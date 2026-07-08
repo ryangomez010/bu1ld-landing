@@ -1,0 +1,196 @@
+import { Link } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+
+import { cn } from "@/lib/utils";
+
+export function TagList({
+  tags,
+  className,
+  linkToSearch,
+}: {
+  tags: string[];
+  className?: string;
+  linkToSearch?: boolean;
+}) {
+  if (!tags.length) return null;
+  return (
+    <div className={cn("flex flex-wrap gap-2", className)}>
+      {tags.map((tag) =>
+        linkToSearch ? (
+          <Link
+            key={tag}
+            to="/search"
+            search={{ q: tag }}
+            className="rounded-sm border border-border/60 bg-background/50 px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground hover:text-bone hover:border-bone/30 transition"
+          >
+            {tag}
+          </Link>
+        ) : (
+          <span
+            key={tag}
+            className="rounded-sm border border-border/60 bg-background/50 px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground"
+          >
+            {tag}
+          </span>
+        ),
+      )}
+    </div>
+  );
+}
+
+export function ContentCard({
+  to,
+  tag,
+  title,
+  summary,
+  meta,
+  children,
+}: {
+  to: string;
+  tag?: string;
+  title: string;
+  summary?: string | null;
+  meta?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group block bg-background/75 border border-border/40 p-6 backdrop-blur-md hover:bg-background/50 hover:border-bone/20 transition"
+    >
+      {tag ? (
+        <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-bone/40">{tag}</span>
+      ) : null}
+      <h3 className="font-display text-xl text-bone mt-2 tracking-tight group-hover:text-accent-blue transition">
+        {title}
+      </h3>
+      {summary ? (
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">{summary}</p>
+      ) : null}
+      {meta ? (
+        <p className="mt-4 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+          {meta}
+        </p>
+      ) : null}
+      {children}
+    </Link>
+  );
+}
+
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string;
+  body: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="rounded-sm border border-dashed border-border/60 p-12 text-center">
+      <h3 className="font-display text-xl text-bone">{title}</h3>
+      <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">{body}</p>
+      {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
+    </div>
+  );
+}
+
+export function MarkdownBody({ body }: { body: string }) {
+  const blocks = body.split(/\n\n+/);
+  return (
+    <div className="prose-build space-y-4 text-foreground/90 leading-relaxed">
+      {blocks.map((block, i) => {
+        const trimmed = block.trim();
+        if (trimmed.startsWith("```")) {
+          const code = trimmed.replace(/^```\w*\n?/, "").replace(/\n?```$/, "");
+          return (
+            <pre
+              key={i}
+              className="overflow-x-auto rounded-sm border border-border/60 bg-card/40 p-4 font-mono text-xs text-bone/85"
+            >
+              <code>{code}</code>
+            </pre>
+          );
+        }
+        if (trimmed.startsWith("## ")) {
+          return (
+            <h2 key={i} className="font-display text-2xl text-bone mt-8 tracking-tight">
+              {trimmed.slice(3)}
+            </h2>
+          );
+        }
+        if (trimmed.startsWith("# ")) {
+          return (
+            <h1 key={i} className="font-display text-3xl text-bone tracking-tight">
+              {trimmed.slice(2)}
+            </h1>
+          );
+        }
+        if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+          const items = trimmed.split("\n").map((l) => l.replace(/^[-*] /, ""));
+          return (
+            <ul key={i} className="list-disc pl-5 space-y-1 text-muted-foreground">
+              {items.map((item, j) => (
+                <li key={j}>{renderInline(item)}</li>
+              ))}
+            </ul>
+          );
+        }
+        if (/^\d+\. /.test(trimmed)) {
+          const items = trimmed.split("\n").map((l) => l.replace(/^\d+\. /, ""));
+          return (
+            <ol key={i} className="list-decimal pl-5 space-y-1 text-muted-foreground">
+              {items.map((item, j) => (
+                <li key={j}>{renderInline(item)}</li>
+              ))}
+            </ol>
+          );
+        }
+        if (trimmed.startsWith("*") && trimmed.endsWith("*") && !trimmed.includes("\n")) {
+          return (
+            <p
+              key={i}
+              className="text-sm italic text-muted-foreground border-l-2 border-bone/20 pl-4"
+            >
+              {trimmed.slice(1, -1)}
+            </p>
+          );
+        }
+        return (
+          <p key={i} className="text-muted-foreground">
+            {renderInline(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function renderInline(text: string): ReactNode {
+  const parts = text.split(/(\*\*[^*]+\*\*|\[([^\]]+)\]\(([^)]+)\))/g).filter(Boolean);
+  return parts.map((part, i) => {
+    const bold = part.match(/^\*\*([^*]+)\*\*$/);
+    if (bold) {
+      return (
+        <strong key={i} className="text-bone font-medium">
+          {bold[1]}
+        </strong>
+      );
+    }
+    const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (link) {
+      return (
+        <a
+          key={i}
+          href={link[2]}
+          target="_blank"
+          rel="noreferrer"
+          className="text-accent-blue hover:text-bone underline-offset-2 hover:underline"
+        >
+          {link[1]}
+        </a>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}

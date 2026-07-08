@@ -1,0 +1,71 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+
+import { SiteFooter } from "@/components/landing/SiteFooter";
+import { SiteHeader } from "@/components/landing/SiteHeader";
+import { PageBackground } from "@/components/layout/PageBackground";
+
+export const Route = createFileRoute("/privacy")({
+  component: PrivacyPage,
+  head: () => ({
+    meta: [{ title: "Privacy Policy — The Bu1ld" }],
+  }),
+});
+
+function PrivacyPage() {
+  return (
+    <div className="relative min-h-screen bg-background text-foreground">
+      <PageBackground density={60} />
+      <SiteHeader />
+      <main className="relative z-10 mx-auto max-w-3xl px-6 py-24">
+        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green">legal</p>
+        <h1 className="font-display text-4xl text-bone mt-4 tracking-tight">Privacy Policy</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Last updated: July 2026</p>
+
+        <div className="mt-10 space-y-6 text-muted-foreground leading-relaxed text-sm">
+          <section>
+            <h2 className="font-display text-xl text-bone mb-2">What we collect</h2>
+            <p>
+              When you create an account, we store your email, profile information (name, bio,
+              background, interests, links), and activity within the platform such as project
+              applications, saved items, and reading progress.
+            </p>
+          </section>
+          <section>
+            <h2 className="font-display text-xl text-bone mb-2">How we use it</h2>
+            <p>
+              Profile data is shared with project leads when you apply to a project. We use your
+              email for account access and optional notifications about applications and platform
+              updates. We do not sell your data.
+            </p>
+          </section>
+          <section>
+            <h2 className="font-display text-xl text-bone mb-2">Storage</h2>
+            <p>
+              Data is stored in Supabase (PostgreSQL) with row-level security. You can request
+              deletion by contacting{" "}
+              <a href="mailto:ryan@thebu1ld.com" className="text-accent-blue hover:text-bone">
+                ryan@thebu1ld.com
+              </a>
+              .
+            </p>
+          </section>
+          <section>
+            <h2 className="font-display text-xl text-bone mb-2">Cookies</h2>
+            <p>
+              We use session cookies for authentication. No third-party advertising trackers at
+              launch.
+            </p>
+          </section>
+        </div>
+
+        <Link
+          to="/"
+          className="mt-12 inline-block font-mono text-[10px] tracking-[0.25em] uppercase text-accent-blue hover:text-bone"
+        >
+          ← Back home
+        </Link>
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}
