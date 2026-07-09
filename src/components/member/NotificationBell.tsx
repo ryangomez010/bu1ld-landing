@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Bell } from "lucide-react";
+import { Bell, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/lib/auth";
+import { relativeTime } from "@/lib/date";
 import {
+  deleteNotification,
   fetchNotifications,
   markAllRead,
   markNotificationRead,
@@ -47,6 +49,13 @@ export function NotificationBell() {
     refresh();
   };
 
+  const onDismiss = async (e: React.MouseEvent, n: Notification) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await deleteNotification(user.id, n.id);
+    refresh();
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -79,13 +88,13 @@ export function NotificationBell() {
             <p className="px-4 py-6 text-sm text-muted-foreground text-center">All caught up.</p>
           ) : (
             items.slice(0, 8).map((n) => (
-              <div key={n.id} className="border-b border-border/40 last:border-0">
+              <div key={n.id} className="relative border-b border-border/40 last:border-0 group">
                 {n.href ? (
                   <Link
                     to={n.href}
                     onClick={() => void onOpenItem(n)}
                     className={cn(
-                      "block px-4 py-3 hover:bg-bone/5 transition",
+                      "block px-4 py-3 pr-10 hover:bg-bone/5 transition",
                       !n.read && "bg-accent-blue/5",
                     )}
                   >
@@ -96,13 +105,21 @@ export function NotificationBell() {
                     type="button"
                     onClick={() => void onOpenItem(n)}
                     className={cn(
-                      "w-full text-left px-4 py-3 hover:bg-bone/5 transition",
+                      "w-full text-left px-4 py-3 pr-10 hover:bg-bone/5 transition",
                       !n.read && "bg-accent-blue/5",
                     )}
                   >
                     <NotificationRow notification={n} />
                   </button>
                 )}
+                <button
+                  type="button"
+                  aria-label="Dismiss notification"
+                  onClick={(e) => void onDismiss(e, n)}
+                  className="absolute right-2 top-3 rounded-sm p-1 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-bone transition"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </div>
             ))
           )}
@@ -124,6 +141,9 @@ function NotificationRow({ notification: n }: { notification: Notification }) {
     <>
       <p className="text-sm text-bone font-medium leading-snug">{n.title}</p>
       <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{n.body}</p>
+      <p className="mt-2 font-mono text-[9px] tracking-[0.12em] uppercase text-bone/40">
+        {relativeTime(n.created_at)}
+      </p>
     </>
   );
 }

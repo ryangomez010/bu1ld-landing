@@ -15,19 +15,26 @@ import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-accent-blue/10 via-transparent to-accent-red/5" />
+      <div className="relative max-w-md text-center">
+        <p className="font-mono text-[10px] tracking-[0.35em] uppercase text-accent-blue">404</p>
+        <h1 className="mt-4 font-display text-5xl text-bone tracking-tight">Page not found</h1>
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          This route doesn&apos;t exist — or the link is outdated.
         </p>
-        <div className="mt-6">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] tracking-[0.25em] uppercase text-background hover:bg-accent-blue transition"
           >
-            Go home
+            Home
+          </Link>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center justify-center rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone hover:border-bone/50 transition"
+          >
+            Member hub
           </Link>
         </div>
       </div>
@@ -40,27 +47,27 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-accent-red/10 via-transparent to-transparent" />
+      <div className="relative max-w-md text-center">
+        <p className="font-mono text-[10px] tracking-[0.35em] uppercase text-accent-red">error</p>
+        <h1 className="mt-4 font-display text-3xl text-bone tracking-tight">This page didn&apos;t load</h1>
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          Something went wrong on our end. Try again, or head back home.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] tracking-[0.25em] uppercase text-background hover:bg-accent-blue transition"
           >
             Try again
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="inline-flex items-center justify-center rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone transition"
           >
             Go home
           </a>

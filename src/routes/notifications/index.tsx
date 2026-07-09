@@ -6,7 +6,13 @@ import { EmptyState } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
-import { fetchNotifications, markAllRead, markNotificationRead } from "@/lib/notifications";
+import { relativeTime } from "@/lib/date";
+import {
+  deleteNotification,
+  fetchNotifications,
+  markAllRead,
+  markNotificationRead,
+} from "@/lib/notifications";
 import type { Notification } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -54,6 +60,7 @@ function NotificationsContent() {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
+            aria-pressed={filter === f}
             className={`font-mono text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 rounded-sm border transition ${
               filter === f
                 ? "bg-accent-blue/10 text-bone border-accent-blue/30"
@@ -89,7 +96,7 @@ function NotificationsContent() {
       ) : (
         <div className="space-y-2">
           {visible.map((n) => (
-            <NotificationCard key={n.id} notification={n} userId={user!.id} onRead={refresh} />
+            <NotificationCard key={n.id} notification={n} userId={user!.id} onChange={refresh} />
           ))}
         </div>
       )}
@@ -100,17 +107,22 @@ function NotificationsContent() {
 function NotificationCard({
   notification: n,
   userId,
-  onRead,
+  onChange,
 }: {
   notification: Notification;
   userId: string;
-  onRead: () => void;
+  onChange: () => void;
 }) {
   const onClick = async () => {
     if (!n.read) {
       await markNotificationRead(userId, n.id);
-      onRead();
+      onChange();
     }
+  };
+
+  const onDismiss = async () => {
+    await deleteNotification(userId, n.id);
+    onChange();
   };
 
   const inner = (
@@ -120,10 +132,24 @@ function NotificationCard({
         !n.read ? "bg-accent-blue/5 border-accent-blue/20" : "bg-background/70",
       )}
     >
-      <p className="font-display text-lg text-bone">{n.title}</p>
+      <div className="flex items-start justify-between gap-3">
+        <p className="font-display text-lg text-bone">{n.title}</p>
+        <button
+          type="button"
+          aria-label="Dismiss"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void onDismiss();
+          }}
+          className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground hover:text-accent-red shrink-0"
+        >
+          Dismiss
+        </button>
+      </div>
       <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{n.body}</p>
       <p className="mt-3 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
-        {new Date(n.created_at).toLocaleDateString()}
+        {relativeTime(n.created_at)}
       </p>
     </div>
   );

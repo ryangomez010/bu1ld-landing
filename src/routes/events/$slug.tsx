@@ -6,7 +6,7 @@ import { RequireAuth } from "@/components/auth/RequireAuth";
 import { SaveButton } from "@/components/member/SaveButton";
 import { TagList } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
-import { fetchEventBySlug } from "@/lib/content";
+import { fetchEventBySlug, fetchEvents, relatedEvents } from "@/lib/content";
 import { daysUntil, formatDate } from "@/lib/date";
 import type { MlEvent } from "@/lib/types";
 
@@ -25,11 +25,13 @@ function EventDetailPage() {
 function EventDetail() {
   const { slug } = Route.useParams();
   const [event, setEvent] = useState<MlEvent | null>(null);
+  const [related, setRelated] = useState<MlEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void fetchEventBySlug(slug).then((e) => {
+    void Promise.all([fetchEventBySlug(slug), fetchEvents()]).then(([e, all]) => {
       setEvent(e);
+      if (e) setRelated(relatedEvents(e, all));
       setLoading(false);
     });
   }, [slug]);
@@ -79,7 +81,7 @@ function EventDetail() {
             .filter(Boolean)
             .join(" · ")}
         </p>
-        <TagList tags={event.topics} className="mt-4" />
+        <TagList tags={event.topics} linkToSearch className="mt-4" />
         {event.summary ? (
           <p className="mt-6 text-lg text-muted-foreground leading-relaxed">{event.summary}</p>
         ) : null}
@@ -158,6 +160,26 @@ function EventDetail() {
           >
             Official site <ExternalLink className="h-3 w-3" />
           </a>
+        ) : null}
+
+        {related.length > 0 ? (
+          <section className="mt-14">
+            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
+              Related events
+            </h2>
+            <div className="grid gap-px border border-border/40 bg-border/40">
+              {related.map((r) => (
+                <Link
+                  key={r.id}
+                  to={`/events/${r.slug}`}
+                  className="bg-background/75 p-5 hover:bg-bone/5 transition block"
+                >
+                  <h3 className="font-display text-lg text-bone">{r.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{r.summary}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
         ) : null}
       </div>
     </MemberLayout>

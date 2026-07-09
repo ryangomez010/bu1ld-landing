@@ -38,6 +38,7 @@ function SearchContent() {
   const { q: initialQ } = Route.useSearch();
   const [query, setQuery] = useState(initialQ);
   const [typeFilter, setTypeFilter] = useState<SearchResult["type"] | "all">("all");
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [index, setIndex] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,9 +54,16 @@ function SearchContent() {
   }, [initialQ]);
 
   const results = useMemo(() => {
-    const matched = searchIndex(index, query);
-    return typeFilter === "all" ? matched : matched.filter((r) => r.type === typeFilter);
-  }, [index, query, typeFilter]);
+    let matched =
+      query.trim() === ""
+        ? typeFilter === "all" && !tagFilter
+          ? []
+          : index
+        : searchIndex(index, query);
+    if (typeFilter !== "all") matched = matched.filter((r) => r.type === typeFilter);
+    if (tagFilter) matched = matched.filter((r) => r.tags.some((t) => t.toLowerCase() === tagFilter.toLowerCase()));
+    return matched;
+  }, [index, query, typeFilter, tagFilter]);
 
   const typeCounts = useMemo(() => {
     const counts: Record<SearchResult["type"], number> = {
@@ -68,6 +76,20 @@ function SearchContent() {
     };
     for (const item of index) counts[item.type] += 1;
     return counts;
+  }, [index]);
+
+  const popularTags = useMemo(() => {
+    const freq = new Map<string, number>();
+    for (const item of index) {
+      for (const t of item.tags) {
+        const key = t.toLowerCase();
+        freq.set(key, (freq.get(key) ?? 0) + 1);
+      }
+    }
+    return Array.from(freq.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([t]) => t);
   }, [index]);
 
   const onQueryChange = (value: string) => {
@@ -94,6 +116,7 @@ function SearchContent() {
             <button
               key={key}
               type="button"
+              aria-pressed={typeFilter === key}
               onClick={() => setTypeFilter(typeFilter === key ? "all" : key)}
               className={`bg-background/70 p-3 text-left transition hover:bg-bone/5 ${
                 typeFilter === key ? "ring-1 ring-inset ring-accent-blue/40" : ""
@@ -108,14 +131,46 @@ function SearchContent() {
         </div>
       ) : null}
 
+      {!loading && popularTags.length > 0 ? (
+        <div className="mb-6 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setTagFilter(null)}
+            aria-pressed={!tagFilter}
+            className={`font-mono text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-sm border transition ${
+              !tagFilter
+                ? "border-accent-green/40 text-accent-green"
+                : "border-border/60 text-muted-foreground hover:text-bone"
+            }`}
+          >
+            All tags
+          </button>
+          {popularTags.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTagFilter(tagFilter === t ? null : t)}
+              aria-pressed={tagFilter === t}
+              className={`font-mono text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-sm border transition ${
+                tagFilter === t
+                  ? "border-accent-green/40 text-accent-green"
+                  : "border-border/60 text-muted-foreground hover:text-bone"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       {loading ? (
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
           Indexing…
         </p>
-      ) : query.trim() === "" ? (
+      ) : query.trim() === "" && typeFilter === "all" && !tagFilter ? (
         <p className="text-sm text-muted-foreground">
           Search across guides, paper reviews, open projects, events, jobs, and newsletter issues.
-          Click a type above to browse by category.
+          Click a type or tag above to browse.
         </p>
       ) : results.length === 0 ? (
         <EmptyState

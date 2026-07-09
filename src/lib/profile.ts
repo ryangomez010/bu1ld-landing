@@ -62,6 +62,7 @@ export function profileCompleteness(profile: Profile | null): {
     { label: "Bio", ok: !!profile.bio?.trim() },
     { label: "Background", ok: !!profile.background },
     { label: "Interests", ok: (profile.interests?.length ?? 0) > 0 },
+    { label: "Timezone", ok: !!profile.timezone?.trim() },
     { label: "LinkedIn", ok: !!profile.linkedin_url?.trim() },
     { label: "GitHub", ok: !!profile.github_url?.trim() },
   ];

@@ -143,6 +143,7 @@ function OnboardingForm() {
                 <button
                   key={interest}
                   type="button"
+                  aria-pressed={active}
                   onClick={() => toggleInterest(interest)}
                   className={`rounded-sm border px-3 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition ${
                     active
@@ -192,6 +193,9 @@ function OnboardingForm() {
         <Link to="/dashboard" className="hover:text-bone transition">
           Skip for now →
         </Link>
+        <span className="mt-2 block text-bone/40">
+          Your hub will nudge you until profile completeness hits 100%. Finish anytime in Profile.
+        </span>
       </p>
     </AuthLayout>
   );

@@ -57,6 +57,15 @@ export async function markAllRead(userId: string): Promise<void> {
   writeLocal(readLocal().map((n) => (n.user_id === userId ? { ...n, read: true } : n)));
 }
 
+export async function deleteNotification(userId: string, id: string): Promise<void> {
+  const supabase = getSupabase();
+  if (supabase) {
+    await supabase.from("notifications").delete().eq("id", id).eq("user_id", userId);
+    return;
+  }
+  writeLocal(readLocal().filter((n) => !(n.id === id && n.user_id === userId)));
+}
+
 export async function createNotification(
   userId: string,
   payload: { title: string; body: string; href?: string },

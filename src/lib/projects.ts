@@ -1,5 +1,6 @@
 import { slugify } from "@/data/seed/content";
 import { SEED_JOBS, SEED_PROJECTS } from "@/data/seed/projects";
+import { notifyApplicationUpdate, notifyLeadApproved } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
 import { getSupabase } from "@/lib/supabase";
 import type {
@@ -429,16 +430,21 @@ export async function updateApplicationStatus(
     const label =
       status === "accepted"
         ? "accepted"
-        : status === "rejected"
+        : status === "declined"
           ? "not selected"
-          : status === "reviewing"
-            ? "under review"
+          : status === "waitlist"
+            ? "waitlisted"
             : status;
     await createNotification(application.user_id, {
       title: `Application ${label}`,
       body: `Your application to ${application.project_title ?? "a project"} is now ${label}.`,
-      href: application.project_slug ? `/projects/${application.project_slug}` : "/applications",
+      href: "/applications",
     });
+    void notifyApplicationUpdate(
+      application.user_id,
+      application.project_title ?? "a project",
+      label,
+    );
   }
 
   return { error: null };
@@ -539,6 +545,26 @@ export async function createJob(payload: {
   return { error: error?.message ?? null };
 }
 
+export async function setJobPublished(
+  id: string,
+  published: boolean,
+): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "Supabase required." };
+  const { error } = await supabase
+    .from("jobs")
+    .update({ published, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  return { error: error?.message ?? null };
+}
+
+export async function deleteJob(id: string): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "Supabase required." };
+  const { error } = await supabase.from("jobs").delete().eq("id", id);
+  return { error: error?.message ?? null };
+}
+
 // ─── Lead verification ──────────────────────────────────────────────────────
 
 export async function submitLeadRequest(
@@ -622,6 +648,7 @@ export async function approveLeadRequest(
       body: "You can now create projects and review applications from My projects.",
       href: "/projects/manage",
     });
+    void notifyLeadApproved(userId);
   }
 
   return { error: profileError?.message ?? null };

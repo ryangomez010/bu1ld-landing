@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
-import { ContentCard, TagList } from "@/components/member/ContentCard";
+import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { getAllGuides } from "@/content/guides";
 import { useAuth } from "@/lib/auth";
@@ -108,7 +108,22 @@ function GuidesContent() {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No guides match this filter.</p>
+        <EmptyState
+          title="No guides match"
+          body="Try another progress filter or clear the tag chip."
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setFilter("all");
+                setTag(null);
+              }}
+              className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"
+            >
+              Reset filters →
+            </button>
+          }
+        />
       ) : (
         <div className="grid gap-px bg-border/40 border border-border/40 sm:grid-cols-2">
           {filtered.map((guide, i) => {

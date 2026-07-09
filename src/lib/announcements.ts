@@ -1,4 +1,6 @@
 import { SEED_ANNOUNCEMENTS } from "@/data/seed/announcements";
+import { fetchMemberIds } from "@/lib/admin";
+import { createNotification } from "@/lib/notifications";
 import { getSupabase } from "@/lib/supabase";
 import type { Announcement } from "@/data/seed/announcements";
 
@@ -63,11 +65,29 @@ export async function fetchAllAnnouncementsAdmin(): Promise<Announcement[]> {
   return readLocal();
 }
 
+async function fanOutAnnouncement(payload: {
+  title: string;
+  body: string;
+  href?: string;
+}) {
+  const ids = await fetchMemberIds();
+  await Promise.all(
+    ids.slice(0, 100).map((id) =>
+      createNotification(id, {
+        title: payload.title,
+        body: payload.body.slice(0, 180),
+        href: payload.href ?? "/dashboard",
+      }),
+    ),
+  );
+}
+
 export async function createAnnouncement(payload: {
   title: string;
   body: string;
   href?: string;
   pinned?: boolean;
+  notify?: boolean;
 }): Promise<{ error: string | null }> {
   const supabase = getSupabase();
   if (supabase) {
@@ -78,19 +98,46 @@ export async function createAnnouncement(payload: {
       pinned: payload.pinned ?? false,
       published: true,
     });
-    return { error: error?.message ?? null };
+    if (error) return { error: error.message };
+  } else {
+    const item: Announcement = {
+      id: `local-a-${Date.now()}`,
+      title: payload.title,
+      body: payload.body,
+      href: payload.href ?? null,
+      pinned: payload.pinned ?? false,
+      published: true,
+      created_at: new Date().toISOString(),
+    };
+    writeLocal([item, ...readLocal()]);
   }
 
-  const item: Announcement = {
-    id: `local-a-${Date.now()}`,
-    title: payload.title,
-    body: payload.body,
-    href: payload.href ?? null,
-    pinned: payload.pinned ?? false,
-    published: true,
-    created_at: new Date().toISOString(),
-  };
-  writeLocal([item, ...readLocal()]);
+  if (payload.notify !== false) {
+    await fanOutAnnouncement(payload);
+  }
+  return { error: null };
+}
+
+export async function setAnnouncementPublished(
+  id: string,
+  published: boolean,
+): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (supabase) {
+    const { error } = await supabase.from("announcements").update({ published }).eq("id", id);
+    return { error: error?.message ?? null };
+  }
+  writeLocal(readLocal().map((a) => (a.id === id ? { ...a, published } : a)));
+  return { error: null };
+}
+
+export async function deleteAnnouncement(id: string): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (supabase) {
+    const { error } = await supabase.from("announcements").delete().eq("id", id);
+    return { error: error?.message ?? null };
+  }
+  writeLocal(readLocal().filter((a) => a.id !== id));
   return { error: null };
 }
 

@@ -45,6 +45,7 @@ function EditProjectForm() {
   const [tags, setTags] = useState("");
   const [capacity, setCapacity] = useState("5");
   const [discordUrl, setDiscordUrl] = useState("");
+  const [published, setPublished] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -60,6 +61,7 @@ function EditProjectForm() {
         setTags(p.tags.join(", "));
         setCapacity(String(p.capacity));
         setDiscordUrl(p.discord_url ?? "");
+        setPublished(p.published);
       }
       setLoading(false);
     });
@@ -84,6 +86,7 @@ function EditProjectForm() {
         .filter(Boolean),
       capacity: Number(capacity) || 5,
       discord_url: discordUrl || null,
+      published,
     });
     setSubmitting(false);
     if (error) {
@@ -189,13 +192,42 @@ function EditProjectForm() {
             />
           </div>
         </div>
-        <div className="flex gap-3">
+        <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+          />
+          Published on project board
+        </label>
+        <div className="flex flex-wrap gap-3">
           <Button
             type="submit"
             disabled={submitting}
             className="font-mono text-[10px] tracking-[0.2em] uppercase"
           >
             {submitting ? "Saving…" : "Save changes"}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={submitting}
+            onClick={() => {
+              setPublished(false);
+              void (async () => {
+                setSubmitting(true);
+                const { error } = await updateProject(project.id, { published: false });
+                setSubmitting(false);
+                if (error) toast.error(error);
+                else {
+                  toast.success("Project unpublished.");
+                  void navigate({ to: "/projects/manage" });
+                }
+              })();
+            }}
+            className="font-mono text-[10px] tracking-[0.2em] uppercase text-accent-red"
+          >
+            Unpublish
           </Button>
           <Link
             to={`/projects/manage/${project.slug}`}

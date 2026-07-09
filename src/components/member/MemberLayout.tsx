@@ -106,8 +106,46 @@ export function MemberLayout({
     </>
   );
 
+  const UtilityLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
+    <div className="space-y-1">
+      <Link
+        to="/search"
+        onClick={onNavigate}
+        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone transition"
+      >
+        <Search className="h-4 w-4" />
+        Search
+      </Link>
+      <Link
+        to="/profile"
+        onClick={onNavigate}
+        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone transition"
+      >
+        <Settings className="h-4 w-4" />
+        Profile
+      </Link>
+      <button
+        type="button"
+        onClick={() => {
+          onNavigate?.();
+          void signOut();
+        }}
+        className="flex w-full items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone transition"
+      >
+        <LogOut className="h-4 w-4" />
+        Sign out
+      </button>
+    </div>
+  );
+
   return (
     <div className="relative min-h-screen bg-background text-foreground">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-sm focus:bg-bone focus:px-3 focus:py-2 focus:font-mono focus:text-[10px] focus:tracking-[0.2em] focus:uppercase focus:text-background"
+      >
+        Skip to content
+      </a>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-accent-blue/10 via-accent-green/5 to-transparent" />
       <div className="relative z-10 flex min-h-screen">
         <aside className="hidden lg:flex w-56 shrink-0 flex-col border-r border-border/60 bg-background/80 backdrop-blur-xl p-4">
@@ -117,29 +155,8 @@ export function MemberLayout({
           <nav className="flex flex-col gap-1 flex-1">
             <NavLinks />
           </nav>
-          <div className="mt-auto pt-4 border-t border-border/60 space-y-1">
-            <Link
-              to="/search"
-              className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone transition"
-            >
-              <Search className="h-4 w-4" />
-              Search
-            </Link>
-            <Link
-              to="/profile"
-              className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone transition"
-            >
-              <Settings className="h-4 w-4" />
-              Profile
-            </Link>
-            <button
-              type="button"
-              onClick={() => void signOut()}
-              className="flex w-full items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone transition"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign out
-            </button>
+          <div className="mt-auto pt-4 border-t border-border/60">
+            <UtilityLinks />
           </div>
         </aside>
 
@@ -175,13 +192,19 @@ export function MemberLayout({
                     <nav className="mt-6 flex flex-col gap-1">
                       <NavLinks onNavigate={() => setOpen(false)} />
                     </nav>
+                    <div className="mt-6 border-t border-border/60 pt-4">
+                      <UtilityLinks onNavigate={() => setOpen(false)} />
+                    </div>
                   </SheetContent>
                 </Sheet>
               </div>
             </div>
           </header>
 
-          <main className="flex-1 px-4 py-8 md:px-8 md:py-10 max-w-5xl w-full mx-auto">
+          <main
+            id="main-content"
+            className="flex-1 px-4 py-8 md:px-8 md:py-10 max-w-5xl w-full mx-auto"
+          >
             {title ? (
               <div className="mb-8">
                 {eyebrow ? (

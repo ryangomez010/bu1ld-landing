@@ -173,3 +173,113 @@ export async function fetchAllNewslettersAdmin(): Promise<NewsletterIssue[]> {
     ? data.map((r) => normalizeNewsletter(r as Record<string, unknown>))
     : SEED_NEWSLETTERS;
 }
+
+export function relatedEvents(event: MlEvent, all: MlEvent[], limit = 3): MlEvent[] {
+  const topics = new Set(event.topics.map((t) => t.toLowerCase()));
+  return all
+    .filter((e) => e.id !== event.id && e.published)
+    .map((e) => ({
+      event: e,
+      score: e.topics.filter((t) => topics.has(t.toLowerCase())).length,
+    }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((x) => x.event);
+}
+
+async function requireSupabase() {
+  const supabase = getSupabase();
+  if (!supabase) return { supabase: null as ReturnType<typeof getSupabase>, error: "Supabase required." };
+  return { supabase, error: null as string | null };
+}
+
+export async function setContentPublished(
+  table: "events" | "papers" | "newsletter_issues",
+  id: string,
+  published: boolean,
+): Promise<{ error: string | null }> {
+  const { supabase, error } = await requireSupabase();
+  if (!supabase) return { error };
+  const { error: err } = await supabase
+    .from(table)
+    .update({ published, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  return { error: err?.message ?? null };
+}
+
+export async function deleteContentRow(
+  table: "events" | "papers" | "newsletter_issues",
+  id: string,
+): Promise<{ error: string | null }> {
+  const { supabase, error } = await requireSupabase();
+  if (!supabase) return { error };
+  const { error: err } = await supabase.from(table).delete().eq("id", id);
+  return { error: err?.message ?? null };
+}
+
+export async function updateEventAdmin(
+  id: string,
+  patch: Partial<{
+    title: string;
+    summary: string | null;
+    topics: string[];
+    prep_notes: string | null;
+    location: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    url: string | null;
+    deadlines: { label: string; date: string }[];
+    resources: { label: string; url: string; kind?: string }[];
+    published: boolean;
+  }>,
+): Promise<{ error: string | null }> {
+  const { supabase, error } = await requireSupabase();
+  if (!supabase) return { error };
+  const { error: err } = await supabase
+    .from("events")
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  return { error: err?.message ?? null };
+}
+
+export async function updatePaperAdmin(
+  id: string,
+  patch: Partial<{
+    title: string;
+    authors: string | null;
+    review_body: string;
+    summary: string | null;
+    tags: string[];
+    is_classic: boolean;
+    arxiv_url: string | null;
+    published: boolean;
+  }>,
+): Promise<{ error: string | null }> {
+  const { supabase, error } = await requireSupabase();
+  if (!supabase) return { error };
+  const { error: err } = await supabase
+    .from("papers")
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  return { error: err?.message ?? null };
+}
+
+export async function updateNewsletterAdmin(
+  id: string,
+  patch: Partial<{
+    title: string;
+    body: string;
+    summary: string | null;
+    issue_number: number | null;
+    published: boolean;
+  }>,
+): Promise<{ error: string | null }> {
+  const { supabase, error } = await requireSupabase();
+  if (!supabase) return { error };
+  const { error: err } = await supabase
+    .from("newsletter_issues")
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  return { error: err?.message ?? null };
+}

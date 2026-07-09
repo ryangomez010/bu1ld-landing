@@ -1,26 +1,27 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { Wordmark } from "@/components/Wordmark";
 import { SectionLabel } from "@/components/landing/Section";
-import { STATS } from "@/data/landing";
 
 export function HeroSection() {
+  const reduce = useReducedMotion();
+
   return (
     <section
       id="top"
       className="relative min-h-screen flex items-center overflow-hidden pt-32 scanline"
     >
-      <div className="relative mx-auto max-w-7xl px-6 w-full">
+      <div className="relative mx-auto max-w-7xl px-6 w-full pb-24">
         <div className="absolute top-24 right-6 hidden md:flex flex-col items-end gap-1 font-mono text-[9px] tracking-[0.3em] uppercase text-bone/40">
           <span>lat 37.4275° N</span>
           <span>lng 122.1697° W</span>
           <span>cycle 2026.Q2</span>
         </div>
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={reduce ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.0, delay: 0.15 }}
+          transition={{ duration: reduce ? 0 : 1.0, delay: reduce ? 0 : 0.15 }}
           className="max-w-5xl"
         >
           <SectionLabel id="00">a machine learning institution</SectionLabel>
@@ -58,28 +59,6 @@ export function HeroSection() {
             </a>
           </div>
         </motion.div>
-
-        <div className="mt-28 grid grid-cols-2 md:grid-cols-4 gap-px bg-border/30 border border-border/40 backdrop-blur-md">
-          {STATS.map(([n, l], idx) => (
-            <motion.div
-              key={l}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 + idx * 0.08 }}
-              className="bg-background/70 p-6 group hover:bg-background/40 transition"
-            >
-              <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-bone/40">
-                0{idx + 1}
-              </div>
-              <div className="font-display text-2xl md:text-3xl text-bone mt-3 tracking-tight">
-                {n}
-              </div>
-              <div className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mt-2">
-                {l}
-              </div>
-            </motion.div>
-          ))}
-        </div>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 font-mono text-[9px] tracking-[0.3em] uppercase text-bone/40">
           <span>scroll</span>

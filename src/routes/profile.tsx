@@ -174,6 +174,7 @@ function ProfileEditor() {
                 <button
                   key={interest}
                   type="button"
+                  aria-pressed={active}
                   onClick={() => toggleInterest(interest)}
                   className={`rounded-sm border px-3 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition ${
                     active
@@ -209,7 +210,38 @@ function ProfileEditor() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="timezone">Timezone</Label>
-          <Input id="timezone" value={timezone} onChange={(e) => setTimezone(e.target.value)} />
+          <Input
+            id="timezone"
+            list="tz-list"
+            value={timezone}
+            onChange={(e) => setTimezone(e.target.value)}
+            placeholder="America/Los_Angeles"
+          />
+          <datalist id="tz-list">
+            {[
+              "America/Los_Angeles",
+              "America/New_York",
+              "America/Chicago",
+              "Europe/London",
+              "Europe/Berlin",
+              "Asia/Kolkata",
+              "Asia/Singapore",
+              "Australia/Sydney",
+              "UTC",
+            ].map((tz) => (
+              <option key={tz} value={tz} />
+            ))}
+          </datalist>
+        </div>
+        <div className="rounded-sm border border-border/50 bg-background/60 p-4 space-y-2">
+          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+            Account
+          </p>
+          <p className="text-sm text-bone">{user?.email}</p>
+          <p className="text-xs text-muted-foreground">
+            Password and email changes are managed through your auth provider (Supabase Auth). Use
+            “Forgot password” on the login page to reset credentials.
+          </p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Button

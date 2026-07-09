@@ -1,5 +1,5 @@
 import { getSupabase } from "@/lib/supabase";
-import type { AdminStats, Profile } from "@/lib/types";
+import type { AdminStats, MemberRole, Profile } from "@/lib/types";
 import { SEED_JOBS, SEED_PROJECTS } from "@/data/seed/projects";
 import { SEED_EVENTS, SEED_PAPERS } from "@/data/seed/content";
 
@@ -50,6 +50,24 @@ export async function fetchAllMembers(): Promise<Profile[]> {
     .order("created_at", { ascending: false })
     .limit(100);
   return (data ?? []).map((p) => ({ ...p, role: p.role ?? "member" })) as Profile[];
+}
+
+export async function updateMemberRole(
+  userId: string,
+  role: MemberRole,
+): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "Supabase required." };
+  const { error } = await supabase
+    .from("profiles")
+    .update({ role, updated_at: new Date().toISOString() })
+    .eq("id", userId);
+  return { error: error?.message ?? null };
+}
+
+export async function fetchMemberIds(): Promise<string[]> {
+  const members = await fetchAllMembers();
+  return members.map((m) => m.id);
 }
 
 export function generatePaperDraft(title: string, authors: string, notes: string): string {

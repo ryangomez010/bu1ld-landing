@@ -12,26 +12,41 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 import { slugify } from "@/data/seed/content";
 import type { Announcement } from "@/data/seed/announcements";
-import { createAnnouncement, fetchAllAnnouncementsAdmin } from "@/lib/announcements";
-import { fetchAllEventsAdmin, fetchAllNewslettersAdmin, fetchAllPapersAdmin } from "@/lib/content";
+import {
+  createAnnouncement,
+  deleteAnnouncement,
+  fetchAllAnnouncementsAdmin,
+  setAnnouncementPublished,
+} from "@/lib/announcements";
+import {
+  deleteContentRow,
+  fetchAllEventsAdmin,
+  fetchAllNewslettersAdmin,
+  fetchAllPapersAdmin,
+  setContentPublished,
+} from "@/lib/content";
 import {
   fetchAdminStats,
   fetchAllMembers,
   generateEventPrep,
   generatePaperDraft,
+  updateMemberRole,
 } from "@/lib/admin";
 import {
   approveLeadRequest,
   createJob,
+  deleteJob,
   fetchAllJobsAdmin,
   fetchPendingLeadRequests,
   rejectLeadRequest,
+  setJobPublished,
 } from "@/lib/projects";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import type {
   AdminStats,
   Job,
   LeadVerificationRequest,
+  MemberRole,
   MlEvent,
   NewsletterIssue,
   Paper,
@@ -133,7 +148,7 @@ function AdminContent() {
       ) : tab === "jobs" ? (
         <AdminJobs jobs={jobs} onSaved={reload} />
       ) : tab === "members" ? (
-        <AdminMembers members={members} />
+        <AdminMembers members={members} onSaved={reload} />
       ) : (
         <AdminLeads requests={leadRequests} adminId={user?.id ?? ""} onSaved={reload} />
       )}
@@ -153,11 +168,41 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
   const [summary, setSummary] = useState("");
   const [topics, setTopics] = useState("");
   const [prepNotes, setPrepNotes] = useState("");
+  const [location, setLocation] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [url, setUrl] = useState("");
+  const [deadlinesText, setDeadlinesText] = useState("");
+  const [resourcesText, setResourcesText] = useState("");
   const [saving, setSaving] = useState(false);
 
   const onDraft = () => {
     setPrepNotes(generateEventPrep(title, topics, prepNotes));
   };
+
+  const parseDeadlines = () =>
+    deadlinesText
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [label, date] = line.split("|").map((s) => s.trim());
+        return label && date ? { label, date } : null;
+      })
+      .filter(Boolean) as { label: string; date: string }[];
+
+  const parseResources = () =>
+    resourcesText
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [label, resourceUrl, kind] = line.split("|").map((s) => s.trim());
+        return label && resourceUrl
+          ? { label, url: resourceUrl, kind: kind || "other" }
+          : null;
+      })
+      .filter(Boolean) as { label: string; url: string; kind: string }[];
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,10 +216,18 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
     const { error } = await supabase.from("events").insert({
       slug,
       title,
-      summary,
-      topics: [],
-      resources: [],
-      deadlines: [],
+      summary: summary || null,
+      topics: topics
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+      prep_notes: prepNotes || null,
+      location: location || null,
+      start_date: startDate || null,
+      end_date: endDate || null,
+      url: url || null,
+      resources: parseResources(),
+      deadlines: parseDeadlines(),
       published: true,
     });
     setSaving(false);
@@ -185,7 +238,34 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
     toast.success("Event created.");
     setTitle("");
     setSummary("");
+    setTopics("");
+    setPrepNotes("");
+    setLocation("");
+    setStartDate("");
+    setEndDate("");
+    setUrl("");
+    setDeadlinesText("");
+    setResourcesText("");
     onSaved();
+  };
+
+  const togglePublish = async (ev: MlEvent) => {
+    const { error } = await setContentPublished("events", ev.id, !ev.published);
+    if (error) toast.error(error);
+    else {
+      toast.success(ev.published ? "Unpublished." : "Published.");
+      onSaved();
+    }
+  };
+
+  const onDelete = async (ev: MlEvent) => {
+    if (!confirm(`Delete “${ev.title}”?`)) return;
+    const { error } = await deleteContentRow("events", ev.id);
+    if (error) toast.error(error);
+    else {
+      toast.success("Deleted.");
+      onSaved();
+    }
   };
 
   return (
@@ -200,9 +280,47 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
           <Label>Summary</Label>
           <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} rows={3} />
         </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Location</Label>
+            <Input value={location} onChange={(e) => setLocation(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label>Official URL</Label>
+            <Input value={url} onChange={(e) => setUrl(e.target.value)} />
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Start date</Label>
+            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label>End date</Label>
+            <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          </div>
+        </div>
         <div className="space-y-2">
           <Label>Topics (comma-separated)</Label>
           <Input value={topics} onChange={(e) => setTopics(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label>Deadlines (one per line: Label | YYYY-MM-DD)</Label>
+          <Textarea
+            value={deadlinesText}
+            onChange={(e) => setDeadlinesText(e.target.value)}
+            rows={3}
+            placeholder="Abstract | 2026-09-01"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Resources (one per line: Label | URL | kind)</Label>
+          <Textarea
+            value={resourcesText}
+            onChange={(e) => setResourcesText(e.target.value)}
+            rows={3}
+            placeholder="CFP | https://… | cfp"
+          />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -224,21 +342,31 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
         >
           {saving ? "Saving…" : "Publish event"}
         </Button>
-        <p className="text-xs text-muted-foreground">
-          Edit deadlines and resources in Supabase table editor for now.
-        </p>
       </form>
       <div>
         <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
           Existing ({events.length})
         </h2>
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-3 text-sm">
           {events.map((ev) => (
-            <li key={ev.id} className="text-bone">
-              {ev.title}{" "}
-              <Link to={`/events/${ev.slug}`} className="text-accent-blue text-xs">
-                view
-              </Link>
+            <li key={ev.id} className="border-b border-border/40 pb-3 text-bone">
+              <div className="flex flex-wrap items-center gap-2">
+                <span>{ev.title}</span>
+                {!ev.published ? (
+                  <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
+                ) : null}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
+                <Link to={`/events/${ev.slug}`} className="text-accent-blue">
+                  view
+                </Link>
+                <button type="button" onClick={() => void togglePublish(ev)} className="text-muted-foreground hover:text-bone">
+                  {ev.published ? "unpublish" : "publish"}
+                </button>
+                <button type="button" onClick={() => void onDelete(ev)} className="text-accent-red hover:text-bone">
+                  delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -252,6 +380,7 @@ function AdminPapers({ papers, onSaved }: { papers: Paper[]; onSaved: () => void
   const [authors, setAuthors] = useState("");
   const [review, setReview] = useState("");
   const [draftNotes, setDraftNotes] = useState("");
+  const [tags, setTags] = useState("");
   const [saving, setSaving] = useState(false);
 
   const onDraft = () => {
@@ -272,7 +401,10 @@ function AdminPapers({ papers, onSaved }: { papers: Paper[]; onSaved: () => void
       title,
       authors,
       review_body: review,
-      tags: [],
+      tags: tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
       published: true,
     });
     setSaving(false);
@@ -284,7 +416,27 @@ function AdminPapers({ papers, onSaved }: { papers: Paper[]; onSaved: () => void
     setTitle("");
     setAuthors("");
     setReview("");
+    setTags("");
     onSaved();
+  };
+
+  const togglePublish = async (p: Paper) => {
+    const { error } = await setContentPublished("papers", p.id, !p.published);
+    if (error) toast.error(error);
+    else {
+      toast.success(p.published ? "Unpublished." : "Published.");
+      onSaved();
+    }
+  };
+
+  const onDelete = async (p: Paper) => {
+    if (!confirm(`Delete “${p.title}”?`)) return;
+    const { error } = await deleteContentRow("papers", p.id);
+    if (error) toast.error(error);
+    else {
+      toast.success("Deleted.");
+      onSaved();
+    }
   };
 
   return (
@@ -298,6 +450,10 @@ function AdminPapers({ papers, onSaved }: { papers: Paper[]; onSaved: () => void
         <div className="space-y-2">
           <Label>Authors</Label>
           <Input value={authors} onChange={(e) => setAuthors(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label>Tags (comma-separated)</Label>
+          <Input value={tags} onChange={(e) => setTags(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>Your notes (for draft assist)</Label>
@@ -328,13 +484,26 @@ function AdminPapers({ papers, onSaved }: { papers: Paper[]; onSaved: () => void
         <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
           Existing ({papers.length})
         </h2>
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-3 text-sm">
           {papers.map((p) => (
-            <li key={p.id} className="text-bone">
-              {p.title}{" "}
-              <Link to={`/papers/${p.slug}`} className="text-accent-blue text-xs">
-                view
-              </Link>
+            <li key={p.id} className="border-b border-border/40 pb-3 text-bone">
+              <div className="flex flex-wrap items-center gap-2">
+                <span>{p.title}</span>
+                {!p.published ? (
+                  <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
+                ) : null}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
+                <Link to={`/papers/${p.slug}`} className="text-accent-blue">
+                  view
+                </Link>
+                <button type="button" onClick={() => void togglePublish(p)} className="text-muted-foreground hover:text-bone">
+                  {p.published ? "unpublish" : "publish"}
+                </button>
+                <button type="button" onClick={() => void onDelete(p)} className="text-accent-red hover:text-bone">
+                  delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -409,13 +578,51 @@ function AdminNewsletters({ issues, onSaved }: { issues: NewsletterIssue[]; onSa
         <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
           Existing ({issues.length})
         </h2>
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-3 text-sm">
           {issues.map((n) => (
-            <li key={n.id} className="text-bone">
-              {n.title}{" "}
-              <Link to={`/newsletter/${n.slug}`} className="text-accent-blue text-xs">
-                view
-              </Link>
+            <li key={n.id} className="border-b border-border/40 pb-3 text-bone">
+              <div className="flex flex-wrap items-center gap-2">
+                <span>{n.title}</span>
+                {!n.published ? (
+                  <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
+                ) : null}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
+                <Link to={`/newsletter/${n.slug}`} className="text-accent-blue">
+                  view
+                </Link>
+                <button
+                  type="button"
+                  onClick={() =>
+                    void setContentPublished("newsletter_issues", n.id, !n.published).then(({ error }) => {
+                      if (error) toast.error(error);
+                      else {
+                        toast.success(n.published ? "Unpublished." : "Published.");
+                        onSaved();
+                      }
+                    })
+                  }
+                  className="text-muted-foreground hover:text-bone"
+                >
+                  {n.published ? "unpublish" : "publish"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!confirm(`Delete “${n.title}”?`)) return;
+                    void deleteContentRow("newsletter_issues", n.id).then(({ error }) => {
+                      if (error) toast.error(error);
+                      else {
+                        toast.success("Deleted.");
+                        onSaved();
+                      }
+                    });
+                  }}
+                  className="text-accent-red hover:text-bone"
+                >
+                  delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -487,6 +694,7 @@ function AdminAnnouncements({ items, onSaved }: { items: Announcement[]; onSaved
         >
           {saving ? "Saving…" : "Publish"}
         </Button>
+        <p className="text-xs text-muted-foreground">Publishing also notifies members in-app.</p>
       </form>
       <div>
         <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
@@ -500,7 +708,37 @@ function AdminAnnouncements({ items, onSaved }: { items: Announcement[]; onSaved
                   pinned
                 </span>
               ) : null}
+              {!a.published ? (
+                <span className="font-mono text-[9px] uppercase text-accent-red mr-2">draft</span>
+              ) : null}
               {a.title}
+              <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
+                <button
+                  type="button"
+                  onClick={() =>
+                    void setAnnouncementPublished(a.id, !a.published).then(({ error }) => {
+                      if (error) toast.error(error);
+                      else onSaved();
+                    })
+                  }
+                  className="text-muted-foreground hover:text-bone"
+                >
+                  {a.published ? "unpublish" : "publish"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!confirm(`Delete “${a.title}”?`)) return;
+                    void deleteAnnouncement(a.id).then(({ error }) => {
+                      if (error) toast.error(error);
+                      else onSaved();
+                    });
+                  }}
+                  className="text-accent-red hover:text-bone"
+                >
+                  delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -548,11 +786,12 @@ function AdminOverview({
   );
 }
 
-function AdminMembers({ members }: { members: Profile[] }) {
+function AdminMembers({ members, onSaved }: { members: Profile[]; onSaved: () => void }) {
   if (!isSupabaseConfigured) {
     return (
       <p className="text-sm text-muted-foreground">
-        Member list requires Supabase with admin profile read policy (phase4.sql).
+        Member list requires Supabase with admin profile read policy (phase4.sql). Run phase6.sql for
+        role updates.
       </p>
     );
   }
@@ -560,6 +799,15 @@ function AdminMembers({ members }: { members: Profile[] }) {
   if (members.length === 0) {
     return <p className="text-sm text-muted-foreground">No members loaded.</p>;
   }
+
+  const onRole = async (id: string, role: MemberRole) => {
+    const { error } = await updateMemberRole(id, role);
+    if (error) toast.error(error);
+    else {
+      toast.success(`Role → ${role}`);
+      onSaved();
+    }
+  };
 
   return (
     <div className="overflow-x-auto rounded-sm border border-border/60">
@@ -570,6 +818,7 @@ function AdminMembers({ members }: { members: Profile[] }) {
             <th className="p-3">Role</th>
             <th className="p-3">Interests</th>
             <th className="p-3">Joined</th>
+            <th className="p-3">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -582,6 +831,21 @@ function AdminMembers({ members }: { members: Profile[] }) {
               </td>
               <td className="p-3 text-muted-foreground">
                 {m.created_at ? new Date(m.created_at).toLocaleDateString() : "—"}
+              </td>
+              <td className="p-3">
+                <div className="flex flex-wrap gap-2">
+                  {(["member", "project_lead", "admin"] as MemberRole[]).map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      disabled={m.role === role}
+                      onClick={() => void onRole(m.id, role)}
+                      className="font-mono text-[8px] tracking-[0.12em] uppercase text-muted-foreground hover:text-bone disabled:opacity-40"
+                    >
+                      {role.replace("_", " ")}
+                    </button>
+                  ))}
+                </div>
               </td>
             </tr>
           ))}
@@ -657,13 +921,54 @@ function AdminJobs({ jobs, onSaved }: { jobs: Job[]; onSaved: () => void }) {
         <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
           Existing ({jobs.length})
         </h2>
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-3 text-sm">
           {jobs.map((j) => (
-            <li key={j.id} className="text-bone">
-              {j.title}{" "}
-              <span className="font-mono text-[9px] uppercase text-muted-foreground">
-                ({j.source})
-              </span>
+            <li key={j.id} className="border-b border-border/40 pb-3 text-bone">
+              <div className="flex flex-wrap items-center gap-2">
+                <span>{j.title}</span>
+                <span className="font-mono text-[9px] uppercase text-muted-foreground">
+                  ({j.source})
+                </span>
+                {!j.published ? (
+                  <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
+                ) : null}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
+                <Link to={`/jobs/${j.slug}`} className="text-accent-blue">
+                  view
+                </Link>
+                <button
+                  type="button"
+                  onClick={() =>
+                    void setJobPublished(j.id, !j.published).then(({ error }) => {
+                      if (error) toast.error(error);
+                      else {
+                        toast.success(j.published ? "Unpublished." : "Published.");
+                        onSaved();
+                      }
+                    })
+                  }
+                  className="text-muted-foreground hover:text-bone"
+                >
+                  {j.published ? "unpublish" : "publish"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!confirm(`Delete “${j.title}”?`)) return;
+                    void deleteJob(j.id).then(({ error }) => {
+                      if (error) toast.error(error);
+                      else {
+                        toast.success("Deleted.");
+                        onSaved();
+                      }
+                    });
+                  }}
+                  className="text-accent-red hover:text-bone"
+                >
+                  delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
