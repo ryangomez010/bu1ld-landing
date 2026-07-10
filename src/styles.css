@@ -556,18 +556,6 @@
   }
   .paper-hero {
     position: relative;
-    overflow: hidden;
-  }
-  .paper-hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse 80% 60% at 100% 0%,
-      color-mix(in oklab, var(--accent-violet) 12%, transparent),
-      transparent
-    );
-    pointer-events: none;
   }
   .list-row-hover {
     transition: background-color 0.15s ease;

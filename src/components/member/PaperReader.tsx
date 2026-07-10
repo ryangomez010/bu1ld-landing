@@ -7,10 +7,14 @@ import { TagList } from "@/components/member/ContentCard";
 import { PaperReviewBody } from "@/components/member/PaperReviewMarkdown";
 import { SaveButton } from "@/components/member/SaveButton";
 import { ShareButton } from "@/components/member/ShareButton";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { getAllGuides } from "@/content/guides";
 import { getPaperScrollProgress, setPaperScrollProgress } from "@/lib/paper-reading-progress";
+import { getPaperNotes, savePaperNotes } from "@/lib/paper-notes";
 import { isPaperRead, markPaperRead, unmarkPaperRead } from "@/lib/paper-read";
 import { extractPullQuote, paperReadMinutes, parseReviewSections } from "@/lib/paper-review";
+import { relatedGuidesForPaper } from "@/lib/research-paths";
 import type { Paper } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -29,12 +33,16 @@ export function PaperReader({
   const readMinutes = paperReadMinutes(paper);
   const pullQuote = extractPullQuote(paper.summary, sections);
   const toc = sections.filter((s) => s.id !== "overview");
+  const relatedGuides = useMemo(() => relatedGuidesForPaper(paper, getAllGuides()), [paper]);
+
   const [scrollProgress, setScrollProgress] = useState(0);
   const [markedRead, setMarkedRead] = useState(false);
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     void isPaperRead(userId, paper.slug).then(setMarkedRead);
     setScrollProgress(getPaperScrollProgress(userId, paper.slug));
+    setNotes(getPaperNotes(userId, paper.slug));
   }, [userId, paper.slug]);
 
   useEffect(() => {
@@ -52,6 +60,11 @@ export function PaperReader({
     return () => window.removeEventListener("scroll", onScroll);
   }, [userId, paper.slug, markedRead]);
 
+  useEffect(() => {
+    const t = window.setTimeout(() => savePaperNotes(userId, paper.slug, notes), 600);
+    return () => window.clearTimeout(t);
+  }, [notes, userId, paper.slug]);
+
   const toggleRead = () => {
     void (markedRead ? unmarkPaperRead(userId, paper.slug) : markPaperRead(userId, paper.slug)).then(
       () => {
@@ -63,39 +76,172 @@ export function PaperReader({
 
   return (
     <>
-      <div className="fixed top-[2px] left-0 right-0 z-[70] h-1 bg-border/40">
-        <div className="h-full bg-gradient-to-r from-accent-red via-accent-violet to-accent-blue transition-all" style={{ width: `${scrollProgress}%` }} />
+      <div className="fixed top-[2px] left-0 right-0 z-[70] h-px bg-border/60">
+        <div
+          className="h-full bg-bone/80 transition-[width] duration-150"
+          style={{ width: `${scrollProgress}%` }}
+        />
       </div>
-      <div className="fixed top-3 right-4 z-[70] font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground bg-background/85 backdrop-blur px-2.5 py-1.5 rounded-sm border border-border/40">
-        {Math.round(scrollProgress)}% · {readMinutes} min
-      </div>
-      <div className="lg:grid lg:grid-cols-[1fr_14rem] lg:gap-12">
-        <article className="min-w-0 pb-24 page-enter">
-          <header className="paper-hero rounded-sm border border-border/50 bg-gradient-to-br from-background to-accent-blue/5 p-6 md:p-8 mb-10">
-            <span className={cn("font-mono text-[9px] tracking-[0.25em] uppercase px-2.5 py-1 rounded-sm border", paper.is_classic ? "border-accent-violet/40 text-accent-violet" : "border-accent-blue/40 text-accent-blue")}>
-              {paper.is_classic ? "Classic review" : "BUILD review"}
-            </span>
-            <h1 className="font-display text-3xl md:text-4xl text-bone mt-4 tracking-tight">{paper.title}</h1>
-            <p className="mt-3 text-sm text-muted-foreground">{[paper.authors, paper.year].filter(Boolean).join(" · ")} · {readMinutes} min</p>
-            {pullQuote ? <p className="mt-5 text-lg text-bone/90 border-l-2 border-accent-blue/40 pl-5">{pullQuote}</p> : null}
-            <div className="mt-5 flex flex-wrap gap-2">
+
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:gap-16">
+        <article className="min-w-0 pb-24">
+          <header className="mb-10 border-l-2 border-bone/25 pl-6 md:pl-8">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-4">
+              <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
+                {paper.is_classic ? "Classic" : "Review"}
+              </span>
+              <span className="text-border">·</span>
+              <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                {readMinutes} min read
+              </span>
+              {markedRead ? (
+                <>
+                  <span className="text-border">·</span>
+                  <span className="font-mono text-[9px] uppercase text-accent-green">Finished</span>
+                </>
+              ) : scrollProgress > 8 ? (
+                <>
+                  <span className="text-border">·</span>
+                  <span className="font-mono text-[9px] uppercase text-muted-foreground">
+                    {Math.round(scrollProgress)}%
+                  </span>
+                </>
+              ) : null}
+            </div>
+
+            <h1 className="font-display text-3xl md:text-[2.5rem] text-bone tracking-tight leading-[1.12] max-w-3xl">
+              {paper.title}
+            </h1>
+            <p className="mt-4 text-sm text-muted-foreground">
+              {[paper.authors, paper.year].filter(Boolean).join(" · ")}
+            </p>
+
+            {pullQuote ? (
+              <p className="mt-6 text-base md:text-lg text-foreground/85 leading-relaxed max-w-2xl">
+                {pullQuote}
+              </p>
+            ) : null}
+
+            <div className="mt-6 flex flex-wrap gap-2">
               <SaveButton itemType="paper" itemSlug={paper.slug} itemTitle={paper.title} />
               <ShareButton title={paper.title} />
-              <Button type="button" size="sm" variant={markedRead ? "outline" : "default"} onClick={toggleRead} className="font-mono text-[9px] uppercase">{markedRead ? "Unread" : "Mark read"}</Button>
-              {paper.arxiv_url ? <a href={paper.arxiv_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 border border-border/60 px-3 py-2 font-mono text-[9px] uppercase text-accent-blue hover:text-bone">arXiv <ExternalLink className="h-3 w-3" /></a> : null}
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={toggleRead}
+                className="font-mono text-[9px] tracking-[0.15em] uppercase"
+              >
+                {markedRead ? "Mark unread" : "Mark read"}
+              </Button>
+              {paper.arxiv_url ? (
+                <a
+                  href={paper.arxiv_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-border/60 px-3 py-2 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground hover:text-bone transition"
+                >
+                  Source <ExternalLink className="h-3 w-3" />
+                </a>
+              ) : null}
             </div>
-            <TagList tags={paper.tags} linkToSearch className="mt-4" />
+            <TagList tags={paper.tags} linkToSearch className="mt-5" />
           </header>
+
           <PaperReviewBody sections={sections} />
-          <nav className="mt-10 flex justify-between gap-4 border-t border-border/60 pt-8">
-            {prev ? <Link to={`/papers/${prev.slug}`} className="max-w-[45%] text-sm text-muted-foreground hover:text-bone">← {prev.title}</Link> : <span />}
-            {next ? <Link to={`/papers/${next.slug}`} className="max-w-[45%] text-sm text-muted-foreground hover:text-bone text-right ml-auto">{next.title} →</Link> : null}
+
+          <nav className="mt-14 grid gap-3 sm:grid-cols-2 border-t border-border/50 pt-8">
+            {prev ? (
+              <Link
+                to={`/papers/${prev.slug}`}
+                className="rounded-sm border border-border/50 p-4 hover:border-bone/20 transition"
+              >
+                <span className="font-mono text-[8px] uppercase text-muted-foreground">Previous</span>
+                <p className="mt-2 text-sm text-bone line-clamp-2">{prev.title}</p>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {next ? (
+              <Link
+                to={`/papers/${next.slug}`}
+                className="rounded-sm border border-border/50 p-4 hover:border-bone/20 transition sm:text-right"
+              >
+                <span className="font-mono text-[8px] uppercase text-muted-foreground">Next</span>
+                <p className="mt-2 text-sm text-bone line-clamp-2">{next.title}</p>
+              </Link>
+            ) : null}
           </nav>
         </article>
+
         <aside className="hidden lg:block">
-          <div className="sticky top-20 rounded-sm border border-border/60 p-4">
-            <p className="font-mono text-[9px] uppercase text-muted-foreground mb-3 flex items-center gap-2"><BookOpen className="h-3.5 w-3.5" /> Sections</p>
-            <ul className="space-y-2">{toc.map((s) => <li key={s.id}><a href={`#${s.id}`} className={cn("text-sm", s.variant === "build" ? "text-accent-green" : "text-muted-foreground hover:text-bone")}>{s.title}</a></li>)}</ul>
+          <div className="sticky top-20 space-y-5">
+            {toc.length > 0 ? (
+              <nav className="rounded-sm border border-border/50 p-4">
+                <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3">
+                  Sections
+                </p>
+                <ul className="space-y-2">
+                  {toc.map((s) => (
+                    <li key={s.id}>
+                      <a
+                        href={`#${s.id}`}
+                        className={cn(
+                          "text-sm leading-snug block py-0.5 transition",
+                          s.variant === "build"
+                            ? "text-accent-green/90 hover:text-accent-green"
+                            : "text-muted-foreground hover:text-bone",
+                        )}
+                      >
+                        {s.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ) : null}
+
+            <div className="rounded-sm border border-border/50 p-4">
+              <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
+                Your notes
+              </p>
+              <p className="text-xs text-muted-foreground mb-3">Private — saved on this device.</p>
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={6}
+                placeholder="Claims to verify, reproduction ideas, questions for the thread…"
+                className="text-sm resize-none bg-background/50"
+              />
+            </div>
+
+            {relatedGuides.length > 0 ? (
+              <div className="rounded-sm border border-border/50 p-4">
+                <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3 flex items-center gap-2">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  Read first
+                </p>
+                <ul className="space-y-2">
+                  {relatedGuides.map((g) => (
+                    <li key={g.slug}>
+                      <Link
+                        to={`/guides/${g.slug}`}
+                        className="text-sm text-muted-foreground hover:text-bone transition line-clamp-2"
+                      >
+                        {g.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            <Link
+              to="/research"
+              className="block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
+            >
+              All reading paths →
+            </Link>
           </div>
         </aside>
       </div>

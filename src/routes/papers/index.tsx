@@ -74,11 +74,18 @@ function PapersContent() {
   ).length;
 
   return (
-    <MemberLayout title="Paper Reviews" eyebrow="research literacy">
-      <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Curated BUILD reviews with editorial depth — classics to re-read and active threads we are
-        pulling on.
-      </p>
+    <MemberLayout title="Paper reviews" eyebrow="research library">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 -mt-4">
+        <p className="text-muted-foreground max-w-2xl leading-relaxed">
+          Member-written reviews — what matters, what to skip, and how it connects to BUILD threads.
+        </p>
+        <Link
+          to="/research"
+          className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone shrink-0"
+        >
+          Reading paths →
+        </Link>
+      </div>
 
       <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">
         <Stat label="Reviews" value={papers.length} />
@@ -90,10 +97,10 @@ function PapersContent() {
       {featured && !loading ? (
         <Link
           to={`/papers/${featured.slug}`}
-          className="mb-8 block rounded-sm border border-accent-violet/30 bg-gradient-to-br from-accent-violet/10 via-background to-accent-blue/5 p-6 md:p-8 hover:border-accent-violet/50 transition group"
+          className="mb-8 block border border-border/50 border-l-2 border-l-bone/40 p-6 md:p-8 hover:bg-bone/[0.02] transition group"
         >
-          <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-violet">
-            Featured review
+          <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
+            Start here
           </p>
           <h2 className="font-display text-2xl md:text-3xl text-bone mt-3 group-hover:text-accent-blue transition">
             {featured.title}

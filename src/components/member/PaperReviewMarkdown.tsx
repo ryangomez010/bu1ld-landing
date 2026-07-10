@@ -183,13 +183,13 @@ export function PaperReviewSection({
   return (
     <section id={section.id} className="scroll-mt-28">
       {section.id !== "overview" ? (
-        <h2 className="font-display text-2xl text-bone mt-12 mb-4 tracking-tight">
+        <h2 className="font-display text-xl md:text-2xl text-bone mt-12 mb-5 tracking-tight border-t border-border/40 pt-10 first:border-0 first:pt-0 first:mt-0">
           {section.title}
         </h2>
       ) : null}
       {section.variant === "build" ? (
-        <div className="rounded-sm border border-accent-green/30 bg-accent-green/5 px-5 py-5 mb-4">
-          <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-green mb-3">
+        <div className="border-l-2 border-accent-green/50 pl-5 md:pl-6">
+          <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-green mb-4">
             BUILD take
           </p>
           <PaperReviewMarkdown body={section.content} />
