@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { MemberCommandPalette } from "@/components/member/MemberCommandPalette";
 import { LiquidBackdrop } from "@/components/member/LiquidBackdrop";
 import { NotificationBell } from "@/components/member/NotificationBell";
 import { MobileTabBar } from "@/components/member/MobileTabBar";
@@ -275,6 +276,7 @@ export function MemberLayout({
         </div>
       </div>
       <MobileTabBar onMenu={() => setOpen(true)} />
+      <MemberCommandPalette />
     </div>
   );
 }

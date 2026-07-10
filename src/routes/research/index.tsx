@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Check } from "lucide-react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
+import { ResearchContinueCard } from "@/components/member/ResearchContinueCard";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { getAllGuides } from "@/content/guides";
@@ -63,7 +64,9 @@ function ResearchHub() {
         here is written by BUILD members — not scraped abstracts.
       </p>
 
-      <div className="mb-10 panel glass rounded-2xl overflow-hidden grid gap-px sm:grid-cols-3">
+      {user ? <ResearchContinueCard userId={user.id} /> : null}
+
+      <div className="mb-12 panel glass rounded-2xl overflow-hidden grid gap-px sm:grid-cols-3">
         <div className="stat-cell relative z-[1]">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Paper reviews</p>
           <p className="mt-2 font-display text-2xl text-bone">
@@ -73,7 +76,7 @@ function ResearchHub() {
             Browse →
           </Link>
         </div>
-        <div className="stat-cell">
+        <div className="stat-cell relative z-[1]">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Guides finished</p>
           <p className="mt-2 font-display text-2xl text-bone">
             {guidesDone}/{guides.length}
@@ -82,7 +85,7 @@ function ResearchHub() {
             Browse →
           </Link>
         </div>
-        <div className="stat-cell">
+        <div className="stat-cell relative z-[1]">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Active path</p>
           <p className="mt-2 font-display text-2xl text-bone">{progress.percent}%</p>
           <p className="mt-2 font-mono text-[9px] uppercase text-muted-foreground">
@@ -103,11 +106,11 @@ function ResearchHub() {
                 key={p.id}
                 type="button"
                 onClick={() => setActivePath(p.id)}
-                className={cn(
-                  "font-mono text-[9px] tracking-[0.15em] uppercase px-3 py-2 rounded-sm border transition",
+                    className={cn(
+                  "font-mono text-[9px] tracking-[0.15em] uppercase px-3 py-2 rounded-xl border transition panel-interactive",
                   activePath === p.id
-                    ? "border-bone/40 text-bone bg-bone/5"
-                    : "border-border/60 text-muted-foreground hover:text-bone",
+                    ? "chip-active border-accent-blue/40"
+                    : "border-border/40 text-muted-foreground hover:text-bone glass-subtle",
                 )}
               >
                 {p.title}

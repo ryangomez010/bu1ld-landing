@@ -21,7 +21,7 @@ export function ContinueReadingStrip({ views }: { views: RecentView[] }) {
           <Link
             key={`${view.type}:${view.slug}`}
             to={view.href}
-            className="panel panel-interactive rounded-sm p-4 block"
+            className="panel panel-interactive rounded-xl p-4 block relative z-[1]"
           >
             <span className="font-mono text-[8px] tracking-[0.2em] uppercase text-accent-blue">
               {TYPE_LABELS[view.type]}

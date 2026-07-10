@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { DashboardHero } from "@/components/member/DashboardHero";
+import { ResearchContinueCard } from "@/components/member/ResearchContinueCard";
 import { TodayFocus } from "@/components/member/TodayFocus";
 import { AttentionPanel } from "@/components/member/AttentionPanel";
 import { ContinueReadingStrip } from "@/components/member/ContinueReadingStrip";
@@ -204,29 +206,12 @@ function DashboardHome() {
 
   return (
     <MemberLayout>
-      <div className="mb-10 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green">
-            member hub
-          </p>
-          <h1 className="font-display text-4xl md:text-5xl text-bone mt-3 tracking-tight flex flex-wrap items-center gap-3">
-            {displayName}
-            {profile?.role ? <RoleBadge role={profile.role} /> : null}
-          </h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground leading-relaxed">
-            {profile?.bio || "Your BUILD hub — events, guides, papers, and digests in one place."}
-          </p>
-        </div>
-        <Link to="/profile" className="panel panel-interactive rounded-sm px-4 py-3 min-w-[150px]">
-          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-            Profile
-          </p>
-          <p className="mt-1 font-display text-xl text-bone">{completeness.percent}%</p>
-          <div className="mt-2 h-1 rounded-full bg-border/60 overflow-hidden">
-            <div className="h-full bg-accent-green" style={{ width: `${completeness.percent}%` }} />
-          </div>
-        </Link>
-      </div>
+      <DashboardHero
+        displayName={displayName}
+        bio={profile?.bio || "Your BUILD hub — events, guides, papers, and digests in one place."}
+        completenessPercent={completeness.percent}
+        roleBadge={profile?.role ? <RoleBadge role={profile.role} /> : null}
+      />
 
       {loading ? (
         <LoadingState label="Loading hub…" />
@@ -270,6 +255,8 @@ function DashboardHome() {
           </section>
 
           <TodayFocus items={attention} />
+
+          {user ? <ResearchContinueCard userId={user.id} /> : null}
 
           <AttentionPanel items={attention} />
 
