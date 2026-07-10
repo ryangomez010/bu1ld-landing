@@ -59,6 +59,35 @@ export function ProjectMemberWorkspace({
           </div>
         ) : null}
 
+        {project.workspace_links && project.workspace_links.length > 0 ? (
+          <div>
+            <p className="font-mono text-[9px] uppercase text-muted-foreground mb-3">Pinned resources</p>
+            <ul className="space-y-2">
+              {project.workspace_links.map((link) => (
+                <li key={link.url}>
+                  {link.url.startsWith("/") ? (
+                    <Link
+                      to={link.url}
+                      className="text-sm text-accent-blue hover:text-bone transition"
+                    >
+                      {link.label} →
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-accent-blue hover:text-bone"
+                    >
+                      {link.label} <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         {project.discord_url ? (
           <a
             href={project.discord_url}

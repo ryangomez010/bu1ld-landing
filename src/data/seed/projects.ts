@@ -19,6 +19,10 @@ export const SEED_PROJECTS: Project[] = [
     team_count: 2,
     published: true,
     discord_url: DISCORD_URL,
+    workspace_links: [
+      { label: "Related paper review", url: "/papers/residual-event-tokenization", kind: "paper" },
+      { label: "World models reading path", url: "/research", kind: "path" },
+    ],
     created_at: "2026-01-10T00:00:00Z",
     updated_at: "2026-01-10T00:00:00Z",
   },
@@ -37,6 +41,10 @@ export const SEED_PROJECTS: Project[] = [
     capacity: 4,
     team_count: 1,
     published: true,
+    workspace_links: [
+      { label: "BUILD paper thread", url: "/papers/residual-event-tokenization", kind: "paper" },
+      { label: "Paper → prototype guide", url: "/guides/paper-to-prototype", kind: "guide" },
+    ],
     created_at: "2026-01-15T00:00:00Z",
     updated_at: "2026-01-15T00:00:00Z",
   },

@@ -30,7 +30,9 @@ Open `http://localhost:3000`
 ## Supabase setup
 
 1. Paste `supabase/full-setup.sql` into the SQL editor (or `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`).
-   - Existing projects: run incremental `supabase/phase10.sql` then `phase11.sql` for directory privacy, RSVPs, paper reads/notes/progress sync, and newsletter subscriptions.
+   - Existing projects: run incremental `supabase/phase10.sql`, `phase11.sql`, then `phase12.sql` for RSVPs, paper sync, newsletter subscriptions, DB search, and admin audit log.
+   - Seed/update content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_DB_PASSWORD`) or paste `supabase/seed-data.sql` in the SQL editor.
+   - Apply a single phase: `bun run supabase:apply-phase -- phase12.sql`
 2. Seed demo content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or DB password), or paste `supabase/seed-data.sql`.
 3. Verify: `bun run supabase:verify`
 4. Sign up in the app, then promote your profile:

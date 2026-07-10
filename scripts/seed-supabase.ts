@@ -83,7 +83,18 @@ VALUES (
   '${sqlEscape(p.review_body)}',
   ${p.published},
   '${p.published_at}'
-) ON CONFLICT (slug) DO NOTHING;`,
+) ON CONFLICT (slug) DO UPDATE SET
+  title = EXCLUDED.title,
+  authors = EXCLUDED.authors,
+  year = EXCLUDED.year,
+  arxiv_url = EXCLUDED.arxiv_url,
+  tags = EXCLUDED.tags,
+  is_classic = EXCLUDED.is_classic,
+  summary = EXCLUDED.summary,
+  review_body = EXCLUDED.review_body,
+  published = EXCLUDED.published,
+  published_at = EXCLUDED.published_at,
+  updated_at = now();`,
       "",
     );
   }
@@ -201,7 +212,7 @@ async function seedViaServiceRole(url: string, key: string) {
       published: p.published,
       published_at: p.published_at,
     })),
-    { onConflict: "slug", ignoreDuplicates: true },
+    { onConflict: "slug" },
   );
   if (e2) throw e2;
 

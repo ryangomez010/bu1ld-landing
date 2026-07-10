@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { clearRecentSearches, getRecentSearches, pushRecentSearch } from "@/lib/recent-search";
 import { getTrendingBrowse } from "@/lib/personalization";
-import { buildSearchIndex, searchIndex } from "@/lib/search";
+import { buildSearchIndex, searchIndex, searchPortal } from "@/lib/search";
 import type { SearchResult } from "@/lib/types";
 
 export const Route = createFileRoute("/search/")({
@@ -84,19 +84,48 @@ function SearchContent() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const results = useMemo(() => {
-    let matched =
-      debouncedQuery.trim() === ""
-        ? typeFilter === "all" && !tagFilter
-          ? []
-          : index
-        : searchIndex(index, debouncedQuery);
-    if (typeFilter !== "all") matched = matched.filter((r) => r.type === typeFilter);
-    if (tagFilter)
-      matched = matched.filter((r) =>
-        r.tags.some((t) => t.toLowerCase() === tagFilter.toLowerCase()),
-      );
-    return matched;
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      if (!debouncedQuery.trim()) {
+        let browse: SearchResult[] = [];
+        if (typeFilter !== "all" || tagFilter) {
+          browse = index;
+          if (typeFilter !== "all") browse = browse.filter((r) => r.type === typeFilter);
+          if (tagFilter) {
+            browse = browse.filter((r) =>
+              r.tags.some((t) => t.toLowerCase() === tagFilter.toLowerCase()),
+            );
+          }
+        }
+        if (!cancelled) {
+          setResults(browse);
+          setSearching(false);
+        }
+        return;
+      }
+
+      setSearching(true);
+      let matched = await searchPortal(index, debouncedQuery);
+      if (cancelled) return;
+      if (typeFilter !== "all") matched = matched.filter((r) => r.type === typeFilter);
+      if (tagFilter) {
+        matched = matched.filter((r) =>
+          r.tags.some((t) => t.toLowerCase() === tagFilter.toLowerCase()),
+        );
+      }
+      setResults(matched);
+      setSearching(false);
+    };
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
   }, [index, debouncedQuery, typeFilter, tagFilter]);
 
   const typeCounts = useMemo(() => {
@@ -214,7 +243,7 @@ function SearchContent() {
         </div>
       ) : null}
 
-      {loading ? (
+      {loading || searching ? (
         <ListSkeleton rows={6} />
       ) : query.trim() === "" && typeFilter === "all" && !tagFilter ? (
         <div className="space-y-8">

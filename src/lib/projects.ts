@@ -66,6 +66,9 @@ function normalizeProject(row: Record<string, unknown>): Project {
     team_count: Number(row.team_count ?? 0),
     published: Boolean(row.published ?? true),
     discord_url: row.discord_url != null ? String(row.discord_url) : null,
+    workspace_links: Array.isArray(row.workspace_links)
+      ? (row.workspace_links as { label: string; url: string; kind?: string }[])
+      : [],
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
   };

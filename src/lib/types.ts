@@ -130,6 +130,7 @@ export type Project = {
   team_count: number;
   published: boolean;
   discord_url?: string | null;
+  workspace_links?: { label: string; url: string; kind?: string }[];
   created_at: string;
   updated_at: string;
 };
