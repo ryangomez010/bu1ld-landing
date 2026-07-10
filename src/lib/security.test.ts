@@ -1,12 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import {
-  clampText,
-  isUuid,
-  isValidEmail,
-  sanitizeAppPath,
-  sanitizeEmailHtml,
-} from "./security";
+import { clampText, isUuid, isValidEmail, sanitizeAppPath, sanitizeEmailHtml } from "./security";
 
 describe("security utilities", () => {
   test("isUuid validates format", () => {
@@ -32,7 +26,7 @@ describe("security utilities", () => {
   });
 
   test("sanitizeEmailHtml strips script tags", () => {
-    const out = sanitizeEmailHtml('<p>Hi</p><script>alert(1)</script>');
+    const out = sanitizeEmailHtml("<p>Hi</p><script>alert(1)</script>");
     expect(out).not.toContain("<script");
   });
 });

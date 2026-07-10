@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Check } from "lucide-react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
+import { ResearchContinueCard } from "@/components/member/ResearchContinueCard";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { getAllGuides } from "@/content/guides";
@@ -63,26 +64,34 @@ function ResearchHub() {
         here is written by BUILD members — not scraped abstracts.
       </p>
 
-      <div className="mb-10 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3">
-        <div className="stat-cell">
+      {user ? <ResearchContinueCard userId={user.id} /> : null}
+
+      <div className="mb-12 panel glass rounded-2xl overflow-hidden grid gap-px sm:grid-cols-3">
+        <div className="stat-cell relative z-[1]">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Paper reviews</p>
           <p className="mt-2 font-display text-2xl text-bone">
             {papersRead}/{papers.length}
           </p>
-          <Link to="/papers" className="mt-2 inline-block font-mono text-[9px] uppercase text-accent-blue hover:text-bone">
+          <Link
+            to="/papers"
+            className="mt-2 inline-block font-mono text-[9px] uppercase text-accent-blue hover:text-bone"
+          >
             Browse →
           </Link>
         </div>
-        <div className="stat-cell">
+        <div className="stat-cell relative z-[1]">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Guides finished</p>
           <p className="mt-2 font-display text-2xl text-bone">
             {guidesDone}/{guides.length}
           </p>
-          <Link to="/guides" className="mt-2 inline-block font-mono text-[9px] uppercase text-accent-blue hover:text-bone">
+          <Link
+            to="/guides"
+            className="mt-2 inline-block font-mono text-[9px] uppercase text-accent-blue hover:text-bone"
+          >
             Browse →
           </Link>
         </div>
-        <div className="stat-cell">
+        <div className="stat-cell relative z-[1]">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Active path</p>
           <p className="mt-2 font-display text-2xl text-bone">{progress.percent}%</p>
           <p className="mt-2 font-mono text-[9px] uppercase text-muted-foreground">
@@ -104,10 +113,10 @@ function ResearchHub() {
                 type="button"
                 onClick={() => setActivePath(p.id)}
                 className={cn(
-                  "font-mono text-[9px] tracking-[0.15em] uppercase px-3 py-2 rounded-sm border transition",
+                  "font-mono text-[9px] tracking-[0.15em] uppercase px-3 py-2 rounded-xl border transition panel-interactive",
                   activePath === p.id
-                    ? "border-bone/40 text-bone bg-bone/5"
-                    : "border-border/60 text-muted-foreground hover:text-bone",
+                    ? "chip-active border-accent-blue/40"
+                    : "border-border/40 text-muted-foreground hover:text-bone glass-subtle",
                 )}
               >
                 {p.title}
@@ -120,8 +129,8 @@ function ResearchHub() {
         {loading ? (
           <ListSkeleton rows={4} />
         ) : (
-          <div className="border border-border/50 rounded-sm">
-            <div className="border-b border-border/50 px-5 py-5 md:px-6">
+          <div className="panel glass rounded-2xl overflow-hidden">
+            <div className="border-b border-border/30 px-5 py-5 md:px-6 relative z-[1]">
               <h3 className="font-display text-xl text-bone">{path.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">
                 {path.description}
@@ -130,7 +139,7 @@ function ResearchHub() {
                 <div className="h-full bg-bone/70" style={{ width: `${progress.percent}%` }} />
               </div>
             </div>
-            <ol className="divide-y divide-border/40">
+            <ol className="divide-y divide-border/30 relative z-[1]">
               {path.steps.map((step, i) => (
                 <PathStepRow
                   key={`${step.kind}-${step.slug}`}
@@ -157,7 +166,7 @@ function ResearchHub() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <Link to="/papers" className="panel panel-interactive block p-6 rounded-sm group">
+        <Link to="/papers" className="panel panel-interactive block p-6 rounded-2xl group">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Paper reviews</p>
           <h3 className="font-display text-xl text-bone mt-2 group-hover:text-accent-blue transition">
             Editorial reviews with BUILD context
@@ -169,7 +178,7 @@ function ResearchHub() {
             Open library <ArrowRight className="h-3 w-3" />
           </span>
         </Link>
-        <Link to="/guides" className="panel panel-interactive block p-6 rounded-sm group">
+        <Link to="/guides" className="panel panel-interactive block p-6 rounded-2xl group">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Reference guides</p>
           <h3 className="font-display text-xl text-bone mt-2 group-hover:text-accent-blue transition">
             Short essays before the heavy papers

@@ -3,5 +3,13 @@
   "name": "bu1ld-landing",
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "src/server.ts",
+  // Use Vite build output — Wrangler cannot resolve TanStack virtual imports from source.
+  "main": "dist/server/server.js",
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+  },
+  "observability": {
+    "enabled": true,
+  },
 }

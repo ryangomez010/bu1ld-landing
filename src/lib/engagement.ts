@@ -31,9 +31,8 @@ export async function fetchEngagementSummary(userId: string): Promise<Engagement
     papersRead: reads.size,
     guidesCompleted,
     guidesInProgress,
-    applicationsActive: applications.filter((a) =>
-      ["pending", "waitlist"].includes(a.status),
-    ).length,
+    applicationsActive: applications.filter((a) => ["pending", "waitlist"].includes(a.status))
+      .length,
     applicationsAccepted: applications.filter((a) => a.status === "accepted").length,
     eventRsvps: rsvps.size,
     savedItems: saved.length,

@@ -45,6 +45,7 @@ function EditProjectForm() {
   const [tags, setTags] = useState("");
   const [capacity, setCapacity] = useState("5");
   const [discordUrl, setDiscordUrl] = useState("");
+  const [workspaceLinksText, setWorkspaceLinksText] = useState("");
   const [published, setPublished] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,9 @@ function EditProjectForm() {
         setTags(p.tags.join(", "));
         setCapacity(String(p.capacity));
         setDiscordUrl(p.discord_url ?? "");
+        setWorkspaceLinksText(
+          (p.workspace_links ?? []).map((l) => `${l.label} | ${l.url}`).join("\n"),
+        );
         setPublished(p.published);
       }
       setLoading(false);
@@ -71,6 +75,17 @@ function EditProjectForm() {
     e.preventDefault();
     if (!project) return;
     setSubmitting(true);
+    const workspace_links = workspaceLinksText
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [label, ...rest] = line.split("|");
+        const url = rest.join("|").trim();
+        return { label: label.trim(), url };
+      })
+      .filter((l) => l.label && l.url);
+
     const { error } = await updateProject(project.id, {
       title,
       description,
@@ -86,6 +101,7 @@ function EditProjectForm() {
         .filter(Boolean),
       capacity: Number(capacity) || 5,
       discord_url: discordUrl || null,
+      workspace_links,
       published,
     });
     setSubmitting(false);
@@ -191,6 +207,19 @@ function EditProjectForm() {
               onChange={(e) => setDiscordUrl(e.target.value)}
             />
           </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="workspace">Workspace links (one per line: Label | /path or URL)</Label>
+          <Textarea
+            id="workspace"
+            rows={4}
+            placeholder={"Paper thread | /papers/residual-event-tokenization\nResearch | /research"}
+            value={workspaceLinksText}
+            onChange={(e) => setWorkspaceLinksText(e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">
+            Shown to accepted members in the project workspace panel.
+          </p>
         </div>
         <label className="flex items-center gap-2 text-sm text-muted-foreground">
           <input

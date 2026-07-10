@@ -46,10 +46,12 @@ export async function markPaperRead(userId: string, slug: string): Promise<void>
   const supabase = getSupabase();
   if (!supabase) return;
 
-  await supabase.from("paper_reads").upsert(
-    { user_id: userId, paper_slug: slug, read_at: new Date().toISOString() },
-    { onConflict: "user_id,paper_slug" },
-  );
+  await supabase
+    .from("paper_reads")
+    .upsert(
+      { user_id: userId, paper_slug: slug, read_at: new Date().toISOString() },
+      { onConflict: "user_id,paper_slug" },
+    );
 }
 
 export async function unmarkPaperRead(userId: string, slug: string): Promise<void> {

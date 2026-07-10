@@ -32,7 +32,11 @@ export async function fetchPaperNotes(userId: string, paperSlug: string): Promis
   return remote || local;
 }
 
-export async function savePaperNotes(userId: string, paperSlug: string, notes: string): Promise<void> {
+export async function savePaperNotes(
+  userId: string,
+  paperSlug: string,
+  notes: string,
+): Promise<void> {
   const safe = clampText(notes, 4000);
   setPaperNotesLocal(userId, paperSlug, safe);
 
@@ -117,9 +121,7 @@ export function getAllPaperScrollProgressLocal(userId: string): Record<string, n
   return result;
 }
 
-export async function getAllPaperNotesForExport(
-  userId: string,
-): Promise<Record<string, string>> {
+export async function getAllPaperNotesForExport(userId: string): Promise<Record<string, string>> {
   const supabase = getSupabase();
   const result: Record<string, string> = {};
 

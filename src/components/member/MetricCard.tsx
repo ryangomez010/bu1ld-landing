@@ -37,7 +37,7 @@ export function MetricCard({
   return (
     <Link
       to={to}
-      className="panel panel-interactive group relative overflow-hidden p-4 block rounded-sm"
+      className="panel panel-interactive group relative overflow-hidden p-4 block rounded-xl"
     >
       <span
         className={cn(

@@ -16,7 +16,10 @@ function slugify(title: string): string {
 }
 
 export function parseReviewSections(reviewBody: string): ReviewSection[] {
-  const chunks = reviewBody.split(/\n(?=## )/).map((c) => c.trim()).filter(Boolean);
+  const chunks = reviewBody
+    .split(/\n(?=## )/)
+    .map((c) => c.trim())
+    .filter(Boolean);
   if (!chunks.length) return [];
 
   return chunks.map((chunk) => {

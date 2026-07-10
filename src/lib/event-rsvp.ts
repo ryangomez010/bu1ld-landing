@@ -71,10 +71,7 @@ export async function toggleEventRsvp(
   return { rsvped: true, error: error?.message ?? null };
 }
 
-export async function fetchMyUpcomingRsvps(
-  userId: string,
-  events: MlEvent[],
-): Promise<MlEvent[]> {
+export async function fetchMyUpcomingRsvps(userId: string, events: MlEvent[]): Promise<MlEvent[]> {
   const ids = await fetchMyRsvpEventIds(userId);
   if (!ids.size) return [];
   const now = new Date();

@@ -20,10 +20,7 @@ export async function isNewsletterSubscribed(userId: string): Promise<boolean> {
   return localSubscribed(userId);
 }
 
-export async function setNewsletterSubscribed(
-  userId: string,
-  subscribed: boolean,
-): Promise<void> {
+export async function setNewsletterSubscribed(userId: string, subscribed: boolean): Promise<void> {
   writeUserJson(STORAGE, userId, subscribed);
 
   const supabase = getSupabase();

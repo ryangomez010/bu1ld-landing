@@ -4,9 +4,9 @@ import type { AttentionItem } from "@/lib/attention";
 import { cn } from "@/lib/utils";
 
 const PRIORITY_STYLES = {
-  high: "border-accent-red/30 bg-accent-red/5",
-  medium: "border-accent-blue/30 bg-accent-blue/5",
-  low: "border-border/50 bg-background/60",
+  high: "panel glass border-accent-red/25",
+  medium: "panel glass border-accent-blue/25",
+  low: "panel glass-subtle",
 } as const;
 
 export function AttentionPanel({ items }: { items: AttentionItem[] }) {
@@ -27,7 +27,7 @@ export function AttentionPanel({ items }: { items: AttentionItem[] }) {
           <li
             key={item.id}
             className={cn(
-              "rounded-sm border px-4 py-4 flex flex-col gap-3",
+              "rounded-xl border px-4 py-4 flex flex-col gap-3 panel-interactive relative overflow-hidden",
               PRIORITY_STYLES[item.priority],
             )}
           >

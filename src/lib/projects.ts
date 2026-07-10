@@ -250,6 +250,7 @@ export async function updateProject(
     tags: string[];
     capacity: number;
     discord_url: string | null;
+    workspace_links: { label: string; url: string; kind?: string }[];
     published: boolean;
   }>,
 ): Promise<{ project: Project | null; error: string | null }> {

@@ -8,13 +8,7 @@ import { PaperReviewBody } from "@/components/member/PaperReviewMarkdown";
 import { SaveButton } from "@/components/member/SaveButton";
 import { ShareButton } from "@/components/member/ShareButton";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { getAllGuides } from "@/content/guides";
 import {
@@ -43,7 +37,7 @@ function ReaderSidebar({
   return (
     <div className="space-y-5">
       {toc.length > 0 ? (
-        <nav className="rounded-sm border border-border/50 p-4">
+        <nav className="rounded-xl border border-border/40 panel glass p-4 relative z-[1]">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3">
             Sections
           </p>
@@ -67,11 +61,13 @@ function ReaderSidebar({
         </nav>
       ) : null}
 
-      <div className="rounded-sm border border-border/50 p-4">
+      <div className="rounded-xl border border-border/40 panel glass p-4 relative z-[1]">
         <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
           Your notes
         </p>
-        <p className="text-xs text-muted-foreground mb-3">Private — synced to your account when signed in.</p>
+        <p className="text-xs text-muted-foreground mb-3">
+          Private — synced to your account when signed in.
+        </p>
         <Textarea
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
@@ -82,7 +78,7 @@ function ReaderSidebar({
       </div>
 
       {relatedGuides.length > 0 ? (
-        <div className="rounded-sm border border-border/50 p-4">
+        <div className="rounded-xl border border-border/40 panel glass p-4 relative z-[1]">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3 flex items-center gap-2">
             <BookOpen className="h-3.5 w-3.5" />
             Read first
@@ -171,12 +167,12 @@ export function PaperReader({
   }, [notes, userId, paper.slug]);
 
   const toggleRead = () => {
-    void (markedRead ? unmarkPaperRead(userId, paper.slug) : markPaperRead(userId, paper.slug)).then(
-      () => {
-        setMarkedRead(!markedRead);
-        toast.success(markedRead ? "Moved to unread" : "Marked as read");
-      },
-    );
+    void (
+      markedRead ? unmarkPaperRead(userId, paper.slug) : markPaperRead(userId, paper.slug)
+    ).then(() => {
+      setMarkedRead(!markedRead);
+      toast.success(markedRead ? "Moved to unread" : "Marked as read");
+    });
   };
 
   return (
@@ -261,7 +257,9 @@ export function PaperReader({
                 to={`/papers/${prev.slug}`}
                 className="rounded-sm border border-border/50 p-4 hover:border-bone/20 transition"
               >
-                <span className="font-mono text-[8px] uppercase text-muted-foreground">Previous</span>
+                <span className="font-mono text-[8px] uppercase text-muted-foreground">
+                  Previous
+                </span>
                 <p className="mt-2 text-sm text-bone line-clamp-2">{prev.title}</p>
               </Link>
             ) : (
@@ -291,73 +289,75 @@ export function PaperReader({
         </aside>
       </div>
 
-      <div className="fixed bottom-16 lg:bottom-4 left-4 right-4 z-[60] flex gap-2 lg:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1 font-mono text-[9px] uppercase bg-background/95 backdrop-blur"
-            >
-              <List className="h-3.5 w-3.5 mr-2" />
-              Sections
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[70vh] overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle className="font-display text-left">Sections</SheetTitle>
-            </SheetHeader>
-            <nav className="mt-4 rounded-sm border border-border/50 p-4">
-              <ul className="space-y-2">
-                {toc.map((s) => (
-                  <li key={s.id}>
-                    <a
-                      href={`#${s.id}`}
-                      className={cn(
-                        "text-sm leading-snug block py-1 transition",
-                        s.variant === "build"
-                          ? "text-accent-green/90 hover:text-accent-green"
-                          : "text-muted-foreground hover:text-bone",
-                      )}
-                    >
-                      {s.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <Link
-              to="/research"
-              className="mt-4 block font-mono text-[9px] uppercase text-accent-blue"
-            >
-              Reading paths →
-            </Link>
-          </SheetContent>
-        </Sheet>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1 font-mono text-[9px] uppercase bg-background/95 backdrop-blur"
-            >
-              <StickyNote className="h-3.5 w-3.5 mr-2" />
-              Notes
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[60vh]">
-            <SheetHeader>
-              <SheetTitle className="font-display text-left">Your notes</SheetTitle>
-            </SheetHeader>
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={8}
-              placeholder="Claims to verify, reproduction ideas…"
-              className="mt-4 text-sm resize-none"
-            />
-          </SheetContent>
-        </Sheet>
+      <div className="fixed bottom-20 lg:bottom-4 left-4 right-4 z-[60] lg:hidden">
+        <div className="glass-dock flex gap-2 p-1.5">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="flex-1 font-mono text-[9px] uppercase h-10 rounded-xl hover:bg-bone/5"
+              >
+                <List className="h-3.5 w-3.5 mr-2" />
+                Sections
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[70vh] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="font-display text-left">Sections</SheetTitle>
+              </SheetHeader>
+              <nav className="mt-4 rounded-sm border border-border/50 p-4">
+                <ul className="space-y-2">
+                  {toc.map((s) => (
+                    <li key={s.id}>
+                      <a
+                        href={`#${s.id}`}
+                        className={cn(
+                          "text-sm leading-snug block py-1 transition",
+                          s.variant === "build"
+                            ? "text-accent-green/90 hover:text-accent-green"
+                            : "text-muted-foreground hover:text-bone",
+                        )}
+                      >
+                        {s.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+              <Link
+                to="/research"
+                className="mt-4 block font-mono text-[9px] uppercase text-accent-blue"
+              >
+                Reading paths →
+              </Link>
+            </SheetContent>
+          </Sheet>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="flex-1 font-mono text-[9px] uppercase h-10 rounded-xl hover:bg-bone/5"
+              >
+                <StickyNote className="h-3.5 w-3.5 mr-2" />
+                Notes
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[60vh]">
+              <SheetHeader>
+                <SheetTitle className="font-display text-left">Your notes</SheetTitle>
+              </SheetHeader>
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={8}
+                placeholder="Claims to verify, reproduction ideas…"
+                className="mt-4 text-sm resize-none"
+              />
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </>
   );

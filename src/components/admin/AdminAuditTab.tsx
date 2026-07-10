@@ -39,7 +39,9 @@ export function AdminAuditTab({ entries }: { entries: AuditEntry[] }) {
               </td>
               <td className="p-3 font-mono text-[10px] uppercase text-bone">{e.action}</td>
               <td className="p-3 text-muted-foreground">
-                {e.target_type ? `${e.target_type}${e.target_id ? ` · ${e.target_id.slice(0, 8)}…` : ""}` : "—"}
+                {e.target_type
+                  ? `${e.target_type}${e.target_id ? ` · ${e.target_id.slice(0, 8)}…` : ""}`
+                  : "—"}
               </td>
               <td className="p-3 text-muted-foreground max-w-md truncate">
                 {e.detail ? JSON.stringify(e.detail) : "—"}

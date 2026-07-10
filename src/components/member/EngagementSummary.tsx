@@ -29,12 +29,12 @@ export function EngagementSummaryPanel({ stats }: { stats: EngagementSummary }) 
           {stats.savedItems} saved →
         </Link>
       </div>
-      <div className="grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="panel glass rounded-2xl overflow-hidden grid gap-px sm:grid-cols-3 lg:grid-cols-6">
         {cells.map((c) => (
           <Link
             key={c.label}
             to={c.to}
-            className="bg-background/75 p-4 hover:bg-bone/5 transition block"
+            className="stat-cell relative z-[1] hover:bg-bone/[0.04] transition-colors"
           >
             <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
               {c.label}

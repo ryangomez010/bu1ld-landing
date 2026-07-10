@@ -82,10 +82,7 @@ function EventsContent() {
     return { upcoming, past };
   }, [events]);
 
-  const goingEvents = useMemo(
-    () => events.filter((e) => rsvpIds.has(e.id)),
-    [events, rsvpIds],
-  );
+  const goingEvents = useMemo(() => events.filter((e) => rsvpIds.has(e.id)), [events, rsvpIds]);
 
   const visible = useMemo(() => {
     if (filter === "going") return goingEvents;
@@ -168,7 +165,11 @@ function EventsContent() {
                       : event.summary}
                   </p>
                   <p className="mt-4 font-mono text-[9px] tracking-[0.22em] uppercase text-muted-foreground/80">
-                    {[event.location, event.start_date ? formatDate(event.start_date) : null, next ? `${next.label} in ${next.days}d` : null]
+                    {[
+                      event.location,
+                      event.start_date ? formatDate(event.start_date) : null,
+                      next ? `${next.label} in ${next.days}d` : null,
+                    ]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>

@@ -43,16 +43,16 @@ update public.profiles set role = 'admin' where id = '<your-user-uuid>';
 
 ## Scripts
 
-| Command                | Description                          |
-| ---------------------- | ------------------------------------ |
-| `bun run dev`          | Development server                   |
-| `bun run build`        | Production build                     |
-| `bun run preview`      | Preview production build             |
-| `bun run format`       | Prettier format                      |
-| `bun run lint`         | ESLint                               |
-| `bun run test`         | Security utility unit tests          |
-| `bun run supabase:verify` | Check tables + auth connectivity |
-| `bun run supabase:apply`  | Apply full schema via Postgres   |
+| Command                   | Description                       |
+| ------------------------- | --------------------------------- |
+| `bun run dev`             | Development server                |
+| `bun run build`           | Production build                  |
+| `bun run preview`         | Preview production build          |
+| `bun run format`          | Prettier format                   |
+| `bun run lint`            | ESLint                            |
+| `bun run test`            | Security utility unit tests       |
+| `bun run supabase:verify` | Check tables + auth connectivity  |
+| `bun run supabase:apply`  | Apply full schema via Postgres    |
 | `bun run supabase:seed`   | Import seed content into Supabase |
 
 ## Email
@@ -80,7 +80,8 @@ Client: set `VITE_EMAIL_ENDPOINT` and matching `VITE_EMAIL_API_SECRET`.
 
 1. `wrangler.jsonc` worker name must match the Cloudflare dashboard worker (`bu1ld-landing`).
 2. Set secrets / vars for the same `VITE_*` keys used at build time.
-3. Deploy with `bunx wrangler deploy` (after `bun run build`).
+3. Build then deploy: `bun run deploy:cf` (or `bun run build && npx wrangler versions upload` on Cloudflare CI).
+4. `wrangler.jsonc` must point at `dist/server/server.js` — not `src/server.ts` — so Wrangler uses the Vite bundle.
 
 ## Member routes
 

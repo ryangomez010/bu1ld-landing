@@ -8,11 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { slugify } from "@/data/seed/content";
 import { generatePaperDraft } from "@/lib/admin";
+import { useAuth } from "@/lib/auth";
 import { deleteContentRow, setContentPublished, updatePaperAdmin } from "@/lib/content";
 import { getSupabase } from "@/lib/supabase";
 import type { Paper } from "@/lib/types";
 
 export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: () => void }) {
+  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState("");
   const [review, setReview] = useState("");
@@ -62,7 +64,7 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
   };
 
   const togglePublish = async (p: Paper) => {
-    const { error } = await setContentPublished("papers", p.id, !p.published);
+    const { error } = await setContentPublished("papers", p.id, !p.published, user?.id);
     if (error) toast.error(error);
     else {
       toast.success(p.published ? "Unpublished." : "Published.");
@@ -71,7 +73,7 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
   };
 
   const onDelete = async (p: Paper) => {
-    const { error } = await deleteContentRow("papers", p.id);
+    const { error } = await deleteContentRow("papers", p.id, user?.id);
     if (error) toast.error(error);
     else {
       toast.success("Deleted.");

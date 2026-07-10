@@ -86,6 +86,7 @@ function SearchContent() {
 
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
+  const [dbSearch, setDbSearch] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -104,21 +105,24 @@ function SearchContent() {
         }
         if (!cancelled) {
           setResults(browse);
+          setDbSearch(false);
           setSearching(false);
         }
         return;
       }
 
       setSearching(true);
-      let matched = await searchPortal(index, debouncedQuery);
+      const { results: matched, fromDb } = await searchPortal(index, debouncedQuery);
       if (cancelled) return;
-      if (typeFilter !== "all") matched = matched.filter((r) => r.type === typeFilter);
+      setDbSearch(fromDb);
+      let filtered = matched;
+      if (typeFilter !== "all") filtered = filtered.filter((r) => r.type === typeFilter);
       if (tagFilter) {
-        matched = matched.filter((r) =>
+        filtered = filtered.filter((r) =>
           r.tags.some((t) => t.toLowerCase() === tagFilter.toLowerCase()),
         );
       }
-      setResults(matched);
+      setResults(filtered);
       setSearching(false);
     };
 
@@ -172,8 +176,13 @@ function SearchContent() {
           autoFocus
         />
       </div>
-      <p className="mb-6 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
-        Press <kbd className="kbd">/</kbd> to focus search
+      <p className="mb-6 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground flex flex-wrap items-center gap-2">
+        Press <kbd className="kbd">/</kbd> to focus · <kbd className="kbd">⌘K</kbd> quick nav
+        {dbSearch && debouncedQuery.trim() ? (
+          <span className="rounded-full border border-accent-green/30 bg-accent-green/10 px-2 py-0.5 text-accent-green">
+            Deep search
+          </span>
+        ) : null}
       </p>
 
       {!loading && recent.length > 0 && !query.trim() ? (

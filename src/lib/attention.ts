@@ -72,9 +72,7 @@ export async function buildAttentionItems(
       priority: "low",
       title: `You're on ${accepted.length} project team${accepted.length === 1 ? "" : "s"}`,
       body: "Check project updates and Discord links from your project pages.",
-      href: accepted[0]?.project_slug
-        ? `/projects/${accepted[0].project_slug}`
-        : "/applications",
+      href: accepted[0]?.project_slug ? `/projects/${accepted[0].project_slug}` : "/applications",
       cta: "Open project",
     });
   }
@@ -97,7 +95,10 @@ export async function buildAttentionItems(
       id: `deadline-${event.id}-${next.label}`,
       priority: next.days === 0 ? "high" : "medium",
       title: `${event.title} · ${next.label}`,
-      body: next.days === 0 ? "Deadline is today." : `Due in ${next.days} day${next.days === 1 ? "" : "s"}.`,
+      body:
+        next.days === 0
+          ? "Deadline is today."
+          : `Due in ${next.days} day${next.days === 1 ? "" : "s"}.`,
       href: `/events/${event.slug}`,
       cta: "View event",
     });

@@ -16,8 +16,8 @@ export function ProjectMemberWorkspace({
   if (application.status !== "accepted") return null;
 
   return (
-    <section className="mt-10 border border-accent-green/25 rounded-sm">
-      <div className="border-b border-accent-green/20 px-5 py-4 bg-accent-green/5">
+    <section className="mt-10 panel glass rounded-2xl overflow-hidden border-accent-green/20">
+      <div className="border-b border-accent-green/15 px-5 py-4 bg-accent-green/[0.06] relative z-[1]">
         <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-green">
           Member workspace
         </p>
@@ -25,11 +25,13 @@ export function ProjectMemberWorkspace({
           You are on this team. Use updates below, Discord, and member profiles to coordinate.
         </p>
       </div>
-      <div className="p-5 space-y-6">
+      <div className="p-5 space-y-6 relative z-[1]">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <p className="font-mono text-[9px] uppercase text-muted-foreground mb-2">Your status</p>
-            <p className="text-sm text-bone">Accepted · joined {new Date(application.updated_at).toLocaleDateString()}</p>
+            <p className="text-sm text-bone">
+              Accepted · joined {new Date(application.updated_at).toLocaleDateString()}
+            </p>
           </div>
           <div>
             <p className="font-mono text-[9px] uppercase text-muted-foreground mb-2">Capacity</p>
@@ -61,7 +63,9 @@ export function ProjectMemberWorkspace({
 
         {project.workspace_links && project.workspace_links.length > 0 ? (
           <div>
-            <p className="font-mono text-[9px] uppercase text-muted-foreground mb-3">Pinned resources</p>
+            <p className="font-mono text-[9px] uppercase text-muted-foreground mb-3">
+              Pinned resources
+            </p>
             <ul className="space-y-2">
               {project.workspace_links.map((link) => (
                 <li key={link.url}>

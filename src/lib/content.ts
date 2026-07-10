@@ -1,4 +1,5 @@
 import { SEED_EVENTS, SEED_NEWSLETTERS, SEED_PAPERS } from "@/data/seed/content";
+import { logAdminAction } from "@/lib/audit-log";
 import { getSupabase } from "@/lib/supabase";
 import { withSeedFallback } from "@/lib/supabase-fallback";
 import type { MlEvent, NewsletterIssue, Paper } from "@/lib/types";
@@ -216,6 +217,7 @@ export async function setContentPublished(
   table: "events" | "papers" | "newsletter_issues",
   id: string,
   published: boolean,
+  actorId?: string,
 ): Promise<{ error: string | null }> {
   const { supabase, error } = await requireSupabase();
   if (!supabase) return { error };
@@ -223,16 +225,26 @@ export async function setContentPublished(
     .from(table)
     .update({ published, updated_at: new Date().toISOString() })
     .eq("id", id);
+  if (!err && actorId) {
+    await logAdminAction(actorId, published ? "content.publish" : "content.unpublish", {
+      targetType: table,
+      targetId: id,
+    });
+  }
   return { error: err?.message ?? null };
 }
 
 export async function deleteContentRow(
   table: "events" | "papers" | "newsletter_issues",
   id: string,
+  actorId?: string,
 ): Promise<{ error: string | null }> {
   const { supabase, error } = await requireSupabase();
   if (!supabase) return { error };
   const { error: err } = await supabase.from(table).delete().eq("id", id);
+  if (!err && actorId) {
+    await logAdminAction(actorId, "content.delete", { targetType: table, targetId: id });
+  }
   return { error: err?.message ?? null };
 }
 

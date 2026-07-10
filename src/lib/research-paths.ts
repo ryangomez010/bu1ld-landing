@@ -2,9 +2,7 @@ import { getAllGuides } from "@/content/guides";
 import type { Guide } from "@/lib/types";
 import type { Paper } from "@/lib/types";
 
-export type PathStep =
-  | { kind: "guide"; slug: string }
-  | { kind: "paper"; slug: string };
+export type PathStep = { kind: "guide"; slug: string } | { kind: "paper"; slug: string };
 
 export type ResearchPath = {
   id: string;
@@ -118,4 +116,59 @@ export function stepLabel(step: PathStep, guides: Guide[], papers: Paper[]): str
     return guides.find((g) => g.slug === step.slug)?.title ?? step.slug;
   }
   return papers.find((p) => p.slug === step.slug)?.title ?? step.slug;
+}
+
+export function isStepDone(
+  step: PathStep,
+  readPaperSlugs: Set<string>,
+  guideProgress: Record<string, number>,
+): boolean {
+  if (step.kind === "paper") return readPaperSlugs.has(step.slug);
+  return (guideProgress[step.slug] ?? 0) >= 95;
+}
+
+export function findNextStepInPath(
+  path: ResearchPath,
+  readPaperSlugs: Set<string>,
+  guideProgress: Record<string, number>,
+): PathStep | null {
+  for (const step of path.steps) {
+    if (!isStepDone(step, readPaperSlugs, guideProgress)) return step;
+  }
+  return null;
+}
+
+export type ContinueResearch = {
+  path: ResearchPath;
+  step: PathStep;
+  stepTitle: string;
+  href: string;
+  pathPercent: number;
+};
+
+/** Best path to resume: highest partial progress, then first incomplete step. */
+export function findContinueResearch(
+  readPaperSlugs: Set<string>,
+  guideProgress: Record<string, number>,
+  guides: Guide[] = getAllGuides(),
+  papers: Paper[] = [],
+): ContinueResearch | null {
+  let best: ContinueResearch | null = null;
+
+  for (const path of RESEARCH_PATHS) {
+    const progress = pathProgress(path, readPaperSlugs, guideProgress);
+    if (progress.percent >= 100) continue;
+    const step = findNextStepInPath(path, readPaperSlugs, guideProgress);
+    if (!step) continue;
+    const candidate: ContinueResearch = {
+      path,
+      step,
+      stepTitle: stepLabel(step, guides, papers),
+      href: stepHref(step),
+      pathPercent: progress.percent,
+    };
+    if (!best || progress.percent > best.pathPercent) best = candidate;
+  }
+
+  return best;
 }

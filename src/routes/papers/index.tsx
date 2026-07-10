@@ -87,7 +87,7 @@ function PapersContent() {
         </Link>
       </div>
 
-      <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">
+      <div className="mb-6 panel glass rounded-2xl overflow-hidden grid gap-px sm:grid-cols-4">
         <Stat label="Reviews" value={papers.length} />
         <Stat label="Read" value={readCount} />
         <Stat label="In progress" value={inProgress} />
@@ -97,12 +97,12 @@ function PapersContent() {
       {featured && !loading ? (
         <Link
           to={`/papers/${featured.slug}`}
-          className="mb-8 block border border-border/50 border-l-2 border-l-bone/40 p-6 md:p-8 hover:bg-bone/[0.02] transition group"
+          className="mb-8 block panel glass rounded-2xl p-6 md:p-8 panel-interactive group relative overflow-hidden border-l-2 border-l-bone/30"
         >
-          <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
+          <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground relative z-[1]">
             Start here
           </p>
-          <h2 className="font-display text-2xl md:text-3xl text-bone mt-3 group-hover:text-accent-blue transition">
+          <h2 className="font-display text-2xl md:text-3xl text-bone mt-3 group-hover:text-accent-blue transition relative z-[1]">
             {featured.title}
           </h2>
           <p className="mt-3 text-muted-foreground max-w-2xl line-clamp-2">{featured.summary}</p>
@@ -172,7 +172,7 @@ function PapersContent() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="stat-cell">
+    <div className="stat-cell relative z-[1]">
       <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
         {label}
       </p>

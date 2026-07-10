@@ -41,14 +41,26 @@ function PaperDetail() {
 
   useEffect(() => {
     if (!user || !paper) return;
-    pushRecentView(user.id, { type: "paper", slug: paper.slug, title: paper.title, href: `/papers/${paper.slug}` });
+    pushRecentView(user.id, {
+      type: "paper",
+      slug: paper.slug,
+      title: paper.title,
+      href: `/papers/${paper.slug}`,
+    });
   }, [user, paper]);
 
-  if (loading) return <MemberLayout><LoadingState /></MemberLayout>;
+  if (loading)
+    return (
+      <MemberLayout>
+        <LoadingState />
+      </MemberLayout>
+    );
   if (!paper) {
     return (
       <MemberLayout title="Review not found">
-        <Link to="/papers" className="text-accent-blue text-sm">← Back to paper reviews</Link>
+        <Link to="/papers" className="text-accent-blue text-sm">
+          ← Back to paper reviews
+        </Link>
       </MemberLayout>
     );
   }

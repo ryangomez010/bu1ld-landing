@@ -175,11 +175,7 @@ export function PaperReviewMarkdown({ body }: { body: string }) {
   );
 }
 
-export function PaperReviewSection({
-  section,
-}: {
-  section: ReviewSection;
-}) {
+export function PaperReviewSection({ section }: { section: ReviewSection }) {
   return (
     <section id={section.id} className="scroll-mt-28">
       {section.id !== "overview" ? (

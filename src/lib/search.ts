@@ -104,7 +104,7 @@ export function searchIndex(items: SearchResult[], query: string): SearchResult[
 export async function searchPortal(
   localIndex: SearchResult[],
   query: string,
-): Promise<SearchResult[]> {
+): Promise<{ results: SearchResult[]; fromDb: boolean }> {
   const remote = await searchPortalRemote(query);
   const guides = searchIndex(
     localIndex.filter((item) => item.type === "guide"),
@@ -118,10 +118,10 @@ export async function searchPortal(
       const key = `${g.type}:${g.slug}`;
       if (!seen.has(key)) merged.push(g);
     }
-    return merged;
+    return { results: merged, fromDb: true };
   }
 
-  return searchIndex(localIndex, query);
+  return { results: searchIndex(localIndex, query), fromDb: false };
 }
 
 export function interestScore(itemTags: string[], interests: string[]): number {
