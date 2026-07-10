@@ -1,14 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
-import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCard";
+import { EmptyState, TagList } from "@/components/member/ContentCard";
 import { FilterBar } from "@/components/member/FilterBar";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { fetchEvents } from "@/lib/content";
-import { fetchMyRsvpEventIds } from "@/lib/event-rsvp";
+import { fetchMyRsvpEventIds, toggleEventRsvp } from "@/lib/event-rsvp";
 import { daysUntil, formatDate, nearestDeadline } from "@/lib/date";
 import type { MlEvent } from "@/lib/types";
 
@@ -30,6 +32,25 @@ function EventsContent() {
   const [rsvpIds, setRsvpIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "upcoming" | "past" | "going">("upcoming");
+  const [rsvpBusy, setRsvpBusy] = useState<string | null>(null);
+
+  const onToggleRsvp = async (event: MlEvent) => {
+    if (!user) return;
+    setRsvpBusy(event.id);
+    const { rsvped, error } = await toggleEventRsvp(user.id, event);
+    setRsvpBusy(null);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    setRsvpIds((prev) => {
+      const next = new Set(prev);
+      if (rsvped) next.add(event.id);
+      else next.delete(event.id);
+      return next;
+    });
+    toast.success(rsvped ? "RSVP added." : "RSVP removed.");
+  };
 
   useEffect(() => {
     void fetchEvents().then((data) => {
@@ -125,39 +146,59 @@ function EventsContent() {
                   ? "Due today"
                   : `${next.days}d left`
                 : null;
+            const going = rsvpIds.has(event.id);
             return (
-              <ContentCard
+              <article
                 key={event.id}
-                to={`/events/${event.slug}`}
-                tag={`event / ${String(i + 1).padStart(2, "0")}`}
-                title={event.title}
-                summary={
-                  event.prep_notes
-                    ? `${event.summary ?? ""}${event.summary ? " — " : ""}Prep: ${event.prep_notes.slice(0, 80)}${event.prep_notes.length > 80 ? "…" : ""}`
-                    : event.summary
-                }
-                meta={[
-                  event.location,
-                  event.start_date ? formatDate(event.start_date) : null,
-                  next ? `${next.label} in ${next.days}d` : null,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
+                className="panel flex flex-col sm:flex-row sm:items-stretch gap-0 rounded-sm overflow-hidden"
               >
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {rsvpIds.has(event.id) ? (
-                    <span className="inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green border border-accent-green/30 px-2 py-1 rounded-sm">
-                      Going ✓
-                    </span>
-                  ) : null}
-                  {countdown ? (
-                    <span className="inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-red border border-accent-red/30 px-2 py-1 rounded-sm">
-                      {countdown} · {next!.label}
-                    </span>
-                  ) : null}
+                <Link
+                  to={`/events/${event.slug}`}
+                  className="flex-1 block p-6 hover:bg-bone/5 transition group"
+                >
+                  <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-blue/80">
+                    event / {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="font-display text-xl text-bone mt-2 tracking-tight group-hover:text-accent-blue transition-colors">
+                    {event.title}
+                  </h3>
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                    {event.prep_notes
+                      ? `${event.summary ?? ""}${event.summary ? " — " : ""}Prep: ${event.prep_notes.slice(0, 80)}${event.prep_notes.length > 80 ? "…" : ""}`
+                      : event.summary}
+                  </p>
+                  <p className="mt-4 font-mono text-[9px] tracking-[0.22em] uppercase text-muted-foreground/80">
+                    {[event.location, event.start_date ? formatDate(event.start_date) : null, next ? `${next.label} in ${next.days}d` : null]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {going ? (
+                      <span className="inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green border border-accent-green/30 px-2 py-1 rounded-sm">
+                        Going ✓
+                      </span>
+                    ) : null}
+                    {countdown ? (
+                      <span className="inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-red border border-accent-red/30 px-2 py-1 rounded-sm">
+                        {countdown} · {next!.label}
+                      </span>
+                    ) : null}
+                  </div>
+                  <TagList tags={event.topics} linkToSearch className="mt-4" />
+                </Link>
+                <div className="flex sm:flex-col items-center justify-center gap-2 border-t sm:border-t-0 sm:border-l border-border/40 px-4 py-3 sm:py-6 sm:min-w-[7rem] bg-background/50">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={going ? "default" : "outline"}
+                    disabled={rsvpBusy === event.id}
+                    className="font-mono text-[9px] tracking-[0.15em] uppercase w-full sm:w-auto"
+                    onClick={() => void onToggleRsvp(event)}
+                  >
+                    {rsvpBusy === event.id ? "…" : going ? "Going" : "RSVP"}
+                  </Button>
                 </div>
-                <TagList tags={event.topics} linkToSearch className="mt-4" />
-              </ContentCard>
+              </article>
             );
           })}
         </div>

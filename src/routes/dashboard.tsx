@@ -10,9 +10,11 @@ import {
 } from "lucide-react";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { EngagementSummaryPanel } from "@/components/member/EngagementSummary";
 import { FeedCard } from "@/components/member/FeedCard";
 import { LoadingState } from "@/components/member/LoadingState";
 import { MetricCard } from "@/components/member/MetricCard";
+import { QuickActions } from "@/components/member/QuickActions";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { SectionHeader } from "@/components/member/SectionHeader";
@@ -28,6 +30,8 @@ import { buildForYouFeed } from "@/lib/personalization";
 import type { ForYouItem } from "@/lib/personalization";
 import { findSimilarMembers, fetchMemberDirectory } from "@/lib/members";
 import type { DirectoryMember } from "@/lib/members";
+import { fetchEngagementSummary } from "@/lib/engagement";
+import type { EngagementSummary } from "@/lib/engagement";
 import { fetchMyUpcomingRsvps } from "@/lib/event-rsvp";
 import { profileCompleteness } from "@/lib/profile";
 import { unreadCount } from "@/lib/notifications";
@@ -79,6 +83,7 @@ function DashboardHome() {
     Array<{ member: DirectoryMember; overlap: string[] }>
   >([]);
   const [myRsvps, setMyRsvps] = useState<MlEvent[]>([]);
+  const [engagement, setEngagement] = useState<EngagementSummary | null>(null);
 
   useEffect(() => {
     void Promise.all([
@@ -106,6 +111,7 @@ function DashboardHome() {
     void buildActivityFeed(user.id).then(setActivity);
     void fetchSavedItems(user.id).then(setSavedItems);
     void unreadCount(user.id).then(setUnreadNotifications);
+    void fetchEngagementSummary(user.id).then(setEngagement);
     setRecentViews(getRecentViews(user.id));
   }, [user]);
 
@@ -262,6 +268,10 @@ function DashboardHome() {
               icon={GraduationCap}
             />
           </section>
+
+          <QuickActions />
+
+          {engagement ? <EngagementSummaryPanel stats={engagement} /> : null}
 
           {savedItems.length > 0 ? (
             <section className="section-gap">

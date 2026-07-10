@@ -76,7 +76,7 @@ Client: set `VITE_EMAIL_ENDPOINT` and matching `VITE_EMAIL_API_SECRET`.
 
 ### Cloudflare Workers
 
-1. `wrangler.jsonc` worker name: `the-bu1ld-nexus`
+1. `wrangler.jsonc` worker name must match the Cloudflare dashboard worker (`bu1ld-landing`).
 2. Set secrets / vars for the same `VITE_*` keys used at build time.
 3. Deploy with `bunx wrangler deploy` (after `bun run build`).
 
