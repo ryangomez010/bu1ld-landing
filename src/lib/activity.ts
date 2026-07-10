@@ -1,12 +1,21 @@
 import { fetchAnnouncements } from "@/lib/announcements";
 import { nearestDeadline } from "@/lib/date";
 import { fetchEvents } from "@/lib/content";
+import { getAllGuideProgress } from "@/lib/reading-progress";
 import { fetchMyApplications, fetchProjects } from "@/lib/projects";
 import { fetchNotifications } from "@/lib/notifications";
+import { fetchSavedItems, savedItemHref } from "@/lib/saved";
 
 export type ActivityItem = {
   id: string;
-  kind: "application" | "deadline" | "announcement" | "notification" | "project";
+  kind:
+    | "application"
+    | "deadline"
+    | "announcement"
+    | "notification"
+    | "project"
+    | "saved"
+    | "guide";
   title: string;
   body: string;
   href: string;
@@ -14,13 +23,16 @@ export type ActivityItem = {
 };
 
 export async function buildActivityFeed(userId: string): Promise<ActivityItem[]> {
-  const [apps, events, announcements, notifications, openProjects] = await Promise.all([
-    fetchMyApplications(userId),
-    fetchEvents(),
-    fetchAnnouncements(),
-    fetchNotifications(userId),
-    fetchProjects("open"),
-  ]);
+  const [apps, events, announcements, notifications, openProjects, saved, guideProgress] =
+    await Promise.all([
+      fetchMyApplications(userId),
+      fetchEvents(),
+      fetchAnnouncements(),
+      fetchNotifications(userId),
+      fetchProjects("open"),
+      fetchSavedItems(userId),
+      getAllGuideProgress(userId),
+    ]);
 
   const items: ActivityItem[] = [];
 
@@ -81,5 +93,28 @@ export async function buildActivityFeed(userId: string): Promise<ActivityItem[]>
     });
   }
 
-  return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 10);
+  for (const s of saved.slice(0, 4)) {
+    items.push({
+      id: `saved-${s.id}`,
+      kind: "saved",
+      title: `Saved · ${s.item_title}`,
+      body: `${s.item_type} bookmark`,
+      href: savedItemHref(s.item_type, s.item_slug),
+      at: s.created_at,
+    });
+  }
+
+  for (const [slug, pct] of Object.entries(guideProgress)) {
+    if (pct < 5 || pct >= 100) continue;
+    items.push({
+      id: `guide-${slug}`,
+      kind: "guide",
+      title: `Guide progress · ${Math.round(pct)}%`,
+      body: `Continue reading ${slug.replace(/-/g, " ")}`,
+      href: `/guides/${slug}`,
+      at: new Date().toISOString(),
+    });
+  }
+
+  return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 12);
 }

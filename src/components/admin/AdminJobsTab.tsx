@@ -134,7 +134,6 @@ export function AdminJobsTab({ jobs, onSaved }: { jobs: Job[]; onSaved: () => vo
                 })
               }
               onDelete={() => {
-                if (!confirm(`Delete “${j.title}”?`)) return;
                 void deleteJob(j.id).then(({ error }) => {
                   if (error) toast.error(error);
                   else {

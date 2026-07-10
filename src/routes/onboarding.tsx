@@ -87,8 +87,14 @@ function OnboardingForm() {
   }, [profile, navigate]);
 
   useEffect(() => {
-    if (!profile && !fullName && user?.user_metadata?.full_name) {
-      setFullName(user.user_metadata.full_name as string);
+    if (!profile && !fullName && user) {
+      const meta = user.user_metadata ?? {};
+      const fromProvider =
+        (typeof meta.full_name === "string" && meta.full_name) ||
+        (typeof meta.name === "string" && meta.name) ||
+        [meta.given_name, meta.family_name].filter(Boolean).join(" ") ||
+        "";
+      if (fromProvider) setFullName(fromProvider);
     }
     if (!timezone) {
       setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);

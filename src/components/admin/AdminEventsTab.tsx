@@ -109,7 +109,6 @@ export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved
   };
 
   const onDelete = async (ev: MlEvent) => {
-    if (!confirm(`Delete “${ev.title}”?`)) return;
     const { error } = await deleteContentRow("events", ev.id);
     if (error) toast.error(error);
     else {

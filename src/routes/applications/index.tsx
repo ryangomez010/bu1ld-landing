@@ -151,9 +151,19 @@ function ApplicationRow({
         {app.pitch}
       </p>
       {app.status === "declined" ? (
-        <p className="mt-3 rounded-sm border border-border/50 bg-accent-red/5 px-3 py-2 text-xs text-muted-foreground">
-          Not selected this round. You can reapply if the project reopens or capacity opens up.
-        </p>
+        <div className="mt-3 rounded-sm border border-border/50 bg-accent-red/5 px-3 py-3 text-xs text-muted-foreground space-y-2">
+          <p>
+            Not selected this round. You can reapply if the project reopens or capacity opens up.
+          </p>
+          {app.project_slug ? (
+            <Link
+              to={`/projects/${app.project_slug}`}
+              className="inline-block font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"
+            >
+              View project & reapply when open →
+            </Link>
+          ) : null}
+        </div>
       ) : null}
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-bone/40">

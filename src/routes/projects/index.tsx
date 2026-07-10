@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
 import { fetchMyApplicationStatusMap, fetchProjects } from "@/lib/projects";
+import { recommendProjects } from "@/lib/personalization";
 import type { ApplicationStatus, Project, ProjectStatus, ProjectType } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/")({
@@ -64,6 +65,15 @@ function ProjectsContent() {
   }, [projects, statusFilter, typeFilter, query]);
 
   const list = statusFilter === "all" ? filtered.filter((p) => p.status !== "closed") : filtered;
+
+  const recommendations = useMemo(() => {
+    if (!profile?.interests?.length) return [];
+    const appliedIds = new Set([...applied.keys()].map((id) => id));
+    return recommendProjects(projects, profile.interests, {
+      excludeIds: appliedIds,
+      limit: 3,
+    });
+  }, [projects, profile?.interests, applied]);
 
   return (
     <MemberLayout title="Projects" eyebrow="join & build">
@@ -124,6 +134,31 @@ function ProjectsContent() {
           />
         </div>
       </div>
+
+      {recommendations.length > 0 && statusFilter === "all" && !query ? (
+        <section className="mb-8 rounded-sm border border-accent-green/20 bg-accent-green/5 px-5 py-5">
+          <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-4">
+            Recommended for you
+          </h2>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {recommendations.map(({ project, matchTags, reason }) => (
+              <Link
+                key={project.id}
+                to={`/projects/${project.slug}`}
+                className="panel panel-interactive p-4 rounded-sm block"
+              >
+                <h3 className="font-display text-base text-bone">{project.title}</h3>
+                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                  {project.description}
+                </p>
+                {matchTags.length ? (
+                  <p className="mt-2 font-mono text-[8px] uppercase text-accent-green">{reason}</p>
+                ) : null}
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {loading ? (
         <ListSkeleton rows={5} />

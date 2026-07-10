@@ -43,7 +43,8 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      active && "drop-shadow-[0_0_8px_color-mix(in_oklab,var(--accent-blue)_70%,transparent)]",
+                      active &&
+                        "drop-shadow-[0_0_8px_color-mix(in_oklab,var(--accent-blue)_70%,transparent)]",
                     )}
                     aria-hidden
                   />

@@ -23,12 +23,7 @@ export function SectionHeader({
   return (
     <div className={cn("section-header", className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2
-          className={cn(
-            "font-mono text-[10px] tracking-[0.3em] uppercase",
-            accentClass,
-          )}
-        >
+        <h2 className={cn("font-mono text-[10px] tracking-[0.3em] uppercase", accentClass)}>
           {title}
         </h2>
         {action}

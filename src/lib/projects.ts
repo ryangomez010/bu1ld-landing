@@ -419,6 +419,7 @@ export async function fetchProjectApplications(projectId: string): Promise<Proje
 export async function updateApplicationStatus(
   applicationId: string,
   status: ApplicationStatus,
+  opts?: { declineNote?: string },
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
   let application: ProjectApplication | undefined;
@@ -462,10 +463,15 @@ export async function updateApplicationStatus(
           : status === "waitlist"
             ? "waitlisted"
             : status;
+    const note = opts?.declineNote?.trim();
+    const body =
+      status === "declined" && note
+        ? `Your application to ${application.project_title ?? "a project"} was not selected. Note from lead: ${note}`
+        : `Your application to ${application.project_title ?? "a project"} is now ${label}.`;
     await createNotification(application.user_id, {
       title: `Application ${label}`,
-      body: `Your application to ${application.project_title ?? "a project"} is now ${label}.`,
-      href: "/applications",
+      body,
+      href: application.project_slug ? `/projects/${application.project_slug}` : "/applications",
     });
     void notifyApplicationUpdate(
       application.user_id,
@@ -475,6 +481,61 @@ export async function updateApplicationStatus(
   }
 
   return { error: null };
+}
+
+/** Bulk-update application status (lead review queue). */
+export async function bulkUpdateApplicationStatus(
+  applicationIds: string[],
+  status: ApplicationStatus,
+  opts?: { declineNote?: string },
+): Promise<{ error: string | null; updated: number }> {
+  let updated = 0;
+  for (const id of applicationIds) {
+    const { error } = await updateApplicationStatus(id, status, opts);
+    if (error) return { error, updated };
+    updated += 1;
+  }
+  return { error: null, updated };
+}
+
+/** Accepted team members for a project (public on detail page). */
+export async function fetchProjectTeamMembers(
+  projectId: string,
+): Promise<Array<{ name: string; userId: string }>> {
+  const apps = await fetchProjectApplications(projectId);
+  return apps
+    .filter((a) => a.status === "accepted")
+    .map((a) => ({
+      name: a.applicant_name ?? "Member",
+      userId: a.user_id,
+    }));
+}
+
+/** Realtime subscription for new/updated applications on a project. */
+export function subscribeProjectApplications(
+  projectId: string,
+  onChange: () => void,
+): (() => void) | undefined {
+  const supabase = getSupabase();
+  if (!supabase) return undefined;
+
+  const channel = supabase
+    .channel(`applications:${projectId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "project_applications",
+        filter: `project_id=eq.${projectId}`,
+      },
+      () => onChange(),
+    )
+    .subscribe();
+
+  return () => {
+    void supabase.removeChannel(channel);
+  };
 }
 
 export async function getApplicationForProject(

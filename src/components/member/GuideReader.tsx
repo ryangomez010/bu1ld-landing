@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { SaveButton } from "@/components/member/SaveButton";
+import { Button } from "@/components/ui/button";
 import { getAllGuides } from "@/content/guides";
 import { saveReadingProgress } from "@/lib/reading-progress";
 import type { Guide, GuideSection } from "@/lib/types";
@@ -140,13 +142,38 @@ export function GuideReader({
         </div>
         <div
           className={cn(
-            "mt-12 rounded-sm border px-5 py-4 text-center font-mono text-[10px] tracking-[0.25em] uppercase",
+            "mt-12 rounded-sm border px-5 py-4 text-center",
             progress >= 95
-              ? "border-accent-green/40 bg-accent-green/5 text-accent-green"
+              ? "border-accent-green/40 bg-accent-green/5"
               : "border-border/60 text-muted-foreground",
           )}
         >
-          {progress >= 95 ? "Reached end of guide" : "Scroll progress saves automatically"}
+          {progress >= 95 ? (
+            <div className="space-y-3">
+              <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-accent-green">
+                {progress >= 100 ? "Guide complete" : "Almost done — mark complete?"}
+              </p>
+              {progress < 100 ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    setProgress(100);
+                    void saveReadingProgress(userId, guide.slug, 100).then(() => {
+                      toast.success("Guide marked complete.");
+                    });
+                  }}
+                  className="font-mono text-[9px] tracking-[0.2em] uppercase"
+                >
+                  Mark complete
+                </Button>
+              ) : null}
+            </div>
+          ) : (
+            <p className="font-mono text-[10px] tracking-[0.25em] uppercase">
+              Scroll progress saves automatically
+            </p>
+          )}
         </div>
 
         <div className="mt-10 flex flex-wrap justify-between gap-4 border-t border-border/60 pt-6">

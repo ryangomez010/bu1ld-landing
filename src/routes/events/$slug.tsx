@@ -103,6 +103,16 @@ function EventDetail() {
             .join(" · ")}
         </p>
         <TagList tags={event.topics} linkToSearch className="mt-4" />
+
+        {event.prep_notes ? (
+          <div className="mt-6 rounded-sm border border-accent-blue/30 bg-accent-blue/5 px-5 py-4">
+            <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-blue mb-2">
+              How to prepare
+            </p>
+            <p className="text-sm text-foreground/90 leading-relaxed">{event.prep_notes}</p>
+          </div>
+        ) : null}
+
         {event.summary ? (
           <p className="mt-6 text-lg text-muted-foreground leading-relaxed">{event.summary}</p>
         ) : null}
@@ -130,17 +140,6 @@ function EventDetail() {
                 );
               })}
             </div>
-          </section>
-        ) : null}
-
-        {event.prep_notes ? (
-          <section className="mt-10">
-            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-              How to prepare
-            </h2>
-            <p className="text-muted-foreground leading-relaxed border-l-2 border-accent-blue/40 pl-4">
-              {event.prep_notes}
-            </p>
           </section>
         ) : null}
 

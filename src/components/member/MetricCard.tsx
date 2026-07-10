@@ -35,7 +35,10 @@ export function MetricCard({
           : "group-hover:bg-accent-blue";
 
   return (
-    <Link to={to} className="panel panel-interactive group relative overflow-hidden p-4 block rounded-sm">
+    <Link
+      to={to}
+      className="panel panel-interactive group relative overflow-hidden p-4 block rounded-sm"
+    >
       <span
         className={cn(
           "absolute inset-y-0 left-0 w-0.5 bg-transparent transition-colors duration-300",

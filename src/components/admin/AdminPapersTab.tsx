@@ -71,7 +71,6 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
   };
 
   const onDelete = async (p: Paper) => {
-    if (!confirm(`Delete “${p.title}”?`)) return;
     const { error } = await deleteContentRow("papers", p.id);
     if (error) toast.error(error);
     else {

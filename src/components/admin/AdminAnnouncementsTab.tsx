@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import type { Announcement } from "@/data/seed/announcements";
+import { ConfirmButton } from "@/components/member/ConfirmButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,7 +53,8 @@ export function AdminAnnouncementsTab({
       <form onSubmit={onSubmit} className="space-y-4 rounded-sm border border-border/60 p-6">
         <h2 className="font-display text-lg text-bone">New announcement</h2>
         <p className="text-xs text-muted-foreground">
-          Pinned announcements appear as &ldquo;This week in ML&rdquo; on the dashboard.
+          Pinned announcements appear as &ldquo;This week in ML&rdquo; on the dashboard. Use
+          unpublish to save as draft — schedule by publishing when ready.
         </p>
         <div className="space-y-2">
           <Label>Title</Label>
@@ -112,19 +114,23 @@ export function AdminAnnouncementsTab({
                 >
                   {a.published ? "unpublish" : "publish"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!confirm(`Delete “${a.title}”?`)) return;
+                <ConfirmButton
+                  title={`Delete “${a.title}”?`}
+                  description="This permanently removes the announcement."
+                  confirmLabel="Delete"
+                  destructive
+                  onConfirm={() =>
                     void deleteAnnouncement(a.id).then(({ error }) => {
                       if (error) toast.error(error);
                       else onSaved();
-                    });
-                  }}
-                  className="text-accent-red hover:text-bone"
-                >
-                  delete
-                </button>
+                    })
+                  }
+                  trigger={
+                    <button type="button" className="text-accent-red hover:text-bone">
+                      delete
+                    </button>
+                  }
+                />
               </div>
             </li>
           ))}

@@ -10,8 +10,13 @@ import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { SaveButton } from "@/components/member/SaveButton";
 import { ShareButton } from "@/components/member/ShareButton";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 import { fetchPaperBySlug, fetchPapers } from "@/lib/content";
+import { isPaperRead, markPaperRead, unmarkPaperRead } from "@/lib/paper-read";
+import { pushRecentView } from "@/lib/recent-views";
 import type { Paper } from "@/lib/types";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/papers/$slug")({
   component: PaperDetailPage,
@@ -27,8 +32,10 @@ function PaperDetailPage() {
 
 function PaperDetail() {
   const { slug } = Route.useParams();
+  const { user } = useAuth();
   const [paper, setPaper] = useState<Paper | null>(null);
   const [related, setRelated] = useState<Paper[]>([]);
+  const [read, setRead] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,6 +59,17 @@ function PaperDetail() {
       setLoading(false);
     });
   }, [slug]);
+
+  useEffect(() => {
+    if (!user || !paper) return;
+    void isPaperRead(user.id, paper.slug).then(setRead);
+    pushRecentView(user.id, {
+      type: "paper",
+      slug: paper.slug,
+      title: paper.title,
+      href: `/papers/${paper.slug}`,
+    });
+  }, [user, paper]);
 
   if (loading) {
     return (
@@ -83,6 +101,26 @@ function PaperDetail() {
             <>
               <SaveButton itemType="paper" itemSlug={paper.slug} itemTitle={paper.title} />
               <ShareButton title={paper.title} />
+              {user ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={read ? "outline" : "default"}
+                  onClick={() => {
+                    void (
+                      read
+                        ? unmarkPaperRead(user.id, paper.slug)
+                        : markPaperRead(user.id, paper.slug)
+                    ).then(() => {
+                      setRead(!read);
+                      toast.success(read ? "Removed from reading list" : "Marked as read");
+                    });
+                  }}
+                  className="font-mono text-[9px] tracking-[0.15em] uppercase"
+                >
+                  {read ? "Mark unread" : "Mark as read"}
+                </Button>
+              ) : null}
             </>
           }
         />

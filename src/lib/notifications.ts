@@ -130,6 +130,21 @@ export function subscribeNotifications(
   };
 }
 
+/** Infer notification category for filtering. */
+export type NotificationCategory = "application" | "announcement" | "lead" | "other";
+
+export function notificationCategory(n: Notification): NotificationCategory {
+  const hay = `${n.title} ${n.body}`.toLowerCase();
+  if (hay.includes("application") || hay.includes("waitlist") || hay.includes("not selected")) {
+    return "application";
+  }
+  if (hay.includes("lead") || hay.includes("project lead")) return "lead";
+  if (hay.includes("announcement") || hay.includes("welcome") || n.href?.includes("/dashboard")) {
+    return "announcement";
+  }
+  return "other";
+}
+
 /** Group notifications by calendar day label. */
 export function groupNotificationsByDay(
   items: Notification[],

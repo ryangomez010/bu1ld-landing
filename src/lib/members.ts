@@ -43,6 +43,40 @@ export async function fetchMemberDirectory(): Promise<DirectoryMember[]> {
   return data.map((r) => normalize(r as Record<string, unknown>));
 }
 
+/** Shared interest tags between two members (case-insensitive). */
+export function sharedInterests(a: string[], b: string[]): string[] {
+  if (!a.length || !b.length) return [];
+  const normalized = b.map((i) => i.toLowerCase());
+  return a.filter((tag) => {
+    const t = tag.toLowerCase();
+    return normalized.some((i) => t === i || t.includes(i) || i.includes(t));
+  });
+}
+
+export function memberSimilarityScore(memberInterests: string[], myInterests: string[]): number {
+  return sharedInterests(myInterests, memberInterests).length;
+}
+
+/** Members with overlapping interests, sorted by overlap count. */
+export function findSimilarMembers(
+  members: DirectoryMember[],
+  myInterests: string[],
+  opts?: { excludeId?: string; limit?: number },
+): Array<{ member: DirectoryMember; overlap: string[]; score: number }> {
+  if (!myInterests.length) return [];
+  const limit = opts?.limit ?? 6;
+
+  return members
+    .filter((m) => m.id !== opts?.excludeId)
+    .map((m) => {
+      const overlap = sharedInterests(myInterests, m.interests ?? []);
+      return { member: m, overlap, score: overlap.length };
+    })
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
+
 export async function fetchDirectoryMember(id: string): Promise<DirectoryMember | null> {
   const supabase = getSupabase();
   if (!supabase) return null;

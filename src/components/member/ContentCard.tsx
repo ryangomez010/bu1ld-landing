@@ -19,19 +19,11 @@ export function TagList({
     <div className={cn("flex flex-wrap gap-2", className)}>
       {tags.map((tag) =>
         linkToSearch ? (
-          <Link
-            key={tag}
-            to="/search"
-            search={{ q: tag }}
-            className="tag"
-          >
+          <Link key={tag} to="/search" search={{ q: tag }} className="tag">
             {tag}
           </Link>
         ) : (
-          <span
-            key={tag}
-            className="tag pointer-events-none"
-          >
+          <span key={tag} className="tag pointer-events-none">
             {tag}
           </span>
         ),

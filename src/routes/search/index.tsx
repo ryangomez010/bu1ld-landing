@@ -12,6 +12,7 @@ import { highlightMatch } from "@/components/member/ResourceNotFound";
 import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { clearRecentSearches, getRecentSearches, pushRecentSearch } from "@/lib/recent-search";
+import { getTrendingBrowse } from "@/lib/personalization";
 import { buildSearchIndex, searchIndex } from "@/lib/search";
 import type { SearchResult } from "@/lib/types";
 
@@ -49,12 +50,14 @@ function SearchContent() {
   const [index, setIndex] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [recent, setRecent] = useState<string[]>([]);
+  const [trending, setTrending] = useState<Awaited<ReturnType<typeof getTrendingBrowse>>>([]);
 
   useEffect(() => {
     void buildSearchIndex().then((items) => {
       setIndex(items);
       setLoading(false);
     });
+    void getTrendingBrowse().then(setTrending);
     setRecent(getRecentSearches());
   }, []);
 
@@ -214,25 +217,70 @@ function SearchContent() {
       {loading ? (
         <ListSkeleton rows={6} />
       ) : query.trim() === "" && typeFilter === "all" && !tagFilter ? (
-        <div className="space-y-6">
+        <div className="space-y-8">
           <p className="text-sm text-muted-foreground">
             Search across guides, paper reviews, open projects, events, jobs, and newsletter issues.
             Click a type or tag above to browse.
           </p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {index.slice(0, 6).map((r) => (
-              <Link
-                key={`browse-${r.type}-${r.slug}`}
-                to={r.href}
-                className="panel panel-interactive p-4 rounded-sm block"
-              >
-                <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
-                  {TYPE_LABELS[r.type]}
-                </span>
-                <h3 className="font-display text-base text-bone mt-1">{r.title}</h3>
-              </Link>
-            ))}
-          </div>
+
+          {trending.length > 0 ? (
+            <section>
+              <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-4">
+                Trending now
+              </h2>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {trending.map((r) => (
+                  <Link
+                    key={`trend-${r.type}-${r.slug}`}
+                    to={r.href}
+                    className="panel panel-interactive p-4 rounded-sm block"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
+                        {TYPE_LABELS[r.type as SearchResult["type"]] ?? r.type}
+                      </span>
+                      {r.badge ? (
+                        <span className="font-mono text-[8px] tracking-[0.1em] uppercase text-accent-green">
+                          {r.badge}
+                        </span>
+                      ) : null}
+                    </div>
+                    <h3 className="font-display text-base text-bone mt-1">{r.title}</h3>
+                    {r.summary ? (
+                      <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{r.summary}</p>
+                    ) : null}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          <section>
+            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
+              Popular tags
+            </h2>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {popularTags.slice(0, 6).map((t) => {
+                const count = index.filter((i) =>
+                  i.tags.some((tag) => tag.toLowerCase() === t),
+                ).length;
+                const sample = index.find((i) => i.tags.some((tag) => tag.toLowerCase() === t));
+                return sample ? (
+                  <Link
+                    key={`tag-${t}`}
+                    to={sample.href}
+                    className="panel panel-interactive p-4 rounded-sm block"
+                    onClick={() => setTagFilter(t)}
+                  >
+                    <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green">
+                      {t} · {count} items
+                    </span>
+                    <h3 className="font-display text-base text-bone mt-1">{sample.title}</h3>
+                  </Link>
+                ) : null;
+              })}
+            </div>
+          </section>
         </div>
       ) : results.length === 0 ? (
         <EmptyState

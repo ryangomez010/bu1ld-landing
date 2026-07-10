@@ -4,13 +4,21 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
+import { ConfirmButton } from "@/components/member/ConfirmButton";
 import { EmptyState } from "@/components/member/ContentCard";
 import { FilterBar } from "@/components/member/FilterBar";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
-import { bulkUnsaveSavedItems, fetchSavedItems, savedItemHref, toggleSaved } from "@/lib/saved";
+import {
+  bulkUnsaveSavedItems,
+  fetchSavedItems,
+  loadSavedPagePrefs,
+  saveSavedPagePrefs,
+  savedItemHref,
+  toggleSaved,
+} from "@/lib/saved";
 import type { SavedItem, SavedItemType } from "@/lib/types";
 
 export const Route = createFileRoute("/saved/")({
@@ -40,6 +48,18 @@ function SavedContent() {
   const [filter, setFilter] = useState<SavedItemType | "all">("all");
   const [sort, setSort] = useState<"newest" | "oldest" | "type">("newest");
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const prefs = loadSavedPagePrefs(user.id);
+    setFilter(prefs.filter);
+    setSort(prefs.sort);
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    saveSavedPagePrefs(user.id, { filter, sort });
+  }, [user, filter, sort]);
 
   const reload = useCallback(() => {
     if (!user) return;
@@ -71,7 +91,6 @@ function SavedContent() {
 
   const onBulkUnsave = async () => {
     if (!user || filtered.length === 0) return;
-    if (!confirm(`Remove ${filtered.length} saved item(s)?`)) return;
     const { error } = await bulkUnsaveSavedItems(
       user.id,
       filtered.map((i) => ({ item_type: i.item_type, item_slug: i.item_slug })),
@@ -116,15 +135,23 @@ function SavedContent() {
               ).map(([value, label]) => ({ value, label }))}
             />
             {filtered.length > 0 ? (
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => void onBulkUnsave()}
-                className="ml-auto font-mono text-[9px] tracking-[0.15em] uppercase"
-              >
-                Unsave all ({filtered.length})
-              </Button>
+              <ConfirmButton
+                title={`Remove ${filtered.length} saved item(s)?`}
+                description="This cannot be undone. Items will be removed from your saved list."
+                confirmLabel="Remove all"
+                destructive
+                onConfirm={() => void onBulkUnsave()}
+                trigger={
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto font-mono text-[9px] tracking-[0.15em] uppercase"
+                  >
+                    Unsave all ({filtered.length})
+                  </Button>
+                }
+              />
             ) : null}
           </div>
           <FilterBar

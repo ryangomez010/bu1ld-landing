@@ -2,6 +2,23 @@ import { readUserJson, writeUserJson } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 import type { SavedItem, SavedItemType } from "@/lib/types";
 
+const PREFS_BASE = "build:saved-prefs";
+
+export type SavedPagePrefs = {
+  filter: SavedItemType | "all";
+  sort: "newest" | "oldest" | "type";
+};
+
+const DEFAULT_PREFS: SavedPagePrefs = { filter: "all", sort: "newest" };
+
+export function loadSavedPagePrefs(userId: string): SavedPagePrefs {
+  return readUserJson(PREFS_BASE, userId, DEFAULT_PREFS);
+}
+
+export function saveSavedPagePrefs(userId: string, prefs: SavedPagePrefs): void {
+  writeUserJson(PREFS_BASE, userId, prefs);
+}
+
 const STORAGE_BASE = "build:saved";
 
 function readLocal(userId: string): SavedItem[] {

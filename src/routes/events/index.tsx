@@ -95,13 +95,23 @@ function EventsContent() {
         <div className="grid gap-px bg-border/40 border border-border/40">
           {visible.map((event, i) => {
             const next = nearestDeadline(event.deadlines);
+            const countdown =
+              next && next.days != null && next.days >= 0
+                ? next.days === 0
+                  ? "Due today"
+                  : `${next.days}d left`
+                : null;
             return (
               <ContentCard
                 key={event.id}
                 to={`/events/${event.slug}`}
                 tag={`event / ${String(i + 1).padStart(2, "0")}`}
                 title={event.title}
-                summary={event.summary}
+                summary={
+                  event.prep_notes
+                    ? `${event.summary ?? ""}${event.summary ? " — " : ""}Prep: ${event.prep_notes.slice(0, 80)}${event.prep_notes.length > 80 ? "…" : ""}`
+                    : event.summary
+                }
                 meta={[
                   event.location,
                   event.start_date ? formatDate(event.start_date) : null,
@@ -110,6 +120,11 @@ function EventsContent() {
                   .filter(Boolean)
                   .join(" · ")}
               >
+                {countdown ? (
+                  <span className="inline-block mt-3 font-mono text-[9px] tracking-[0.2em] uppercase text-accent-red border border-accent-red/30 px-2 py-1 rounded-sm">
+                    {countdown} · {next!.label}
+                  </span>
+                ) : null}
                 <TagList tags={event.topics} linkToSearch className="mt-4" />
               </ContentCard>
             );

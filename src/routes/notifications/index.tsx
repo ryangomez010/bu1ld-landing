@@ -15,7 +15,9 @@ import {
   groupNotificationsByDay,
   markAllRead,
   markNotificationRead,
+  notificationCategory,
   subscribeNotifications,
+  type NotificationCategory,
 } from "@/lib/notifications";
 import type { Notification } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -36,6 +38,7 @@ function NotificationsContent() {
   const { user } = useAuth();
   const [items, setItems] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<"all" | "unread">("all");
+  const [typeFilter, setTypeFilter] = useState<NotificationCategory | "all">("all");
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(() => {
@@ -57,11 +60,23 @@ function NotificationsContent() {
   }, [user, refresh]);
 
   const unread = items.filter((n) => !n.read).length;
-  const visible = useMemo(
-    () => (filter === "unread" ? items.filter((n) => !n.read) : items),
-    [items, filter],
-  );
+  const visible = useMemo(() => {
+    let list = filter === "unread" ? items.filter((n) => !n.read) : items;
+    if (typeFilter !== "all") {
+      list = list.filter((n) => notificationCategory(n) === typeFilter);
+    }
+    return list;
+  }, [items, filter, typeFilter]);
   const grouped = useMemo(() => groupNotificationsByDay(visible), [visible]);
+
+  const typeCounts = useMemo(() => {
+    const base = filter === "unread" ? items.filter((n) => !n.read) : items;
+    return {
+      application: base.filter((n) => notificationCategory(n) === "application").length,
+      announcement: base.filter((n) => notificationCategory(n) === "announcement").length,
+      lead: base.filter((n) => notificationCategory(n) === "lead").length,
+    };
+  }, [items, filter]);
 
   return (
     <MemberLayout title="Notifications" eyebrow="updates">
@@ -85,6 +100,20 @@ function NotificationsContent() {
           </Button>
         ) : null}
       </div>
+
+      <FilterBar
+        className="mb-6"
+        value={typeFilter}
+        onChange={setTypeFilter}
+        options={(
+          [
+            ["all", "All types", items.length],
+            ["application", "Applications", typeCounts.application],
+            ["announcement", "Announcements", typeCounts.announcement],
+            ["lead", "Lead status", typeCounts.lead],
+          ] as const
+        ).map(([value, label, count]) => ({ value, label, count }))}
+      />
 
       {loading ? (
         <LoadingState />

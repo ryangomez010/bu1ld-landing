@@ -135,7 +135,6 @@ export function AdminNewslettersTab({
                 )
               }
               onDelete={() => {
-                if (!confirm(`Delete “${n.title}”?`)) return;
                 void deleteContentRow("newsletter_issues", n.id).then(({ error }) => {
                   if (error) toast.error(error);
                   else {

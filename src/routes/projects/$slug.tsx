@@ -27,12 +27,14 @@ import { useAuth } from "@/lib/auth";
 import {
   applyToProject,
   fetchProjectBySlug,
+  fetchProjectTeamMembers,
   fetchProjects,
   getApplicationForProject,
   isProjectLead,
   relatedProjects,
   updateApplicationPitch,
 } from "@/lib/projects";
+import { pushRecentView } from "@/lib/recent-views";
 import type { Project, ProjectApplication } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/$slug")({
@@ -53,6 +55,7 @@ function ProjectDetail() {
   const [project, setProject] = useState<Project | null>(null);
   const [application, setApplication] = useState<ProjectApplication | null>(null);
   const [related, setRelated] = useState<Project[]>([]);
+  const [teamMembers, setTeamMembers] = useState<Array<{ name: string; userId: string }>>([]);
   const [pitch, setPitch] = useState("");
   const [editingPitch, setEditingPitch] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -61,10 +64,23 @@ function ProjectDetail() {
   useEffect(() => {
     void Promise.all([fetchProjectBySlug(slug), fetchProjects()]).then(([p, all]) => {
       setProject(p);
-      if (p) setRelated(relatedProjects(p, all));
+      if (p) {
+        setRelated(relatedProjects(p, all));
+        void fetchProjectTeamMembers(p.id).then(setTeamMembers);
+      }
       setLoading(false);
     });
   }, [slug]);
+
+  useEffect(() => {
+    if (!user || !project) return;
+    pushRecentView(user.id, {
+      type: "project",
+      slug: project.slug,
+      title: project.title,
+      href: `/projects/${project.slug}`,
+    });
+  }, [user, project]);
 
   useEffect(() => {
     if (!user || !project) return;
@@ -163,6 +179,25 @@ function ProjectDetail() {
               Skills needed
             </h2>
             <TagList tags={project.skills_needed} linkToSearch />
+          </section>
+        ) : null}
+
+        {teamMembers.length > 0 ? (
+          <section className="mt-8">
+            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
+              Team
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {teamMembers.map((m) => (
+                <Link
+                  key={m.userId}
+                  to={`/members/${m.userId}`}
+                  className="rounded-sm border border-border/60 px-3 py-2 text-sm text-bone hover:border-bone/30 transition"
+                >
+                  {m.name}
+                </Link>
+              ))}
+            </div>
           </section>
         ) : null}
 

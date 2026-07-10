@@ -26,9 +26,13 @@ import { fetchEvents, fetchNewsletters, fetchPapers } from "@/lib/content";
 import { daysUntil, formatDate, nearestDeadline } from "@/lib/date";
 import { buildForYouFeed } from "@/lib/personalization";
 import type { ForYouItem } from "@/lib/personalization";
+import { findSimilarMembers, fetchMemberDirectory } from "@/lib/members";
+import type { DirectoryMember } from "@/lib/members";
 import { profileCompleteness } from "@/lib/profile";
 import { unreadCount } from "@/lib/notifications";
 import { getAllGuideProgress } from "@/lib/reading-progress";
+import { getLastRecentView, getRecentViews } from "@/lib/recent-views";
+import type { RecentView } from "@/lib/recent-views";
 import { fetchJobs, fetchMyApplications, fetchProjects } from "@/lib/projects";
 import { fetchSavedItems, savedItemHref } from "@/lib/saved";
 import type { Announcement } from "@/data/seed/announcements";
@@ -69,6 +73,10 @@ function DashboardHome() {
   const [activity, setActivity] = useState<ActivityItem[]>([]);
   const [savedItems, setSavedItems] = useState<Awaited<ReturnType<typeof fetchSavedItems>>>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [recentViews, setRecentViews] = useState<RecentView[]>([]);
+  const [similarMembers, setSimilarMembers] = useState<
+    Array<{ member: DirectoryMember; overlap: string[] }>
+  >([]);
 
   useEffect(() => {
     void Promise.all([
@@ -96,7 +104,17 @@ function DashboardHome() {
     void buildActivityFeed(user.id).then(setActivity);
     void fetchSavedItems(user.id).then(setSavedItems);
     void unreadCount(user.id).then(setUnreadNotifications);
+    setRecentViews(getRecentViews(user.id));
   }, [user]);
+
+  useEffect(() => {
+    if (!user || !profile?.interests?.length) return;
+    void fetchMemberDirectory().then((members) => {
+      setSimilarMembers(
+        findSimilarMembers(members, profile.interests, { excludeId: user.id, limit: 4 }),
+      );
+    });
+  }, [user, profile?.interests]);
 
   useEffect(() => {
     if (!user || !profile?.interests?.length) return;
@@ -119,6 +137,32 @@ function DashboardHome() {
     .map((g) => ({ ...g, progress: guideProgress[g.slug] ?? 0 }))
     .filter((g) => g.progress > 0 && g.progress < 100)
     .sort((a, b) => b.progress - a.progress)[0];
+
+  const lastViewed =
+    user && recentViews.length > 0
+      ? recentViews[0]
+      : user
+        ? getLastRecentView(user.id, ["project", "paper"])
+        : null;
+
+  const onboardingSteps = [
+    {
+      label: "Complete profile",
+      done: !!profile?.onboarding_completed && completeness.percent >= 80,
+      href: profile?.onboarding_completed ? "/profile" : "/onboarding",
+    },
+    {
+      label: "Apply or save something",
+      done: myApplications.length > 0 || savedItems.length > 0,
+      href: myApplications.length ? "/applications" : "/projects",
+    },
+    {
+      label: "Read a guide",
+      done: Object.values(guideProgress).some((p) => p >= 95),
+      href: continueGuide ? `/guides/${continueGuide.slug}` : "/guides",
+    },
+  ];
+  const checklistComplete = onboardingSteps.every((s) => s.done);
 
   const nextEvent = events
     .map((e) => ({ event: e, deadline: nearestDeadline(e.deadlines) }))
@@ -158,10 +202,7 @@ function DashboardHome() {
             {profile?.bio || "Your BUILD hub — events, guides, papers, and digests in one place."}
           </p>
         </div>
-        <Link
-          to="/profile"
-          className="panel panel-interactive rounded-sm px-4 py-3 min-w-[150px]"
-        >
+        <Link to="/profile" className="panel panel-interactive rounded-sm px-4 py-3 min-w-[150px]">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Profile
           </p>
@@ -237,6 +278,58 @@ function DashboardHome() {
                   </Link>
                 ))}
               </div>
+            </section>
+          ) : null}
+
+          {profile?.onboarding_completed && !checklistComplete ? (
+            <section className="mb-8 rounded-sm border border-accent-violet/30 bg-accent-violet/5 px-5 py-5">
+              <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-violet mb-4">
+                Get started — 3 steps to full member
+              </h2>
+              <ol className="space-y-3">
+                {onboardingSteps.map((step) => (
+                  <li key={step.label} className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`font-mono text-[10px] w-5 h-5 flex items-center justify-center rounded-sm border ${
+                          step.done
+                            ? "border-accent-green/40 bg-accent-green/10 text-accent-green"
+                            : "border-border/60 text-muted-foreground"
+                        }`}
+                      >
+                        {step.done ? "✓" : "·"}
+                      </span>
+                      <span
+                        className={
+                          step.done ? "text-muted-foreground line-through" : "text-bone text-sm"
+                        }
+                      >
+                        {step.label}
+                      </span>
+                    </div>
+                    {!step.done ? (
+                      <Link
+                        to={step.href}
+                        className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone shrink-0"
+                      >
+                        Go →
+                      </Link>
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null}
+
+          {lastViewed ? (
+            <section className="mb-8">
+              <FeedCard
+                tag="pick up where you left off"
+                title={lastViewed.title}
+                body={`Last viewed ${lastViewed.type} — continue reading.`}
+                to={lastViewed.href}
+                cta="Resume →"
+              />
             </section>
           ) : null}
 
@@ -380,6 +473,11 @@ function DashboardHome() {
                         Matches: {item.matchTags.slice(0, 3).join(", ")}
                       </p>
                     ) : null}
+                    {item.reason ? (
+                      <p className="mt-1 font-mono text-[8px] tracking-[0.1em] uppercase text-muted-foreground">
+                        {item.reason}
+                      </p>
+                    ) : null}
                   </Link>
                 ))}
               </div>
@@ -410,6 +508,40 @@ function DashboardHome() {
               </Link>
             </section>
           )}
+
+          {similarMembers.length > 0 ? (
+            <section className="section-gap">
+              <SectionHeader
+                title="People like you"
+                action={
+                  <Link
+                    to="/members"
+                    className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
+                  >
+                    Directory →
+                  </Link>
+                }
+              />
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                {similarMembers.map(({ member, overlap }) => (
+                  <Link
+                    key={member.id}
+                    to={`/members/${member.id}`}
+                    className="panel panel-interactive p-4 rounded-sm block"
+                  >
+                    <h3 className="font-display text-base text-bone">
+                      {member.full_name ?? "Member"}
+                    </h3>
+                    {overlap.length ? (
+                      <p className="mt-2 font-mono text-[8px] tracking-[0.1em] uppercase text-accent-green">
+                        Shared: {overlap.slice(0, 3).join(", ")}
+                      </p>
+                    ) : null}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {activity.length > 0 ? (
             <section className="section-gap">

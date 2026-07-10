@@ -4,11 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState } from "@/components/member/ContentCard";
 import { FilterBar } from "@/components/member/FilterBar";
+import { FilterChip } from "@/components/member/FilterChip";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { Input } from "@/components/ui/input";
-import { fetchMemberDirectory } from "@/lib/members";
+import { useAuth } from "@/lib/auth";
+import { fetchMemberDirectory, sharedInterests } from "@/lib/members";
 import type { DirectoryMember } from "@/lib/members";
 import type { MemberBackground } from "@/lib/types";
 
@@ -34,10 +36,12 @@ function MembersPage() {
 }
 
 function MembersContent() {
+  const { profile } = useAuth();
   const [members, setMembers] = useState<DirectoryMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [background, setBackground] = useState<MemberBackground | "all">("all");
+  const [sharedOnly, setSharedOnly] = useState(false);
 
   useEffect(() => {
     void fetchMemberDirectory().then((list) => {
@@ -48,8 +52,12 @@ function MembersContent() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    const myInterests = profile?.interests ?? [];
     return members.filter((m) => {
       if (background !== "all" && m.background !== background) return false;
+      if (sharedOnly && myInterests.length) {
+        if (sharedInterests(myInterests, m.interests ?? []).length === 0) return false;
+      }
       if (!q) return true;
       const hay = [m.full_name, m.bio, ...(m.interests ?? []), m.background]
         .filter(Boolean)
@@ -57,7 +65,7 @@ function MembersContent() {
         .toLowerCase();
       return hay.includes(q);
     });
-  }, [members, query, background]);
+  }, [members, query, background, sharedOnly, profile?.interests]);
 
   return (
     <MemberLayout title="Members" eyebrow="community">
@@ -73,7 +81,7 @@ function MembersContent() {
       />
 
       <FilterBar
-        className="mb-6"
+        className="mb-4"
         value={background}
         onChange={setBackground}
         options={BACKGROUNDS.map((b) => ({
@@ -82,6 +90,14 @@ function MembersContent() {
           count: b === "all" ? members.length : members.filter((m) => m.background === b).length,
         }))}
       />
+
+      {profile?.interests?.length ? (
+        <div className="mb-6">
+          <FilterChip active={sharedOnly} onClick={() => setSharedOnly((v) => !v)}>
+            Shared interests with me
+          </FilterChip>
+        </div>
+      ) : null}
 
       {loading ? (
         <ListSkeleton rows={5} />
@@ -104,6 +120,12 @@ function MembersContent() {
 }
 
 function MemberCard({ member }: { member: DirectoryMember }) {
+  const { profile } = useAuth();
+  const overlap =
+    profile?.interests?.length && member.interests?.length
+      ? sharedInterests(profile.interests, member.interests)
+      : [];
+
   return (
     <Link
       to={`/members/${member.id}`}
@@ -125,7 +147,9 @@ function MemberCard({ member }: { member: DirectoryMember }) {
       ) : null}
       {member.interests?.length ? (
         <p className="mt-3 font-mono text-[8px] tracking-[0.12em] uppercase text-accent-green line-clamp-2">
-          {member.interests.slice(0, 5).join(" · ")}
+          {overlap.length
+            ? `Shared: ${overlap.slice(0, 4).join(" · ")}`
+            : member.interests.slice(0, 5).join(" · ")}
         </p>
       ) : null}
     </Link>

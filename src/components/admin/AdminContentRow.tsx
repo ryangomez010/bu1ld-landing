@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
+import { ConfirmButton } from "@/components/member/ConfirmButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -84,9 +85,18 @@ export function AdminContentRow({
         >
           {published ? "unpublish" : "publish"}
         </button>
-        <button type="button" onClick={onDelete} className="text-accent-red hover:text-bone">
-          delete
-        </button>
+        <ConfirmButton
+          title={`Delete “${title}”?`}
+          description="This permanently removes this content item."
+          confirmLabel="Delete"
+          destructive
+          onConfirm={onDelete}
+          trigger={
+            <button type="button" className="text-accent-red hover:text-bone">
+              delete
+            </button>
+          }
+        />
       </div>
     </li>
   );
