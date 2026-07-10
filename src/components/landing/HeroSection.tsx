@@ -46,14 +46,14 @@ export function HeroSection() {
           <div className="mt-12 flex flex-wrap gap-4">
             <Link
               to="/signup"
-              className="group inline-flex items-center gap-3 px-7 py-3.5 rounded-sm bg-bone text-background font-mono text-[11px] tracking-[0.3em] uppercase hover:bg-accent-blue transition glow-bone"
+              className="group inline-flex items-center gap-3 px-7 py-3.5 rounded-sm bg-bone text-background font-mono text-[11px] tracking-[0.3em] uppercase hover:bg-accent-blue active:scale-[0.98] transition-all duration-200 glow-bone"
             >
               Become a member{" "}
-              <span className="transition-transform group-hover:translate-x-1">→</span>
+              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
             </Link>
             <a
               href="#research"
-              className="inline-flex items-center gap-3 px-7 py-3.5 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:border-bone hover:bg-bone/5 transition"
+              className="inline-flex items-center gap-3 px-7 py-3.5 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:border-bone/50 hover:bg-bone/5 active:scale-[0.98] transition-all duration-200"
             >
               Explore research
             </a>

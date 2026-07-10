@@ -1,4 +1,5 @@
 import { FilterChip } from "@/components/member/FilterChip";
+import { cn } from "@/lib/utils";
 
 export type FilterOption<T extends string> = {
   value: T;
@@ -11,14 +12,16 @@ export function FilterBar<T extends string>({
   value,
   onChange,
   className,
+  sticky,
 }: {
   options: FilterOption<T>[];
   value: T;
   onChange: (value: T) => void;
   className?: string;
+  sticky?: boolean;
 }) {
   return (
-    <div className={`flex flex-wrap gap-2 ${className ?? ""}`}>
+    <div className={cn("flex flex-wrap gap-2", sticky && "filter-bar-sticky", className)}>
       {options.map((opt) => (
         <FilterChip
           key={opt.value}

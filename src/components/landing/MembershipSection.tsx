@@ -16,7 +16,7 @@ export function MembershipSection() {
         {MEMBERSHIP_PERKS.map((perk) => (
           <div
             key={perk.id}
-            className={`p-8 bg-background/75 backdrop-blur-md ${hoverGlow[perk.color]} transition group`}
+            className={`p-8 bg-background/75 backdrop-blur-md ${hoverGlow[perk.color]} transition-all duration-300 group hover:-translate-y-px`}
           >
             <span
               className={`font-mono text-[10px] tracking-[0.3em] uppercase ${textAccent[perk.color]} flex items-center gap-2`}

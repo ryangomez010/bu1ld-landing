@@ -1,6 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CalendarPlus } from "lucide-react";
+import {
+  Bell,
+  Bookmark,
+  CalendarPlus,
+  ClipboardList,
+  FolderKanban,
+  GraduationCap,
+} from "lucide-react";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { FeedCard } from "@/components/member/FeedCard";
@@ -8,6 +15,7 @@ import { LoadingState } from "@/components/member/LoadingState";
 import { MetricCard } from "@/components/member/MetricCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { RoleBadge } from "@/components/member/RoleBadge";
+import { SectionHeader } from "@/components/member/SectionHeader";
 import { getAllGuides } from "@/content/guides";
 import { fetchAnnouncements } from "@/lib/announcements";
 import { buildActivityFeed } from "@/lib/activity";
@@ -137,7 +145,7 @@ function DashboardHome() {
 
   return (
     <MemberLayout>
-      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-10 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green">
             member hub
@@ -152,7 +160,7 @@ function DashboardHome() {
         </div>
         <Link
           to="/profile"
-          className="panel panel-interactive rounded-sm px-4 py-3 min-w-[150px] hover:-translate-y-px transition-transform"
+          className="panel panel-interactive rounded-sm px-4 py-3 min-w-[150px]"
         >
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Profile
@@ -168,47 +176,56 @@ function DashboardHome() {
         <LoadingState label="Loading hub…" />
       ) : (
         <>
-          <section className="mb-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+          <section className="section-gap grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
             <MetricCard
               label="Open projects"
               value={String(openProjects.length)}
               to="/projects"
               accent="blue"
+              icon={FolderKanban}
             />
             <MetricCard
               label="Applications"
               value={String(myApplications.length)}
               to="/applications"
               accent="green"
+              icon={ClipboardList}
             />
-            <MetricCard label="Saved" value={String(savedItems.length)} to="/saved" />
+            <MetricCard
+              label="Saved"
+              value={String(savedItems.length)}
+              to="/saved"
+              icon={Bookmark}
+            />
             <MetricCard
               label="Notifications"
               value={String(unreadNotifications)}
               to="/notifications"
               accent="red"
+              icon={Bell}
             />
             <MetricCard
               label="Guides unread"
               value={String(unreadGuides)}
               to="/guides"
               accent="violet"
+              icon={GraduationCap}
             />
           </section>
 
           {savedItems.length > 0 ? (
-            <section className="mb-8">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
-                  Recently saved
-                </h2>
-                <Link
-                  to="/saved"
-                  className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
-                >
-                  View all →
-                </Link>
-              </div>
+            <section className="section-gap">
+              <SectionHeader
+                title="Recently saved"
+                action={
+                  <Link
+                    to="/saved"
+                    className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone transition-colors"
+                  >
+                    View all →
+                  </Link>
+                }
+              />
               <div className="flex flex-wrap gap-2">
                 {savedItems.slice(0, 4).map((item) => (
                   <Link
@@ -268,10 +285,8 @@ function DashboardHome() {
           ) : null}
 
           {announcements.length > 1 ? (
-            <section className="mb-8">
-              <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-                Recent updates
-              </h2>
+            <section className="section-gap">
+              <SectionHeader title="Recent updates" />
               <div className="grid gap-px border border-border/40 bg-border/40">
                 {announcements
                   .filter((a) => a.id !== pinned?.id)
@@ -287,11 +302,9 @@ function DashboardHome() {
           ) : null}
 
           {weeklyDeadlines.length > 0 ? (
-            <section className="mb-8 rounded-sm border border-accent-blue/20 bg-accent-blue/5 px-5 py-5">
-              <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-blue mb-3">
-                This week — deadlines
-              </h2>
-              <ul className="space-y-2 text-sm">
+            <section className="section-gap">
+              <SectionHeader title="This week — deadlines" accent="blue" />
+              <ul className="rounded-sm border border-accent-blue/20 bg-accent-blue/5 px-5 py-5 space-y-2 text-sm">
                 {weeklyDeadlines.map((d) => (
                   <li
                     key={`${d.event.slug}-${d.date}`}
@@ -331,19 +344,20 @@ function DashboardHome() {
           ) : null}
 
           {forYou.length > 0 ? (
-            <section className="mb-8">
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green">
-                  For you
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setForYouKey((k) => k + 1)}
-                  className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone"
-                >
-                  Refresh feed
-                </button>
-              </div>
+            <section className="section-gap">
+              <SectionHeader
+                title="For you"
+                accent="green"
+                action={
+                  <button
+                    type="button"
+                    onClick={() => setForYouKey((k) => k + 1)}
+                    className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone transition-colors"
+                  >
+                    Refresh feed
+                  </button>
+                }
+              />
               <p className="text-sm text-muted-foreground mb-4 -mt-2">
                 Based on your interests: {profile?.interests?.slice(0, 4).join(", ")}
               </p>
@@ -352,7 +366,7 @@ function DashboardHome() {
                   <Link
                     key={`${item.type}-${item.href}`}
                     to={item.href}
-                    className="panel panel-interactive p-5 rounded-sm block hover:-translate-y-px"
+                    className="panel panel-interactive p-5 rounded-sm block"
                   >
                     <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-blue">
                       {item.type}
@@ -398,16 +412,14 @@ function DashboardHome() {
           )}
 
           {activity.length > 0 ? (
-            <section className="mb-8">
-              <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
-                Activity
-              </h2>
+            <section className="section-gap">
+              <SectionHeader title="Activity" />
               <div className="grid gap-px border border-border/40 bg-border/40">
                 {activity.slice(0, 6).map((item) => (
                   <Link
                     key={item.id}
                     to={item.href}
-                    className="bg-background/75 p-4 hover:bg-bone/5 transition block"
+                    className="bg-background/75 p-4 list-row-hover transition block"
                   >
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
@@ -514,10 +526,8 @@ function DashboardHome() {
             />
           </div>
 
-          <section className="mt-10">
-            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
-              Quick links
-            </h2>
+          <section className="mt-10 section-gap">
+            <SectionHeader title="Quick links" />
             <div className="flex flex-wrap gap-3">
               {[
                 ["/search", "Search"],

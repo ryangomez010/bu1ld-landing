@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { Inbox } from "lucide-react";
+import type { LucideIcon, ReactNode } from "react";
 
 import { safeHref } from "@/lib/urls";
 import { cn } from "@/lib/utils";
@@ -22,14 +23,14 @@ export function TagList({
             key={tag}
             to="/search"
             search={{ q: tag }}
-            className="rounded-sm border border-border/60 bg-background/50 px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground hover:text-bone hover:border-bone/30 transition"
+            className="tag"
           >
             {tag}
           </Link>
         ) : (
           <span
             key={tag}
-            className="rounded-sm border border-border/60 bg-background/50 px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground"
+            className="tag pointer-events-none"
           >
             {tag}
           </span>
@@ -55,10 +56,7 @@ export function ContentCard({
   children?: React.ReactNode;
 }) {
   return (
-    <Link
-      to={to}
-      className="panel panel-interactive group block p-6 rounded-sm hover:-translate-y-px"
-    >
+    <Link to={to} className="panel panel-interactive group block p-6 rounded-sm">
       {tag ? (
         <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-blue/80">
           {tag}
@@ -71,7 +69,7 @@ export function ContentCard({
         <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">{summary}</p>
       ) : null}
       {meta ? (
-        <p className="mt-4 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+        <p className="mt-4 font-mono text-[9px] tracking-[0.22em] uppercase text-muted-foreground/80">
           {meta}
         </p>
       ) : null}
@@ -84,15 +82,20 @@ export function EmptyState({
   title,
   body,
   action,
+  icon: Icon = Inbox,
 }: {
   title: string;
   body: string;
   action?: ReactNode;
+  icon?: LucideIcon;
 }) {
   return (
-    <div role="status" className="panel rounded-sm border-dashed p-12 text-center max-w-lg mx-auto">
-      <div className="mx-auto mb-4 h-10 w-10 rounded-sm border border-border/60 flex items-center justify-center font-mono text-xs text-muted-foreground">
-        ∅
+    <div
+      role="status"
+      className="panel rounded-sm border border-dashed border-border/50 p-12 text-center max-w-lg mx-auto"
+    >
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-sm border border-border/60 bg-bone/3">
+        <Icon className="h-5 w-5 text-muted-foreground/70" aria-hidden />
       </div>
       <h3 className="font-display text-xl text-bone">{title}</h3>
       <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">{body}</p>

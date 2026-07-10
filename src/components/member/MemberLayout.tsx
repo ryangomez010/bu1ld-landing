@@ -61,7 +61,7 @@ export function MemberLayout({
 
   const navClass = (active: boolean) =>
     cn(
-      "flex items-center gap-3 rounded-sm pl-3 pr-3 py-2.5 font-mono text-[10px] tracking-[0.2em] uppercase transition",
+      "flex items-center gap-3 rounded-sm pl-3 pr-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-200",
       active
         ? "nav-active"
         : "text-muted-foreground hover:text-bone hover:bg-bone/5 border border-transparent",
@@ -172,20 +172,20 @@ export function MemberLayout({
         Skip to content
       </a>
       <div className="relative z-10 flex min-h-screen">
-        <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border/60 bg-background/60 backdrop-blur-xl p-4">
-          <Link to="/" className="px-3 py-2 mb-4">
+        <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border/60 bg-background/50 backdrop-blur-xl p-4">
+          <Link to="/" className="px-3 py-2 mb-6 block">
             <Wordmark className="text-lg" />
           </Link>
-          <nav className="flex flex-col gap-0.5 flex-1 overflow-y-auto">
+          <nav className="flex flex-col gap-0.5 flex-1 overflow-y-auto pr-1">
             <NavLinks />
           </nav>
-          <div className="mt-auto pt-4 border-t border-border/60">
+          <div className="mt-auto pt-4 border-t border-border/50">
             <UtilityLinks />
           </div>
         </aside>
 
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+          <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65">
             <Link to="/dashboard" className="lg:hidden">
               <Wordmark />
             </Link>
@@ -244,7 +244,7 @@ export function MemberLayout({
 
           <main
             id="main-content"
-            className="flex-1 px-4 py-8 md:px-8 md:py-10 max-w-5xl w-full mx-auto pb-24 lg:pb-10"
+            className="flex-1 px-4 py-8 md:px-8 md:py-10 max-w-5xl w-full mx-auto pb-24 lg:pb-10 page-enter"
           >
             {title ? (
               <header className="mb-8 pb-6 border-b border-border/40">
@@ -256,12 +256,13 @@ export function MemberLayout({
                 <h1 className="font-display text-3xl md:text-4xl lg:text-[2.75rem] text-bone tracking-tight mt-2 leading-[1.1]">
                   {title}
                 </h1>
+                <div className="divider-grad mt-5 max-w-xs" />
               </header>
             ) : null}
             {children}
           </main>
 
-          <footer className="border-t border-border/60 px-4 py-4 pb-20 lg:pb-4 flex flex-wrap items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground bg-background/40">
+          <footer className="border-t border-border/50 px-4 py-3.5 pb-20 lg:pb-3.5 flex flex-wrap items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/80 bg-background/30 backdrop-blur-sm">
             <span className="truncate max-w-[200px]">{user?.email}</span>
             {profile?.role ? <RoleBadge role={profile.role} /> : null}
             <span className="text-bone/20">·</span>

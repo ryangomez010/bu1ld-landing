@@ -32,7 +32,7 @@ export function AdminContentRow({
   onDelete,
 }: AdminContentRowProps) {
   return (
-    <li className="border-b border-border/40 pb-3 text-bone">
+    <li className="border-b border-border/40 pb-3 text-bone admin-row-hover px-2 -mx-2 rounded-sm">
       {editing ? (
         <div className="space-y-2 mb-2">
           {editFields}

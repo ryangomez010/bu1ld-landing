@@ -15,10 +15,10 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border/60 bg-background/90 backdrop-blur-xl shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border/60 bg-background/92 backdrop-blur-xl shadow-[0_-4px_24px_-4px_rgba(0,0,0,0.5)]"
       aria-label="Primary"
     >
-      <ul className="flex items-stretch justify-around px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <ul className="flex items-stretch justify-around px-2 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {TABS.map(({ to, label, icon: Icon }) => {
           const active = pathname === to || (to !== "/dashboard" && pathname.startsWith(to));
           return (
@@ -27,17 +27,27 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
                 to={to}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex flex-col items-center gap-1 rounded-md py-2 font-mono text-[8px] tracking-[0.1em] uppercase transition",
+                  "relative flex flex-col items-center gap-1 rounded-md py-2 font-mono text-[8px] tracking-[0.1em] uppercase transition-colors duration-200",
                   active ? "text-accent-blue" : "text-muted-foreground hover:text-bone",
                 )}
               >
                 {active ? (
-                  <span className="absolute inset-x-1 top-0 h-0.5 rounded-full bg-accent-blue shadow-[0_0_8px_var(--accent-blue)]" />
+                  <span className="absolute inset-x-2 -top-px h-[2px] rounded-full bg-accent-blue shadow-[0_0_10px_var(--accent-blue)]" />
                 ) : null}
-                <Icon
-                  className={cn("h-5 w-5", active && "drop-shadow-[0_0_6px_var(--accent-blue)]")}
-                  aria-hidden
-                />
+                <span
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-md transition-colors duration-200",
+                    active && "bg-accent-blue/10",
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "h-5 w-5",
+                      active && "drop-shadow-[0_0_8px_color-mix(in_oklab,var(--accent-blue)_70%,transparent)]",
+                    )}
+                    aria-hidden
+                  />
+                </span>
                 {label}
               </Link>
             </li>
@@ -47,9 +57,11 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
           <button
             type="button"
             onClick={onMenu}
-            className="flex w-full flex-col items-center gap-1 rounded-md py-2 font-mono text-[8px] tracking-[0.1em] uppercase text-muted-foreground hover:text-bone transition"
+            className="flex w-full flex-col items-center gap-1 rounded-md py-2 font-mono text-[8px] tracking-[0.1em] uppercase text-muted-foreground hover:text-bone transition-colors duration-200"
           >
-            <Menu className="h-5 w-5" aria-hidden />
+            <span className="flex h-8 w-8 items-center justify-center rounded-md">
+              <Menu className="h-5 w-5" aria-hidden />
+            </span>
             Menu
           </button>
         </li>

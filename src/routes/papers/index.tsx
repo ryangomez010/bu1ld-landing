@@ -71,6 +71,7 @@ function PapersContent() {
       </div>
 
       <FilterBar
+        sticky
         className="mb-4"
         value={filter}
         onChange={setFilter}
@@ -118,7 +119,7 @@ function PapersContent() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-background/75 p-4">
+    <div className="stat-cell">
       <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
         {label}
       </p>

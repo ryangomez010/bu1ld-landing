@@ -95,32 +95,34 @@ function ProjectsContent() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        {(["all", "open", "active", "closed"] as const).map((f) => (
-          <FilterChip key={f} active={statusFilter === f} onClick={() => setStatusFilter(f)}>
-            {f} {f === "open" ? `(${open.length})` : ""}
-          </FilterChip>
-        ))}
-        <Link
-          to="/applications"
-          className="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"
-        >
-          My applications →
-        </Link>
-      </div>
+      <div className="sticky top-14 z-30 -mx-4 px-4 py-3 mb-6 md:static md:mx-0 md:px-0 md:py-0 bg-background/85 backdrop-blur-xl md:bg-transparent md:backdrop-blur-none border-b border-border/40 md:border-0 space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {(["all", "open", "active", "closed"] as const).map((f) => (
+            <FilterChip key={f} active={statusFilter === f} onClick={() => setStatusFilter(f)}>
+              {f} {f === "open" ? `(${open.length})` : ""}
+            </FilterChip>
+          ))}
+          <Link
+            to="/applications"
+            className="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone transition-colors"
+          >
+            My applications →
+          </Link>
+        </div>
 
-      <div className="flex flex-wrap items-center gap-2 mb-6">
-        {(["all", "research", "startup", "program"] as const).map((f) => (
-          <FilterChip key={f} active={typeFilter === f} onClick={() => setTypeFilter(f)}>
-            {f}
-          </FilterChip>
-        ))}
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Filter by skill or tag…"
-          className="ml-auto max-w-xs font-mono text-xs"
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          {(["all", "research", "startup", "program"] as const).map((f) => (
+            <FilterChip key={f} active={typeFilter === f} onClick={() => setTypeFilter(f)}>
+              {f}
+            </FilterChip>
+          ))}
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Filter by skill or tag…"
+            className="ml-auto max-w-xs font-mono text-xs"
+          />
+        </div>
       </div>
 
       {loading ? (
@@ -133,7 +135,7 @@ function ProjectsContent() {
             <Link
               key={project.id}
               to={`/projects/${project.slug}`}
-              className="panel panel-interactive group block p-6 rounded-sm hover:-translate-y-px"
+              className="panel panel-interactive group block p-6 rounded-sm"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <ProjectTypeBadge type={project.type} />

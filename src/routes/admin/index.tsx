@@ -91,7 +91,7 @@ function AdminContent() {
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-2 mb-8 border-b border-border/60 pb-4">
+      <div className="flex flex-wrap gap-1.5 mb-8 -mt-2 overflow-x-auto pb-1 border-b border-border/50">
         {(
           [
             "overview",
@@ -109,11 +109,7 @@ function AdminContent() {
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-4 py-2 rounded-sm transition ${
-              tab === t
-                ? "bg-accent-blue/10 text-bone border border-accent-blue/30 nav-active"
-                : "text-muted-foreground hover:text-bone border border-transparent"
-            }`}
+            className={`admin-tab ${tab === t ? "admin-tab-active" : "text-muted-foreground"}`}
           >
             {t}
             {t === "leads" && leadRequests.length > 0 ? ` (${leadRequests.length})` : ""}

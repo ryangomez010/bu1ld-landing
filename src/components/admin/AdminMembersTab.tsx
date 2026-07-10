@@ -59,7 +59,7 @@ export function AdminMembersTab({ members, onSaved }: { members: Profile[]; onSa
           </thead>
           <tbody>
             {filtered.map((m) => (
-              <tr key={m.id} className="border-b border-border/40 last:border-0">
+              <tr key={m.id} className="border-b border-border/40 last:border-0 admin-row-hover">
                 <td className="p-3 text-bone">{m.full_name || "—"}</td>
                 <td className="p-3 font-mono text-[10px] uppercase">{m.role}</td>
                 <td className="p-3 text-muted-foreground">

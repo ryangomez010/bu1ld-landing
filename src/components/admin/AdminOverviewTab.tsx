@@ -26,7 +26,7 @@ export function AdminOverviewTab({
       </p>
       <div className="grid gap-px bg-border/40 border border-border/40 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
-          <div key={c.label} className="bg-background/75 p-5">
+          <div key={c.label} className="stat-cell">
             <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
               {c.label}
             </p>

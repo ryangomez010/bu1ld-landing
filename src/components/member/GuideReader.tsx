@@ -100,15 +100,17 @@ export function GuideReader({
         {Math.round(progress)}% read
       </div>
 
-      <article className="max-w-2xl pb-24">
+      <article className="max-w-2xl pb-24 detail-header">
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
           {guide.readMinutes} min read · reference guide
         </p>
-        <h1 className="font-display text-4xl text-bone mt-4 tracking-tight">{guide.title}</h1>
-        <div className="mt-3">
+        <h1 className="font-display text-4xl text-bone mt-4 tracking-tight leading-[1.1]">
+          {guide.title}
+        </h1>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <SaveButton itemType="guide" itemSlug={guide.slug} itemTitle={guide.title} />
         </div>
-        <p className="mt-4 text-lg text-muted-foreground">{guide.description}</p>
+        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">{guide.description}</p>
 
         {toc.length > 1 ? (
           <nav className="mt-6 rounded-sm border border-border/60 bg-background/50 p-4">
@@ -131,7 +133,7 @@ export function GuideReader({
         ) : null}
 
         <div className="divider-grad my-8" />
-        <div className="space-y-4">
+        <div className="prose-build space-y-4">
           {guide.sections.map((section, i) => (
             <GuideSectionView key={i} section={section} />
           ))}
