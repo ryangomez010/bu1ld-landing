@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { GuideReader } from "@/components/member/GuideReader";
+import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { PageBackLink } from "@/components/member/PageBackLink";
+import { ShareButton } from "@/components/member/ShareButton";
 import { getGuide } from "@/content/guides";
 import { useAuth } from "@/lib/auth";
 import { getReadingProgress } from "@/lib/reading-progress";
@@ -48,21 +51,17 @@ function GuideDetail() {
   if (!user || !ready) {
     return (
       <MemberLayout>
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-          Loading…
-        </p>
+        <LoadingState />
       </MemberLayout>
     );
   }
 
   return (
     <MemberLayout>
-      <Link
-        to="/guides"
-        className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone mb-6 inline-block"
-      >
-        ← Guides
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <PageBackLink to="/guides" label="Guides" />
+        <ShareButton title={guide.title} />
+      </div>
       <GuideReader guide={guide} userId={user.id} initialProgress={initialProgress} />
     </MemberLayout>
   );

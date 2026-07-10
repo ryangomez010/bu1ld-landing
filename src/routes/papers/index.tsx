@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCard";
+import { FilterBar } from "@/components/member/FilterBar";
+import { FilterChip } from "@/components/member/FilterChip";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Input } from "@/components/ui/input";
@@ -68,60 +70,34 @@ function PapersContent() {
         <Stat label="Interesting now" value={String(recent)} />
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-4">
-        {(
+      <FilterBar
+        className="mb-4"
+        value={filter}
+        onChange={setFilter}
+        options={(
           [
-            ["all", "All"],
-            ["classic", "Classics"],
-            ["recent", "Interesting now"],
+            ["all", "All", papers.length],
+            ["classic", "Classics", classics],
+            ["recent", "Interesting now", recent],
           ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setFilter(key)}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 rounded-sm border transition ${
-              filter === key
-                ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search papers…"
-          className="ml-auto max-w-xs font-mono text-xs"
-        />
-      </div>
+        ).map(([value, label, count]) => ({ value, label, count }))}
+      />
+
+      <Input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search papers…"
+        className="mb-4 max-w-xs font-mono text-xs"
+      />
 
       <div className="flex flex-wrap gap-2 mb-8">
-        <button
-          type="button"
-          onClick={() => setTag(null)}
-          className={`font-mono text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-sm border transition ${
-            !tag
-              ? "border-accent-green/40 text-accent-green"
-              : "border-border/60 text-muted-foreground hover:text-bone"
-          }`}
-        >
+        <FilterChip active={!tag} onClick={() => setTag(null)}>
           All tags
-        </button>
+        </FilterChip>
         {allTags.map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setTag(t === tag ? null : t)}
-            className={`font-mono text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-sm border transition ${
-              tag === t
-                ? "border-accent-green/40 text-accent-green"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
+          <FilterChip key={t} active={tag === t} onClick={() => setTag(t === tag ? null : t)}>
             {t}
-          </button>
+          </FilterChip>
         ))}
       </div>
 

@@ -25,6 +25,7 @@ import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as PapersIndexRouteImport } from './routes/papers/index'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
 import { Route as NewsletterIndexRouteImport } from './routes/newsletter/index'
+import { Route as MembersIndexRouteImport } from './routes/members/index'
 import { Route as JobsIndexRouteImport } from './routes/jobs/index'
 import { Route as GuidesIndexRouteImport } from './routes/guides/index'
 import { Route as EventsIndexRouteImport } from './routes/events/index'
@@ -34,6 +35,7 @@ import { Route as ProjectsNewRouteImport } from './routes/projects/new'
 import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
 import { Route as PapersSlugRouteImport } from './routes/papers/$slug'
 import { Route as NewsletterSlugRouteImport } from './routes/newsletter/$slug'
+import { Route as MembersIdRouteImport } from './routes/members/$id'
 import { Route as LeadApplyRouteImport } from './routes/lead/apply'
 import { Route as JobsSlugRouteImport } from './routes/jobs/$slug'
 import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
@@ -123,6 +125,11 @@ const NewsletterIndexRoute = NewsletterIndexRouteImport.update({
   path: '/newsletter/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MembersIndexRoute = MembersIndexRouteImport.update({
+  id: '/members/',
+  path: '/members/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JobsIndexRoute = JobsIndexRouteImport.update({
   id: '/jobs/',
   path: '/jobs/',
@@ -166,6 +173,11 @@ const PapersSlugRoute = PapersSlugRouteImport.update({
 const NewsletterSlugRoute = NewsletterSlugRouteImport.update({
   id: '/newsletter/$slug',
   path: '/newsletter/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembersIdRoute = MembersIdRouteImport.update({
+  id: '/members/$id',
+  path: '/members/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeadApplyRoute = LeadApplyRouteImport.update({
@@ -225,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
+  '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -234,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/events/': typeof EventsIndexRoute
   '/guides/': typeof GuidesIndexRoute
   '/jobs/': typeof JobsIndexRoute
+  '/members/': typeof MembersIndexRoute
   '/newsletter/': typeof NewsletterIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/papers/': typeof PapersIndexRoute
@@ -260,6 +274,7 @@ export interface FileRoutesByTo {
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
+  '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -269,6 +284,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsIndexRoute
   '/guides': typeof GuidesIndexRoute
   '/jobs': typeof JobsIndexRoute
+  '/members': typeof MembersIndexRoute
   '/newsletter': typeof NewsletterIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/papers': typeof PapersIndexRoute
@@ -296,6 +312,7 @@ export interface FileRoutesById {
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
+  '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -305,6 +322,7 @@ export interface FileRoutesById {
   '/events/': typeof EventsIndexRoute
   '/guides/': typeof GuidesIndexRoute
   '/jobs/': typeof JobsIndexRoute
+  '/members/': typeof MembersIndexRoute
   '/newsletter/': typeof NewsletterIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/papers/': typeof PapersIndexRoute
@@ -333,6 +351,7 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/jobs/$slug'
     | '/lead/apply'
+    | '/members/$id'
     | '/newsletter/$slug'
     | '/papers/$slug'
     | '/projects/$slug'
@@ -342,6 +361,7 @@ export interface FileRouteTypes {
     | '/events/'
     | '/guides/'
     | '/jobs/'
+    | '/members/'
     | '/newsletter/'
     | '/notifications/'
     | '/papers/'
@@ -368,6 +388,7 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/jobs/$slug'
     | '/lead/apply'
+    | '/members/$id'
     | '/newsletter/$slug'
     | '/papers/$slug'
     | '/projects/$slug'
@@ -377,6 +398,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/guides'
     | '/jobs'
+    | '/members'
     | '/newsletter'
     | '/notifications'
     | '/papers'
@@ -403,6 +425,7 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/jobs/$slug'
     | '/lead/apply'
+    | '/members/$id'
     | '/newsletter/$slug'
     | '/papers/$slug'
     | '/projects/$slug'
@@ -412,6 +435,7 @@ export interface FileRouteTypes {
     | '/events/'
     | '/guides/'
     | '/jobs/'
+    | '/members/'
     | '/newsletter/'
     | '/notifications/'
     | '/papers/'
@@ -439,6 +463,7 @@ export interface RootRouteChildren {
   GuidesSlugRoute: typeof GuidesSlugRoute
   JobsSlugRoute: typeof JobsSlugRoute
   LeadApplyRoute: typeof LeadApplyRoute
+  MembersIdRoute: typeof MembersIdRoute
   NewsletterSlugRoute: typeof NewsletterSlugRoute
   PapersSlugRoute: typeof PapersSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
@@ -448,6 +473,7 @@ export interface RootRouteChildren {
   EventsIndexRoute: typeof EventsIndexRoute
   GuidesIndexRoute: typeof GuidesIndexRoute
   JobsIndexRoute: typeof JobsIndexRoute
+  MembersIndexRoute: typeof MembersIndexRoute
   NewsletterIndexRoute: typeof NewsletterIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   PapersIndexRoute: typeof PapersIndexRoute
@@ -573,6 +599,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsletterIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/members/': {
+      id: '/members/'
+      path: '/members'
+      fullPath: '/members/'
+      preLoaderRoute: typeof MembersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/jobs/': {
       id: '/jobs/'
       path: '/jobs'
@@ -634,6 +667,13 @@ declare module '@tanstack/react-router' {
       path: '/newsletter/$slug'
       fullPath: '/newsletter/$slug'
       preLoaderRoute: typeof NewsletterSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/members/$id': {
+      id: '/members/$id'
+      path: '/members/$id'
+      fullPath: '/members/$id'
+      preLoaderRoute: typeof MembersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lead/apply': {
@@ -711,6 +751,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuidesSlugRoute: GuidesSlugRoute,
   JobsSlugRoute: JobsSlugRoute,
   LeadApplyRoute: LeadApplyRoute,
+  MembersIdRoute: MembersIdRoute,
   NewsletterSlugRoute: NewsletterSlugRoute,
   PapersSlugRoute: PapersSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
@@ -720,6 +761,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsIndexRoute: EventsIndexRoute,
   GuidesIndexRoute: GuidesIndexRoute,
   JobsIndexRoute: JobsIndexRoute,
+  MembersIndexRoute: MembersIndexRoute,
   NewsletterIndexRoute: NewsletterIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
   PapersIndexRoute: PapersIndexRoute,

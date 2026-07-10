@@ -34,9 +34,7 @@ export async function fetchMemberDirectory(): Promise<DirectoryMember[]> {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select(
-      "id, full_name, bio, background, interests, github_url, linkedin_url, role, created_at",
-    )
+    .select("id, full_name, bio, background, interests, github_url, linkedin_url, role, created_at")
     .eq("onboarding_completed", true)
     .order("created_at", { ascending: false })
     .limit(200);
@@ -51,9 +49,7 @@ export async function fetchDirectoryMember(id: string): Promise<DirectoryMember 
 
   const { data } = await supabase
     .from("profiles")
-    .select(
-      "id, full_name, bio, background, interests, github_url, linkedin_url, role, created_at",
-    )
+    .select("id, full_name, bio, background, interests, github_url, linkedin_url, role, created_at")
     .eq("id", id)
     .eq("onboarding_completed", true)
     .maybeSingle();

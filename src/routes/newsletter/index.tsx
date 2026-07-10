@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { ContentCard, EmptyState } from "@/components/member/ContentCard";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { fetchNewsletters } from "@/lib/content";
 import { formatDate } from "@/lib/date";
@@ -22,9 +23,13 @@ function NewsletterPage() {
 
 function NewsletterContent() {
   const [issues, setIssues] = useState<NewsletterIssue[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void fetchNewsletters().then(setIssues);
+    void fetchNewsletters().then((data) => {
+      setIssues(data);
+      setLoading(false);
+    });
   }, []);
 
   return (
@@ -33,7 +38,9 @@ function NewsletterContent() {
         Archived BUILD digests — community updates, paper picks, event reminders, and startup
         spotlights.
       </p>
-      {issues.length === 0 ? (
+      {loading ? (
+        <ListSkeleton rows={4} />
+      ) : issues.length === 0 ? (
         <EmptyState
           title="No issues yet"
           body="Newsletter digests will appear here once an issue is published."

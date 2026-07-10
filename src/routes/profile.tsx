@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { TagList } from "@/components/member/ContentCard";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { Button } from "@/components/ui/button";
@@ -74,6 +76,14 @@ function ProfileEditor() {
 
   const completeness = profileCompleteness(profile);
 
+  if (user && !profile) {
+    return (
+      <MemberLayout title="Profile" eyebrow="member settings">
+        <ListSkeleton rows={4} />
+      </MemberLayout>
+    );
+  }
+
   const toggleInterest = (interest: string) => {
     setInterests((prev) =>
       prev.includes(interest) ? prev.filter((i) => i !== interest) : [...prev, interest],
@@ -118,7 +128,7 @@ function ProfileEditor() {
 
   return (
     <MemberLayout title="Profile" eyebrow="member settings">
-      <div className="mb-8 -mt-4 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3">
+      <div className="mb-8 -mt-4 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-background/75 p-4">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Completeness
@@ -145,6 +155,21 @@ function ProfileEditor() {
         </div>
         <div className="bg-background/75 p-4">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+            Directory
+          </p>
+          {user && profile?.onboarding_completed ? (
+            <Link
+              to={`/members/${user.id}`}
+              className="mt-2 inline-block font-mono text-[10px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
+            >
+              View public profile →
+            </Link>
+          ) : (
+            <p className="mt-2 text-sm text-muted-foreground">Complete onboarding to appear</p>
+          )}
+        </div>
+        <div className="bg-background/75 p-4">
+          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Missing
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -152,6 +177,38 @@ function ProfileEditor() {
           </p>
         </div>
       </div>
+
+      <section className="mb-8 max-w-xl rounded-sm border border-border/60 bg-background/70 p-5">
+        <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
+          Public member card preview
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-display text-xl text-bone">{fullName || "Your name"}</h3>
+          {profile?.role ? <RoleBadge role={profile.role} /> : null}
+          {background ? (
+            <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground capitalize border border-border/60 px-2 py-1 rounded-sm">
+              {background}
+            </span>
+          ) : null}
+        </div>
+        {bio ? (
+          <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">{bio}</p>
+        ) : (
+          <p className="mt-3 text-sm text-muted-foreground italic">
+            Add a bio to stand out in the directory.
+          </p>
+        )}
+        {interests.length ? <TagList tags={interests.slice(0, 6)} className="mt-4" /> : null}
+        {user ? (
+          <Link
+            to="/members/$id"
+            params={{ id: user.id }}
+            className="mt-4 inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
+          >
+            View public profile →
+          </Link>
+        ) : null}
+      </section>
 
       <form onSubmit={onSubmit} className="max-w-xl space-y-5">
         <div className="space-y-2">

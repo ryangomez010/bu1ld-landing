@@ -36,17 +36,48 @@ function OnboardingPage() {
   );
 }
 
+const ONBOARDING_DRAFT_KEY = "build:onboarding-draft";
+
+type OnboardingDraft = {
+  step: number;
+  fullName: string;
+  bio: string;
+  background: MemberBackground;
+  interests: string[];
+  githubUrl: string;
+  linkedinUrl: string;
+  timezone: string;
+};
+
+function loadDraft(): Partial<OnboardingDraft> {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(localStorage.getItem(ONBOARDING_DRAFT_KEY) ?? "{}") as OnboardingDraft;
+  } catch {
+    return {};
+  }
+}
+
+function saveDraft(draft: OnboardingDraft) {
+  try {
+    localStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    /* ignore */
+  }
+}
+
 function OnboardingForm() {
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
-  const [fullName, setFullName] = useState("");
-  const [bio, setBio] = useState("");
-  const [background, setBackground] = useState<MemberBackground>("engineer");
-  const [interests, setInterests] = useState<string[]>([]);
-  const [githubUrl, setGithubUrl] = useState("");
-  const [linkedinUrl, setLinkedinUrl] = useState("");
-  const [timezone, setTimezone] = useState("");
+  const draft = loadDraft();
+  const [step, setStep] = useState(draft.step ?? 0);
+  const [fullName, setFullName] = useState(draft.fullName ?? "");
+  const [bio, setBio] = useState(draft.bio ?? "");
+  const [background, setBackground] = useState<MemberBackground>(draft.background ?? "engineer");
+  const [interests, setInterests] = useState<string[]>(draft.interests ?? []);
+  const [githubUrl, setGithubUrl] = useState(draft.githubUrl ?? "");
+  const [linkedinUrl, setLinkedinUrl] = useState(draft.linkedinUrl ?? "");
+  const [timezone, setTimezone] = useState(draft.timezone ?? "");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -63,6 +94,19 @@ function OnboardingForm() {
       setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
     }
   }, [profile, user, fullName, timezone]);
+
+  useEffect(() => {
+    saveDraft({
+      step,
+      fullName,
+      bio,
+      background,
+      interests,
+      githubUrl,
+      linkedinUrl,
+      timezone,
+    });
+  }, [step, fullName, bio, background, interests, githubUrl, linkedinUrl, timezone]);
 
   const toggleInterest = (interest: string) => {
     setInterests((prev) =>
@@ -97,6 +141,11 @@ function OnboardingForm() {
         void sendEmail({ to: user.email, ...mail });
       }
       await refreshProfile();
+      try {
+        localStorage.removeItem(ONBOARDING_DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
       toast.success("Profile complete. Welcome to The Bu1ld.");
       void navigate({ to: "/dashboard" });
     } catch (err) {
@@ -127,6 +176,26 @@ function OnboardingForm() {
         ))}
       </div>
 
+      <div className="mb-6 rounded-sm border border-border/60 bg-background/60 p-4">
+        <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
+          Profile preview
+        </p>
+        <p className="font-display text-lg text-bone">{fullName.trim() || "Your name"}</p>
+        {background ? (
+          <p className="mt-1 font-mono text-[9px] tracking-[0.15em] uppercase text-accent-green capitalize">
+            {background}
+          </p>
+        ) : null}
+        <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
+          {bio.trim() || "Your bio will appear here for project leads when you apply."}
+        </p>
+        {interests.length > 0 ? (
+          <p className="mt-2 font-mono text-[8px] tracking-[0.12em] uppercase text-muted-foreground">
+            {interests.slice(0, 5).join(" · ")}
+          </p>
+        ) : null}
+      </div>
+
       <form onSubmit={onSubmit} className="space-y-5">
         {step === 0 ? (
           <>
@@ -135,9 +204,13 @@ function OnboardingForm() {
               <Input
                 id="fullName"
                 required
+                minLength={2}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
+              {fullName.trim().length > 0 && fullName.trim().length < 2 ? (
+                <p className="text-xs text-accent-red">Name should be at least 2 characters.</p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="bio">Bio</Label>
@@ -267,7 +340,7 @@ function OnboardingForm() {
       </form>
       <p className="mt-4 text-center text-xs text-muted-foreground">
         <Link to="/dashboard" className="hover:text-bone transition">
-          Skip for now →
+          Skip for now — explore the hub first →
         </Link>
       </p>
     </AuthLayout>

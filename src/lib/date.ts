@@ -29,6 +29,13 @@ export function nearestDeadline(
   return upcoming[0] ?? null;
 }
 
+/** True if the ISO timestamp falls within the last N days (default 7). */
+export function isWithinDays(iso: string, days = 7): boolean {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return false;
+  return Date.now() - d.getTime() <= days * 24 * 60 * 60 * 1000;
+}
+
 export function relativeTime(iso: string): string {
   const d = new Date(iso);
   const diff = Date.now() - d.getTime();

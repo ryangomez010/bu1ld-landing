@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
+import { RequireProjectLead } from "@/components/auth/RequireProjectLead";
 import { TagList } from "@/components/member/ContentCard";
 import { FilterBar } from "@/components/member/FilterBar";
 import { ListSkeleton } from "@/components/member/LoadingState";
@@ -15,7 +16,15 @@ import {
   fetchProjectBySlug,
   updateApplicationStatus,
 } from "@/lib/projects";
+import { relativeTime } from "@/lib/date";
 import type { ApplicationStatus, Project, ProjectApplication } from "@/lib/types";
+
+const STATUS_HELP: Record<ApplicationStatus, string> = {
+  pending: "Awaiting your review — accept, waitlist, or decline.",
+  accepted: "On the team — applicant can see accepted status.",
+  waitlist: "Strong fit but not joining yet — keep for a later round.",
+  declined: "Not selected this round — applicant was notified in-app.",
+};
 
 export const Route = createFileRoute("/projects/manage/$slug")({
   component: ManageProjectPage,
@@ -127,6 +136,10 @@ function ManageProject() {
         }))}
       />
 
+      {statusFilter !== "all" ? (
+        <p className="mb-4 text-sm text-muted-foreground">{STATUS_HELP[statusFilter]}</p>
+      ) : null}
+
       <div className="space-y-4">
         {visible.length === 0 ? (
           <p className="text-muted-foreground text-sm">No applications in this filter.</p>
@@ -146,6 +159,13 @@ function ManageProject() {
                 </div>
                 <ApplicationStatusBadge status={app.status} />
               </div>
+              <p className="mt-2 text-xs text-muted-foreground">{STATUS_HELP[app.status]}</p>
+              <p className="mt-1 font-mono text-[9px] tracking-[0.15em] uppercase text-bone/40">
+                Applied {relativeTime(app.created_at)}
+                {app.updated_at !== app.created_at
+                  ? ` · Updated ${relativeTime(app.updated_at)}`
+                  : ""}
+              </p>
 
               {app.applicant_bio ? (
                 <p className="mt-3 text-sm text-muted-foreground">{app.applicant_bio}</p>

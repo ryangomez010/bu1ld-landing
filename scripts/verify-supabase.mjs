@@ -50,6 +50,7 @@ const TABLES = [
   "notifications",
   "saved_items",
   "announcements",
+  "project_updates",
 ];
 
 const supabase = createClient(url, key);

@@ -65,25 +65,26 @@ function NotificationsContent() {
 
   return (
     <MemberLayout title="Notifications" eyebrow="updates">
-      <FilterBar
-        className="mb-6 -mt-2"
-        value={filter}
-        onChange={setFilter}
-        options={[
-          { value: "all" as const, label: "all", count: items.length },
-          { value: "unread" as const, label: "unread", count: unread },
-        ]}
-      />
-      {unread > 0 ? (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => void markAllRead(user!.id).then(refresh)}
-          className="-mt-4 mb-6 ml-auto block font-mono text-[9px] tracking-[0.15em] uppercase"
-        >
-          Mark all read
-        </Button>
-      ) : null}
+      <div className="mb-6 -mt-2 flex flex-wrap items-center justify-between gap-3">
+        <FilterBar
+          value={filter}
+          onChange={setFilter}
+          options={[
+            { value: "all" as const, label: "all", count: items.length },
+            { value: "unread" as const, label: "unread", count: unread },
+          ]}
+        />
+        {unread > 0 ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => void markAllRead(user!.id).then(refresh)}
+            className="font-mono text-[9px] tracking-[0.15em] uppercase shrink-0"
+          >
+            Mark all read
+          </Button>
+        ) : null}
+      </div>
 
       {loading ? (
         <LoadingState />

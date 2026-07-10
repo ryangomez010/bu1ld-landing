@@ -4,7 +4,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { relativeTime } from "@/lib/date";
-import { createProjectUpdate, fetchProjectUpdates, type ProjectUpdate } from "@/lib/project-updates";
+import {
+  createProjectUpdate,
+  fetchProjectUpdates,
+  type ProjectUpdate,
+} from "@/lib/project-updates";
 
 export function ProjectUpdatesSection({
   projectId,
@@ -75,10 +79,7 @@ export function ProjectUpdatesSection({
       ) : (
         <div className="space-y-2">
           {updates.map((u) => (
-            <article
-              key={u.id}
-              className="rounded-sm border border-border/60 bg-background/70 p-4"
-            >
+            <article key={u.id} className="rounded-sm border border-border/60 bg-background/70 p-4">
               <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                 {u.author_name ?? "Lead"} · {relativeTime(u.created_at)}
               </p>

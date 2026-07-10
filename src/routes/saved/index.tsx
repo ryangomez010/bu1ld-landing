@@ -107,11 +107,13 @@ function SavedContent() {
             <FilterBar
               value={sort}
               onChange={setSort}
-              options={([
-                ["newest", "Newest"],
-                ["oldest", "Oldest"],
-                ["type", "By type"],
-              ] as const).map(([value, label]) => ({ value, label }))}
+              options={(
+                [
+                  ["newest", "Newest"],
+                  ["oldest", "Oldest"],
+                  ["type", "By type"],
+                ] as const
+              ).map(([value, label]) => ({ value, label }))}
             />
             {filtered.length > 0 ? (
               <Button
@@ -129,16 +131,13 @@ function SavedContent() {
             className="mb-6"
             value={filter}
             onChange={setFilter}
-            options={(["all", "project", "guide", "paper", "event", "job", "newsletter"] as const).map(
-              (f) => ({
-                value: f,
-                label: f === "all" ? "All" : TYPE_LABELS[f],
-                count:
-                  f === "all"
-                    ? items.length
-                    : items.filter((i) => i.item_type === f).length,
-              }),
-            )}
+            options={(
+              ["all", "project", "guide", "paper", "event", "job", "newsletter"] as const
+            ).map((f) => ({
+              value: f,
+              label: f === "all" ? "All" : TYPE_LABELS[f],
+              count: f === "all" ? items.length : items.filter((i) => i.item_type === f).length,
+            }))}
           />
 
           {filtered.length === 0 ? (

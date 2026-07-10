@@ -133,6 +133,15 @@ export type Project = {
   updated_at: string;
 };
 
+export type ProjectUpdate = {
+  id: string;
+  project_id: string;
+  author_id: string;
+  author_name?: string;
+  body: string;
+  created_at: string;
+};
+
 export type ProjectApplication = {
   id: string;
   project_id: string;

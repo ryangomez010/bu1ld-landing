@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import { CalendarPlus, ExternalLink } from "lucide-react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
-import { SaveButton } from "@/components/member/SaveButton";
 import { TagList } from "@/components/member/ContentCard";
+import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { PageBackLink } from "@/components/member/PageBackLink";
+import { SaveButton } from "@/components/member/SaveButton";
+import { ShareButton } from "@/components/member/ShareButton";
 import { Button } from "@/components/ui/button";
 import { buildIcsEvent, downloadIcs } from "@/lib/calendar";
 import { fetchEventBySlug, fetchEvents, relatedEvents } from "@/lib/content";
@@ -41,9 +44,7 @@ function EventDetail() {
   if (loading) {
     return (
       <MemberLayout>
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-          Loading…
-        </p>
+        <LoadingState />
       </MemberLayout>
     );
   }
@@ -60,19 +61,15 @@ function EventDetail() {
 
   return (
     <MemberLayout>
-      <Link
-        to="/events"
-        className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone"
-      >
-        ← Events
-      </Link>
-      <div className="mt-6">
+      <PageBackLink to="/events" label="Events" />
+      <div className="mt-2">
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-blue">
           conference / event
         </p>
         <h1 className="font-display text-4xl text-bone mt-3 tracking-tight">{event.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <SaveButton itemType="event" itemSlug={event.slug} itemTitle={event.title} />
+          <ShareButton title={event.title} />
           {event.start_date ? (
             <Button
               type="button"

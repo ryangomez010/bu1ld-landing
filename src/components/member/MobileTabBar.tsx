@@ -1,13 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ClipboardList, FolderKanban, Home, Menu, Search } from "lucide-react";
+import { FolderKanban, Home, Menu, Search, Users } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/projects", label: "Projects", icon: FolderKanban },
+  { to: "/members", label: "Members", icon: Users },
   { to: "/search", label: "Search", icon: Search },
-  { to: "/applications", label: "Apps", icon: ClipboardList },
 ] as const;
 
 export function MobileTabBar({ onMenu }: { onMenu: () => void }) {

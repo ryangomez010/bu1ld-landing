@@ -1,15 +1,9 @@
 import { readUserJson, writeUserJson } from "@/lib/storage";
-import { clampText, LIMITS } from "@/lib/security";
+import { clampText } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
+import type { ProjectUpdate } from "@/lib/types";
 
-export type ProjectUpdate = {
-  id: string;
-  project_id: string;
-  author_id: string;
-  author_name?: string;
-  body: string;
-  created_at: string;
-};
+export type { ProjectUpdate };
 
 const STORAGE = "build:project-updates";
 

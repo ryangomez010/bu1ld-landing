@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState, TagList } from "@/components/member/ContentCard";
+import { FilterBar } from "@/components/member/FilterBar";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { JobSourceBadge } from "@/components/member/ProjectBadges";
+import { isWithinDays } from "@/lib/date";
 import { fetchJobs } from "@/lib/projects";
 import type { Job } from "@/lib/types";
 
@@ -24,7 +26,7 @@ function JobsPage() {
 function JobsContent() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "internal" | "external">("all");
+  const [filter, setFilter] = useState<"all" | "internal" | "external" | "new">("all");
 
   useEffect(() => {
     void fetchJobs().then((data) => {
@@ -33,7 +35,13 @@ function JobsContent() {
     });
   }, []);
 
-  const filtered = filter === "all" ? jobs : jobs.filter((j) => j.source === filter);
+  const filtered = jobs.filter((j) => {
+    if (filter === "new") return isWithinDays(j.created_at);
+    if (filter === "all") return true;
+    return j.source === filter;
+  });
+
+  const newCount = jobs.filter((j) => isWithinDays(j.created_at)).length;
 
   return (
     <MemberLayout title="Jobs" eyebrow="careers">
@@ -42,32 +50,32 @@ function JobsContent() {
         direct contact; external roles link out.
       </p>
 
-      <div className="flex gap-2 mb-8">
-        {(["all", "internal", "external"] as const).map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setFilter(f)}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-4 py-2 rounded-sm border transition ${
-              filter === f
-                ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
-            {f === "all" ? "All" : f === "internal" ? "BUILD" : "External"}
-          </button>
-        ))}
-      </div>
+      <FilterBar
+        className="mb-8"
+        value={filter}
+        onChange={setFilter}
+        options={[
+          { value: "all" as const, label: "All", count: jobs.length },
+          { value: "new" as const, label: "New this week", count: newCount },
+          {
+            value: "internal" as const,
+            label: "BUILD",
+            count: jobs.filter((j) => j.source === "internal").length,
+          },
+          {
+            value: "external" as const,
+            label: "External",
+            count: jobs.filter((j) => j.source === "external").length,
+          },
+        ]}
+      />
 
       <div className="mb-8 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3">
         <StatCell label="All listings" value={String(jobs.length)} />
+        <StatCell label="New this week" value={String(newCount)} />
         <StatCell
           label="BUILD roles"
           value={String(jobs.filter((j) => j.source === "internal").length)}
-        />
-        <StatCell
-          label="External roles"
-          value={String(jobs.filter((j) => j.source === "external").length)}
         />
       </div>
 
@@ -85,6 +93,11 @@ function JobsContent() {
             >
               <div className="flex flex-wrap items-center gap-2">
                 <JobSourceBadge source={job.source} />
+                {isWithinDays(job.created_at) ? (
+                  <span className="font-mono text-[8px] tracking-[0.2em] uppercase text-accent-green border border-accent-green/30 px-2 py-0.5 rounded-sm">
+                    New this week
+                  </span>
+                ) : null}
                 {job.employment_type ? (
                   <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                     {job.employment_type}

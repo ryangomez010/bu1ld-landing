@@ -60,12 +60,14 @@ function GuidesContent() {
         className="mb-4"
         value={filter}
         onChange={setFilter}
-        options={([
-          ["all", "All"],
-          ["continue", "Continue"],
-          ["not_started", "Not started"],
-          ["done", "Finished"],
-        ] as const).map(([value, label]) => ({ value, label }))}
+        options={(
+          [
+            ["all", "All"],
+            ["continue", "Continue"],
+            ["not_started", "Not started"],
+            ["done", "Finished"],
+          ] as const
+        ).map(([value, label]) => ({ value, label }))}
       />
 
       <div className="flex flex-wrap gap-2 mb-8">

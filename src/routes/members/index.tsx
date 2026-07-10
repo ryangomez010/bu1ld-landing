@@ -51,12 +51,7 @@ function MembersContent() {
     return members.filter((m) => {
       if (background !== "all" && m.background !== background) return false;
       if (!q) return true;
-      const hay = [
-        m.full_name,
-        m.bio,
-        ...(m.interests ?? []),
-        m.background,
-      ]
+      const hay = [m.full_name, m.bio, ...(m.interests ?? []), m.background]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -124,7 +119,9 @@ function MemberCard({ member }: { member: DirectoryMember }) {
         </p>
       ) : null}
       {member.bio ? (
-        <p className="mt-3 text-sm text-muted-foreground line-clamp-3 leading-relaxed">{member.bio}</p>
+        <p className="mt-3 text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+          {member.bio}
+        </p>
       ) : null}
       {member.interests?.length ? (
         <p className="mt-3 font-mono text-[8px] tracking-[0.12em] uppercase text-accent-green line-clamp-2">

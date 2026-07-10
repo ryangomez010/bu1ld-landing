@@ -11,6 +11,7 @@ import type {
   Profile,
   Project,
   ProjectApplication,
+  ProjectUpdate,
   ReadingProgress,
   SavedItem,
 } from "@/lib/types";
@@ -63,6 +64,15 @@ export type Database = {
         Insert: { project_id: string; user_id: string; pitch: string; status?: string };
         Update: Partial<ProjectApplication>;
       };
+      project_updates: {
+        Row: ProjectUpdate;
+        Insert: {
+          project_id: string;
+          author_id: string;
+          body: string;
+        };
+        Update: Partial<ProjectUpdate>;
+      };
       lead_verification_requests: {
         Row: LeadVerificationRequest;
         Insert: { user_id: string; message: string };
@@ -109,6 +119,21 @@ export type Database = {
           published?: boolean;
         };
         Update: Partial<Announcement>;
+      };
+      project_updates: {
+        Row: {
+          id: string;
+          project_id: string;
+          author_id: string | null;
+          body: string;
+          created_at: string;
+        };
+        Insert: {
+          project_id: string;
+          author_id: string;
+          body: string;
+        };
+        Update: { body?: string };
       };
     };
   };

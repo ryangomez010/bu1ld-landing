@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Cinematic intro: a swarm of digital dots converges from chaos and resolves
@@ -14,18 +14,18 @@ export function GenesisIntro({ onDone }: { onDone: () => void }) {
     reduceMotion ? "done" : "running",
   );
 
-  const finish = () => {
+  const finish = useCallback(() => {
     try {
       localStorage.setItem(INTRO_KEY, "1");
     } catch {
       /* ignore */
     }
     onDone();
-  };
+  }, [onDone]);
 
   useEffect(() => {
     if (reduceMotion) finish();
-  }, [onDone, reduceMotion]);
+  }, [finish, reduceMotion]);
 
   useEffect(() => {
     if (reduceMotion) return;
@@ -172,7 +172,7 @@ export function GenesisIntro({ onDone }: { onDone: () => void }) {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", fit);
     };
-  }, [onDone, reduceMotion]);
+  }, [finish, reduceMotion]);
 
   if (phase === "done") return null;
   return (
@@ -187,9 +187,9 @@ export function GenesisIntro({ onDone }: { onDone: () => void }) {
         onClick={() => {
           setPhase("fading");
           setTimeout(() => {
-          setPhase("done");
-          finish();
-        }, 400);
+            setPhase("done");
+            finish();
+          }, 400);
         }}
         className="absolute top-6 right-6 z-10 font-mono text-[10px] tracking-[0.28em] uppercase text-bone/50 hover:text-bone transition px-3 py-2 border border-bone/20 rounded-sm"
       >

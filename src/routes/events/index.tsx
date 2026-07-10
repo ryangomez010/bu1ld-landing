@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCard";
+import { FilterBar } from "@/components/member/FilterBar";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { fetchEvents } from "@/lib/content";
@@ -70,28 +71,18 @@ function EventsContent() {
         />
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
-        {(
+      <FilterBar
+        className="mb-6"
+        value={filter}
+        onChange={setFilter}
+        options={(
           [
-            ["upcoming", "Upcoming"],
-            ["past", "Past"],
-            ["all", "All"],
+            ["upcoming", "Upcoming", categorized.upcoming.length],
+            ["past", "Past", categorized.past.length],
+            ["all", "All", events.length],
           ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setFilter(key)}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-4 py-2 rounded-sm border transition ${
-              filter === key
-                ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+        ).map(([value, label, count]) => ({ value, label, count }))}
+      />
 
       {loading ? (
         <ListSkeleton rows={5} />

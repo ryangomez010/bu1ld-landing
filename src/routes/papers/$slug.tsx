@@ -4,8 +4,11 @@ import { ExternalLink } from "lucide-react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { MarkdownBody, TagList } from "@/components/member/ContentCard";
-import { SaveButton } from "@/components/member/SaveButton";
+import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { PageBackLink } from "@/components/member/PageBackLink";
+import { SaveButton } from "@/components/member/SaveButton";
+import { ShareButton } from "@/components/member/ShareButton";
 import { fetchPaperBySlug, fetchPapers } from "@/lib/content";
 import type { Paper } from "@/lib/types";
 
@@ -52,9 +55,7 @@ function PaperDetail() {
   if (loading) {
     return (
       <MemberLayout>
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-          Loading…
-        </p>
+        <LoadingState />
       </MemberLayout>
     );
   }
@@ -71,19 +72,15 @@ function PaperDetail() {
 
   return (
     <MemberLayout>
-      <Link
-        to="/papers"
-        className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone"
-      >
-        ← Papers
-      </Link>
-      <article className="mt-6 max-w-2xl">
+      <PageBackLink to="/papers" label="Papers" />
+      <article className="mt-2 max-w-2xl">
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-blue">
           {paper.is_classic ? "classic review" : "build review"}
         </p>
         <h1 className="font-display text-4xl text-bone mt-3 tracking-tight">{paper.title}</h1>
         <div className="mt-2 flex items-center gap-3">
           <SaveButton itemType="paper" itemSlug={paper.slug} itemTitle={paper.title} />
+          <ShareButton title={paper.title} />
         </div>
         <p className="mt-2 text-muted-foreground">
           {[paper.authors, paper.year].filter(Boolean).join(" · ")}

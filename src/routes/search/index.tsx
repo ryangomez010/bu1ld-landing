@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState } from "@/components/member/ContentCard";
+import { FilterBar } from "@/components/member/FilterBar";
 import { FilterChip } from "@/components/member/FilterChip";
-import { ListSkeleton, LoadingState } from "@/components/member/LoadingState";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { highlightMatch } from "@/components/member/ResourceNotFound";
 import { Input } from "@/components/ui/input";
@@ -211,12 +212,28 @@ function SearchContent() {
       ) : null}
 
       {loading ? (
-        <LoadingState label="Indexing…" />
+        <ListSkeleton rows={6} />
       ) : query.trim() === "" && typeFilter === "all" && !tagFilter ? (
-        <p className="text-sm text-muted-foreground">
-          Search across guides, paper reviews, open projects, events, jobs, and newsletter issues.
-          Click a type or tag above to browse.
-        </p>
+        <div className="space-y-6">
+          <p className="text-sm text-muted-foreground">
+            Search across guides, paper reviews, open projects, events, jobs, and newsletter issues.
+            Click a type or tag above to browse.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {index.slice(0, 6).map((r) => (
+              <Link
+                key={`browse-${r.type}-${r.slug}`}
+                to={r.href}
+                className="panel panel-interactive p-4 rounded-sm block"
+              >
+                <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
+                  {TYPE_LABELS[r.type]}
+                </span>
+                <h3 className="font-display text-base text-bone mt-1">{r.title}</h3>
+              </Link>
+            ))}
+          </div>
+        </div>
       ) : results.length === 0 ? (
         <EmptyState
           title="No matches"
