@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { GuideReader } from "@/components/member/GuideReader";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { getGuide } from "@/content/guides";
@@ -14,9 +14,9 @@ export const Route = createFileRoute("/guides/$slug")({
 
 function GuideDetailPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <GuideDetail />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 

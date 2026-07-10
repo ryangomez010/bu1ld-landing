@@ -1,13 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState, TagList } from "@/components/member/ContentCard";
+import { FilterChip } from "@/components/member/FilterChip";
+import { InterestMatchTags } from "@/components/member/InterestMatchTags";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
-import { ProjectStatusBadge, ProjectTypeBadge } from "@/components/member/ProjectBadges";
+import {
+  ApplicationStatusBadge,
+  ProjectStatusBadge,
+  ProjectTypeBadge,
+} from "@/components/member/ProjectBadges";
 import { Input } from "@/components/ui/input";
-import { fetchProjects } from "@/lib/projects";
-import type { Project, ProjectStatus, ProjectType } from "@/lib/types";
+import { useAuth } from "@/lib/auth";
+import { fetchMyApplicationStatusMap, fetchProjects } from "@/lib/projects";
+import type { ApplicationStatus, Project, ProjectStatus, ProjectType } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
@@ -15,21 +23,31 @@ export const Route = createFileRoute("/projects/")({
 
 function ProjectsPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <ProjectsContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
 function ProjectsContent() {
+  const { user, profile } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [applied, setApplied] = useState<Map<string, ApplicationStatus>>(new Map());
+  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | "all">("all");
   const [typeFilter, setTypeFilter] = useState<ProjectType | "all">("all");
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    void fetchProjects().then(setProjects);
-  }, []);
+    void Promise.all([
+      fetchProjects(),
+      user ? fetchMyApplicationStatusMap(user.id) : Promise.resolve(new Map()),
+    ]).then(([data, appMap]) => {
+      setProjects(data);
+      setApplied(appMap);
+      setLoading(false);
+    });
+  }, [user]);
 
   const open = projects.filter((p) => p.status === "open");
   const alumni = projects.filter((p) => p.status === "closed");
@@ -54,14 +72,14 @@ function ProjectsContent() {
         background attached automatically.
       </p>
 
-      <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3">
-        <div className="bg-background/75 p-4">
+      <div className="mb-6 grid gap-2 sm:grid-cols-3">
+        <div className="panel p-4 rounded-sm">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Open
           </p>
           <p className="mt-2 font-display text-2xl text-bone">{open.length}</p>
         </div>
-        <div className="bg-background/75 p-4">
+        <div className="panel p-4 rounded-sm">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Active
           </p>
@@ -69,7 +87,7 @@ function ProjectsContent() {
             {projects.filter((p) => p.status === "active").length}
           </p>
         </div>
-        <div className="bg-background/75 p-4">
+        <div className="panel p-4 rounded-sm">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Alumni
           </p>
@@ -77,20 +95,11 @@ function ProjectsContent() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         {(["all", "open", "active", "closed"] as const).map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setStatusFilter(f)}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-4 py-2 rounded-sm border transition ${
-              statusFilter === f
-                ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
+          <FilterChip key={f} active={statusFilter === f} onClick={() => setStatusFilter(f)}>
             {f} {f === "open" ? `(${open.length})` : ""}
-          </button>
+          </FilterChip>
         ))}
         <Link
           to="/applications"
@@ -100,20 +109,11 @@ function ProjectsContent() {
         </Link>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-2 mb-6">
         {(["all", "research", "startup", "program"] as const).map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setTypeFilter(f)}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 rounded-sm border transition ${
-              typeFilter === f
-                ? "bg-accent-green/10 text-bone border-accent-green/30"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
+          <FilterChip key={f} active={typeFilter === f} onClick={() => setTypeFilter(f)}>
             {f}
-          </button>
+          </FilterChip>
         ))}
         <Input
           value={query}
@@ -123,19 +123,24 @@ function ProjectsContent() {
         />
       </div>
 
-      {list.length === 0 ? (
+      {loading ? (
+        <ListSkeleton rows={5} />
+      ) : list.length === 0 ? (
         <EmptyState title="No projects match" body="Try another filter or clear the search." />
       ) : (
-        <div className="grid gap-px bg-border/40 border border-border/40">
+        <div className="grid gap-2">
           {list.map((project) => (
             <Link
               key={project.id}
               to={`/projects/${project.slug}`}
-              className="group block bg-background/75 p-6 backdrop-blur-md hover:bg-background/50 transition"
+              className="panel panel-interactive group block p-6 rounded-sm hover:-translate-y-px"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <ProjectTypeBadge type={project.type} />
                 <ProjectStatusBadge status={project.status} />
+                {applied.has(project.id) ? (
+                  <ApplicationStatusBadge status={applied.get(project.id)!} />
+                ) : null}
                 {project.team_count >= project.capacity ? (
                   <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-red border border-accent-red/30 px-2 py-1 rounded-sm">
                     Full
@@ -155,6 +160,13 @@ function ProjectsContent() {
                 </span>
               </div>
               <TagList tags={project.tags} className="mt-4" />
+              {profile?.interests?.length ? (
+                <InterestMatchTags
+                  tags={[...project.tags, ...project.skills_needed]}
+                  interests={profile.interests}
+                  className="mt-2"
+                />
+              ) : null}
             </Link>
           ))}
         </div>
@@ -168,12 +180,12 @@ function ProjectsContent() {
           <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
             Closed threads stay visible as portfolio proof — what BUILD has shipped.
           </p>
-          <div className="grid gap-px bg-border/40 border border-border/40">
+          <div className="grid gap-2">
             {alumni.map((project) => (
               <Link
                 key={project.id}
                 to={`/projects/${project.slug}`}
-                className="group block bg-background/50 p-6 hover:bg-background/40 transition opacity-90"
+                className="panel panel-interactive group block p-6 rounded-sm opacity-90 hover:-translate-y-px"
               >
                 <ProjectStatusBadge status={project.status} />
                 <h3 className="font-display text-lg text-bone mt-3 tracking-tight group-hover:text-accent-blue transition">

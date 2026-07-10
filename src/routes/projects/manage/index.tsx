@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { RequireProjectLead } from "@/components/auth/RequireProjectLead";
 import { EmptyState } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
@@ -16,11 +16,11 @@ export const Route = createFileRoute("/projects/manage/")({
 
 function ManageProjectsPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <RequireProjectLead>
         <ManageContent />
       </RequireProjectLead>
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -113,7 +113,9 @@ function ManageContent() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-background/75 p-4">
-      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">{label}</p>
+      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+        {label}
+      </p>
       <p className="mt-2 font-display text-2xl text-bone">{value}</p>
     </div>
   );

@@ -1,35 +1,28 @@
+import { readUserJson, writeUserJson } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 import type { SavedItem, SavedItemType } from "@/lib/types";
 
-const key = "build:saved:all";
+const STORAGE_BASE = "build:saved";
 
-function readLocal(): SavedItem[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(localStorage.getItem(key) ?? "[]") as SavedItem[];
-  } catch {
-    return [];
-  }
+function readLocal(userId: string): SavedItem[] {
+  return readUserJson<SavedItem[]>(STORAGE_BASE, userId, []);
 }
 
-function writeLocal(items: SavedItem[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(items));
+function writeLocal(userId: string, items: SavedItem[]) {
+  writeUserJson(STORAGE_BASE, userId, items);
 }
 
 export async function fetchSavedItems(userId: string): Promise<SavedItem[]> {
   const supabase = getSupabase();
   if (supabase) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("saved_items")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
-    if (data) return data as SavedItem[];
+    if (!error && data) return data as SavedItem[];
   }
-  return readLocal()
-    .filter((s) => s.user_id === userId)
-    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return readLocal(userId).sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
 export async function isSaved(
@@ -60,9 +53,8 @@ export async function toggleSaved(
         .eq("item_slug", itemSlug);
     } else {
       writeLocal(
-        readLocal().filter(
-          (s) => !(s.user_id === userId && s.item_type === itemType && s.item_slug === itemSlug),
-        ),
+        userId,
+        readLocal(userId).filter((s) => !(s.item_type === itemType && s.item_slug === itemSlug)),
       );
     }
     return false;
@@ -85,9 +77,38 @@ export async function toggleSaved(
       item_title: itemTitle,
     });
   } else {
-    writeLocal([item, ...readLocal()]);
+    writeLocal(userId, [item, ...readLocal(userId)]);
   }
   return true;
+}
+
+/** Remove multiple saved items at once (filtered list or selection). */
+export async function bulkUnsaveSavedItems(
+  userId: string,
+  items: Pick<SavedItem, "item_type" | "item_slug">[],
+): Promise<{ error: string | null }> {
+  if (items.length === 0) return { error: null };
+  const supabase = getSupabase();
+
+  if (supabase) {
+    for (const item of items) {
+      const { error } = await supabase
+        .from("saved_items")
+        .delete()
+        .eq("user_id", userId)
+        .eq("item_type", item.item_type)
+        .eq("item_slug", item.item_slug);
+      if (error) return { error: error.message };
+    }
+    return { error: null };
+  }
+
+  const remove = new Set(items.map((i) => `${i.item_type}:${i.item_slug}`));
+  writeLocal(
+    userId,
+    readLocal(userId).filter((s) => !remove.has(`${s.item_type}:${s.item_slug}`)),
+  );
+  return { error: null };
 }
 
 export function savedItemHref(type: SavedItemType, slug: string): string {
@@ -100,4 +121,22 @@ export function savedItemHref(type: SavedItemType, slug: string): string {
     newsletter: `/newsletter/${slug}`,
   };
   return map[type];
+}
+
+/** Migrate legacy global saved key to per-user storage. */
+export function migrateLegacySaved(userId: string): void {
+  if (typeof window === "undefined") return;
+  const legacyKey = "build:saved:all";
+  const legacy = localStorage.getItem(legacyKey);
+  if (!legacy) return;
+  try {
+    const items = JSON.parse(legacy) as SavedItem[];
+    const mine = items.filter((s) => s.user_id === userId);
+    if (mine.length) {
+      writeLocal(userId, [...mine, ...readLocal(userId)]);
+    }
+    localStorage.removeItem(legacyKey);
+  } catch {
+    localStorage.removeItem(legacyKey);
+  }
 }

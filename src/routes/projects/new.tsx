@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { RequireProjectLead } from "@/components/auth/RequireProjectLead";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
@@ -26,11 +26,11 @@ export const Route = createFileRoute("/projects/new")({
 
 function NewProjectPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <RequireProjectLead>
         <NewProjectForm />
       </RequireProjectLead>
-    </RequireAuth>
+    </RequireMember>
   );
 }
 

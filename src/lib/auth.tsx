@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { Session, User } from "@supabase/supabase-js";
 
 import { fetchProfile } from "@/lib/profile";
+import { migrateLegacyNotifications } from "@/lib/notifications";
+import { migrateLegacySaved } from "@/lib/saved";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
 
@@ -13,6 +15,8 @@ type AuthContextValue = {
   configured: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signInWithOAuth: (provider: "github" | "google") => Promise<{ error: string | null }>;
+  resetPassword: (email: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 };
@@ -73,6 +77,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(null);
       return;
     }
+    migrateLegacyNotifications(user.id);
+    migrateLegacySaved(user.id);
     void refreshProfile();
   }, [user, refreshProfile]);
 
@@ -96,6 +102,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error?.message ?? null };
   }, []);
 
+  const signInWithOAuth = useCallback(async (provider: "github" | "google") => {
+    const supabase = getSupabase();
+    if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
+
+    const redirectTo = `${window.location.origin}/auth/callback`;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo },
+    });
+    return { error: error?.message ?? null };
+  }, []);
+
+  const resetPassword = useCallback(async (email: string) => {
+    const supabase = getSupabase();
+    if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
+
+    const redirectTo = `${window.location.origin}/reset-password`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    return { error: error?.message ?? null };
+  }, []);
+
   const signOut = useCallback(async () => {
     const supabase = getSupabase();
     if (!supabase) return;
@@ -112,10 +139,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       configured: isSupabaseConfigured,
       signUp,
       signIn,
+      signInWithOAuth,
+      resetPassword,
       signOut,
       refreshProfile,
     }),
-    [user, session, profile, loading, signUp, signIn, signOut, refreshProfile],
+    [
+      user,
+      session,
+      profile,
+      loading,
+      signUp,
+      signIn,
+      signInWithOAuth,
+      resetPassword,
+      signOut,
+      refreshProfile,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

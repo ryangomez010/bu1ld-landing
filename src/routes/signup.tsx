@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AuthLayout } from "@/components/auth/AuthLayout";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { RedirectIfAuthed } from "@/components/auth/RequireAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -98,6 +99,7 @@ function SignupForm() {
           {submitting ? "Creating account…" : "Create account"}
         </Button>
       </form>
+      <OAuthButtons />
       <p className="mt-4 text-center text-xs text-muted-foreground">
         By creating an account you agree to our{" "}
         <Link to="/terms" className="text-accent-blue hover:text-bone">

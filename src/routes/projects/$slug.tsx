@@ -2,11 +2,19 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
-import { PitchTemplates } from "@/components/member/PitchTemplates";
+import { RequireMember } from "@/components/auth/RequireAuth";
+import { clearPitchDraft, loadPitchDraft, savePitchDraft } from "@/lib/application-draft";
+import { InterestMatchTags } from "@/components/member/InterestMatchTags";
+import { CapacityBar } from "@/components/member/CapacityBar";
+import { ResourceNotFound } from "@/components/member/ResourceNotFound";
+import { LoadingState } from "@/components/member/LoadingState";
 import { TagList } from "@/components/member/ContentCard";
+import { PitchTemplates } from "@/components/member/PitchTemplates";
 import { SaveButton } from "@/components/member/SaveButton";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { PageBackLink } from "@/components/member/PageBackLink";
+import { ProjectUpdatesSection } from "@/components/member/ProjectUpdatesSection";
+import { ShareButton } from "@/components/member/ShareButton";
 import {
   ApplicationStatusBadge,
   ProjectStatusBadge,
@@ -23,6 +31,7 @@ import {
   getApplicationForProject,
   isProjectLead,
   relatedProjects,
+  updateApplicationPitch,
 } from "@/lib/projects";
 import type { Project, ProjectApplication } from "@/lib/types";
 
@@ -32,9 +41,9 @@ export const Route = createFileRoute("/projects/$slug")({
 
 function ProjectDetailPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <ProjectDetail />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -45,6 +54,7 @@ function ProjectDetail() {
   const [application, setApplication] = useState<ProjectApplication | null>(null);
   const [related, setRelated] = useState<Project[]>([]);
   const [pitch, setPitch] = useState("");
+  const [editingPitch, setEditingPitch] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +69,13 @@ function ProjectDetail() {
   useEffect(() => {
     if (!user || !project) return;
     void getApplicationForProject(user.id, project.id).then(setApplication);
+    setPitch(loadPitchDraft(user.id, project.id));
   }, [user, project]);
+
+  useEffect(() => {
+    if (!user || !project) return;
+    savePitchDraft(user.id, project.id, pitch);
+  }, [pitch, user, project]);
 
   const onApply = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +88,7 @@ function ProjectDetail() {
       return;
     }
     toast.success("Application submitted.");
+    clearPitchDraft(user.id, project.id);
     void getApplicationForProject(user.id, project.id).then(setApplication);
     setPitch("");
   };
@@ -79,19 +96,20 @@ function ProjectDetail() {
   if (loading) {
     return (
       <MemberLayout>
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-          Loading…
-        </p>
+        <LoadingState />
       </MemberLayout>
     );
   }
 
   if (!project) {
     return (
-      <MemberLayout title="Project not found">
-        <Link to="/projects" className="text-accent-blue text-sm">
-          ← Back to projects
-        </Link>
+      <MemberLayout>
+        <ResourceNotFound
+          title="Project not found"
+          body="This project may have been removed or the link is outdated."
+          backTo="/projects"
+          backLabel="← Back to projects"
+        />
       </MemberLayout>
     );
   }
@@ -102,14 +120,9 @@ function ProjectDetail() {
 
   return (
     <MemberLayout>
-      <Link
-        to="/projects"
-        className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone"
-      >
-        ← Projects
-      </Link>
+      <PageBackLink to="/projects" label="Projects" />
 
-      <div className="mt-6">
+      <div className="mt-2">
         <div className="flex flex-wrap items-center gap-2">
           <ProjectTypeBadge type={project.type} />
           <ProjectStatusBadge status={project.status} />
@@ -120,13 +133,26 @@ function ProjectDetail() {
           ) : null}
         </div>
         <h1 className="font-display text-4xl text-bone mt-4 tracking-tight">{project.title}</h1>
-        <div className="mt-2 flex items-center gap-3">
+        <div className="mt-2 flex flex-wrap items-center gap-3">
           <SaveButton itemType="project" itemSlug={project.slug} itemTitle={project.title} />
+          <ShareButton title={project.title} />
         </div>
+        {profile?.interests?.length ? (
+          <InterestMatchTags
+            tags={[...project.tags, ...project.skills_needed]}
+            interests={profile.interests}
+            className="mt-3"
+          />
+        ) : null}
         <p className="mt-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
           {project.lead_name ? `Lead: ${project.lead_name}` : "BUILD collective"} ·{" "}
           {project.team_count}/{project.capacity} builders
         </p>
+        <CapacityBar
+          teamCount={project.team_count}
+          capacity={project.capacity}
+          className="mt-4 max-w-xs"
+        />
         <TagList tags={project.tags} linkToSearch className="mt-4" />
 
         <p className="mt-8 text-muted-foreground leading-relaxed text-lg">{project.description}</p>
@@ -153,13 +179,60 @@ function ProjectDetail() {
 
         {application ? (
           <div className="mt-10 rounded-sm border border-border/60 bg-background/70 p-6">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <h2 className="font-display text-lg text-bone">Your application</h2>
               <ApplicationStatusBadge status={application.status} />
+              {application.status === "pending" ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingPitch((v) => !v);
+                    setPitch(application.pitch);
+                  }}
+                  className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground hover:text-bone"
+                >
+                  {editingPitch ? "Cancel edit" : "Edit pitch"}
+                </button>
+              ) : null}
             </div>
-            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-              {application.pitch}
-            </p>
+            {editingPitch && application.status === "pending" ? (
+              <form
+                className="mt-4 space-y-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!user) return;
+                  setSubmitting(true);
+                  void updateApplicationPitch(user.id, application.id, pitch).then(({ error }) => {
+                    setSubmitting(false);
+                    if (error) toast.error(error);
+                    else {
+                      toast.success("Pitch updated.");
+                      setEditingPitch(false);
+                      void getApplicationForProject(user.id, project.id).then(setApplication);
+                    }
+                  });
+                }}
+              >
+                <Textarea
+                  value={pitch}
+                  onChange={(e) => setPitch(e.target.value)}
+                  rows={6}
+                  required
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={submitting}
+                  className="font-mono text-[9px] uppercase"
+                >
+                  Save pitch
+                </Button>
+              </form>
+            ) : (
+              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+                {application.pitch}
+              </p>
+            )}
             <Link
               to="/applications"
               className="mt-4 inline-block text-sm text-accent-blue hover:text-bone"
@@ -174,7 +247,7 @@ function ProjectDetail() {
           >
             <h2 className="font-display text-lg text-bone">Apply to this project</h2>
             <p className="text-sm text-muted-foreground">
-              Your profile (bio, background, interests, LinkedIn) will be attached for the project
+              Your profile (bio, background, interests, LinkedIn, GitHub) will be attached for the
               lead.
             </p>
             <div className="space-y-2">
@@ -227,6 +300,13 @@ function ProjectDetail() {
             This project is not accepting applications.
           </p>
         ) : null}
+
+        <ProjectUpdatesSection
+          projectId={project.id}
+          canPost={isLead}
+          authorId={user?.id}
+          authorName={profile?.full_name ?? undefined}
+        />
 
         {isLead ? (
           <div className="mt-6 flex flex-wrap gap-4">

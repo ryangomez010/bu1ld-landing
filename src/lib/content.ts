@@ -1,5 +1,6 @@
 import { SEED_EVENTS, SEED_NEWSLETTERS, SEED_PAPERS } from "@/data/seed/content";
 import { getSupabase } from "@/lib/supabase";
+import { withSeedFallback } from "@/lib/supabase-fallback";
 import type { MlEvent, NewsletterIssue, Paper } from "@/lib/types";
 
 function parseJsonField<T>(value: unknown, fallback: T): T {
@@ -76,8 +77,13 @@ export async function fetchEvents(): Promise<MlEvent[]> {
       .select("*")
       .eq("published", true)
       .order("start_date", { ascending: true });
-    if (!error && data?.length)
-      return data.map((r) => normalizeEvent(r as Record<string, unknown>));
+    if (!error) {
+      return withSeedFallback(
+        (data ?? []).map((r) => normalizeEvent(r as Record<string, unknown>)),
+        SEED_EVENTS,
+      );
+    }
+    return SEED_EVENTS;
   }
   return SEED_EVENTS;
 }
@@ -87,6 +93,7 @@ export async function fetchEventBySlug(slug: string): Promise<MlEvent | null> {
   if (supabase) {
     const { data } = await supabase.from("events").select("*").eq("slug", slug).maybeSingle();
     if (data) return normalizeEvent(data as Record<string, unknown>);
+    return SEED_EVENTS.find((e) => e.slug === slug) ?? null;
   }
   return SEED_EVENTS.find((e) => e.slug === slug) ?? null;
 }
@@ -99,8 +106,13 @@ export async function fetchPapers(): Promise<Paper[]> {
       .select("*")
       .eq("published", true)
       .order("published_at", { ascending: false });
-    if (!error && data?.length)
-      return data.map((r) => normalizePaper(r as Record<string, unknown>));
+    if (!error) {
+      return withSeedFallback(
+        (data ?? []).map((r) => normalizePaper(r as Record<string, unknown>)),
+        SEED_PAPERS,
+      );
+    }
+    return SEED_PAPERS;
   }
   return SEED_PAPERS;
 }
@@ -110,6 +122,7 @@ export async function fetchPaperBySlug(slug: string): Promise<Paper | null> {
   if (supabase) {
     const { data } = await supabase.from("papers").select("*").eq("slug", slug).maybeSingle();
     if (data) return normalizePaper(data as Record<string, unknown>);
+    return SEED_PAPERS.find((p) => p.slug === slug) ?? null;
   }
   return SEED_PAPERS.find((p) => p.slug === slug) ?? null;
 }
@@ -122,8 +135,13 @@ export async function fetchNewsletters(): Promise<NewsletterIssue[]> {
       .select("*")
       .eq("published", true)
       .order("published_at", { ascending: false });
-    if (!error && data?.length)
-      return data.map((r) => normalizeNewsletter(r as Record<string, unknown>));
+    if (!error) {
+      return withSeedFallback(
+        (data ?? []).map((r) => normalizeNewsletter(r as Record<string, unknown>)),
+        SEED_NEWSLETTERS,
+      );
+    }
+    return SEED_NEWSLETTERS;
   }
   return SEED_NEWSLETTERS;
 }
@@ -137,6 +155,7 @@ export async function fetchNewsletterBySlug(slug: string): Promise<NewsletterIss
       .eq("slug", slug)
       .maybeSingle();
     if (data) return normalizeNewsletter(data as Record<string, unknown>);
+    return SEED_NEWSLETTERS.find((n) => n.slug === slug) ?? null;
   }
   return SEED_NEWSLETTERS.find((n) => n.slug === slug) ?? null;
 }
@@ -149,7 +168,7 @@ export async function fetchAllEventsAdmin(): Promise<MlEvent[]> {
     .from("events")
     .select("*")
     .order("start_date", { ascending: true });
-  return data?.length ? data.map((r) => normalizeEvent(r as Record<string, unknown>)) : SEED_EVENTS;
+  return data?.length ? data.map((r) => normalizeEvent(r as Record<string, unknown>)) : [];
 }
 
 export async function fetchAllPapersAdmin(): Promise<Paper[]> {
@@ -159,7 +178,7 @@ export async function fetchAllPapersAdmin(): Promise<Paper[]> {
     .from("papers")
     .select("*")
     .order("published_at", { ascending: false });
-  return data?.length ? data.map((r) => normalizePaper(r as Record<string, unknown>)) : SEED_PAPERS;
+  return data?.length ? data.map((r) => normalizePaper(r as Record<string, unknown>)) : [];
 }
 
 export async function fetchAllNewslettersAdmin(): Promise<NewsletterIssue[]> {
@@ -169,9 +188,7 @@ export async function fetchAllNewslettersAdmin(): Promise<NewsletterIssue[]> {
     .from("newsletter_issues")
     .select("*")
     .order("published_at", { ascending: false });
-  return data?.length
-    ? data.map((r) => normalizeNewsletter(r as Record<string, unknown>))
-    : SEED_NEWSLETTERS;
+  return data?.length ? data.map((r) => normalizeNewsletter(r as Record<string, unknown>)) : [];
 }
 
 export function relatedEvents(event: MlEvent, all: MlEvent[], limit = 3): MlEvent[] {
@@ -190,7 +207,8 @@ export function relatedEvents(event: MlEvent, all: MlEvent[], limit = 3): MlEven
 
 async function requireSupabase() {
   const supabase = getSupabase();
-  if (!supabase) return { supabase: null as ReturnType<typeof getSupabase>, error: "Supabase required." };
+  if (!supabase)
+    return { supabase: null as ReturnType<typeof getSupabase>, error: "Supabase required." };
   return { supabase, error: null as string | null };
 }
 

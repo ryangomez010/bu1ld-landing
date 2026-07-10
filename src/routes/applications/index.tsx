@@ -1,13 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState } from "@/components/member/ContentCard";
+import { ConfirmButton } from "@/components/member/ConfirmButton";
+import { FilterBar } from "@/components/member/FilterBar";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { ApplicationStatusBadge } from "@/components/member/ProjectBadges";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { relativeTime } from "@/lib/date";
 import { fetchMyApplications, withdrawApplication } from "@/lib/projects";
 import type { ApplicationStatus, ProjectApplication } from "@/lib/types";
 
@@ -17,25 +21,29 @@ export const Route = createFileRoute("/applications/")({
 
 function ApplicationsPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <ApplicationsContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
 function ApplicationsContent() {
   const { user } = useAuth();
   const [applications, setApplications] = useState<ProjectApplication[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ApplicationStatus | "all">("all");
 
-  const reload = () => {
+  const reload = useCallback(() => {
     if (!user) return;
-    void fetchMyApplications(user.id).then(setApplications);
-  };
+    void fetchMyApplications(user.id).then((data) => {
+      setApplications(data);
+      setLoading(false);
+    });
+  }, [user]);
 
   useEffect(() => {
     reload();
-  }, [user]);
+  }, [reload]);
 
   const filtered = useMemo(
     () => (filter === "all" ? applications : applications.filter((a) => a.status === filter)),
@@ -61,7 +69,9 @@ function ApplicationsContent() {
 
   return (
     <MemberLayout title="My applications" eyebrow="project forum">
-      {applications.length === 0 ? (
+      {loading ? (
+        <ListSkeleton rows={4} />
+      ) : applications.length === 0 ? (
         <EmptyState
           title="No applications yet"
           body="Browse open projects and apply with a short pitch — your profile attaches automatically."
@@ -76,23 +86,16 @@ function ApplicationsContent() {
         />
       ) : (
         <>
-          <div className="flex flex-wrap gap-2 mb-6 -mt-4">
-            {(["all", "pending", "accepted", "waitlist", "declined"] as const).map((f) => (
-              <button
-                key={f}
-                type="button"
-                onClick={() => setFilter(f)}
-                className={`font-mono text-[10px] tracking-[0.22em] uppercase px-4 py-2 rounded-sm border transition ${
-                  filter === f
-                    ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                    : "border-border/60 text-muted-foreground hover:text-bone"
-                }`}
-              >
-                {f}
-                {counts[f] ? ` (${counts[f]})` : ""}
-              </button>
-            ))}
-          </div>
+          <FilterBar
+            className="mb-6 -mt-4"
+            value={filter}
+            onChange={setFilter}
+            options={(["all", "pending", "accepted", "waitlist", "declined"] as const).map((f) => ({
+              value: f,
+              label: f,
+              count: counts[f],
+            }))}
+          />
 
           <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">
             {(["pending", "accepted", "waitlist", "declined"] as const).map((s) => (
@@ -152,10 +155,8 @@ function ApplicationRow({
       ) : null}
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-bone/40">
-          Applied {new Date(app.created_at).toLocaleDateString()}
-          {app.updated_at !== app.created_at
-            ? ` · Updated ${new Date(app.updated_at).toLocaleDateString()}`
-            : ""}
+          Applied {relativeTime(app.created_at)}
+          {app.updated_at !== app.created_at ? ` · Updated ${relativeTime(app.updated_at)}` : ""}
         </p>
         <button
           type="button"
@@ -175,14 +176,22 @@ function ApplicationRow({
           Copy
         </button>
         {app.status === "pending" ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => void onWithdraw(app.id)}
-            className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-red"
-          >
-            Withdraw
-          </Button>
+          <ConfirmButton
+            title="Withdraw application?"
+            description="This removes your pitch from the review queue. You can apply again later if the project is still open."
+            confirmLabel="Withdraw"
+            destructive
+            onConfirm={() => onWithdraw(app.id)}
+            trigger={
+              <Button
+                size="sm"
+                variant="ghost"
+                className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-red"
+              >
+                Withdraw
+              </Button>
+            }
+          />
         ) : null}
       </div>
     </div>

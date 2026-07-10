@@ -2,10 +2,15 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState } from "@/components/member/ContentCard";
+import { FilterChip } from "@/components/member/FilterChip";
+import { ListSkeleton, LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { highlightMatch } from "@/components/member/ResourceNotFound";
 import { Input } from "@/components/ui/input";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { clearRecentSearches, getRecentSearches, pushRecentSearch } from "@/lib/recent-search";
 import { buildSearchIndex, searchIndex } from "@/lib/search";
 import type { SearchResult } from "@/lib/types";
 
@@ -18,9 +23,9 @@ export const Route = createFileRoute("/search/")({
 
 function SearchPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <SearchContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -37,33 +42,58 @@ function SearchContent() {
   const navigate = useNavigate();
   const { q: initialQ } = Route.useSearch();
   const [query, setQuery] = useState(initialQ);
+  const debouncedQuery = useDebouncedValue(query);
   const [typeFilter, setTypeFilter] = useState<SearchResult["type"] | "all">("all");
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [index, setIndex] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
+  const [recent, setRecent] = useState<string[]>([]);
 
   useEffect(() => {
     void buildSearchIndex().then((items) => {
       setIndex(items);
       setLoading(false);
     });
+    setRecent(getRecentSearches());
   }, []);
 
   useEffect(() => {
     setQuery(initialQ);
   }, [initialQ]);
 
+  useEffect(() => {
+    void navigate({ to: "/search", search: { q: debouncedQuery }, replace: true });
+    if (debouncedQuery.trim()) {
+      pushRecentSearch(debouncedQuery);
+      setRecent(getRecentSearches());
+    }
+  }, [debouncedQuery, navigate]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "/" && document.activeElement?.tagName !== "INPUT") {
+        e.preventDefault();
+        document.getElementById("search-input")?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const results = useMemo(() => {
     let matched =
-      query.trim() === ""
+      debouncedQuery.trim() === ""
         ? typeFilter === "all" && !tagFilter
           ? []
           : index
-        : searchIndex(index, query);
+        : searchIndex(index, debouncedQuery);
     if (typeFilter !== "all") matched = matched.filter((r) => r.type === typeFilter);
-    if (tagFilter) matched = matched.filter((r) => r.tags.some((t) => t.toLowerCase() === tagFilter.toLowerCase()));
+    if (tagFilter)
+      matched = matched.filter((r) =>
+        r.tags.some((t) => t.toLowerCase() === tagFilter.toLowerCase()),
+      );
     return matched;
-  }, [index, query, typeFilter, tagFilter]);
+  }, [index, debouncedQuery, typeFilter, tagFilter]);
 
   const typeCounts = useMemo(() => {
     const counts: Record<SearchResult["type"], number> = {
@@ -94,32 +124,63 @@ function SearchContent() {
 
   const onQueryChange = (value: string) => {
     setQuery(value);
-    void navigate({ to: "/search", search: { q: value }, replace: true });
   };
 
   return (
     <MemberLayout title="Search" eyebrow="find anything">
-      <div className="relative max-w-xl mb-8">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="relative max-w-xl mb-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
         <Input
+          id="search-input"
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Guides, papers, projects, events, jobs…"
-          className="pl-10 font-mono text-sm"
+          className="pl-10 font-mono text-sm bg-background/50"
           autoFocus
         />
       </div>
+      <p className="mb-6 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
+        Press <kbd className="kbd">/</kbd> to focus search
+      </p>
+
+      {!loading && recent.length > 0 && !query.trim() ? (
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+            Recent
+          </span>
+          {recent.map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => onQueryChange(r)}
+              className="font-mono text-[9px] tracking-[0.12em] uppercase px-2.5 py-1 rounded-sm border border-border/60 text-muted-foreground hover:text-bone"
+            >
+              {r}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              clearRecentSearches();
+              setRecent([]);
+            }}
+            className="font-mono text-[9px] uppercase text-accent-red hover:text-bone"
+          >
+            Clear
+          </button>
+        </div>
+      ) : null}
 
       {!loading ? (
-        <div className="mb-4 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="mb-4 grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
           {(Object.keys(TYPE_LABELS) as Array<SearchResult["type"]>).map((key) => (
             <button
               key={key}
               type="button"
               aria-pressed={typeFilter === key}
               onClick={() => setTypeFilter(typeFilter === key ? "all" : key)}
-              className={`bg-background/70 p-3 text-left transition hover:bg-bone/5 ${
-                typeFilter === key ? "ring-1 ring-inset ring-accent-blue/40" : ""
+              className={`panel panel-interactive p-3 text-left rounded-sm ${
+                typeFilter === key ? "ring-1 ring-accent-blue/40 border-accent-blue/30" : ""
               }`}
             >
               <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
@@ -133,40 +194,24 @@ function SearchContent() {
 
       {!loading && popularTags.length > 0 ? (
         <div className="mb-6 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setTagFilter(null)}
-            aria-pressed={!tagFilter}
-            className={`font-mono text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-sm border transition ${
-              !tagFilter
-                ? "border-accent-green/40 text-accent-green"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
+          <FilterChip active={!tagFilter} onClick={() => setTagFilter(null)}>
             All tags
-          </button>
+          </FilterChip>
           {popularTags.map((t) => (
-            <button
+            <FilterChip
               key={t}
-              type="button"
+              active={tagFilter === t}
               onClick={() => setTagFilter(tagFilter === t ? null : t)}
-              aria-pressed={tagFilter === t}
-              className={`font-mono text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-sm border transition ${
-                tagFilter === t
-                  ? "border-accent-green/40 text-accent-green"
-                  : "border-border/60 text-muted-foreground hover:text-bone"
-              }`}
+              className="text-[9px] tracking-[0.12em] px-2.5 py-1"
             >
               {t}
-            </button>
+            </FilterChip>
           ))}
         </div>
       ) : null}
 
       {loading ? (
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-          Indexing…
-        </p>
+        <LoadingState label="Indexing…" />
       ) : query.trim() === "" && typeFilter === "all" && !tagFilter ? (
         <p className="text-sm text-muted-foreground">
           Search across guides, paper reviews, open projects, events, jobs, and newsletter issues.
@@ -183,13 +228,17 @@ function SearchContent() {
             <Link
               key={`${r.type}-${r.slug}`}
               to={r.href}
-              className="bg-background/75 p-5 hover:bg-bone/5 transition block"
+              className="panel panel-interactive p-5 rounded-sm block hover:-translate-y-px"
             >
               <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-blue">
                 {TYPE_LABELS[r.type]}
               </span>
-              <h3 className="font-display text-lg text-bone mt-2">{r.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{r.summary}</p>
+              <h3 className="font-display text-lg text-bone mt-2">
+                {highlightMatch(r.title, query)}
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                {highlightMatch(r.summary, query)}
+              </p>
               {r.tags.length > 0 ? (
                 <p className="mt-2 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
                   {r.tags.slice(0, 4).join(" · ")}

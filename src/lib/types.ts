@@ -148,6 +148,7 @@ export type ProjectApplication = {
   applicant_bio?: string;
   applicant_background?: MemberBackground | null;
   applicant_linkedin?: string | null;
+  applicant_github?: string | null;
   applicant_interests?: string[];
 };
 

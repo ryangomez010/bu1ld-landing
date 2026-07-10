@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { CalendarPlus, ExternalLink } from "lucide-react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { SaveButton } from "@/components/member/SaveButton";
 import { TagList } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { Button } from "@/components/ui/button";
+import { buildIcsEvent, downloadIcs } from "@/lib/calendar";
 import { fetchEventBySlug, fetchEvents, relatedEvents } from "@/lib/content";
 import { daysUntil, formatDate } from "@/lib/date";
 import type { MlEvent } from "@/lib/types";
@@ -16,9 +18,9 @@ export const Route = createFileRoute("/events/$slug")({
 
 function EventDetailPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <EventDetail />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -69,8 +71,30 @@ function EventDetail() {
           conference / event
         </p>
         <h1 className="font-display text-4xl text-bone mt-3 tracking-tight">{event.title}</h1>
-        <div className="mt-2 flex items-center gap-3">
+        <div className="mt-2 flex flex-wrap items-center gap-3">
           <SaveButton itemType="event" itemSlug={event.slug} itemTitle={event.title} />
+          {event.start_date ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="font-mono text-[9px] tracking-[0.15em] uppercase"
+              onClick={() => {
+                const ics = buildIcsEvent({
+                  title: event.title,
+                  startDate: event.start_date!,
+                  endDate: event.end_date,
+                  description: event.summary ?? undefined,
+                  location: event.location,
+                  url: event.url,
+                });
+                downloadIcs(`${event.slug}.ics`, ics);
+              }}
+            >
+              <CalendarPlus className="h-3.5 w-3.5 mr-1.5" />
+              Add to calendar
+            </Button>
+          ) : null}
         </div>
         <p className="mt-2 text-muted-foreground">
           {[

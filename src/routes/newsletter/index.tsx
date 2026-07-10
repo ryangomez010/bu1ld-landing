@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { ContentCard, EmptyState } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { fetchNewsletters } from "@/lib/content";
@@ -14,9 +14,9 @@ export const Route = createFileRoute("/newsletter/")({
 
 function NewsletterPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <NewsletterContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 

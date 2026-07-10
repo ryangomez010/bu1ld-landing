@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AuthLayout } from "@/components/auth/AuthLayout";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { RedirectIfAuthed } from "@/components/auth/RequireAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,7 +65,15 @@ function LoginForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <Link
+              to="/forgot-password"
+              className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone transition"
+            >
+              Forgot?
+            </Link>
+          </div>
           <Input
             id="password"
             type="password"
@@ -84,6 +93,7 @@ function LoginForm() {
           {submitting ? "Signing in…" : "Log in"}
         </Button>
       </form>
+      <OAuthButtons />
       <p className="mt-6 text-center text-sm text-muted-foreground">
         No account?{" "}
         <Link to="/signup" className="text-accent-blue hover:text-bone transition">

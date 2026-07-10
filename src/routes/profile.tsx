@@ -18,8 +18,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { BACKGROUND_OPTIONS, INTEREST_OPTIONS } from "@/data/landing";
 import { useAuth } from "@/lib/auth";
+import { buildForYouFeed } from "@/lib/personalization";
+import type { ForYouItem } from "@/lib/personalization";
 import { profileCompleteness, updateProfile } from "@/lib/profile";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { isSafeUrl } from "@/lib/urls";
 import type { MemberBackground } from "@/lib/types";
 
 export const Route = createFileRoute("/profile")({
@@ -45,6 +48,18 @@ function ProfileEditor() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [timezone, setTimezone] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [previewFeed, setPreviewFeed] = useState<ForYouItem[]>([]);
+
+  useEffect(() => {
+    if (!interests.length) {
+      setPreviewFeed([]);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      void buildForYouFeed(interests).then((feed) => setPreviewFeed(feed.slice(0, 3)));
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [interests]);
 
   useEffect(() => {
     if (!profile) return;
@@ -70,6 +85,14 @@ function ProfileEditor() {
     if (!user) return;
     if (!isSupabaseConfigured) {
       toast.error("Connect Supabase to save profile changes.");
+      return;
+    }
+    if (githubUrl.trim() && !isSafeUrl(githubUrl)) {
+      toast.error("GitHub URL must start with http:// or https://");
+      return;
+    }
+    if (linkedinUrl.trim() && !isSafeUrl(linkedinUrl)) {
+      toast.error("LinkedIn URL must start with http:// or https://");
       return;
     }
     setSubmitting(true);
@@ -187,6 +210,29 @@ function ProfileEditor() {
               );
             })}
           </div>
+          {previewFeed.length > 0 ? (
+            <div className="mt-4 rounded-sm border border-accent-green/20 bg-accent-green/5 p-4">
+              <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green mb-2">
+                For you preview
+              </p>
+              <ul className="space-y-2 text-sm">
+                {previewFeed.map((item) => (
+                  <li key={item.href}>
+                    <Link to={item.href} className="text-bone hover:text-accent-blue transition">
+                      {item.title}
+                    </Link>
+                    <span className="ml-2 font-mono text-[8px] uppercase text-muted-foreground">
+                      {item.type}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : interests.length > 0 ? (
+            <p className="mt-3 text-xs text-muted-foreground">
+              No matches for these interests yet — try broader tags.
+            </p>
+          ) : null}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">

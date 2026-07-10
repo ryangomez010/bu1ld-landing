@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { MarkdownBody } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { SaveButton } from "@/components/member/SaveButton";
@@ -15,9 +15,9 @@ export const Route = createFileRoute("/newsletter/$slug")({
 
 function NewsletterDetailPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <NewsletterDetail />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 

@@ -72,13 +72,26 @@ export function searchIndex(items: SearchResult[], query: string): SearchResult[
   const q = query.trim().toLowerCase();
   if (!q) return [];
 
+  const tokens = q.split(/\s+/).filter(Boolean);
+
   return items
     .map((item) => {
+      const title = item.title.toLowerCase();
       const haystack = [item.title, item.summary, ...item.tags].join(" ").toLowerCase();
-      const score =
-        (item.title.toLowerCase().includes(q) ? 10 : 0) +
-        (haystack.includes(q) ? 5 : 0) +
-        item.tags.filter((t) => t.toLowerCase().includes(q)).length * 3;
+      let score = 0;
+
+      if (title === q) score += 20;
+      else if (title.startsWith(q)) score += 12;
+      else if (title.includes(q)) score += 10;
+
+      if (haystack.includes(q)) score += 5;
+
+      for (const token of tokens) {
+        if (title.includes(token)) score += 4;
+        if (item.tags.some((t) => t.toLowerCase().includes(token))) score += 3;
+        if (item.summary.toLowerCase().includes(token)) score += 1;
+      }
+
       return { item, score };
     })
     .filter((x) => x.score > 0)

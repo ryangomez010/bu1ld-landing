@@ -1,7 +1,10 @@
 import { SEED_ANNOUNCEMENTS } from "@/data/seed/announcements";
 import { fetchMemberIds } from "@/lib/admin";
 import { createNotification } from "@/lib/notifications";
+import { clampText, LIMITS, sanitizeAppPath } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
+import { withSeedFallback } from "@/lib/supabase-fallback";
+import { isSafeUrl } from "@/lib/urls";
 import type { Announcement } from "@/data/seed/announcements";
 
 const key = "build:announcements";
@@ -33,17 +36,30 @@ function normalize(row: Record<string, unknown>): Announcement {
   };
 }
 
+function seedAnnouncements(): Announcement[] {
+  return SEED_ANNOUNCEMENTS.filter((a) => a.published).sort((a, b) => {
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+    return b.created_at.localeCompare(a.created_at);
+  });
+}
+
 export async function fetchAnnouncements(): Promise<Announcement[]> {
   const supabase = getSupabase();
   if (supabase) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("announcements")
       .select("*")
       .eq("published", true)
       .order("pinned", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(10);
-    if (data?.length) return data.map((r) => normalize(r as Record<string, unknown>));
+    if (!error) {
+      return withSeedFallback(
+        (data ?? []).map((r) => normalize(r as Record<string, unknown>)),
+        seedAnnouncements(),
+      );
+    }
+    return seedAnnouncements();
   }
   return readLocal()
     .filter((a) => a.published)
@@ -65,21 +81,25 @@ export async function fetchAllAnnouncementsAdmin(): Promise<Announcement[]> {
   return readLocal();
 }
 
-async function fanOutAnnouncement(payload: {
-  title: string;
-  body: string;
-  href?: string;
-}) {
+async function fanOutAnnouncement(payload: { title: string; body: string; href?: string }) {
   const ids = await fetchMemberIds();
+  const href = sanitizeAppPath(payload.href) ?? "/dashboard";
   await Promise.all(
-    ids.slice(0, 100).map((id) =>
+    ids.map((id) =>
       createNotification(id, {
         title: payload.title,
-        body: payload.body.slice(0, 180),
-        href: payload.href ?? "/dashboard",
+        body: payload.body.slice(0, LIMITS.notificationBody),
+        href,
       }),
     ),
   );
+}
+
+function normalizeAnnouncementHref(href?: string): string | null {
+  if (!href?.trim()) return null;
+  const appPath = sanitizeAppPath(href);
+  if (appPath) return appPath;
+  return isSafeUrl(href) ? clampText(href, LIMITS.profileUrl) : null;
 }
 
 export async function createAnnouncement(payload: {
@@ -89,12 +109,17 @@ export async function createAnnouncement(payload: {
   pinned?: boolean;
   notify?: boolean;
 }): Promise<{ error: string | null }> {
+  const title = clampText(payload.title, LIMITS.announcementTitle);
+  const body = clampText(payload.body, LIMITS.announcementBody);
+  const href = normalizeAnnouncementHref(payload.href);
+  if (!title || !body) return { error: "Title and body are required." };
+
   const supabase = getSupabase();
   if (supabase) {
     const { error } = await supabase.from("announcements").insert({
-      title: payload.title,
-      body: payload.body,
-      href: payload.href ?? null,
+      title,
+      body,
+      href,
       pinned: payload.pinned ?? false,
       published: true,
     });
@@ -102,9 +127,9 @@ export async function createAnnouncement(payload: {
   } else {
     const item: Announcement = {
       id: `local-a-${Date.now()}`,
-      title: payload.title,
-      body: payload.body,
-      href: payload.href ?? null,
+      title,
+      body,
+      href,
       pinned: payload.pinned ?? false,
       published: true,
       created_at: new Date().toISOString(),
@@ -113,7 +138,7 @@ export async function createAnnouncement(payload: {
   }
 
   if (payload.notify !== false) {
-    await fanOutAnnouncement(payload);
+    await fanOutAnnouncement({ title, body, href: href ?? undefined });
   }
   return { error: null };
 }

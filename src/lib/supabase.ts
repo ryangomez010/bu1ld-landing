@@ -1,15 +1,18 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import type { Announcement } from "@/data/seed/announcements";
 import type {
   Job,
   LeadVerificationRequest,
   MlEvent,
   NewsletterIssue,
+  Notification,
   Paper,
   Profile,
   Project,
   ProjectApplication,
   ReadingProgress,
+  SavedItem,
 } from "@/lib/types";
 
 export type Database = {
@@ -75,12 +78,57 @@ export type Database = {
         };
         Update: Partial<Job>;
       };
+      notifications: {
+        Row: Notification;
+        Insert: {
+          user_id: string;
+          title: string;
+          body: string;
+          href?: string | null;
+          read?: boolean;
+        };
+        Update: Partial<Notification>;
+      };
+      saved_items: {
+        Row: SavedItem;
+        Insert: {
+          user_id: string;
+          item_type: SavedItem["item_type"];
+          item_slug: string;
+          item_title: string;
+        };
+        Update: Partial<SavedItem>;
+      };
+      announcements: {
+        Row: Announcement;
+        Insert: {
+          title: string;
+          body: string;
+          href?: string | null;
+          pinned?: boolean;
+          published?: boolean;
+        };
+        Update: Partial<Announcement>;
+      };
     };
   };
 };
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+function readEnv(key: string): string | undefined {
+  const value = import.meta.env[key];
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+const supabaseUrl = readEnv("VITE_SUPABASE_URL") ?? readEnv("NEXT_PUBLIC_SUPABASE_URL");
+
+/** Prefer JWT anon key; fall back to publishable key for newer Supabase projects. */
+const supabaseAnonKey =
+  readEnv("VITE_SUPABASE_ANON_KEY") ??
+  readEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") ??
+  readEnv("VITE_SUPABASE_PUBLISHABLE_KEY") ??
+  readEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+
+export const supabaseProjectUrl = supabaseUrl;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
@@ -90,7 +138,14 @@ export function getSupabase(): SupabaseClient<Database> | null {
   if (!isSupabaseConfigured) return null;
   if (typeof window === "undefined") return null;
   if (!browserClient) {
-    browserClient = createClient<Database>(supabaseUrl!, supabaseAnonKey!);
+    browserClient = createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: "pkce",
+      },
+    });
   }
   return browserClient;
 }

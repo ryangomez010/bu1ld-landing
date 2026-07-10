@@ -1,5 +1,6 @@
 import { getAllGuides } from "@/content/guides";
-import { fetchEvents, fetchPapers } from "@/lib/content";
+import { matchingTags } from "@/lib/interest";
+import { fetchEvents, fetchNewsletters, fetchPapers } from "@/lib/content";
 import { interestScore } from "@/lib/search";
 import { fetchJobs, fetchProjects } from "@/lib/projects";
 
@@ -9,9 +10,30 @@ export type ForYouItem = {
   summary: string;
   href: string;
   score: number;
+  matchTags: string[];
 };
 
 type ScoredItem = ForYouItem & { slug: string };
+
+function scoreItem(
+  type: string,
+  title: string,
+  summary: string,
+  href: string,
+  slug: string,
+  tags: string[],
+  interests: string[],
+): ScoredItem {
+  return {
+    type,
+    title,
+    summary,
+    href,
+    slug,
+    score: interestScore(tags, interests),
+    matchTags: matchingTags(tags, interests),
+  };
+}
 
 export async function buildForYouFeed(
   interests: string[],
@@ -19,56 +41,75 @@ export async function buildForYouFeed(
 ): Promise<ForYouItem[]> {
   if (!interests.length) return [];
 
-  const [events, papers, projects, jobs] = await Promise.all([
+  const [events, papers, projects, jobs, newsletters] = await Promise.all([
     fetchEvents(),
     fetchPapers(),
     fetchProjects("open"),
     fetchJobs(),
+    fetchNewsletters(),
   ]);
   const guides = getAllGuides();
   const exclude = opts?.excludeSlugs ?? new Set<string>();
 
   const items: ScoredItem[] = [
-    ...events.map((e) => ({
-      type: "event",
-      title: e.title,
-      summary: e.summary ?? "Conference radar",
-      href: `/events/${e.slug}`,
-      score: interestScore(e.topics, interests),
-      slug: e.slug,
-    })),
-    ...papers.map((p) => ({
-      type: "paper",
-      title: p.title,
-      summary: p.summary ?? "Paper review",
-      href: `/papers/${p.slug}`,
-      score: interestScore(p.tags, interests),
-      slug: p.slug,
-    })),
-    ...projects.map((p) => ({
-      type: "project",
-      title: p.title,
-      summary: p.description.slice(0, 120),
-      href: `/projects/${p.slug}`,
-      score: interestScore([...p.tags, ...p.skills_needed], interests),
-      slug: p.slug,
-    })),
-    ...jobs.map((j) => ({
-      type: "job",
-      title: j.title,
-      summary: `${j.company} — ${j.tags.join(", ")}`,
-      href: `/jobs/${j.slug}`,
-      score: interestScore(j.tags, interests),
-      slug: j.slug,
-    })),
-    ...guides.map((g) => ({
-      type: "guide",
-      title: g.title,
-      summary: g.description,
-      href: `/guides/${g.slug}`,
-      score: interestScore(g.tags, interests),
-      slug: g.slug,
-    })),
+    ...events.map((e) =>
+      scoreItem(
+        "event",
+        e.title,
+        e.summary ?? "Conference radar",
+        `/events/${e.slug}`,
+        e.slug,
+        e.topics,
+        interests,
+      ),
+    ),
+    ...papers.map((p) =>
+      scoreItem(
+        "paper",
+        p.title,
+        p.summary ?? "Paper review",
+        `/papers/${p.slug}`,
+        p.slug,
+        p.tags,
+        interests,
+      ),
+    ),
+    ...projects.map((p) =>
+      scoreItem(
+        "project",
+        p.title,
+        p.description.slice(0, 120),
+        `/projects/${p.slug}`,
+        p.slug,
+        [...p.tags, ...p.skills_needed],
+        interests,
+      ),
+    ),
+    ...jobs.map((j) =>
+      scoreItem(
+        "job",
+        j.title,
+        `${j.company} — ${j.tags.join(", ")}`,
+        `/jobs/${j.slug}`,
+        j.slug,
+        j.tags,
+        interests,
+      ),
+    ),
+    ...guides.map((g) =>
+      scoreItem("guide", g.title, g.description, `/guides/${g.slug}`, g.slug, g.tags, interests),
+    ),
+    ...newsletters.map((n) =>
+      scoreItem(
+        "newsletter",
+        n.title,
+        n.summary ?? "Newsletter issue",
+        `/newsletter/${n.slug}`,
+        n.slug,
+        ["newsletter"],
+        interests,
+      ),
+    ),
   ];
 
   return items

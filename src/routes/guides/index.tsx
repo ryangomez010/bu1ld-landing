@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCard";
+import { FilterBar } from "@/components/member/FilterBar";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { getAllGuides } from "@/content/guides";
 import { useAuth } from "@/lib/auth";
@@ -14,9 +15,9 @@ export const Route = createFileRoute("/guides/")({
 
 function GuidesPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <GuidesContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -55,29 +56,17 @@ function GuidesContent() {
         you can pick up where you left off.
       </p>
 
-      <div className="flex flex-wrap gap-2 mb-4">
-        {(
-          [
-            ["all", "All"],
-            ["continue", "Continue"],
-            ["not_started", "Not started"],
-            ["done", "Finished"],
-          ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setFilter(key)}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 rounded-sm border transition ${
-              filter === key
-                ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <FilterBar
+        className="mb-4"
+        value={filter}
+        onChange={setFilter}
+        options={([
+          ["all", "All"],
+          ["continue", "Continue"],
+          ["not_started", "Not started"],
+          ["done", "Finished"],
+        ] as const).map(([value, label]) => ({ value, label }))}
+      />
 
       <div className="flex flex-wrap gap-2 mb-8">
         <button

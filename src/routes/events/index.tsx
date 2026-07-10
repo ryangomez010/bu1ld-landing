@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCard";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { fetchEvents } from "@/lib/content";
 import { daysUntil, formatDate, nearestDeadline } from "@/lib/date";
@@ -14,18 +15,22 @@ export const Route = createFileRoute("/events/")({
 
 function EventsPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <EventsContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
 function EventsContent() {
   const [events, setEvents] = useState<MlEvent[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "upcoming" | "past">("upcoming");
 
   useEffect(() => {
-    void fetchEvents().then(setEvents);
+    void fetchEvents().then((data) => {
+      setEvents(data);
+      setLoading(false);
+    });
   }, []);
 
   const categorized = useMemo(() => {
@@ -88,7 +93,9 @@ function EventsContent() {
         ))}
       </div>
 
-      {visible.length === 0 ? (
+      {loading ? (
+        <ListSkeleton rows={5} />
+      ) : visible.length === 0 ? (
         <EmptyState
           title="No events in this view"
           body="Add conference entries from Admin to keep this radar live."

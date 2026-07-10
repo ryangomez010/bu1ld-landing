@@ -2,7 +2,9 @@ import { slugify } from "@/data/seed/content";
 import { SEED_JOBS, SEED_PROJECTS } from "@/data/seed/projects";
 import { notifyApplicationUpdate, notifyLeadApproved } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
+import { clampText, LIMITS } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
+import { withSeedFallback } from "@/lib/supabase-fallback";
 import type {
   ApplicationStatus,
   Job,
@@ -87,6 +89,7 @@ function normalizeApplication(row: Record<string, unknown>): ProjectApplication 
         ? (row.applicant_background as ProjectApplication["applicant_background"])
         : undefined,
     applicant_linkedin: row.applicant_linkedin != null ? String(row.applicant_linkedin) : undefined,
+    applicant_github: row.applicant_github != null ? String(row.applicant_github) : undefined,
     applicant_interests: (row.applicant_interests as string[]) ?? undefined,
   };
 }
@@ -115,6 +118,11 @@ export function isProjectLead(role: string | undefined): boolean {
 
 // ─── Projects ───────────────────────────────────────────────────────────────
 
+function localProjects(status?: ProjectStatus): Project[] {
+  const all = [...readCustomProjects(), ...SEED_PROJECTS];
+  return status ? all.filter((p) => p.status === status) : all;
+}
+
 export async function fetchProjects(status?: ProjectStatus): Promise<Project[]> {
   const supabase = getSupabase();
   if (supabase) {
@@ -125,12 +133,15 @@ export async function fetchProjects(status?: ProjectStatus): Promise<Project[]> 
       .order("created_at", { ascending: false });
     if (status) q = q.eq("status", status);
     const { data, error } = await q;
-    if (!error && data?.length)
-      return data.map((r) => normalizeProject(r as Record<string, unknown>));
+    if (!error) {
+      return withSeedFallback(
+        (data ?? []).map((r) => normalizeProject(r as Record<string, unknown>)),
+        localProjects(status),
+      );
+    }
+    return localProjects(status);
   }
-  const custom = readCustomProjects();
-  const all = [...custom, ...SEED_PROJECTS];
-  return status ? all.filter((p) => p.status === status) : all;
+  return localProjects(status);
 }
 
 export async function fetchProjectBySlug(slug: string): Promise<Project | null> {
@@ -138,8 +149,9 @@ export async function fetchProjectBySlug(slug: string): Promise<Project | null> 
   if (supabase) {
     const { data } = await supabase.from("projects").select("*").eq("slug", slug).maybeSingle();
     if (data) return normalizeProject(data as Record<string, unknown>);
+    return localProjects().find((p) => p.slug === slug) ?? null;
   }
-  return [...readCustomProjects(), ...SEED_PROJECTS].find((p) => p.slug === slug) ?? null;
+  return localProjects().find((p) => p.slug === slug) ?? null;
 }
 
 export async function fetchLeadProjects(leadId: string): Promise<Project[]> {
@@ -150,7 +162,8 @@ export async function fetchLeadProjects(leadId: string): Promise<Project[]> {
       .select("*")
       .eq("lead_id", leadId)
       .order("created_at", { ascending: false });
-    if (data?.length) return data.map((r) => normalizeProject(r as Record<string, unknown>));
+    if (data) return data.map((r) => normalizeProject(r as Record<string, unknown>));
+    return [];
   }
   return readCustomProjects().filter((p) => p.lead_id === leadId);
 }
@@ -187,6 +200,7 @@ export async function createProject(
         skills_needed: input.skills_needed,
         tags: input.tags,
         lead_id: leadId,
+        lead_name: leadName,
         capacity: input.capacity,
         team_count: 0,
         published: true,
@@ -290,9 +304,13 @@ export async function applyToProject(
     bio?: string | null;
     background?: string | null;
     linkedin_url?: string | null;
+    github_url?: string | null;
     interests?: string[];
   },
 ): Promise<{ error: string | null }> {
+  const safePitch = clampText(pitch, LIMITS.applicationPitch);
+  if (!safePitch) return { error: "Pitch is required." };
+
   const now = new Date().toISOString();
   const supabase = getSupabase();
 
@@ -300,7 +318,7 @@ export async function applyToProject(
     const { error } = await supabase.from("project_applications").insert({
       project_id: project.id,
       user_id: userId,
-      pitch,
+      pitch: safePitch,
       status: "pending",
     });
     return { error: error?.message ?? null };
@@ -314,7 +332,7 @@ export async function applyToProject(
     id: `local-app-${Date.now()}`,
     project_id: project.id,
     user_id: userId,
-    pitch,
+    pitch: safePitch,
     status: "pending",
     created_at: now,
     updated_at: now,
@@ -324,12 +342,20 @@ export async function applyToProject(
     applicant_bio: profile.bio ?? undefined,
     applicant_background: profile.background as ProjectApplication["applicant_background"],
     applicant_linkedin: profile.linkedin_url ?? undefined,
+    applicant_github: profile.github_url ?? undefined,
     applicant_interests: profile.interests,
   };
   apps.push(app);
   writeLocalApps(apps);
   localStorage.setItem(appsKey(userId), JSON.stringify(apps.filter((a) => a.user_id === userId)));
   return { error: null };
+}
+
+export async function fetchMyApplicationStatusMap(
+  userId: string,
+): Promise<Map<string, ApplicationStatus>> {
+  const apps = await fetchMyApplications(userId);
+  return new Map(apps.map((a) => [a.project_id, a.status]));
 }
 
 export async function fetchMyApplications(userId: string): Promise<ProjectApplication[]> {
@@ -367,7 +393,7 @@ export async function fetchProjectApplications(projectId: string): Promise<Proje
   if (supabase) {
     const { data } = await supabase
       .from("project_applications")
-      .select("*, profiles(full_name, bio, background, linkedin_url, interests)")
+      .select("*, profiles(full_name, bio, background, linkedin_url, github_url, interests)")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false });
     return (data ?? []).map((row) => {
@@ -379,6 +405,7 @@ export async function fetchProjectApplications(projectId: string): Promise<Proje
         applicant_bio: prof?.bio,
         applicant_background: prof?.background,
         applicant_linkedin: prof?.linkedin_url,
+        applicant_github: prof?.github_url,
         applicant_interests: prof?.interests,
       });
     });
@@ -458,6 +485,35 @@ export async function getApplicationForProject(
   return mine.find((a) => a.project_id === projectId) ?? null;
 }
 
+/** Update pitch text while application is still pending. */
+export async function updateApplicationPitch(
+  userId: string,
+  applicationId: string,
+  pitch: string,
+): Promise<{ error: string | null }> {
+  const safePitch = clampText(pitch, LIMITS.applicationPitch);
+  if (!safePitch) return { error: "Pitch is required." };
+
+  const supabase = getSupabase();
+  if (supabase) {
+    const { error } = await supabase
+      .from("project_applications")
+      .update({ pitch: safePitch, updated_at: new Date().toISOString() })
+      .eq("id", applicationId)
+      .eq("user_id", userId)
+      .eq("status", "pending");
+    return { error: error?.message ?? null };
+  }
+
+  const apps = readLocalApps();
+  const idx = apps.findIndex((a) => a.id === applicationId && a.user_id === userId);
+  if (idx === -1) return { error: "Application not found." };
+  if (apps[idx].status !== "pending") return { error: "Only pending applications can be edited." };
+  apps[idx] = { ...apps[idx], pitch: safePitch, updated_at: new Date().toISOString() };
+  writeLocalApps(apps);
+  return { error: null };
+}
+
 export async function withdrawApplication(
   userId: string,
   applicationId: string,
@@ -501,7 +557,13 @@ export async function fetchJobs(source?: Job["source"]): Promise<Job[]> {
       .order("created_at", { ascending: false });
     if (source) q = q.eq("source", source);
     const { data, error } = await q;
-    if (!error && data?.length) return data.map((r) => normalizeJob(r as Record<string, unknown>));
+    if (!error) {
+      return withSeedFallback(
+        (data ?? []).map((r) => normalizeJob(r as Record<string, unknown>)),
+        source ? SEED_JOBS.filter((j) => j.source === source) : SEED_JOBS,
+      );
+    }
+    return source ? SEED_JOBS.filter((j) => j.source === source) : SEED_JOBS;
   }
   return source ? SEED_JOBS.filter((j) => j.source === source) : SEED_JOBS;
 }
@@ -513,7 +575,7 @@ export async function fetchAllJobsAdmin(): Promise<Job[]> {
       .from("jobs")
       .select("*")
       .order("created_at", { ascending: false });
-    if (data?.length) return data.map((r) => normalizeJob(r as Record<string, unknown>));
+    return data?.length ? data.map((r) => normalizeJob(r as Record<string, unknown>)) : [];
   }
   return SEED_JOBS;
 }
@@ -554,6 +616,27 @@ export async function setJobPublished(
   const { error } = await supabase
     .from("jobs")
     .update({ published, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  return { error: error?.message ?? null };
+}
+
+export async function updateJobAdmin(
+  id: string,
+  patch: Partial<{
+    title: string;
+    company: string;
+    description: string;
+    location: string | null;
+    url: string | null;
+    tags: string[];
+    published: boolean;
+  }>,
+): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "Supabase required." };
+  const { error } = await supabase
+    .from("jobs")
+    .update({ ...patch, updated_at: new Date().toISOString() })
     .eq("id", id);
   return { error: error?.message ?? null };
 }

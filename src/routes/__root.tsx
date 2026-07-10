@@ -51,12 +51,15 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-accent-red/10 via-transparent to-transparent" />
       <div className="relative max-w-md text-center">
         <p className="font-mono text-[10px] tracking-[0.35em] uppercase text-accent-red">error</p>
-        <h1 className="mt-4 font-display text-3xl text-bone tracking-tight">This page didn&apos;t load</h1>
+        <h1 className="mt-4 font-display text-3xl text-bone tracking-tight">
+          This page didn&apos;t load
+        </h1>
         <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
           Something went wrong on our end. Try again, or head back home.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <button
+            type="button"
             onClick={() => {
               router.invalidate();
               reset();
@@ -97,6 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@thebu1ld" },
+      { property: "og:image", content: "https://thebu1ld.com/og.svg" },
       { name: "theme-color", content: "#0a0a0b" },
       { name: "robots", content: "index, follow" },
     ],

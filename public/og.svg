@@ -1,0 +1,6 @@
+# 1200x630 OG preview  replace with branded asset before launch
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0a0a0b"/>
+  <text x="600" y="300" text-anchor="middle" fill="#F2EBDD" font-family="system-ui,sans-serif" font-size="96" font-weight="800">BU1LD</text>
+  <text x="600" y="380" text-anchor="middle" fill="#3DB1E2" font-family="system-ui,sans-serif" font-size="28" letter-spacing="0.2em">A MACHINE LEARNING INSTITUTION</text>
+</svg>

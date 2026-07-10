@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState } from "@/components/member/ContentCard";
+import { FilterBar } from "@/components/member/FilterBar";
+import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
@@ -10,8 +12,10 @@ import { relativeTime } from "@/lib/date";
 import {
   deleteNotification,
   fetchNotifications,
+  groupNotificationsByDay,
   markAllRead,
   markNotificationRead,
+  subscribeNotifications,
 } from "@/lib/notifications";
 import type { Notification } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -22,9 +26,9 @@ export const Route = createFileRoute("/notifications/")({
 
 function NotificationsPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <NotificationsContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -34,58 +38,55 @@ function NotificationsContent() {
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [loading, setLoading] = useState(true);
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     if (!user) return;
     void fetchNotifications(user.id).then((list) => {
       setItems(list);
       setLoading(false);
     });
-  };
+  }, [user]);
 
   useEffect(() => {
     refresh();
-  }, [user]);
+  }, [refresh]);
+
+  useEffect(() => {
+    if (!user) return;
+    const unsub = subscribeNotifications(user.id, refresh);
+    return unsub;
+  }, [user, refresh]);
 
   const unread = items.filter((n) => !n.read).length;
   const visible = useMemo(
     () => (filter === "unread" ? items.filter((n) => !n.read) : items),
     [items, filter],
   );
+  const grouped = useMemo(() => groupNotificationsByDay(visible), [visible]);
 
   return (
     <MemberLayout title="Notifications" eyebrow="updates">
-      <div className="flex flex-wrap items-center gap-3 mb-6 -mt-2">
-        {(["all", "unread"] as const).map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setFilter(f)}
-            aria-pressed={filter === f}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 rounded-sm border transition ${
-              filter === f
-                ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
-            {f} {f === "unread" && unread > 0 ? `(${unread})` : ""}
-          </button>
-        ))}
-        {unread > 0 ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => void markAllRead(user!.id).then(refresh)}
-            className="ml-auto font-mono text-[9px] tracking-[0.15em] uppercase"
-          >
-            Mark all read
-          </Button>
-        ) : null}
-      </div>
+      <FilterBar
+        className="mb-6 -mt-2"
+        value={filter}
+        onChange={setFilter}
+        options={[
+          { value: "all" as const, label: "all", count: items.length },
+          { value: "unread" as const, label: "unread", count: unread },
+        ]}
+      />
+      {unread > 0 ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => void markAllRead(user!.id).then(refresh)}
+          className="-mt-4 mb-6 ml-auto block font-mono text-[9px] tracking-[0.15em] uppercase"
+        >
+          Mark all read
+        </Button>
+      ) : null}
 
       {loading ? (
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-          Loading…
-        </p>
+        <LoadingState />
       ) : items.length === 0 ? (
         <EmptyState
           title="All caught up"
@@ -94,9 +95,23 @@ function NotificationsContent() {
       ) : visible.length === 0 ? (
         <EmptyState title="No unread notifications" body="Switch to All to see your history." />
       ) : (
-        <div className="space-y-2">
-          {visible.map((n) => (
-            <NotificationCard key={n.id} notification={n} userId={user!.id} onChange={refresh} />
+        <div className="space-y-8">
+          {grouped.map((group) => (
+            <section key={group.label}>
+              <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
+                {group.label}
+              </h2>
+              <div className="space-y-2">
+                {group.items.map((n) => (
+                  <NotificationCard
+                    key={n.id}
+                    notification={n}
+                    userId={user!.id}
+                    onChange={refresh}
+                  />
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       )}
@@ -148,9 +163,16 @@ function NotificationCard({
         </button>
       </div>
       <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{n.body}</p>
-      <p className="mt-3 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
-        {relativeTime(n.created_at)}
-      </p>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <p className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
+          {relativeTime(n.created_at)}
+        </p>
+        {n.href ? (
+          <span className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue">
+            View →
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 

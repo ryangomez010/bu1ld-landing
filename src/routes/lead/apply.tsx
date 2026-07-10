@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,9 +16,9 @@ export const Route = createFileRoute("/lead/apply")({
 
 function LeadApplyPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <LeadApplyForm />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 

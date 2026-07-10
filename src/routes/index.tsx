@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 
-import { GenesisIntro } from "@/components/GenesisIntro";
+const GenesisIntro = lazy(() =>
+  import("@/components/GenesisIntro").then((m) => ({ default: m.GenesisIntro })),
+);
 import { ContactSection } from "@/components/landing/ContactSection";
 import { FaqSection } from "@/components/landing/FaqSection";
 import { HeroSection } from "@/components/landing/HeroSection";
@@ -23,7 +25,14 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const [intro, setIntro] = useState(true);
+  const [intro, setIntro] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return !localStorage.getItem("build:intro-seen");
+    } catch {
+      return true;
+    }
+  });
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 });
@@ -37,7 +46,11 @@ function HomePage() {
         Skip to content
       </a>
       <AnimatePresence>
-        {intro ? <GenesisIntro onDone={() => setIntro(false)} /> : null}
+        {intro ? (
+          <Suspense fallback={null}>
+            <GenesisIntro onDone={() => setIntro(false)} />
+          </Suspense>
+        ) : null}
       </AnimatePresence>
 
       <PageBackground density={140} />
@@ -51,7 +64,7 @@ function HomePage() {
 
       <SiteHeader />
 
-      <div className="relative z-10">
+      <main id="top" className="relative z-10">
         <HeroSection />
         <MarqueeStrip />
         <section className="mx-auto max-w-7xl px-6 py-16">
@@ -80,7 +93,7 @@ function HomePage() {
         <FaqSection />
         <ContactSection />
         <SiteFooter />
-      </div>
+      </main>
     </div>
   );
 }

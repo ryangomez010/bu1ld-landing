@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import { RequireAdmin } from "@/components/auth/RequireAdmin";
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { AdminGuidesTab } from "@/components/admin/AdminGuidesTab";
+import { AdminContentRow } from "@/components/admin/AdminContentRow";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +21,9 @@ import {
   setAnnouncementPublished,
 } from "@/lib/announcements";
 import {
+  updateEventAdmin,
+  updatePaperAdmin,
+  updateNewsletterAdmin,
   deleteContentRow,
   fetchAllEventsAdmin,
   fetchAllNewslettersAdmin,
@@ -40,6 +45,7 @@ import {
   fetchPendingLeadRequests,
   rejectLeadRequest,
   setJobPublished,
+  updateJobAdmin,
 } from "@/lib/projects";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import type {
@@ -70,7 +76,15 @@ function AdminPage() {
 function AdminContent() {
   const { user } = useAuth();
   const [tab, setTab] = useState<
-    "overview" | "announcements" | "events" | "papers" | "newsletter" | "jobs" | "members" | "leads"
+    | "overview"
+    | "announcements"
+    | "events"
+    | "papers"
+    | "newsletter"
+    | "jobs"
+    | "guides"
+    | "members"
+    | "leads"
   >("overview");
   const [events, setEvents] = useState<MlEvent[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -115,6 +129,7 @@ function AdminContent() {
             "papers",
             "newsletter",
             "jobs",
+            "guides",
             "members",
             "leads",
           ] as const
@@ -147,6 +162,8 @@ function AdminContent() {
         <AdminNewsletters issues={newsletters} onSaved={reload} />
       ) : tab === "jobs" ? (
         <AdminJobs jobs={jobs} onSaved={reload} />
+      ) : tab === "guides" ? (
+        <AdminGuidesTab />
       ) : tab === "members" ? (
         <AdminMembers members={members} onSaved={reload} />
       ) : (
@@ -175,6 +192,9 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
   const [deadlinesText, setDeadlinesText] = useState("");
   const [resourcesText, setResourcesText] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editSummary, setEditSummary] = useState("");
 
   const onDraft = () => {
     setPrepNotes(generateEventPrep(title, topics, prepNotes));
@@ -198,9 +218,7 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
       .filter(Boolean)
       .map((line) => {
         const [label, resourceUrl, kind] = line.split("|").map((s) => s.trim());
-        return label && resourceUrl
-          ? { label, url: resourceUrl, kind: kind || "other" }
-          : null;
+        return label && resourceUrl ? { label, url: resourceUrl, kind: kind || "other" } : null;
       })
       .filter(Boolean) as { label: string; url: string; kind: string }[];
 
@@ -228,14 +246,14 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
       url: url || null,
       resources: parseResources(),
       deadlines: parseDeadlines(),
-      published: true,
+      published: false,
     });
     setSaving(false);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success("Event created.");
+    toast.success("Event saved as draft.");
     setTitle("");
     setSummary("");
     setTopics("");
@@ -340,7 +358,7 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
           disabled={saving}
           className="font-mono text-[10px] tracking-[0.2em] uppercase"
         >
-          {saving ? "Saving…" : "Publish event"}
+          {saving ? "Saving…" : "Save as draft"}
         </Button>
       </form>
       <div>
@@ -350,20 +368,79 @@ function AdminEvents({ events, onSaved }: { events: MlEvent[]; onSaved: () => vo
         <ul className="space-y-3 text-sm">
           {events.map((ev) => (
             <li key={ev.id} className="border-b border-border/40 pb-3 text-bone">
-              <div className="flex flex-wrap items-center gap-2">
-                <span>{ev.title}</span>
-                {!ev.published ? (
-                  <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
-                ) : null}
-              </div>
+              {editingId === ev.id ? (
+                <div className="space-y-2 mb-2">
+                  <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                  <Textarea
+                    value={editSummary}
+                    onChange={(e) => setEditSummary(e.target.value)}
+                    rows={2}
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => {
+                        void updateEventAdmin(ev.id, {
+                          title: editTitle,
+                          summary: editSummary || null,
+                        }).then(({ error }) => {
+                          if (error) toast.error(error);
+                          else {
+                            toast.success("Event updated.");
+                            setEditingId(null);
+                            onSaved();
+                          }
+                        });
+                      }}
+                      className="font-mono text-[9px] uppercase"
+                    >
+                      Save
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingId(null)}
+                      className="font-mono text-[9px] uppercase text-muted-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap items-center gap-2">
+                  <span>{ev.title}</span>
+                  {!ev.published ? (
+                    <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
+                  ) : null}
+                </div>
+              )}
               <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
                 <Link to={`/events/${ev.slug}`} className="text-accent-blue">
                   view
                 </Link>
-                <button type="button" onClick={() => void togglePublish(ev)} className="text-muted-foreground hover:text-bone">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingId(ev.id);
+                    setEditTitle(ev.title);
+                    setEditSummary(ev.summary ?? "");
+                  }}
+                  className="text-muted-foreground hover:text-bone"
+                >
+                  edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void togglePublish(ev)}
+                  className="text-muted-foreground hover:text-bone"
+                >
                   {ev.published ? "unpublish" : "publish"}
                 </button>
-                <button type="button" onClick={() => void onDelete(ev)} className="text-accent-red hover:text-bone">
+                <button
+                  type="button"
+                  onClick={() => void onDelete(ev)}
+                  className="text-accent-red hover:text-bone"
+                >
                   delete
                 </button>
               </div>
@@ -382,6 +459,10 @@ function AdminPapers({ papers, onSaved }: { papers: Paper[]; onSaved: () => void
   const [draftNotes, setDraftNotes] = useState("");
   const [tags, setTags] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editAuthors, setEditAuthors] = useState("");
+  const [editReview, setEditReview] = useState("");
 
   const onDraft = () => {
     setReview(generatePaperDraft(title, authors, draftNotes));
@@ -405,14 +486,14 @@ function AdminPapers({ papers, onSaved }: { papers: Paper[]; onSaved: () => void
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean),
-      published: true,
+      published: false,
     });
     setSaving(false);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success("Paper review published.");
+    toast.success("Paper saved as draft.");
     setTitle("");
     setAuthors("");
     setReview("");
@@ -486,25 +567,51 @@ function AdminPapers({ papers, onSaved }: { papers: Paper[]; onSaved: () => void
         </h2>
         <ul className="space-y-3 text-sm">
           {papers.map((p) => (
-            <li key={p.id} className="border-b border-border/40 pb-3 text-bone">
-              <div className="flex flex-wrap items-center gap-2">
-                <span>{p.title}</span>
-                {!p.published ? (
-                  <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
-                ) : null}
-              </div>
-              <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
-                <Link to={`/papers/${p.slug}`} className="text-accent-blue">
-                  view
-                </Link>
-                <button type="button" onClick={() => void togglePublish(p)} className="text-muted-foreground hover:text-bone">
-                  {p.published ? "unpublish" : "publish"}
-                </button>
-                <button type="button" onClick={() => void onDelete(p)} className="text-accent-red hover:text-bone">
-                  delete
-                </button>
-              </div>
-            </li>
+            <AdminContentRow
+              key={p.id}
+              title={p.title}
+              published={p.published}
+              viewHref={`/papers/${p.slug}`}
+              editing={editingId === p.id}
+              editFields={
+                <>
+                  <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                  <Input
+                    value={editAuthors}
+                    onChange={(e) => setEditAuthors(e.target.value)}
+                    placeholder="Authors"
+                  />
+                  <Textarea
+                    value={editReview}
+                    onChange={(e) => setEditReview(e.target.value)}
+                    rows={4}
+                  />
+                </>
+              }
+              onStartEdit={() => {
+                setEditingId(p.id);
+                setEditTitle(p.title);
+                setEditAuthors(p.authors ?? "");
+                setEditReview(p.review_body);
+              }}
+              onCancelEdit={() => setEditingId(null)}
+              onSaveEdit={() => {
+                void updatePaperAdmin(p.id, {
+                  title: editTitle,
+                  authors: editAuthors || null,
+                  review_body: editReview,
+                }).then(({ error }) => {
+                  if (error) toast.error(error);
+                  else {
+                    toast.success("Paper updated.");
+                    setEditingId(null);
+                    onSaved();
+                  }
+                });
+              }}
+              onTogglePublish={() => void togglePublish(p)}
+              onDelete={() => void onDelete(p)}
+            />
           ))}
         </ul>
       </div>
@@ -517,6 +624,9 @@ function AdminNewsletters({ issues, onSaved }: { issues: NewsletterIssue[]; onSa
   const [body, setBody] = useState("");
   const [issueNumber, setIssueNumber] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editBody, setEditBody] = useState("");
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -532,14 +642,14 @@ function AdminNewsletters({ issues, onSaved }: { issues: NewsletterIssue[]; onSa
       title,
       body,
       issue_number: issueNumber ? Number(issueNumber) : null,
-      published: true,
+      published: false,
     });
     setSaving(false);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success("Newsletter issue published.");
+    toast.success("Newsletter saved as draft.");
     setTitle("");
     setBody("");
     setIssueNumber("");
@@ -580,50 +690,63 @@ function AdminNewsletters({ issues, onSaved }: { issues: NewsletterIssue[]; onSa
         </h2>
         <ul className="space-y-3 text-sm">
           {issues.map((n) => (
-            <li key={n.id} className="border-b border-border/40 pb-3 text-bone">
-              <div className="flex flex-wrap items-center gap-2">
-                <span>{n.title}</span>
-                {!n.published ? (
-                  <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
-                ) : null}
-              </div>
-              <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
-                <Link to={`/newsletter/${n.slug}`} className="text-accent-blue">
-                  view
-                </Link>
-                <button
-                  type="button"
-                  onClick={() =>
-                    void setContentPublished("newsletter_issues", n.id, !n.published).then(({ error }) => {
-                      if (error) toast.error(error);
-                      else {
-                        toast.success(n.published ? "Unpublished." : "Published.");
-                        onSaved();
-                      }
-                    })
+            <AdminContentRow
+              key={n.id}
+              title={n.title}
+              published={n.published}
+              viewHref={`/newsletter/${n.slug}`}
+              editing={editingId === n.id}
+              editFields={
+                <>
+                  <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                  <Textarea
+                    value={editBody}
+                    onChange={(e) => setEditBody(e.target.value)}
+                    rows={6}
+                  />
+                </>
+              }
+              onStartEdit={() => {
+                setEditingId(n.id);
+                setEditTitle(n.title);
+                setEditBody(n.body);
+              }}
+              onCancelEdit={() => setEditingId(null)}
+              onSaveEdit={() => {
+                void updateNewsletterAdmin(n.id, {
+                  title: editTitle,
+                  body: editBody,
+                }).then(({ error }) => {
+                  if (error) toast.error(error);
+                  else {
+                    toast.success("Newsletter updated.");
+                    setEditingId(null);
+                    onSaved();
                   }
-                  className="text-muted-foreground hover:text-bone"
-                >
-                  {n.published ? "unpublish" : "publish"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!confirm(`Delete “${n.title}”?`)) return;
-                    void deleteContentRow("newsletter_issues", n.id).then(({ error }) => {
-                      if (error) toast.error(error);
-                      else {
-                        toast.success("Deleted.");
-                        onSaved();
-                      }
-                    });
-                  }}
-                  className="text-accent-red hover:text-bone"
-                >
-                  delete
-                </button>
-              </div>
-            </li>
+                });
+              }}
+              onTogglePublish={() =>
+                void setContentPublished("newsletter_issues", n.id, !n.published).then(
+                  ({ error }) => {
+                    if (error) toast.error(error);
+                    else {
+                      toast.success(n.published ? "Unpublished." : "Published.");
+                      onSaved();
+                    }
+                  },
+                )
+              }
+              onDelete={() => {
+                if (!confirm(`Delete “${n.title}”?`)) return;
+                void deleteContentRow("newsletter_issues", n.id).then(({ error }) => {
+                  if (error) toast.error(error);
+                  else {
+                    toast.success("Deleted.");
+                    onSaved();
+                  }
+                });
+              }}
+            />
           ))}
         </ul>
       </div>
@@ -769,8 +892,7 @@ function AdminOverview({
   return (
     <div>
       <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
-        Platform snapshot. Connect Supabase and run phase4.sql for live member counts,
-        notifications, and saved items.
+        Platform snapshot — members, content, applications, and pending lead requests.
       </p>
       <div className="grid gap-px bg-border/40 border border-border/40 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
@@ -787,11 +909,13 @@ function AdminOverview({
 }
 
 function AdminMembers({ members, onSaved }: { members: Profile[]; onSaved: () => void }) {
+  const [query, setQuery] = useState("");
+
   if (!isSupabaseConfigured) {
     return (
       <p className="text-sm text-muted-foreground">
-        Member list requires Supabase with admin profile read policy (phase4.sql). Run phase6.sql for
-        role updates.
+        Member list requires Supabase with admin profile read policy (phase4.sql). Run phase6.sql
+        for role updates.
       </p>
     );
   }
@@ -809,48 +933,63 @@ function AdminMembers({ members, onSaved }: { members: Profile[]; onSaved: () =>
     }
   };
 
+  const filtered = members.filter((m) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    const hay = [m.full_name, m.role, ...(m.interests ?? [])].join(" ").toLowerCase();
+    return hay.includes(q);
+  });
+
   return (
-    <div className="overflow-x-auto rounded-sm border border-border/60">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-border/60 text-left font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-            <th className="p-3">Name</th>
-            <th className="p-3">Role</th>
-            <th className="p-3">Interests</th>
-            <th className="p-3">Joined</th>
-            <th className="p-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((m) => (
-            <tr key={m.id} className="border-b border-border/40 last:border-0">
-              <td className="p-3 text-bone">{m.full_name || "—"}</td>
-              <td className="p-3 font-mono text-[10px] uppercase">{m.role}</td>
-              <td className="p-3 text-muted-foreground">
-                {m.interests?.slice(0, 3).join(", ") || "—"}
-              </td>
-              <td className="p-3 text-muted-foreground">
-                {m.created_at ? new Date(m.created_at).toLocaleDateString() : "—"}
-              </td>
-              <td className="p-3">
-                <div className="flex flex-wrap gap-2">
-                  {(["member", "project_lead", "admin"] as MemberRole[]).map((role) => (
-                    <button
-                      key={role}
-                      type="button"
-                      disabled={m.role === role}
-                      onClick={() => void onRole(m.id, role)}
-                      className="font-mono text-[8px] tracking-[0.12em] uppercase text-muted-foreground hover:text-bone disabled:opacity-40"
-                    >
-                      {role.replace("_", " ")}
-                    </button>
-                  ))}
-                </div>
-              </td>
+    <div>
+      <Input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search members by name, role, interest…"
+        className="mb-4 max-w-md font-mono text-sm"
+      />
+      <div className="overflow-x-auto rounded-sm border border-border/60">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border/60 text-left font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+              <th className="p-3">Name</th>
+              <th className="p-3">Role</th>
+              <th className="p-3">Interests</th>
+              <th className="p-3">Joined</th>
+              <th className="p-3">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.map((m) => (
+              <tr key={m.id} className="border-b border-border/40 last:border-0">
+                <td className="p-3 text-bone">{m.full_name || "—"}</td>
+                <td className="p-3 font-mono text-[10px] uppercase">{m.role}</td>
+                <td className="p-3 text-muted-foreground">
+                  {m.interests?.slice(0, 3).join(", ") || "—"}
+                </td>
+                <td className="p-3 text-muted-foreground">
+                  {m.created_at ? new Date(m.created_at).toLocaleDateString() : "—"}
+                </td>
+                <td className="p-3">
+                  <div className="flex flex-wrap gap-2">
+                    {(["member", "project_lead", "admin"] as MemberRole[]).map((role) => (
+                      <button
+                        key={role}
+                        type="button"
+                        disabled={m.role === role}
+                        onClick={() => void onRole(m.id, role)}
+                        className="font-mono text-[8px] tracking-[0.12em] uppercase text-muted-foreground hover:text-bone disabled:opacity-40"
+                      >
+                        {role.replace("_", " ")}
+                      </button>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -861,6 +1000,10 @@ function AdminJobs({ jobs, onSaved }: { jobs: Job[]; onSaved: () => void }) {
   const [description, setDescription] = useState("");
   const [source, setSource] = useState<Job["source"]>("internal");
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editCompany, setEditCompany] = useState("");
+  const [editDescription, setEditDescription] = useState("");
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -923,53 +1066,68 @@ function AdminJobs({ jobs, onSaved }: { jobs: Job[]; onSaved: () => void }) {
         </h2>
         <ul className="space-y-3 text-sm">
           {jobs.map((j) => (
-            <li key={j.id} className="border-b border-border/40 pb-3 text-bone">
-              <div className="flex flex-wrap items-center gap-2">
-                <span>{j.title}</span>
-                <span className="font-mono text-[9px] uppercase text-muted-foreground">
-                  ({j.source})
-                </span>
-                {!j.published ? (
-                  <span className="font-mono text-[8px] uppercase text-accent-red">draft</span>
-                ) : null}
-              </div>
-              <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
-                <Link to={`/jobs/${j.slug}`} className="text-accent-blue">
-                  view
-                </Link>
-                <button
-                  type="button"
-                  onClick={() =>
-                    void setJobPublished(j.id, !j.published).then(({ error }) => {
-                      if (error) toast.error(error);
-                      else {
-                        toast.success(j.published ? "Unpublished." : "Published.");
-                        onSaved();
-                      }
-                    })
+            <AdminContentRow
+              key={j.id}
+              title={`${j.title} (${j.source})`}
+              published={j.published}
+              viewHref={`/jobs/${j.slug}`}
+              editing={editingId === j.id}
+              editFields={
+                <>
+                  <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                  <Input
+                    value={editCompany}
+                    onChange={(e) => setEditCompany(e.target.value)}
+                    placeholder="Company"
+                  />
+                  <Textarea
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    rows={4}
+                  />
+                </>
+              }
+              onStartEdit={() => {
+                setEditingId(j.id);
+                setEditTitle(j.title);
+                setEditCompany(j.company);
+                setEditDescription(j.description);
+              }}
+              onCancelEdit={() => setEditingId(null)}
+              onSaveEdit={() => {
+                void updateJobAdmin(j.id, {
+                  title: editTitle,
+                  company: editCompany,
+                  description: editDescription,
+                }).then(({ error }) => {
+                  if (error) toast.error(error);
+                  else {
+                    toast.success("Job updated.");
+                    setEditingId(null);
+                    onSaved();
                   }
-                  className="text-muted-foreground hover:text-bone"
-                >
-                  {j.published ? "unpublish" : "publish"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!confirm(`Delete “${j.title}”?`)) return;
-                    void deleteJob(j.id).then(({ error }) => {
-                      if (error) toast.error(error);
-                      else {
-                        toast.success("Deleted.");
-                        onSaved();
-                      }
-                    });
-                  }}
-                  className="text-accent-red hover:text-bone"
-                >
-                  delete
-                </button>
-              </div>
-            </li>
+                });
+              }}
+              onTogglePublish={() =>
+                void setJobPublished(j.id, !j.published).then(({ error }) => {
+                  if (error) toast.error(error);
+                  else {
+                    toast.success(j.published ? "Unpublished." : "Published.");
+                    onSaved();
+                  }
+                })
+              }
+              onDelete={() => {
+                if (!confirm(`Delete “${j.title}”?`)) return;
+                void deleteJob(j.id).then(({ error }) => {
+                  if (error) toast.error(error);
+                  else {
+                    toast.success("Deleted.");
+                    onSaved();
+                  }
+                });
+              }}
+            />
           ))}
         </ul>
       </div>

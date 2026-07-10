@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState, TagList } from "@/components/member/ContentCard";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { JobSourceBadge } from "@/components/member/ProjectBadges";
 import { fetchJobs } from "@/lib/projects";
@@ -14,18 +15,22 @@ export const Route = createFileRoute("/jobs/")({
 
 function JobsPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <JobsContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
 function JobsContent() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "internal" | "external">("all");
 
   useEffect(() => {
-    void fetchJobs().then(setJobs);
+    void fetchJobs().then((data) => {
+      setJobs(data);
+      setLoading(false);
+    });
   }, []);
 
   const filtered = filter === "all" ? jobs : jobs.filter((j) => j.source === filter);
@@ -66,7 +71,9 @@ function JobsContent() {
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <ListSkeleton rows={5} />
+      ) : filtered.length === 0 ? (
         <EmptyState title="No jobs for this filter" body="Try another source filter." />
       ) : (
         <div className="grid gap-px bg-border/40 border border-border/40">

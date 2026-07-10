@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Bell, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -11,6 +11,7 @@ import {
   fetchNotifications,
   markAllRead,
   markNotificationRead,
+  subscribeNotifications,
   unreadCount,
 } from "@/lib/notifications";
 import type { Notification } from "@/lib/types";
@@ -22,17 +23,21 @@ export function NotificationBell() {
   const [items, setItems] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     if (!user) return;
     void unreadCount(user.id).then(setCount);
     void fetchNotifications(user.id).then(setItems);
-  };
+  }, [user]);
 
   useEffect(() => {
     refresh();
-    const id = window.setInterval(refresh, 30000);
-    return () => window.clearInterval(id);
-  }, [user]);
+    const poll = window.setInterval(refresh, 60000);
+    const unsub = user ? subscribeNotifications(user.id, refresh) : undefined;
+    return () => {
+      window.clearInterval(poll);
+      unsub?.();
+    };
+  }, [user, refresh]);
 
   if (!user) return null;
 
@@ -116,7 +121,7 @@ export function NotificationBell() {
                   type="button"
                   aria-label="Dismiss notification"
                   onClick={(e) => void onDismiss(e, n)}
-                  className="absolute right-2 top-3 rounded-sm p-1 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-bone transition"
+                  className="absolute right-2 top-3 rounded-sm p-1 text-muted-foreground opacity-70 hover:opacity-100 hover:text-bone transition focus:opacity-100"
                 >
                   <X className="h-3 w-3" />
                 </button>

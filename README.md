@@ -20,25 +20,49 @@ Open `http://localhost:3000`
 
 ## Environment
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `VITE_SUPABASE_URL` | for live auth/data | Supabase project URL |
-| `VITE_SUPABASE_ANON_KEY` | for live auth/data | anon/public key |
-| `VITE_EMAIL_ENDPOINT` | recommended for email | Server/edge URL that sends mail with a private Resend key |
-| `VITE_RESEND_API_KEY` | local only | Do **not** use in production client builds |
+| Variable                 | Required              | Notes                                                     |
+| ------------------------ | --------------------- | --------------------------------------------------------- |
+| `VITE_SUPABASE_URL`      | for live auth/data    | Supabase project URL                                      |
+| `VITE_SUPABASE_ANON_KEY` | for live auth/data    | anon/public key                                           |
+| `VITE_EMAIL_ENDPOINT`    | recommended for email | Server/edge URL that sends mail with a private Resend key |
+| `VITE_RESEND_API_KEY`    | local only            | Do **not** use in production client builds                |
 
 ## Supabase setup
 
-Run SQL in order in the Supabase SQL editor:
+1. Paste `supabase/full-setup.sql` into the SQL editor (or `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`).
+2. Seed demo content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or DB password), or paste `supabase/seed-data.sql`.
+3. Verify: `bun run supabase:verify`
+4. Sign up in the app, then promote your profile:
 
-1. `supabase/schema.sql`
-2. `supabase/phase2.sql`
-3. `supabase/phase3.sql`
-4. `supabase/phase4.sql`
-5. `supabase/phase5.sql`
-6. `supabase/phase6.sql` — admin role updates
+```sql
+update public.profiles set role = 'admin' where id = '<your-user-uuid>';
+```
 
-Then set your profile `role` to `admin` in `profiles` for `/admin` access.
+## Scripts
+
+| Command                | Description                          |
+| ---------------------- | ------------------------------------ |
+| `bun run dev`          | Development server                   |
+| `bun run build`        | Production build                     |
+| `bun run preview`      | Preview production build             |
+| `bun run format`       | Prettier format                      |
+| `bun run lint`         | ESLint                               |
+| `bun run supabase:verify` | Check tables + auth connectivity |
+| `bun run supabase:apply`  | Apply full schema via Postgres   |
+| `bun run supabase:seed`   | Import seed content into Supabase |
+
+## Email
+
+Deploy `api/email.ts` on Vercel (or use `/api/email` on Cloudflare via `src/server.ts`).
+
+| Server secret               | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `RESEND_API_KEY`            | Resend API key                                       |
+| `EMAIL_API_SECRET`          | Bearer token clients send as `VITE_EMAIL_API_SECRET` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Resolve recipient email by `userId`                  |
+| `EMAIL_FROM`                | Optional sender override                             |
+
+Client: set `VITE_EMAIL_ENDPOINT` and matching `VITE_EMAIL_API_SECRET`.
 
 ## Deploy
 
@@ -54,28 +78,18 @@ Then set your profile `role` to `admin` in `profiles` for `/admin` access.
 2. Set secrets / vars for the same `VITE_*` keys used at build time.
 3. Deploy with `bunx wrangler deploy` (after `bun run build`).
 
-## Scripts
-
-| Command | Description |
-|---------|-------------|
-| `bun run dev` | Development server |
-| `bun run build` | Production build |
-| `bun run preview` | Preview production build |
-| `bun run format` | Prettier format |
-| `bun run lint` | ESLint |
-
 ## Member routes
 
-| Route | Purpose |
-|-------|---------|
-| `/` | Public landing |
-| `/signup`, `/login` | Auth |
-| `/onboarding` | First-time profile |
-| `/profile` | Edit profile |
-| `/dashboard` | Member home |
-| `/projects` | Browse & apply |
-| `/applications` | Your applications |
-| `/jobs` | Job board |
-| `/events`, `/guides`, `/papers`, `/newsletter` | Content |
-| `/search`, `/saved`, `/notifications` | Discovery & updates |
-| `/admin` | Admin console (admin role) |
+| Route                                          | Purpose                    |
+| ---------------------------------------------- | -------------------------- |
+| `/`                                            | Public landing             |
+| `/signup`, `/login`                            | Auth                       |
+| `/onboarding`                                  | First-time profile         |
+| `/profile`                                     | Edit profile               |
+| `/dashboard`                                   | Member home                |
+| `/projects`                                    | Browse & apply             |
+| `/applications`                                | Your applications          |
+| `/jobs`                                        | Job board                  |
+| `/events`, `/guides`, `/papers`, `/newsletter` | Content                    |
+| `/search`, `/saved`, `/notifications`          | Discovery & updates        |
+| `/admin`                                       | Admin console (admin role) |

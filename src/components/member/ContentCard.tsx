@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+import { safeHref } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 
 export function TagList({
@@ -56,12 +57,14 @@ export function ContentCard({
   return (
     <Link
       to={to}
-      className="group block bg-background/75 border border-border/40 p-6 backdrop-blur-md hover:bg-background/50 hover:border-bone/20 transition"
+      className="panel panel-interactive group block p-6 rounded-sm hover:-translate-y-px"
     >
       {tag ? (
-        <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-bone/40">{tag}</span>
+        <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-blue/80">
+          {tag}
+        </span>
       ) : null}
-      <h3 className="font-display text-xl text-bone mt-2 tracking-tight group-hover:text-accent-blue transition">
+      <h3 className="font-display text-xl text-bone mt-2 tracking-tight group-hover:text-accent-blue transition-colors">
         {title}
       </h3>
       {summary ? (
@@ -87,7 +90,10 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="rounded-sm border border-dashed border-border/60 p-12 text-center">
+    <div role="status" className="panel rounded-sm border-dashed p-12 text-center max-w-lg mx-auto">
+      <div className="mx-auto mb-4 h-10 w-10 rounded-sm border border-border/60 flex items-center justify-center font-mono text-xs text-muted-foreground">
+        ∅
+      </div>
       <h3 className="font-display text-xl text-bone">{title}</h3>
       <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">{body}</p>
       {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
@@ -179,12 +185,14 @@ function renderInline(text: string): ReactNode {
     }
     const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
     if (link) {
+      const href = safeHref(link[2]);
+      if (!href) return <span key={i}>{link[1]}</span>;
       return (
         <a
           key={i}
-          href={link[2]}
+          href={href}
           target="_blank"
-          rel="noreferrer"
+          rel="noreferrer noopener"
           className="text-accent-blue hover:text-bone underline-offset-2 hover:underline"
         >
           {link[1]}

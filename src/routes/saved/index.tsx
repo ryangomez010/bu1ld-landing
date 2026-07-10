@@ -1,14 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bookmark } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState } from "@/components/member/ContentCard";
+import { FilterBar } from "@/components/member/FilterBar";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
-import { fetchSavedItems, savedItemHref, toggleSaved } from "@/lib/saved";
+import { bulkUnsaveSavedItems, fetchSavedItems, savedItemHref, toggleSaved } from "@/lib/saved";
 import type { SavedItem, SavedItemType } from "@/lib/types";
 
 export const Route = createFileRoute("/saved/")({
@@ -17,9 +19,9 @@ export const Route = createFileRoute("/saved/")({
 
 function SavedPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <SavedContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -36,24 +38,29 @@ function SavedContent() {
   const { user } = useAuth();
   const [items, setItems] = useState<SavedItem[]>([]);
   const [filter, setFilter] = useState<SavedItemType | "all">("all");
+  const [sort, setSort] = useState<"newest" | "oldest" | "type">("newest");
   const [loading, setLoading] = useState(true);
 
-  const reload = () => {
+  const reload = useCallback(() => {
     if (!user) return;
     void fetchSavedItems(user.id).then((list) => {
       setItems(list);
       setLoading(false);
     });
-  };
+  }, [user]);
 
   useEffect(() => {
     reload();
-  }, [user]);
+  }, [reload]);
 
-  const filtered = useMemo(
-    () => (filter === "all" ? items : items.filter((i) => i.item_type === filter)),
-    [items, filter],
-  );
+  const filtered = useMemo(() => {
+    const base = filter === "all" ? items : items.filter((i) => i.item_type === filter);
+    const sorted = [...base];
+    if (sort === "newest") sorted.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    else if (sort === "oldest") sorted.sort((a, b) => a.created_at.localeCompare(b.created_at));
+    else sorted.sort((a, b) => a.item_type.localeCompare(b.item_type));
+    return sorted;
+  }, [items, filter, sort]);
 
   const onUnsave = async (item: SavedItem) => {
     if (!user) return;
@@ -62,12 +69,25 @@ function SavedContent() {
     reload();
   };
 
+  const onBulkUnsave = async () => {
+    if (!user || filtered.length === 0) return;
+    if (!confirm(`Remove ${filtered.length} saved item(s)?`)) return;
+    const { error } = await bulkUnsaveSavedItems(
+      user.id,
+      filtered.map((i) => ({ item_type: i.item_type, item_slug: i.item_slug })),
+    );
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    toast.success(`Removed ${filtered.length} item(s)`);
+    reload();
+  };
+
   return (
     <MemberLayout title="Saved" eyebrow="your bookmarks">
       {loading ? (
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-          Loading…
-        </p>
+        <ListSkeleton rows={4} />
       ) : items.length === 0 ? (
         <EmptyState
           title="Nothing saved yet"
@@ -83,27 +103,43 @@ function SavedContent() {
         />
       ) : (
         <>
-          <div className="flex flex-wrap gap-2 mb-6 -mt-4">
-            {(["all", "project", "guide", "paper", "event", "job", "newsletter"] as const).map(
-              (f) => (
-                <button
-                  key={f}
-                  type="button"
-                  onClick={() => setFilter(f)}
-                  className={`font-mono text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 rounded-sm border transition ${
-                    filter === f
-                      ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                      : "border-border/60 text-muted-foreground hover:text-bone"
-                  }`}
-                >
-                  {f === "all" ? "All" : TYPE_LABELS[f]}
-                  {f === "all"
-                    ? ` (${items.length})`
-                    : ` (${items.filter((i) => i.item_type === f).length})`}
-                </button>
-              ),
-            )}
+          <div className="flex flex-wrap items-center gap-2 mb-4 -mt-4">
+            <FilterBar
+              value={sort}
+              onChange={setSort}
+              options={([
+                ["newest", "Newest"],
+                ["oldest", "Oldest"],
+                ["type", "By type"],
+              ] as const).map(([value, label]) => ({ value, label }))}
+            />
+            {filtered.length > 0 ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => void onBulkUnsave()}
+                className="ml-auto font-mono text-[9px] tracking-[0.15em] uppercase"
+              >
+                Unsave all ({filtered.length})
+              </Button>
+            ) : null}
           </div>
+          <FilterBar
+            className="mb-6"
+            value={filter}
+            onChange={setFilter}
+            options={(["all", "project", "guide", "paper", "event", "job", "newsletter"] as const).map(
+              (f) => ({
+                value: f,
+                label: f === "all" ? "All" : TYPE_LABELS[f],
+                count:
+                  f === "all"
+                    ? items.length
+                    : items.filter((i) => i.item_type === f).length,
+              }),
+            )}
+          />
 
           {filtered.length === 0 ? (
             <EmptyState title="No items in this filter" body="Try another type." />

@@ -143,6 +143,10 @@
 }
 
 @layer base {
+  html {
+    scroll-padding-top: 5rem;
+  }
+
   * {
     border-color: var(--color-border);
   }
@@ -153,6 +157,16 @@
     font-family: "Inter Tight", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent-blue) 35%, transparent);
+    color: var(--bone);
+  }
+
+  :focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--accent-blue) 55%, transparent);
+    outline-offset: 2px;
   }
 }
 
@@ -297,6 +311,102 @@
   .marquee-track {
     animation: marquee 60s linear infinite;
   }
+
+  /* Member hub surfaces */
+  .member-canvas {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, color-mix(in oklab, var(--accent-blue) 12%, transparent), transparent),
+      radial-gradient(rgba(242, 235, 221, 0.02) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      24px 24px;
+  }
+  .panel {
+    background: color-mix(in oklab, var(--background) 75%, transparent);
+    border: 1px solid color-mix(in oklab, var(--bone) 10%, transparent);
+    backdrop-filter: blur(12px);
+  }
+  .panel-interactive {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.25s ease;
+  }
+  .panel-interactive:hover {
+    background: color-mix(in oklab, var(--background) 55%, transparent);
+    border-color: color-mix(in oklab, var(--bone) 22%, transparent);
+  }
+  .chip {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    border-radius: 2px;
+    border: 1px solid color-mix(in oklab, var(--bone) 12%, transparent);
+    color: var(--muted-foreground);
+    background: transparent;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+  .chip:hover {
+    color: var(--bone);
+    border-color: color-mix(in oklab, var(--bone) 25%, transparent);
+  }
+  .chip-active {
+    color: var(--bone);
+    background: color-mix(in oklab, var(--accent-blue) 12%, transparent);
+    border-color: color-mix(in oklab, var(--accent-blue) 35%, transparent);
+  }
+  .nav-active {
+    position: relative;
+    background: color-mix(in oklab, var(--accent-blue) 10%, transparent);
+    border: 1px solid color-mix(in oklab, var(--accent-blue) 28%, transparent);
+    color: var(--bone);
+  }
+  .nav-active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--accent-blue);
+    box-shadow: 0 0 12px color-mix(in oklab, var(--accent-blue) 80%, transparent);
+  }
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--bone) 4%, transparent) 0%,
+      color-mix(in oklab, var(--bone) 10%, transparent) 50%,
+      color-mix(in oklab, var(--bone) 4%, transparent) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+  .kbd {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid color-mix(in oklab, var(--bone) 15%, transparent);
+    background: color-mix(in oklab, var(--bone) 6%, transparent);
+    color: var(--muted-foreground);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 @keyframes caret {
@@ -329,5 +439,19 @@
   }
   50% {
     opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .caret-blink::after,
+  .animate-pulse,
+  .scanline,
+  .shimmer {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+    scroll-padding-top: 5rem;
   }
 }

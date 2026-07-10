@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { MarkdownBody, TagList } from "@/components/member/ContentCard";
 import { SaveButton } from "@/components/member/SaveButton";
 import { MemberLayout } from "@/components/member/MemberLayout";
@@ -15,9 +15,9 @@ export const Route = createFileRoute("/papers/$slug")({
 
 function PaperDetailPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <PaperDetail />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 

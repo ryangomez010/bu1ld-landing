@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCard";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Input } from "@/components/ui/input";
 import { fetchPapers } from "@/lib/content";
@@ -14,20 +15,24 @@ export const Route = createFileRoute("/papers/")({
 
 function PapersPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <PapersContent />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
 function PapersContent() {
   const [papers, setPapers] = useState<Paper[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "classic" | "recent">("all");
   const [tag, setTag] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    void fetchPapers().then(setPapers);
+    void fetchPapers().then((data) => {
+      setPapers(data);
+      setLoading(false);
+    });
   }, []);
 
   const allTags = useMemo(
@@ -120,7 +125,9 @@ function PapersContent() {
         ))}
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <ListSkeleton rows={5} />
+      ) : filtered.length === 0 ? (
         <EmptyState title="No papers match" body="Try another filter or search term." />
       ) : (
         <div className="grid gap-px bg-border/40 border border-border/40">
@@ -136,7 +143,9 @@ function PapersContent() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-background/75 p-4">
-      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">{label}</p>
+      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+        {label}
+      </p>
       <p className="mt-2 font-display text-2xl text-bone">{value}</p>
     </div>
   );

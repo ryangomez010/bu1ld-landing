@@ -2,10 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
-import { RequireProjectLead } from "@/components/auth/RequireProjectLead";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { TagList } from "@/components/member/ContentCard";
+import { FilterBar } from "@/components/member/FilterBar";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { PageBackLink } from "@/components/member/PageBackLink";
 import { ApplicationStatusBadge } from "@/components/member/ProjectBadges";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,11 +23,11 @@ export const Route = createFileRoute("/projects/manage/$slug")({
 
 function ManageProjectPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <RequireProjectLead>
         <ManageProject />
       </RequireProjectLead>
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -62,9 +64,7 @@ function ManageProject() {
   if (loading) {
     return (
       <MemberLayout>
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-          Loading…
-        </p>
+        <ListSkeleton rows={4} />
       </MemberLayout>
     );
   }
@@ -86,20 +86,13 @@ function ManageProject() {
 
   return (
     <MemberLayout title={project.title} eyebrow="review applications">
-      <div className="flex flex-wrap items-center gap-4 -mt-4 mb-6">
-        <Link
-          to="/projects/manage"
-          className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone"
-        >
-          ← My projects
-        </Link>
-        <Link
-          to={`/projects/edit/${project.slug}`}
-          className="font-mono text-[10px] tracking-[0.25em] uppercase text-accent-green hover:text-bone"
-        >
-          Edit project →
-        </Link>
-      </div>
+      <PageBackLink to="/projects/manage" label="My projects" />
+      <Link
+        to={`/projects/edit/${project.slug}`}
+        className="mb-6 inline-block font-mono text-[10px] tracking-[0.25em] uppercase text-accent-green hover:text-bone"
+      >
+        Edit project →
+      </Link>
 
       <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3">
         <div className="bg-background/75 p-4">
@@ -122,22 +115,17 @@ function ManageProject() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
-        {(["all", "pending", "accepted", "waitlist", "declined"] as const).map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setStatusFilter(f)}
-            className={`font-mono text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 rounded-sm border transition ${
-              statusFilter === f
-                ? "bg-accent-blue/10 text-bone border-accent-blue/30"
-                : "border-border/60 text-muted-foreground hover:text-bone"
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
+      <FilterBar
+        className="mb-6"
+        value={statusFilter}
+        onChange={setStatusFilter}
+        options={(["all", "pending", "accepted", "waitlist", "declined"] as const).map((f) => ({
+          value: f,
+          label: f,
+          count:
+            f === "all" ? applications.length : applications.filter((a) => a.status === f).length,
+        }))}
+      />
 
       <div className="space-y-4">
         {visible.length === 0 ? (
@@ -172,9 +160,19 @@ function ManageProject() {
                   href={app.applicant_linkedin}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-2 inline-block text-sm text-accent-blue hover:text-bone"
+                  className="mt-2 inline-block text-sm text-accent-blue hover:text-bone mr-4"
                 >
                   LinkedIn →
+                </a>
+              ) : null}
+              {app.applicant_github ? (
+                <a
+                  href={app.applicant_github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 inline-block text-sm text-accent-blue hover:text-bone"
+                >
+                  GitHub →
                 </a>
               ) : null}
 

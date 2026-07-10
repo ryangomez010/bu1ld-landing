@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { TagList } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { JobSourceBadge } from "@/components/member/ProjectBadges";
@@ -16,9 +16,9 @@ export const Route = createFileRoute("/jobs/$slug")({
 
 function JobDetailPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <JobDetail />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 

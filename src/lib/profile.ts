@@ -1,5 +1,7 @@
 import { createNotification } from "@/lib/notifications";
+import { clampText, LIMITS, sanitizeAppPath } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
+import { isSafeUrl } from "@/lib/urls";
 import type { OnboardingData, Profile } from "@/lib/types";
 
 export async function fetchProfile(userId: string): Promise<Profile | null> {
@@ -20,9 +22,33 @@ export async function upsertProfile(userId: string, patch: Partial<Profile>): Pr
   const supabase = getSupabase();
   if (!supabase) throw new Error("Supabase is not configured");
 
+  // Never allow client-side role changes — RLS trigger also enforces this.
+  const { role: _role, id: _id, created_at: _ca, updated_at: _ua, ...raw } = patch;
+
+  const safe: Partial<Profile> = { ...raw };
+  if (safe.full_name != null) safe.full_name = clampText(safe.full_name, LIMITS.profileName);
+  if (safe.bio != null) safe.bio = clampText(safe.bio, LIMITS.profileBio);
+  if (safe.timezone != null) safe.timezone = clampText(safe.timezone, 80);
+  if (safe.github_url != null) {
+    safe.github_url = isSafeUrl(safe.github_url)
+      ? clampText(safe.github_url, LIMITS.profileUrl)
+      : null;
+  }
+  if (safe.linkedin_url != null) {
+    safe.linkedin_url = isSafeUrl(safe.linkedin_url)
+      ? clampText(safe.linkedin_url, LIMITS.profileUrl)
+      : null;
+  }
+  if (safe.interests != null) {
+    safe.interests = safe.interests
+      .map((i) => clampText(i, 60))
+      .filter(Boolean)
+      .slice(0, 20);
+  }
+
   const { data, error } = await supabase
     .from("profiles")
-    .upsert({ id: userId, ...patch, updated_at: new Date().toISOString() })
+    .upsert({ id: userId, ...safe, updated_at: new Date().toISOString() })
     .select("*")
     .single();
 

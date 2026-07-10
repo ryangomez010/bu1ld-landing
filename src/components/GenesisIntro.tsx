@@ -4,11 +4,31 @@ import { useEffect, useRef, useState } from "react";
  * Cinematic intro: a swarm of digital dots converges from chaos and resolves
  * into the BU1LD wordmark, then fades out and unlocks the page.
  */
+const INTRO_KEY = "build:intro-seen";
+
 export function GenesisIntro({ onDone }: { onDone: () => void }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const [phase, setPhase] = useState<"running" | "fading" | "done">("running");
+  const reduceMotion =
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const [phase, setPhase] = useState<"running" | "fading" | "done">(
+    reduceMotion ? "done" : "running",
+  );
+
+  const finish = () => {
+    try {
+      localStorage.setItem(INTRO_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    onDone();
+  };
 
   useEffect(() => {
+    if (reduceMotion) finish();
+  }, [onDone, reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion) return;
     const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -142,7 +162,7 @@ export function GenesisIntro({ onDone }: { onDone: () => void }) {
         setPhase("fading");
         setTimeout(() => {
           setPhase("done");
-          onDone();
+          finish();
         }, 900);
       }
     };
@@ -152,7 +172,7 @@ export function GenesisIntro({ onDone }: { onDone: () => void }) {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", fit);
     };
-  }, [onDone]);
+  }, [onDone, reduceMotion]);
 
   if (phase === "done") return null;
   return (
@@ -167,9 +187,9 @@ export function GenesisIntro({ onDone }: { onDone: () => void }) {
         onClick={() => {
           setPhase("fading");
           setTimeout(() => {
-            setPhase("done");
-            onDone();
-          }, 400);
+          setPhase("done");
+          finish();
+        }, 400);
         }}
         className="absolute top-6 right-6 z-10 font-mono text-[10px] tracking-[0.28em] uppercase text-bone/50 hover:text-bone transition px-3 py-2 border border-bone/20 rounded-sm"
       >

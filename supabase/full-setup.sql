@@ -1,0 +1,677 @@
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- schema.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- The Bu1ld — profiles table (run in Supabase SQL editor)
+
+create table if not exists public.profiles (
+  id uuid references auth.users on delete cascade primary key,
+  full_name text,
+  bio text,
+  background text check (background in ('researcher', 'engineer', 'founder', 'student', 'other')),
+  interests text[] default '{}',
+  github_url text,
+  linkedin_url text,
+  timezone text,
+  onboarding_completed boolean default false,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+alter table public.profiles enable row level security;
+
+create policy "Users can view own profile"
+  on public.profiles for select
+  using (auth.uid() = id);
+
+create policy "Users can insert own profile"
+  on public.profiles for insert
+  with check (auth.uid() = id);
+
+create policy "Users can update own profile"
+  on public.profiles for update
+  using (auth.uid() = id);
+
+-- Auto-create profile row on signup
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = ''
+as $$
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, coalesce(new.raw_user_meta_data ->> 'full_name', ''));
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- phase2.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Phase 2: content tables (run after schema.sql)
+
+-- Add admin role to profiles
+alter table public.profiles
+  add column if not exists role text default 'member'
+    check (role in ('member', 'admin'));
+
+-- Events (conferences, meetups, deadlines)
+create table if not exists public.events (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  title text not null,
+  summary text,
+  location text,
+  start_date date,
+  end_date date,
+  topics text[] default '{}',
+  prep_notes text,
+  resources jsonb default '[]',
+  deadlines jsonb default '[]',
+  url text,
+  published boolean default true,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+-- Paper reviews
+create table if not exists public.papers (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  title text not null,
+  authors text,
+  year int,
+  arxiv_url text,
+  tags text[] default '{}',
+  is_classic boolean default false,
+  summary text,
+  review_body text not null,
+  published boolean default true,
+  published_at timestamptz default now() not null,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+-- Newsletter issues
+create table if not exists public.newsletter_issues (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  title text not null,
+  issue_number int,
+  summary text,
+  body text not null,
+  published boolean default true,
+  published_at timestamptz default now() not null,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+-- Guide scroll progress (not comprehension — scroll depth only)
+create table if not exists public.reading_progress (
+  user_id uuid references auth.users on delete cascade,
+  guide_slug text not null,
+  progress_percent int default 0 check (progress_percent >= 0 and progress_percent <= 100),
+  updated_at timestamptz default now() not null,
+  primary key (user_id, guide_slug)
+);
+
+-- RLS
+alter table public.events enable row level security;
+alter table public.papers enable row level security;
+alter table public.newsletter_issues enable row level security;
+alter table public.reading_progress enable row level security;
+
+-- Members read published content
+create policy "Members read published events"
+  on public.events for select
+  using (published = true or exists (
+    select 1 from public.profiles where id = auth.uid() and role = 'admin'
+  ));
+
+create policy "Members read published papers"
+  on public.papers for select
+  using (published = true or exists (
+    select 1 from public.profiles where id = auth.uid() and role = 'admin'
+  ));
+
+create policy "Members read published newsletters"
+  on public.newsletter_issues for select
+  using (published = true or exists (
+    select 1 from public.profiles where id = auth.uid() and role = 'admin'
+  ));
+
+-- Admins manage content
+create policy "Admins manage events"
+  on public.events for all
+  using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+create policy "Admins manage papers"
+  on public.papers for all
+  using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+create policy "Admins manage newsletters"
+  on public.newsletter_issues for all
+  using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+-- Reading progress: own rows only
+create policy "Users manage own reading progress"
+  on public.reading_progress for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- phase3.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Phase 3: projects, applications, jobs, lead verification (run after phase2.sql)
+
+-- Extend profile roles to include project_lead
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles
+  add constraint profiles_role_check
+  check (role in ('member', 'project_lead', 'admin'));
+
+-- Projects
+create table if not exists public.projects (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  title text not null,
+  description text not null,
+  type text not null check (type in ('research', 'startup', 'program')),
+  status text not null default 'open' check (status in ('open', 'active', 'closed')),
+  skills_needed text[] default '{}',
+  tags text[] default '{}',
+  lead_id uuid references public.profiles(id) on delete set null,
+  capacity int not null default 5,
+  team_count int not null default 0,
+  published boolean default true,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+-- Project applications
+create table if not exists public.project_applications (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid references public.projects(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  pitch text not null,
+  status text not null default 'pending'
+    check (status in ('pending', 'accepted', 'declined', 'waitlist')),
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null,
+  unique (project_id, user_id)
+);
+
+-- Lead verification requests
+create table if not exists public.lead_verification_requests (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  message text not null,
+  status text not null default 'pending'
+    check (status in ('pending', 'approved', 'rejected')),
+  reviewed_at timestamptz,
+  reviewed_by uuid references public.profiles(id),
+  created_at timestamptz default now() not null
+);
+
+-- Jobs board
+create table if not exists public.jobs (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  title text not null,
+  company text not null,
+  location text,
+  source text not null default 'external' check (source in ('internal', 'external')),
+  employment_type text,
+  description text not null,
+  url text,
+  tags text[] default '{}',
+  published boolean default true,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+-- RLS
+alter table public.projects enable row level security;
+alter table public.project_applications enable row level security;
+alter table public.lead_verification_requests enable row level security;
+alter table public.jobs enable row level security;
+
+-- Projects: members read published; leads manage own; admins all
+create policy "Members read published projects"
+  on public.projects for select
+  using (
+    published = true
+    or lead_id = auth.uid()
+    or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
+create policy "Leads and admins insert projects"
+  on public.projects for insert
+  with check (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role in ('project_lead', 'admin')
+    )
+  );
+
+create policy "Leads update own projects"
+  on public.projects for update
+  using (
+    lead_id = auth.uid()
+    or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
+create policy "Admins delete projects"
+  on public.projects for delete
+  using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+-- Applications
+create policy "Users read own applications"
+  on public.project_applications for select
+  using (
+    user_id = auth.uid()
+    or exists (
+      select 1 from public.projects p
+      where p.id = project_id and p.lead_id = auth.uid()
+    )
+    or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
+create policy "Members apply to projects"
+  on public.project_applications for insert
+  with check (user_id = auth.uid());
+
+create policy "Leads update application status"
+  on public.project_applications for update
+  using (
+    exists (
+      select 1 from public.projects p
+      where p.id = project_id and p.lead_id = auth.uid()
+    )
+    or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
+-- Lead requests
+create policy "Users read own lead requests"
+  on public.lead_verification_requests for select
+  using (
+    user_id = auth.uid()
+    or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
+create policy "Members request lead status"
+  on public.lead_verification_requests for insert
+  with check (user_id = auth.uid());
+
+create policy "Admins review lead requests"
+  on public.lead_verification_requests for update
+  using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+-- Jobs
+create policy "Members read published jobs"
+  on public.jobs for select
+  using (
+    published = true
+    or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
+create policy "Admins manage jobs"
+  on public.jobs for all
+  using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- phase4.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Phase 4: notifications, saved items (run after phase3.sql)
+
+create table if not exists public.notifications (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users on delete cascade not null,
+  title text not null,
+  body text not null,
+  href text,
+  read boolean default false,
+  created_at timestamptz default now() not null
+);
+
+create table if not exists public.saved_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users on delete cascade not null,
+  item_type text not null check (item_type in ('event', 'paper', 'project', 'job', 'guide', 'newsletter')),
+  item_slug text not null,
+  item_title text not null,
+  created_at timestamptz default now() not null,
+  unique (user_id, item_type, item_slug)
+);
+
+alter table public.notifications enable row level security;
+alter table public.saved_items enable row level security;
+
+create policy "Users read own notifications"
+  on public.notifications for select
+  using (auth.uid() = user_id);
+
+create policy "Users update own notifications"
+  on public.notifications for update
+  using (auth.uid() = user_id);
+
+create policy "System insert notifications"
+  on public.notifications for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users manage own saved items"
+  on public.saved_items for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- Admins can list all profiles (for member management)
+create policy "Admins read all profiles"
+  on public.profiles for select
+  using (
+    auth.uid() = id
+    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  );
+
+create index if not exists notifications_user_unread_idx
+  on public.notifications (user_id, read, created_at desc);
+
+create index if not exists saved_items_user_idx
+  on public.saved_items (user_id, created_at desc);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- phase5.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Phase 5: announcements, project discord links (run after phase4.sql)
+
+create table if not exists public.announcements (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  body text not null,
+  href text,
+  pinned boolean default false,
+  published boolean default true,
+  created_at timestamptz default now() not null
+);
+
+alter table public.projects
+  add column if not exists discord_url text;
+
+alter table public.announcements enable row level security;
+
+create policy "Members read published announcements"
+  on public.announcements for select
+  using (published = true);
+
+create policy "Admins manage announcements"
+  on public.announcements for all
+  using (
+    exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  )
+  with check (
+    exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  );
+
+create index if not exists announcements_pinned_idx
+  on public.announcements (pinned desc, created_at desc);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- phase6.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Phase 6 — admin member role updates + content moderation policies
+-- Run after phase5.sql
+
+-- Admins can update any profile (role changes, etc.)
+drop policy if exists "Admins update profiles" on public.profiles;
+create policy "Admins update profiles"
+  on public.profiles for update
+  using (
+    exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  )
+  with check (
+    exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  );
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- phase7.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Phase 7 — security hardening (run after phase6.sql)
+-- Fixes: role self-escalation, notification fan-out, lead profile reads,
+-- members-only content, project lead_id binding, notification deletes.
+
+-- ─── Profiles: prevent non-admins from changing role ───────────────────────
+create or replace function public.protect_profile_role()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.role is distinct from old.role then
+    if not exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role = 'admin'
+    ) then
+      new.role := old.role;
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists protect_profile_role_trigger on public.profiles;
+create trigger protect_profile_role_trigger
+  before update on public.profiles
+  for each row
+  execute function public.protect_profile_role();
+
+-- Tighten user update policy — role column protected by trigger above
+drop policy if exists "Users can update own profile" on public.profiles;
+create policy "Users can update own profile"
+  on public.profiles for update
+  using (auth.uid() = id)
+  with check (auth.uid() = id);
+
+-- Project leads can read profiles of applicants to their projects
+drop policy if exists "Leads read applicant profiles" on public.profiles;
+create policy "Leads read applicant profiles"
+  on public.profiles for select
+  using (
+    exists (
+      select 1
+      from public.project_applications pa
+      join public.projects pr on pr.id = pa.project_id
+      where pa.user_id = profiles.id
+        and pr.lead_id = auth.uid()
+    )
+  );
+
+-- ─── Notifications: admin fan-out + user dismiss ───────────────────────────
+drop policy if exists "System insert notifications" on public.notifications;
+create policy "Users insert own notifications"
+  on public.notifications for insert
+  with check (auth.uid() = user_id);
+
+create policy "Admins insert notifications"
+  on public.notifications for insert
+  with check (
+    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
+drop policy if exists "Users delete own notifications" on public.notifications;
+create policy "Users delete own notifications"
+  on public.notifications for delete
+  using (auth.uid() = user_id);
+
+-- ─── Projects: bind lead_id on insert + lead_name column ─────────────────────
+alter table public.projects add column if not exists lead_name text;
+
+drop policy if exists "Leads and admins insert projects" on public.projects;
+create policy "Leads and admins insert projects"
+  on public.projects for insert
+  with check (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role in ('project_lead', 'admin')
+    )
+    and (
+      lead_id is null
+      or lead_id = auth.uid()
+      or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    )
+  );
+
+-- ─── Members-only content reads (require authenticated session) ──────────────
+drop policy if exists "Members read published events" on public.events;
+create policy "Members read published events"
+  on public.events for select
+  using (
+    auth.uid() is not null
+    and (
+      published = true
+      or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    )
+  );
+
+drop policy if exists "Members read published papers" on public.papers;
+create policy "Members read published papers"
+  on public.papers for select
+  using (
+    auth.uid() is not null
+    and (
+      published = true
+      or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    )
+  );
+
+drop policy if exists "Members read published newsletters" on public.newsletter_issues;
+create policy "Members read published newsletters"
+  on public.newsletter_issues for select
+  using (
+    auth.uid() is not null
+    and (
+      published = true
+      or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    )
+  );
+
+drop policy if exists "Members read published projects" on public.projects;
+create policy "Members read published projects"
+  on public.projects for select
+  using (
+    auth.uid() is not null
+    and (
+      published = true
+      or lead_id = auth.uid()
+      or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    )
+  );
+
+drop policy if exists "Members read published jobs" on public.jobs;
+create policy "Members read published jobs"
+  on public.jobs for select
+  using (
+    auth.uid() is not null
+    and (
+      published = true
+      or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    )
+  );
+
+-- Announcements (phase5)
+drop policy if exists "Members read published announcements" on public.announcements;
+create policy "Members read published announcements"
+  on public.announcements for select
+  using (
+    auth.uid() is not null
+    and (
+      published = true
+      or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    )
+  );
+
+-- Phase 8 — additional security constraints (see supabase/phase8.sql)
+alter table public.profiles
+  drop constraint if exists profiles_full_name_len,
+  add constraint profiles_full_name_len check (char_length(full_name) <= 120);
+
+alter table public.profiles
+  drop constraint if exists profiles_bio_len,
+  add constraint profiles_bio_len check (bio is null or char_length(bio) <= 2000);
+
+alter table public.profiles
+  drop constraint if exists profiles_github_url_len,
+  add constraint profiles_github_url_len check (github_url is null or char_length(github_url) <= 500);
+
+alter table public.profiles
+  drop constraint if exists profiles_linkedin_url_len,
+  add constraint profiles_linkedin_url_len check (linkedin_url is null or char_length(linkedin_url) <= 500);
+
+alter table public.notifications
+  drop constraint if exists notifications_title_len,
+  add constraint notifications_title_len check (char_length(title) <= 200);
+
+alter table public.notifications
+  drop constraint if exists notifications_body_len,
+  add constraint notifications_body_len check (char_length(body) <= 500);
+
+alter table public.notifications
+  drop constraint if exists notifications_href_safe,
+  add constraint notifications_href_safe check (
+    href is null
+    or (
+      href ~ '^/[^/]'
+      and href !~ '[:\\]'
+      and char_length(href) <= 500
+    )
+  );
+
+alter table public.announcements
+  drop constraint if exists announcements_title_len,
+  add constraint announcements_title_len check (char_length(title) <= 200);
+
+alter table public.announcements
+  drop constraint if exists announcements_body_len,
+  add constraint announcements_body_len check (char_length(body) <= 5000);
+
+alter table public.project_applications
+  drop constraint if exists project_applications_pitch_len,
+  add constraint project_applications_pitch_len check (char_length(pitch) <= 4000);
+
+create or replace function public.default_profile_role()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if tg_op = 'INSERT' then
+    if new.role is distinct from 'member' then
+      if not exists (
+        select 1 from public.profiles
+        where id = auth.uid() and role = 'admin'
+      ) then
+        new.role := 'member';
+      end if;
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists default_profile_role_trigger on public.profiles;
+create trigger default_profile_role_trigger
+  before insert on public.profiles
+  for each row
+  execute function public.default_profile_role();
