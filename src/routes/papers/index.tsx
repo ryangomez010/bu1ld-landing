@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { BookOpen, Clock } from "lucide-react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
-import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCard";
+import { EmptyState, TagList } from "@/components/member/ContentCard";
 import { FilterBar } from "@/components/member/FilterBar";
 import { FilterChip } from "@/components/member/FilterChip";
 import { ListSkeleton } from "@/components/member/LoadingState";
@@ -10,8 +11,11 @@ import { MemberLayout } from "@/components/member/MemberLayout";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
 import { fetchPapers } from "@/lib/content";
+import { getAllPaperScrollProgress } from "@/lib/paper-reading-progress";
 import { getReadPaperSlugs } from "@/lib/paper-read";
+import { paperReadMinutes, pickFeaturedPaper, sortPapersForLibrary } from "@/lib/paper-review";
 import type { Paper } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/papers/")({
   component: PapersPage,
@@ -29,6 +33,7 @@ function PapersContent() {
   const { user } = useAuth();
   const [papers, setPapers] = useState<Paper[]>([]);
   const [readSlugs, setReadSlugs] = useState<Set<string>>(new Set());
+  const [scrollProgress, setScrollProgress] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "classic" | "recent" | "unread" | "read">("all");
   const [tag, setTag] = useState<string | null>(null);
@@ -36,16 +41,19 @@ function PapersContent() {
 
   useEffect(() => {
     void fetchPapers().then((data) => {
-      setPapers(data);
+      setPapers(sortPapersForLibrary(data));
       setLoading(false);
     });
-    if (user) void getReadPaperSlugs(user.id).then(setReadSlugs);
+    if (!user) return;
+    void getReadPaperSlugs(user.id).then(setReadSlugs);
+    setScrollProgress(getAllPaperScrollProgress(user.id));
   }, [user]);
 
   const allTags = useMemo(
     () => Array.from(new Set(papers.flatMap((p) => p.tags))).sort(),
     [papers],
   );
+  const featured = useMemo(() => pickFeaturedPaper(papers, readSlugs), [papers, readSlugs]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -56,28 +64,50 @@ function PapersContent() {
       if (filter === "unread" && readSlugs.has(p.slug)) return false;
       if (tag && !p.tags.includes(tag)) return false;
       if (!q) return true;
-      const hay = [p.title, p.authors, p.summary, ...p.tags].join(" ").toLowerCase();
-      return hay.includes(q);
+      return [p.title, p.authors, p.summary, ...p.tags].join(" ").toLowerCase().includes(q);
     });
   }, [papers, filter, tag, query, readSlugs]);
 
-  const classics = papers.filter((p) => p.is_classic).length;
-  const recent = papers.filter((p) => !p.is_classic).length;
   const readCount = papers.filter((p) => readSlugs.has(p.slug)).length;
+  const inProgress = papers.filter(
+    (p) => !readSlugs.has(p.slug) && (scrollProgress[p.slug] ?? 0) > 5,
+  ).length;
 
   return (
     <MemberLayout title="Paper Reviews" eyebrow="research literacy">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Curated BUILD reviews — classics worth re-reading and threads we are actively pulling on.
-        Human editorial voice, not auto-generated summaries.
+        Curated BUILD reviews with editorial depth — classics to re-read and active threads we are
+        pulling on.
       </p>
 
       <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">
-        <Stat label="Total reviews" value={String(papers.length)} />
-        <Stat label="Read" value={String(readCount)} />
-        <Stat label="Classics" value={String(classics)} />
-        <Stat label="Interesting now" value={String(recent)} />
+        <Stat label="Reviews" value={papers.length} />
+        <Stat label="Read" value={readCount} />
+        <Stat label="In progress" value={inProgress} />
+        <Stat label="Classics" value={papers.filter((p) => p.is_classic).length} />
       </div>
+
+      {featured && !loading ? (
+        <Link
+          to={`/papers/${featured.slug}`}
+          className="mb-8 block rounded-sm border border-accent-violet/30 bg-gradient-to-br from-accent-violet/10 via-background to-accent-blue/5 p-6 md:p-8 hover:border-accent-violet/50 transition group"
+        >
+          <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-violet">
+            Featured review
+          </p>
+          <h2 className="font-display text-2xl md:text-3xl text-bone mt-3 group-hover:text-accent-blue transition">
+            {featured.title}
+          </h2>
+          <p className="mt-3 text-muted-foreground max-w-2xl line-clamp-2">{featured.summary}</p>
+          <p className="mt-4 font-mono text-[9px] uppercase text-muted-foreground flex items-center gap-3">
+            <span className="inline-flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {paperReadMinutes(featured)} min
+            </span>
+            <span>{featured.is_classic ? "Classic" : "Active thread"}</span>
+          </p>
+        </Link>
+      ) : null}
 
       <FilterBar
         sticky
@@ -89,8 +119,8 @@ function PapersContent() {
             ["all", "All", papers.length],
             ["unread", "Unread", papers.length - readCount],
             ["read", "Read", readCount],
-            ["classic", "Classics", classics],
-            ["recent", "Interesting now", recent],
+            ["classic", "Classics", papers.filter((p) => p.is_classic).length],
+            ["recent", "Active", papers.filter((p) => !p.is_classic).length],
           ] as const
         ).map(([value, label, count]) => ({ value, label, count }))}
       />
@@ -98,8 +128,8 @@ function PapersContent() {
       <Input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search papers…"
-        className="mb-4 max-w-xs font-mono text-xs"
+        placeholder="Search reviews, authors, tags…"
+        className="mb-4 max-w-md font-mono text-xs"
       />
 
       <div className="flex flex-wrap gap-2 mb-8">
@@ -107,7 +137,7 @@ function PapersContent() {
           All tags
         </FilterChip>
         {allTags.map((t) => (
-          <FilterChip key={t} active={tag === t} onClick={() => setTag(t === tag ? null : t)}>
+          <FilterChip key={t} active={tag === t} onClick={() => setTag(tag === t ? null : t)}>
             {t}
           </FilterChip>
         ))}
@@ -116,11 +146,16 @@ function PapersContent() {
       {loading ? (
         <ListSkeleton rows={5} />
       ) : filtered.length === 0 ? (
-        <EmptyState title="No papers match" body="Try another filter or search term." />
+        <EmptyState title="No reviews match" body="Try another filter or search term." />
       ) : (
-        <div className="grid gap-px bg-border/40 border border-border/40">
+        <div className="grid gap-3 md:grid-cols-2">
           {filtered.map((paper) => (
-            <PaperCard key={paper.id} paper={paper} isRead={readSlugs.has(paper.slug)} />
+            <PaperLibraryCard
+              key={paper.id}
+              paper={paper}
+              isRead={readSlugs.has(paper.slug)}
+              progress={scrollProgress[paper.slug] ?? 0}
+            />
           ))}
         </div>
       )}
@@ -128,7 +163,7 @@ function PapersContent() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="stat-cell">
       <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
@@ -139,21 +174,56 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function PaperCard({ paper, isRead }: { paper: Paper; isRead?: boolean }) {
+function PaperLibraryCard({
+  paper,
+  isRead,
+  progress,
+}: {
+  paper: Paper;
+  isRead: boolean;
+  progress: number;
+}) {
+  const mins = paperReadMinutes(paper);
   return (
-    <ContentCard
+    <Link
       to={`/papers/${paper.slug}`}
-      tag={isRead ? "read" : paper.is_classic ? "classic" : "review"}
-      title={paper.title}
-      summary={paper.summary}
-      meta={[paper.authors, paper.year].filter(Boolean).join(" · ")}
+      className="panel panel-interactive group block rounded-sm p-5 h-full"
     >
-      {isRead ? (
-        <span className="inline-block mt-3 font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green border border-accent-green/30 px-2 py-1 rounded-sm">
-          Read ✓
+      <div className="flex items-start justify-between gap-2">
+        <span
+          className={cn(
+            "font-mono text-[8px] uppercase px-2 py-0.5 rounded-sm border",
+            paper.is_classic
+              ? "border-accent-violet/40 text-accent-violet"
+              : "border-accent-blue/40 text-accent-blue",
+          )}
+        >
+          {paper.is_classic ? "classic" : "review"}
         </span>
+        {isRead ? (
+          <span className="font-mono text-[8px] uppercase text-accent-green">Read ✓</span>
+        ) : progress > 5 ? (
+          <span className="font-mono text-[8px] uppercase text-muted-foreground">
+            {Math.round(progress)}%
+          </span>
+        ) : null}
+      </div>
+      <h3 className="font-display text-xl text-bone mt-3 group-hover:text-accent-blue transition line-clamp-2">
+        {paper.title}
+      </h3>
+      <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{paper.summary}</p>
+      <p className="mt-3 font-mono text-[9px] uppercase text-muted-foreground">
+        {[paper.authors, paper.year].filter(Boolean).join(" · ")} · {mins} min
+      </p>
+      {!isRead && progress > 0 ? (
+        <div className="mt-3 h-1 rounded-full bg-border/60 overflow-hidden">
+          <div className="h-full bg-accent-blue" style={{ width: `${progress}%` }} />
+        </div>
       ) : null}
-      <TagList tags={paper.tags} linkToSearch className="mt-4" />
-    </ContentCard>
+      <TagList tags={paper.tags.slice(0, 4)} linkToSearch className="mt-4" />
+      <span className="mt-4 inline-flex items-center gap-1 font-mono text-[9px] uppercase text-accent-blue group-hover:text-bone">
+        <BookOpen className="h-3 w-3" /> Read review
+      </span>
+    </Link>
   );
 }
