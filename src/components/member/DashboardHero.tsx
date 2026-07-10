@@ -45,7 +45,11 @@ export function DashboardHero({
             <kbd className="kbd" aria-label="Forward slash">
               /
             </kbd>{" "}
-            search
+            search ·{" "}
+            <kbd className="kbd" aria-label="Question mark">
+              ?
+            </kbd>{" "}
+            shortcuts
           </p>
         </div>
         <Link

@@ -93,6 +93,9 @@ function SignupForm() {
             onChange={(e) => setPassword(e.target.value)}
             className="bg-background/50"
           />
+          <p className="text-xs text-muted-foreground">
+            At least 8 characters with a letter and a number.
+          </p>
         </div>
         <Button
           type="submit"

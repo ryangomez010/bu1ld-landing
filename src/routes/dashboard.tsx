@@ -73,7 +73,7 @@ function DashboardPage() {
 }
 
 function DashboardHome() {
-  const { user, profile } = useAuth();
+  const { user, profile, emailVerified } = useAuth();
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<MlEvent[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -215,6 +215,20 @@ function DashboardHome() {
         completenessPercent={completeness.percent}
         roleBadge={profile?.role ? <RoleBadge role={profile.role} /> : null}
       />
+
+      {!emailVerified && user?.email ? (
+        <div className="mb-6 rounded-sm border border-accent-red/25 bg-accent-red/5 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Verify <strong className="text-bone">{user.email}</strong> to secure your account.
+          </p>
+          <Link
+            to="/account/security"
+            className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
+          >
+            Resend verification →
+          </Link>
+        </div>
+      ) : null}
 
       {loading ? (
         <LoadingState label="Loading your hub…" />

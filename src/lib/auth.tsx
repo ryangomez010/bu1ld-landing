@@ -4,6 +4,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { fetchProfile } from "@/lib/profile";
 import { migrateLegacyNotifications } from "@/lib/notifications";
 import { migrateLegacySaved } from "@/lib/saved";
+import { isValidEmail, validatePassword } from "@/lib/security";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
 
@@ -13,11 +14,14 @@ type AuthContextValue = {
   profile: Profile | null;
   loading: boolean;
   configured: boolean;
+  emailVerified: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signInWithOAuth: (provider: "github" | "google") => Promise<{ error: string | null }>;
   resetPassword: (email: string) => Promise<{ error: string | null }>;
-  signOut: () => Promise<void>;
+  updatePassword: (password: string) => Promise<{ error: string | null }>;
+  resendVerificationEmail: () => Promise<{ error: string | null }>;
+  signOut: (scope?: "local" | "global") => Promise<void>;
   refreshProfile: () => Promise<void>;
 };
 
@@ -86,10 +90,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = getSupabase();
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
 
+    const trimmedEmail = email.trim();
+    if (!isValidEmail(trimmedEmail)) return { error: "Enter a valid email address." };
+    const pw = validatePassword(password);
+    if (!pw.ok) return { error: pw.reason };
+    const name = fullName.trim();
+    if (name.length < 2) return { error: "Full name must be at least 2 characters." };
+
+    const redirectTo = `${window.location.origin}/auth/callback`;
     const { error } = await supabase.auth.signUp({
-      email,
+      email: trimmedEmail,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: { full_name: name },
+        emailRedirectTo: redirectTo,
+      },
     });
     return { error: error?.message ?? null };
   }, []);
@@ -98,7 +113,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = getSupabase();
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const trimmedEmail = email.trim();
+    if (!isValidEmail(trimmedEmail)) return { error: "Enter a valid email address." };
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: trimmedEmail,
+      password,
+    });
     return { error: error?.message ?? null };
   }, []);
 
@@ -118,17 +139,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = getSupabase();
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
 
+    const trimmedEmail = email.trim();
+    if (!isValidEmail(trimmedEmail)) return { error: "Enter a valid email address." };
+
     const redirectTo = `${window.location.origin}/reset-password`;
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, { redirectTo });
     return { error: error?.message ?? null };
   }, []);
 
-  const signOut = useCallback(async () => {
+  const updatePassword = useCallback(async (password: string) => {
+    const supabase = getSupabase();
+    if (!supabase) return { error: "Auth is not configured." };
+
+    const pw = validatePassword(password);
+    if (!pw.ok) return { error: pw.reason };
+
+    const { error } = await supabase.auth.updateUser({ password });
+    return { error: error?.message ?? null };
+  }, []);
+
+  const resendVerificationEmail = useCallback(async () => {
+    const supabase = getSupabase();
+    if (!supabase) return { error: "Auth is not configured." };
+    if (!user?.email) return { error: "No email on file." };
+
+    const redirectTo = `${window.location.origin}/auth/callback`;
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: user.email,
+      options: { emailRedirectTo: redirectTo },
+    });
+    return { error: error?.message ?? null };
+  }, [user?.email]);
+
+  const signOut = useCallback(async (scope: "local" | "global" = "local") => {
     const supabase = getSupabase();
     if (!supabase) return;
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope });
     setProfile(null);
   }, []);
+
+  const emailVerified = Boolean(user?.email_confirmed_at);
 
   const value = useMemo(
     () => ({
@@ -137,10 +188,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profile,
       loading,
       configured: isSupabaseConfigured,
+      emailVerified,
       signUp,
       signIn,
       signInWithOAuth,
       resetPassword,
+      updatePassword,
+      resendVerificationEmail,
       signOut,
       refreshProfile,
     }),
@@ -149,10 +203,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       profile,
       loading,
+      emailVerified,
       signUp,
       signIn,
       signInWithOAuth,
       resetPassword,
+      updatePassword,
+      resendVerificationEmail,
       signOut,
       refreshProfile,
     ],

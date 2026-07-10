@@ -105,6 +105,14 @@ function SavedContent() {
 
   return (
     <MemberLayout title="Saved" eyebrow="your bookmarks">
+      <div className="mb-6 flex flex-wrap gap-3 -mt-4">
+        <Link
+          to="/saved/collections"
+          className="font-mono text-[10px] tracking-[0.2em] uppercase text-accent-green hover:text-bone"
+        >
+          Research collections →
+        </Link>
+      </div>
       {loading ? (
         <ListSkeleton rows={4} />
       ) : items.length === 0 ? (

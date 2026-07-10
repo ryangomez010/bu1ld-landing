@@ -32,6 +32,7 @@ import { Route as GuidesIndexRouteImport } from './routes/guides/index'
 import { Route as EventsIndexRouteImport } from './routes/events/index'
 import { Route as ApplicationsIndexRouteImport } from './routes/applications/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as SavedCollectionsRouteImport } from './routes/saved/collections'
 import { Route as ProjectsNewRouteImport } from './routes/projects/new'
 import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
 import { Route as PapersSlugRouteImport } from './routes/papers/$slug'
@@ -42,6 +43,7 @@ import { Route as JobsSlugRouteImport } from './routes/jobs/$slug'
 import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
 import { Route as EventsSlugRouteImport } from './routes/events/$slug'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as AccountSecurityRouteImport } from './routes/account/security'
 import { Route as ProjectsManageIndexRouteImport } from './routes/projects/manage/index'
 import { Route as ProjectsManageSlugRouteImport } from './routes/projects/manage/$slug'
 import { Route as ProjectsEditSlugRouteImport } from './routes/projects/edit/$slug'
@@ -161,6 +163,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SavedCollectionsRoute = SavedCollectionsRouteImport.update({
+  id: '/saved/collections',
+  path: '/saved/collections',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsNewRoute = ProjectsNewRouteImport.update({
   id: '/projects/new',
   path: '/projects/new',
@@ -211,6 +218,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountSecurityRoute = AccountSecurityRouteImport.update({
+  id: '/account/security',
+  path: '/account/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsManageIndexRoute = ProjectsManageIndexRouteImport.update({
   id: '/projects/manage/',
   path: '/projects/manage/',
@@ -238,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
@@ -248,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/papers/$slug': typeof PapersSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/saved/collections': typeof SavedCollectionsRoute
   '/admin/': typeof AdminIndexRoute
   '/applications/': typeof ApplicationsIndexRoute
   '/events/': typeof EventsIndexRoute
@@ -276,6 +290,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
@@ -286,6 +301,7 @@ export interface FileRoutesByTo {
   '/papers/$slug': typeof PapersSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/saved/collections': typeof SavedCollectionsRoute
   '/admin': typeof AdminIndexRoute
   '/applications': typeof ApplicationsIndexRoute
   '/events': typeof EventsIndexRoute
@@ -315,6 +331,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
@@ -325,6 +342,7 @@ export interface FileRoutesById {
   '/papers/$slug': typeof PapersSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/saved/collections': typeof SavedCollectionsRoute
   '/admin/': typeof AdminIndexRoute
   '/applications/': typeof ApplicationsIndexRoute
   '/events/': typeof EventsIndexRoute
@@ -355,6 +373,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
     | '/guides/$slug'
@@ -365,6 +384,7 @@ export interface FileRouteTypes {
     | '/papers/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/saved/collections'
     | '/admin/'
     | '/applications/'
     | '/events/'
@@ -393,6 +413,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
     | '/guides/$slug'
@@ -403,6 +424,7 @@ export interface FileRouteTypes {
     | '/papers/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/saved/collections'
     | '/admin'
     | '/applications'
     | '/events'
@@ -431,6 +453,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
     | '/guides/$slug'
@@ -441,6 +464,7 @@ export interface FileRouteTypes {
     | '/papers/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/saved/collections'
     | '/admin/'
     | '/applications/'
     | '/events/'
@@ -470,6 +494,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
+  AccountSecurityRoute: typeof AccountSecurityRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   EventsSlugRoute: typeof EventsSlugRoute
   GuidesSlugRoute: typeof GuidesSlugRoute
@@ -480,6 +505,7 @@ export interface RootRouteChildren {
   PapersSlugRoute: typeof PapersSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ProjectsNewRoute: typeof ProjectsNewRoute
+  SavedCollectionsRoute: typeof SavedCollectionsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ApplicationsIndexRoute: typeof ApplicationsIndexRoute
   EventsIndexRoute: typeof EventsIndexRoute
@@ -661,6 +687,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/saved/collections': {
+      id: '/saved/collections'
+      path: '/saved/collections'
+      fullPath: '/saved/collections'
+      preLoaderRoute: typeof SavedCollectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/new': {
       id: '/projects/new'
       path: '/projects/new'
@@ -731,6 +764,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/security': {
+      id: '/account/security'
+      path: '/account/security'
+      fullPath: '/account/security'
+      preLoaderRoute: typeof AccountSecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/manage/': {
       id: '/projects/manage/'
       path: '/projects/manage'
@@ -766,6 +806,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
+  AccountSecurityRoute: AccountSecurityRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   EventsSlugRoute: EventsSlugRoute,
   GuidesSlugRoute: GuidesSlugRoute,
@@ -776,6 +817,7 @@ const rootRouteChildren: RootRouteChildren = {
   PapersSlugRoute: PapersSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   ProjectsNewRoute: ProjectsNewRoute,
+  SavedCollectionsRoute: SavedCollectionsRoute,
   AdminIndexRoute: AdminIndexRoute,
   ApplicationsIndexRoute: ApplicationsIndexRoute,
   EventsIndexRoute: EventsIndexRoute,

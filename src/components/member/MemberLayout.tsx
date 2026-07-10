@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { KeyboardShortcutsDialog } from "@/components/member/KeyboardShortcutsDialog";
 import { MemberCommandPalette } from "@/components/member/MemberCommandPalette";
 import { LiquidBackdrop } from "@/components/member/LiquidBackdrop";
 import { NotificationBell } from "@/components/member/NotificationBell";
@@ -36,6 +37,7 @@ const NAV_MAIN = [
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/applications", label: "Applications", icon: ClipboardList },
   { to: "/saved", label: "Saved", icon: Bookmark },
+  { to: "/saved/collections", label: "Collections", icon: Bookmark },
   { to: "/members", label: "Members", icon: Users },
 ] as const;
 
@@ -152,6 +154,14 @@ export function MemberLayout({
       >
         <Settings className="h-4 w-4" />
         Profile
+      </Link>
+      <Link
+        to="/account/security"
+        onClick={onNavigate}
+        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
+      >
+        <Shield className="h-4 w-4" />
+        Security
       </Link>
       <button
         type="button"
@@ -277,6 +287,7 @@ export function MemberLayout({
       </div>
       <MobileTabBar onMenu={() => setOpen(true)} />
       <MemberCommandPalette />
+      <KeyboardShortcutsDialog />
     </div>
   );
 }

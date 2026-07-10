@@ -79,7 +79,10 @@ export default {
       }
 
       const handler = await getServerEntry();
-      const response = applySecurityHeaders(await handler.fetch(request, env, ctx));
+      const response = applySecurityHeaders(
+        await handler.fetch(request, env, ctx),
+        url.protocol === "https:",
+      );
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
       console.error(error);

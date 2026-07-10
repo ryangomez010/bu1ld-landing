@@ -9,6 +9,7 @@ import {
   Library,
   Search,
   Settings,
+  Shield,
   Users,
 } from "lucide-react";
 
@@ -32,6 +33,8 @@ const NAV = [
   { to: "/members", label: "Member directory", icon: Users },
   { to: "/search", label: "Search", icon: Search },
   { to: "/profile", label: "Profile & export", icon: Settings },
+  { to: "/account/security", label: "Account security", icon: Shield },
+  { to: "/saved/collections", label: "Research collections", icon: BookOpen },
 ] as const;
 
 export function MemberCommandPalette() {

@@ -2,6 +2,7 @@
 
 import {
   clampText,
+  checkRateLimit,
   isUuid,
   isValidEmail,
   jsonResponse,
@@ -75,16 +76,12 @@ function clientIp(request: Request): string {
   );
 }
 
-function checkRateLimit(request: Request): Response | null {
+function checkRateLimitRequest(request: Request): Response | null {
   const ip = clientIp(request);
-  const now = Date.now();
-  const windowStart = now - RATE_LIMIT_WINDOW_MS;
-  const hits = (rateBuckets.get(ip) ?? []).filter((t) => t > windowStart);
-  if (hits.length >= RATE_LIMIT_MAX) {
+  const result = checkRateLimit(rateBuckets, ip, RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX);
+  if (!result.allowed) {
     return jsonResponse({ error: "Too many requests" }, 429);
   }
-  hits.push(now);
-  rateBuckets.set(ip, hits);
   return null;
 }
 
@@ -96,7 +93,7 @@ export async function handleEmailRequest(request: Request, env: EmailEnv): Promi
   const authError = checkAuth(request, env);
   if (authError) return authError;
 
-  const rateError = checkRateLimit(request);
+  const rateError = checkRateLimitRequest(request);
   if (rateError) return rateError;
 
   const contentLength = Number(request.headers.get("content-length") ?? "0");

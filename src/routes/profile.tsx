@@ -390,8 +390,11 @@ function ProfileEditor() {
           </p>
           <p className="text-sm text-bone">{user?.email}</p>
           <p className="text-xs text-muted-foreground">
-            Password and email changes are managed through your auth provider (Supabase Auth). Use
-            “Forgot password” on the login page to reset credentials.
+            Password and email changes are managed in{" "}
+            <Link to="/account/security" className="text-accent-blue hover:text-bone">
+              Account security
+            </Link>
+            . Use “Forgot password” on the login page if you’re locked out.
           </p>
           <Button
             type="button"

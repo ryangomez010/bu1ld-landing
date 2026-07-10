@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { AdminAuditTab } from "@/components/admin/AdminAuditTab";
+import { AdminSecurityTab } from "@/components/admin/AdminSecurityTab";
 import { AdminAnnouncementsTab } from "@/components/admin/AdminAnnouncementsTab";
 import { AdminEventsTab } from "@/components/admin/AdminEventsTab";
 import { AdminGuidesTab } from "@/components/admin/AdminGuidesTab";
@@ -18,7 +19,9 @@ import type { Announcement } from "@/data/seed/announcements";
 import { fetchAllAnnouncementsAdmin } from "@/lib/announcements";
 import { fetchAdminStats, fetchAllMembers } from "@/lib/admin";
 import { fetchAdminAuditLog } from "@/lib/audit-log";
+import { fetchAdminSecurityEvents } from "@/lib/account-security";
 import type { AuditEntry } from "@/lib/audit-log";
+import type { SecurityEvent } from "@/lib/account-security";
 import { fetchAllEventsAdmin, fetchAllNewslettersAdmin, fetchAllPapersAdmin } from "@/lib/content";
 import { fetchAllJobsAdmin, fetchPendingLeadRequests } from "@/lib/projects";
 import { useAuth } from "@/lib/auth";
@@ -60,6 +63,7 @@ function AdminContent() {
     | "members"
     | "leads"
     | "audit"
+    | "security"
   >("overview");
   const [events, setEvents] = useState<MlEvent[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -70,6 +74,7 @@ function AdminContent() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [leadRequests, setLeadRequests] = useState<LeadVerificationRequest[]>([]);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
+  const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
 
   const reload = () => {
     void fetchAllEventsAdmin().then(setEvents);
@@ -81,6 +86,7 @@ function AdminContent() {
     void fetchAdminStats().then(setStats);
     void fetchPendingLeadRequests().then(setLeadRequests);
     void fetchAdminAuditLog().then(setAuditLog);
+    void fetchAdminSecurityEvents().then(setSecurityEvents);
   };
 
   useEffect(() => {
@@ -110,6 +116,7 @@ function AdminContent() {
             "members",
             "leads",
             "audit",
+            "security",
           ] as const
         ).map((t) => (
           <button
@@ -142,6 +149,8 @@ function AdminContent() {
         <AdminMembersTab members={members} actorId={user?.id ?? ""} onSaved={reload} />
       ) : tab === "audit" ? (
         <AdminAuditTab entries={auditLog} />
+      ) : tab === "security" ? (
+        <AdminSecurityTab events={securityEvents} />
       ) : (
         <AdminLeadsTab requests={leadRequests} adminId={user?.id ?? ""} onSaved={reload} />
       )}

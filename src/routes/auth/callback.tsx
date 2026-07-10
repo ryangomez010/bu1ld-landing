@@ -26,7 +26,14 @@ function AuthCallbackPage() {
 
     const finish = async () => {
       const params = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
       const code = params.get("code");
+      const oauthError = params.get("error_description") ?? hashParams.get("error_description");
+
+      if (oauthError) {
+        setError(decodeURIComponent(oauthError.replace(/\+/g, " ")));
+        return;
+      }
 
       if (code) {
         const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
