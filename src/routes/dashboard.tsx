@@ -28,6 +28,7 @@ import { buildForYouFeed } from "@/lib/personalization";
 import type { ForYouItem } from "@/lib/personalization";
 import { findSimilarMembers, fetchMemberDirectory } from "@/lib/members";
 import type { DirectoryMember } from "@/lib/members";
+import { fetchMyUpcomingRsvps } from "@/lib/event-rsvp";
 import { profileCompleteness } from "@/lib/profile";
 import { unreadCount } from "@/lib/notifications";
 import { getAllGuideProgress } from "@/lib/reading-progress";
@@ -77,6 +78,7 @@ function DashboardHome() {
   const [similarMembers, setSimilarMembers] = useState<
     Array<{ member: DirectoryMember; overlap: string[] }>
   >([]);
+  const [myRsvps, setMyRsvps] = useState<MlEvent[]>([]);
 
   useEffect(() => {
     void Promise.all([
@@ -115,6 +117,11 @@ function DashboardHome() {
       );
     });
   }, [user, profile?.interests]);
+
+  useEffect(() => {
+    if (!user || !events.length) return;
+    void fetchMyUpcomingRsvps(user.id, events).then(setMyRsvps);
+  }, [user, events]);
 
   useEffect(() => {
     if (!user || !profile?.interests?.length) return;
@@ -430,6 +437,29 @@ function DashboardHome() {
                         {d.days === 0 ? "Today" : `${d.days}d`}
                       </span>
                     </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {myRsvps.length > 0 ? (
+            <section className="section-gap">
+              <SectionHeader title="Events you're attending" accent="green" />
+              <ul className="rounded-sm border border-border/40 divide-y divide-border/40">
+                {myRsvps.map((e) => (
+                  <li key={e.id}>
+                    <Link
+                      to={`/events/${e.slug}`}
+                      className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 hover:bg-bone/5 transition block"
+                    >
+                      <span className="text-bone">{e.title}</span>
+                      {e.start_date ? (
+                        <span className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
+                          {formatDate(e.start_date)}
+                        </span>
+                      ) : null}
+                    </Link>
                   </li>
                 ))}
               </ul>

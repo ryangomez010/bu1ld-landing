@@ -30,6 +30,7 @@ Open `http://localhost:3000`
 ## Supabase setup
 
 1. Paste `supabase/full-setup.sql` into the SQL editor (or `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`).
+   - Existing projects: run incremental `supabase/phase10.sql` after phase 9 for directory privacy, event RSVPs, and synced paper reads.
 2. Seed demo content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or DB password), or paste `supabase/seed-data.sql`.
 3. Verify: `bun run supabase:verify`
 4. Sign up in the app, then promote your profile:
@@ -47,6 +48,7 @@ update public.profiles set role = 'admin' where id = '<your-user-uuid>';
 | `bun run preview`      | Preview production build             |
 | `bun run format`       | Prettier format                      |
 | `bun run lint`         | ESLint                               |
+| `bun run test`         | Security utility unit tests          |
 | `bun run supabase:verify` | Check tables + auth connectivity |
 | `bun run supabase:apply`  | Apply full schema via Postgres   |
 | `bun run supabase:seed`   | Import seed content into Supabase |

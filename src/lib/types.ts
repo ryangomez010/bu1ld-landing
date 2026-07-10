@@ -12,6 +12,7 @@ export type Profile = {
   linkedin_url: string | null;
   timezone: string | null;
   onboarding_completed: boolean;
+  directory_visible?: boolean;
   role: MemberRole;
   created_at: string;
   updated_at: string;

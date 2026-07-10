@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "supabase:verify": "node scripts/verify-supabase.mjs",
     "supabase:apply": "node scripts/apply-schema.mjs",
-    "supabase:seed": "bun scripts/seed-supabase.ts"
+    "supabase:seed": "bun scripts/seed-supabase.ts",
+    "test": "bun test src/lib/security.test.ts"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",

@@ -51,6 +51,8 @@ const TABLES = [
   "saved_items",
   "announcements",
   "project_updates",
+  "paper_reads",
+  "event_rsvps",
 ];
 
 const supabase = createClient(url, key);

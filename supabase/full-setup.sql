@@ -730,7 +730,10 @@ create policy "Leads delete own project updates"
   on public.project_updates for delete
   using (author_id = auth.uid());
 
--- Phase 9 — member directory + project updates (see supabase/phase9.sql)
+-- Phase 10 — membership hardening (see supabase/phase10.sql)
+
+alter table public.profiles
+  add column if not exists directory_visible boolean not null default true;
 
 drop policy if exists "Members read directory profiles" on public.profiles;
 create policy "Members read directory profiles"
@@ -738,49 +741,65 @@ create policy "Members read directory profiles"
   using (
     auth.uid() is not null
     and onboarding_completed = true
+    and coalesce(directory_visible, true) = true
   );
 
-create table if not exists public.project_updates (
-  id uuid primary key default gen_random_uuid(),
-  project_id uuid references public.projects(id) on delete cascade not null,
-  author_id uuid references public.profiles(id) on delete set null,
-  body text not null check (char_length(body) <= 2000),
-  created_at timestamptz not null default now()
+create table if not exists public.paper_reads (
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  paper_slug text not null check (char_length(paper_slug) <= 200),
+  read_at timestamptz not null default now(),
+  primary key (user_id, paper_slug)
 );
 
-create index if not exists project_updates_project_idx
-  on public.project_updates (project_id, created_at desc);
+alter table public.paper_reads enable row level security;
 
-alter table public.project_updates enable row level security;
+drop policy if exists "Users read own paper reads" on public.paper_reads;
+create policy "Users read own paper reads"
+  on public.paper_reads for select
+  using (auth.uid() = user_id);
 
-drop policy if exists "Members read project updates" on public.project_updates;
-create policy "Members read project updates"
-  on public.project_updates for select
+drop policy if exists "Users insert own paper reads" on public.paper_reads;
+create policy "Users insert own paper reads"
+  on public.paper_reads for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists "Users delete own paper reads" on public.paper_reads;
+create policy "Users delete own paper reads"
+  on public.paper_reads for delete
+  using (auth.uid() = user_id);
+
+create table if not exists public.event_rsvps (
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  event_id uuid references public.events(id) on delete cascade not null,
+  created_at timestamptz not null default now(),
+  primary key (user_id, event_id)
+);
+
+create index if not exists event_rsvps_event_idx on public.event_rsvps (event_id);
+
+alter table public.event_rsvps enable row level security;
+
+drop policy if exists "Members read event rsvps" on public.event_rsvps;
+create policy "Members read event rsvps"
+  on public.event_rsvps for select
   using (
     auth.uid() is not null
     and exists (
-      select 1 from public.projects p
-      where p.id = project_updates.project_id
+      select 1 from public.events e
+      where e.id = event_rsvps.event_id
       and (
-        p.published = true
-        or p.lead_id = auth.uid()
+        e.published = true
         or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
       )
     )
   );
 
-drop policy if exists "Leads insert project updates" on public.project_updates;
-create policy "Leads insert project updates"
-  on public.project_updates for insert
-  with check (
-    author_id = auth.uid()
-    and exists (
-      select 1 from public.projects
-      where id = project_id and lead_id = auth.uid()
-    )
-  );
+drop policy if exists "Users manage own event rsvps" on public.event_rsvps;
+create policy "Users manage own event rsvps"
+  on public.event_rsvps for insert
+  with check (auth.uid() = user_id);
 
-drop policy if exists "Leads delete own project updates" on public.project_updates;
-create policy "Leads delete own project updates"
-  on public.project_updates for delete
-  using (author_id = auth.uid());
+drop policy if exists "Users delete own event rsvps" on public.event_rsvps;
+create policy "Users delete own event rsvps"
+  on public.event_rsvps for delete
+  using (auth.uid() = user_id);

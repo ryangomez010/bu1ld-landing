@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CalendarPlus, ExternalLink } from "lucide-react";
+import { CalendarPlus, ExternalLink, Users } from "lucide-react";
+import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { TagList } from "@/components/member/ContentCard";
@@ -13,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { buildIcsEvent, downloadIcs } from "@/lib/calendar";
 import { fetchEventBySlug, fetchEvents, relatedEvents } from "@/lib/content";
 import { daysUntil, formatDate } from "@/lib/date";
+import { fetchRsvpCount, isRsvped, toggleEventRsvp } from "@/lib/event-rsvp";
+import { useAuth } from "@/lib/auth";
 import type { MlEvent } from "@/lib/types";
 
 export const Route = createFileRoute("/events/$slug")({
@@ -29,9 +32,13 @@ function EventDetailPage() {
 
 function EventDetail() {
   const { slug } = Route.useParams();
+  const { user } = useAuth();
   const [event, setEvent] = useState<MlEvent | null>(null);
   const [related, setRelated] = useState<MlEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rsvped, setRsvped] = useState(false);
+  const [rsvpCount, setRsvpCount] = useState(0);
+  const [rsvpBusy, setRsvpBusy] = useState(false);
 
   useEffect(() => {
     void Promise.all([fetchEventBySlug(slug), fetchEvents()]).then(([e, all]) => {
@@ -40,6 +47,26 @@ function EventDetail() {
       setLoading(false);
     });
   }, [slug]);
+
+  useEffect(() => {
+    if (!user || !event) return;
+    void isRsvped(user.id, event.id).then(setRsvped);
+    void fetchRsvpCount(event.id).then(setRsvpCount);
+  }, [user, event?.id]);
+
+  const onToggleRsvp = async () => {
+    if (!user || !event) return;
+    setRsvpBusy(true);
+    const { rsvped: next, error } = await toggleEventRsvp(user.id, event);
+    setRsvpBusy(false);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    setRsvped(next);
+    setRsvpCount((c) => Math.max(0, c + (next ? 1 : -1)));
+    toast.success(next ? "You're on the list." : "RSVP removed.");
+  };
 
   if (loading) {
     return (
@@ -91,6 +118,22 @@ function EventDetail() {
               <CalendarPlus className="h-3.5 w-3.5 mr-1.5" />
               Add to calendar
             </Button>
+          ) : null}
+          <Button
+            type="button"
+            size="sm"
+            variant={rsvped ? "default" : "outline"}
+            disabled={rsvpBusy}
+            className="font-mono text-[9px] tracking-[0.15em] uppercase"
+            onClick={() => void onToggleRsvp()}
+          >
+            {rsvpBusy ? "…" : rsvped ? "Going ✓" : "RSVP"}
+          </Button>
+          {rsvpCount > 0 ? (
+            <span className="inline-flex items-center gap-1.5 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
+              <Users className="h-3.5 w-3.5" />
+              {rsvpCount} going
+            </span>
           ) : null}
         </div>
         <p className="mt-2 text-muted-foreground">

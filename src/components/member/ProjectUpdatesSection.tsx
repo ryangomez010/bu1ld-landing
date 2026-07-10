@@ -7,6 +7,7 @@ import { relativeTime } from "@/lib/date";
 import {
   createProjectUpdate,
   fetchProjectUpdates,
+  subscribeProjectUpdates,
   type ProjectUpdate,
 } from "@/lib/project-updates";
 
@@ -31,6 +32,7 @@ export function ProjectUpdatesSection({
 
   useEffect(() => {
     reload();
+    return subscribeProjectUpdates(projectId, setUpdates);
   }, [projectId]);
 
   const onPost = async (e: React.FormEvent) => {

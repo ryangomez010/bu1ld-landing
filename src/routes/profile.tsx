@@ -8,6 +8,7 @@ import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,10 +20,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { BACKGROUND_OPTIONS, INTEREST_OPTIONS } from "@/data/landing";
+import { buildAccountExport, downloadAccountExport } from "@/lib/account-export";
 import { useAuth } from "@/lib/auth";
 import { buildForYouFeed } from "@/lib/personalization";
 import type { ForYouItem } from "@/lib/personalization";
-import { profileCompleteness, updateProfile } from "@/lib/profile";
+import { syncPaperReadsToRemote } from "@/lib/paper-read";
+import { profileCompleteness, updateProfile, upsertProfile } from "@/lib/profile";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { isSafeUrl } from "@/lib/urls";
 import type { MemberBackground } from "@/lib/types";
@@ -49,7 +52,9 @@ function ProfileEditor() {
   const [githubUrl, setGithubUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [timezone, setTimezone] = useState("");
+  const [directoryVisible, setDirectoryVisible] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [previewFeed, setPreviewFeed] = useState<ForYouItem[]>([]);
 
   useEffect(() => {
@@ -72,7 +77,13 @@ function ProfileEditor() {
     setGithubUrl(profile.github_url ?? "");
     setLinkedinUrl(profile.linkedin_url ?? "");
     setTimezone(profile.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone);
+    setDirectoryVisible(profile.directory_visible !== false);
   }, [profile]);
+
+  useEffect(() => {
+    if (!user) return;
+    void syncPaperReadsToRemote(user.id);
+  }, [user]);
 
   const completeness = profileCompleteness(profile);
 
@@ -116,6 +127,7 @@ function ProfileEditor() {
         linkedin_url: linkedinUrl,
         timezone,
       });
+      await upsertProfile(user.id, { directory_visible: directoryVisible });
       await refreshProfile();
       toast.success("Profile updated.");
       void navigate({ to: "/dashboard" });
@@ -123,6 +135,20 @@ function ProfileEditor() {
       toast.error(err instanceof Error ? err.message : "Could not save profile.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const onExport = async () => {
+    if (!user) return;
+    setExporting(true);
+    try {
+      const data = await buildAccountExport(user.id);
+      downloadAccountExport(data);
+      toast.success("Account data downloaded.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Export failed.");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -158,12 +184,16 @@ function ProfileEditor() {
             Directory
           </p>
           {user && profile?.onboarding_completed ? (
-            <Link
-              to={`/members/${user.id}`}
-              className="mt-2 inline-block font-mono text-[10px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
-            >
-              View public profile →
-            </Link>
+            profile.directory_visible !== false ? (
+              <Link
+                to={`/members/${user.id}`}
+                className="mt-2 inline-block font-mono text-[10px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
+              >
+                View public profile →
+              </Link>
+            ) : (
+              <p className="mt-2 text-sm text-muted-foreground">Hidden from directory</p>
+            )
           ) : (
             <p className="mt-2 text-sm text-muted-foreground">Complete onboarding to appear</p>
           )}
@@ -336,7 +366,23 @@ function ProfileEditor() {
             ))}
           </datalist>
         </div>
-        <div className="rounded-sm border border-border/50 bg-background/60 p-4 space-y-2">
+        <div className="flex items-start gap-3 rounded-sm border border-border/50 bg-background/60 p-4">
+          <Checkbox
+            id="directoryVisible"
+            checked={directoryVisible}
+            onCheckedChange={(v) => setDirectoryVisible(v === true)}
+          />
+          <div className="space-y-1">
+            <Label htmlFor="directoryVisible" className="text-bone cursor-pointer">
+              Show me in the member directory
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              When off, other members cannot find your profile in search or the directory. You can
+              still use the portal normally.
+            </p>
+          </div>
+        </div>
+        <div className="rounded-sm border border-border/50 bg-background/60 p-4 space-y-3">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Account
           </p>
@@ -345,6 +391,16 @@ function ProfileEditor() {
             Password and email changes are managed through your auth provider (Supabase Auth). Use
             “Forgot password” on the login page to reset credentials.
           </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={exporting}
+            onClick={() => void onExport()}
+            className="font-mono text-[9px] tracking-[0.15em] uppercase"
+          >
+            {exporting ? "Preparing…" : "Download my data"}
+          </Button>
         </div>
         <div className="flex flex-wrap gap-3">
           <Button

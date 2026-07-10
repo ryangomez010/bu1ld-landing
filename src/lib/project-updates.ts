@@ -28,18 +28,7 @@ export async function fetchProjectUpdates(projectId: string): Promise<ProjectUpd
       .order("created_at", { ascending: false })
       .limit(20);
     if (!error && data?.length) {
-      return data.map((row) => {
-        const r = row as Record<string, unknown>;
-        const profile = r.profiles as { full_name?: string } | null;
-        return {
-          id: String(r.id),
-          project_id: String(r.project_id),
-          author_id: String(r.author_id),
-          author_name: profile?.full_name ?? undefined,
-          body: String(r.body),
-          created_at: String(r.created_at),
-        };
-      });
+      return data.map((row) => mapRow(row as Record<string, unknown>));
     }
   }
   return readLocal(projectId).sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -77,4 +66,45 @@ export async function createProjectUpdate(
   };
   writeLocal(projectId, [update, ...readLocal(projectId)]);
   return { error: null };
+}
+
+function mapRow(row: Record<string, unknown>): ProjectUpdate {
+  const profile = row.profiles as { full_name?: string } | null;
+  return {
+    id: String(row.id),
+    project_id: String(row.project_id),
+    author_id: String(row.author_id),
+    author_name: profile?.full_name ?? undefined,
+    body: String(row.body),
+    created_at: String(row.created_at),
+  };
+}
+
+/** Subscribe to live project updates (Supabase realtime). Returns unsubscribe. */
+export function subscribeProjectUpdates(
+  projectId: string,
+  onUpdate: (updates: ProjectUpdate[]) => void,
+): () => void {
+  const supabase = getSupabase();
+  if (!supabase) return () => {};
+
+  const channel = supabase
+    .channel(`project-updates-${projectId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "project_updates",
+        filter: `project_id=eq.${projectId}`,
+      },
+      () => {
+        void fetchProjectUpdates(projectId).then(onUpdate);
+      },
+    )
+    .subscribe();
+
+  return () => {
+    void supabase.removeChannel(channel);
+  };
 }
