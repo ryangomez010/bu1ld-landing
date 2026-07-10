@@ -58,6 +58,28 @@ export const RESEARCH_PATHS: ResearchPath[] = [
       { kind: "paper", slug: "residual-event-tokenization" },
     ],
   },
+  {
+    id: "efficient-finetune",
+    title: "Efficient adaptation",
+    description:
+      "LoRA for practical fine-tunes, then DPO for preference alignment — the stack most member projects actually run.",
+    steps: [
+      { kind: "paper", slug: "lora-low-rank-adaptation" },
+      { kind: "paper", slug: "direct-preference-optimization" },
+      { kind: "guide", slug: "how-llms-work" },
+    ],
+  },
+  {
+    id: "long-context",
+    title: "Beyond attention",
+    description:
+      "Scaling laws for compute budgeting, then selective state-space models for long-context throughput experiments.",
+    steps: [
+      { kind: "paper", slug: "chinchilla-scaling-laws" },
+      { kind: "paper", slug: "mamba-selective-state-spaces" },
+      { kind: "guide", slug: "what-is-attention" },
+    ],
+  },
 ];
 
 export function relatedGuidesForPaper(paper: Paper, guides: Guide[] = getAllGuides()): Guide[] {

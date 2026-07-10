@@ -1,22 +1,116 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, ExternalLink } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { BookOpen, ExternalLink, List, StickyNote } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { TagList } from "@/components/member/ContentCard";
 import { PaperReviewBody } from "@/components/member/PaperReviewMarkdown";
 import { SaveButton } from "@/components/member/SaveButton";
 import { ShareButton } from "@/components/member/ShareButton";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
 import { getAllGuides } from "@/content/guides";
-import { getPaperScrollProgress, setPaperScrollProgress } from "@/lib/paper-reading-progress";
-import { getPaperNotes, savePaperNotes } from "@/lib/paper-notes";
+import {
+  fetchPaperNotes,
+  fetchPaperScrollProgress,
+  savePaperNotes,
+  savePaperScrollProgress,
+} from "@/lib/paper-notes";
 import { isPaperRead, markPaperRead, unmarkPaperRead } from "@/lib/paper-read";
 import { extractPullQuote, paperReadMinutes, parseReviewSections } from "@/lib/paper-review";
 import { relatedGuidesForPaper } from "@/lib/research-paths";
 import type { Paper } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+function ReaderSidebar({
+  toc,
+  notes,
+  onNotesChange,
+  relatedGuides,
+}: {
+  toc: ReturnType<typeof parseReviewSections>;
+  notes: string;
+  onNotesChange: (value: string) => void;
+  relatedGuides: ReturnType<typeof relatedGuidesForPaper>;
+}) {
+  return (
+    <div className="space-y-5">
+      {toc.length > 0 ? (
+        <nav className="rounded-sm border border-border/50 p-4">
+          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3">
+            Sections
+          </p>
+          <ul className="space-y-2">
+            {toc.map((s) => (
+              <li key={s.id}>
+                <a
+                  href={`#${s.id}`}
+                  className={cn(
+                    "text-sm leading-snug block py-0.5 transition",
+                    s.variant === "build"
+                      ? "text-accent-green/90 hover:text-accent-green"
+                      : "text-muted-foreground hover:text-bone",
+                  )}
+                >
+                  {s.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : null}
+
+      <div className="rounded-sm border border-border/50 p-4">
+        <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
+          Your notes
+        </p>
+        <p className="text-xs text-muted-foreground mb-3">Private — synced to your account when signed in.</p>
+        <Textarea
+          value={notes}
+          onChange={(e) => onNotesChange(e.target.value)}
+          rows={6}
+          placeholder="Claims to verify, reproduction ideas, questions for the thread…"
+          className="text-sm resize-none bg-background/50"
+        />
+      </div>
+
+      {relatedGuides.length > 0 ? (
+        <div className="rounded-sm border border-border/50 p-4">
+          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3 flex items-center gap-2">
+            <BookOpen className="h-3.5 w-3.5" />
+            Read first
+          </p>
+          <ul className="space-y-2">
+            {relatedGuides.map((g) => (
+              <li key={g.slug}>
+                <Link
+                  to={`/guides/${g.slug}`}
+                  className="text-sm text-muted-foreground hover:text-bone transition line-clamp-2"
+                >
+                  {g.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      <Link
+        to="/research"
+        className="block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
+      >
+        All reading paths →
+      </Link>
+    </div>
+  );
+}
 
 export function PaperReader({
   paper,
@@ -38,11 +132,18 @@ export function PaperReader({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [markedRead, setMarkedRead] = useState(false);
   const [notes, setNotes] = useState("");
+  const progressSaveRef = useRef(0);
 
   useEffect(() => {
-    void isPaperRead(userId, paper.slug).then(setMarkedRead);
-    setScrollProgress(getPaperScrollProgress(userId, paper.slug));
-    setNotes(getPaperNotes(userId, paper.slug));
+    void Promise.all([
+      isPaperRead(userId, paper.slug),
+      fetchPaperScrollProgress(userId, paper.slug),
+      fetchPaperNotes(userId, paper.slug),
+    ]).then(([read, progress, savedNotes]) => {
+      setMarkedRead(read);
+      setScrollProgress(progress);
+      setNotes(savedNotes);
+    });
   }, [userId, paper.slug]);
 
   useEffect(() => {
@@ -50,7 +151,11 @@ export function PaperReader({
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const pct = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 100;
       setScrollProgress(pct);
-      setPaperScrollProgress(userId, paper.slug, pct);
+      const rounded = Math.round(pct);
+      if (rounded !== progressSaveRef.current) {
+        progressSaveRef.current = rounded;
+        void savePaperScrollProgress(userId, paper.slug, pct);
+      }
       if (pct >= 92 && !markedRead) {
         void markPaperRead(userId, paper.slug).then(() => setMarkedRead(true));
       }
@@ -84,7 +189,7 @@ export function PaperReader({
       </div>
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:gap-16">
-        <article className="min-w-0 pb-24">
+        <article className="min-w-0 pb-28 lg:pb-24">
           <header className="mb-10 border-l-2 border-bone/25 pl-6 md:pl-8">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-4">
               <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
@@ -175,75 +280,84 @@ export function PaperReader({
         </article>
 
         <aside className="hidden lg:block">
-          <div className="sticky top-20 space-y-5">
-            {toc.length > 0 ? (
-              <nav className="rounded-sm border border-border/50 p-4">
-                <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3">
-                  Sections
-                </p>
-                <ul className="space-y-2">
-                  {toc.map((s) => (
-                    <li key={s.id}>
-                      <a
-                        href={`#${s.id}`}
-                        className={cn(
-                          "text-sm leading-snug block py-0.5 transition",
-                          s.variant === "build"
-                            ? "text-accent-green/90 hover:text-accent-green"
-                            : "text-muted-foreground hover:text-bone",
-                        )}
-                      >
-                        {s.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            ) : null}
-
-            <div className="rounded-sm border border-border/50 p-4">
-              <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
-                Your notes
-              </p>
-              <p className="text-xs text-muted-foreground mb-3">Private — saved on this device.</p>
-              <Textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={6}
-                placeholder="Claims to verify, reproduction ideas, questions for the thread…"
-                className="text-sm resize-none bg-background/50"
-              />
-            </div>
-
-            {relatedGuides.length > 0 ? (
-              <div className="rounded-sm border border-border/50 p-4">
-                <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3 flex items-center gap-2">
-                  <BookOpen className="h-3.5 w-3.5" />
-                  Read first
-                </p>
-                <ul className="space-y-2">
-                  {relatedGuides.map((g) => (
-                    <li key={g.slug}>
-                      <Link
-                        to={`/guides/${g.slug}`}
-                        className="text-sm text-muted-foreground hover:text-bone transition line-clamp-2"
-                      >
-                        {g.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            <Link
-              to="/research"
-              className="block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
-            >
-              All reading paths →
-            </Link>
+          <div className="sticky top-20">
+            <ReaderSidebar
+              toc={toc}
+              notes={notes}
+              onNotesChange={setNotes}
+              relatedGuides={relatedGuides}
+            />
           </div>
         </aside>
+      </div>
+
+      <div className="fixed bottom-16 lg:bottom-4 left-4 right-4 z-[60] flex gap-2 lg:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 font-mono text-[9px] uppercase bg-background/95 backdrop-blur"
+            >
+              <List className="h-3.5 w-3.5 mr-2" />
+              Sections
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="max-h-[70vh] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle className="font-display text-left">Sections</SheetTitle>
+            </SheetHeader>
+            <nav className="mt-4 rounded-sm border border-border/50 p-4">
+              <ul className="space-y-2">
+                {toc.map((s) => (
+                  <li key={s.id}>
+                    <a
+                      href={`#${s.id}`}
+                      className={cn(
+                        "text-sm leading-snug block py-1 transition",
+                        s.variant === "build"
+                          ? "text-accent-green/90 hover:text-accent-green"
+                          : "text-muted-foreground hover:text-bone",
+                      )}
+                    >
+                      {s.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <Link
+              to="/research"
+              className="mt-4 block font-mono text-[9px] uppercase text-accent-blue"
+            >
+              Reading paths →
+            </Link>
+          </SheetContent>
+        </Sheet>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 font-mono text-[9px] uppercase bg-background/95 backdrop-blur"
+            >
+              <StickyNote className="h-3.5 w-3.5 mr-2" />
+              Notes
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="max-h-[60vh]">
+            <SheetHeader>
+              <SheetTitle className="font-display text-left">Your notes</SheetTitle>
+            </SheetHeader>
+            <Textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={8}
+              placeholder="Claims to verify, reproduction ideas…"
+              className="mt-4 text-sm resize-none"
+            />
+          </SheetContent>
+        </Sheet>
       </div>
     </>
   );

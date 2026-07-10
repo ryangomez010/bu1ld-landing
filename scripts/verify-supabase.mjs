@@ -53,6 +53,7 @@ const TABLES = [
   "project_updates",
   "paper_reads",
   "event_rsvps",
+  "newsletter_subscriptions",
 ];
 
 const supabase = createClient(url, key);

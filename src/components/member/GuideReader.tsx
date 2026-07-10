@@ -92,27 +92,32 @@ export function GuideReader({
 
   return (
     <>
-      <div className="fixed top-[2px] left-0 right-0 z-[70] h-1 bg-border/40">
+      <div className="fixed top-[2px] left-0 right-0 z-[70] h-px bg-border/60">
         <div
-          className="h-full bg-gradient-to-r from-accent-red via-accent-green to-accent-blue transition-all duration-150"
+          className="h-full bg-bone/80 transition-[width] duration-150"
           style={{ width: `${progress}%` }}
         />
       </div>
-      <div className="fixed top-3 right-4 z-[70] font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground bg-background/80 backdrop-blur px-2 py-1 rounded-sm border border-border/40">
-        {Math.round(progress)}% read
-      </div>
 
-      <article className="max-w-2xl pb-24 detail-header">
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
-          {guide.readMinutes} min read · reference guide
-        </p>
-        <h1 className="font-display text-4xl text-bone mt-4 tracking-tight leading-[1.1]">
-          {guide.title}
-        </h1>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <SaveButton itemType="guide" itemSlug={guide.slug} itemTitle={guide.title} />
-        </div>
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">{guide.description}</p>
+      <article className="max-w-2xl pb-24">
+        <header className="border-l-2 border-bone/25 pl-6 md:pl-8">
+          <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
+            {guide.readMinutes} min read · reference guide
+          </p>
+          <h1 className="font-display text-3xl md:text-4xl text-bone mt-4 tracking-tight leading-[1.1]">
+            {guide.title}
+          </h1>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <SaveButton itemType="guide" itemSlug={guide.slug} itemTitle={guide.title} />
+            <Link
+              to="/research"
+              className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"
+            >
+              Reading paths →
+            </Link>
+          </div>
+          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">{guide.description}</p>
+        </header>
 
         {toc.length > 1 ? (
           <nav className="mt-6 rounded-sm border border-border/60 bg-background/50 p-4">

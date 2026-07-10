@@ -321,6 +321,88 @@ Most member projects should start with SFT + light DPO on **small, curated** pre
     created_at: "2026-03-10T00:00:00Z",
     updated_at: "2026-03-10T00:00:00Z",
   },
+  {
+    id: "seed-lora",
+    slug: "lora-low-rank-adaptation",
+    title: "LoRA: Low-Rank Adaptation of Large Language Models",
+    authors: "Hu et al.",
+    year: 2021,
+    arxiv_url: "https://arxiv.org/abs/2106.09685",
+    tags: ["Fine-tuning", "Efficiency", "LLMs"],
+    is_classic: true,
+    summary:
+      "Train tiny adapter matrices instead of full weights — the default trick for customizing big models on small GPUs.",
+    review_body: `## The problem
+
+Full fine-tuning a 7B+ model needs memory for optimizer states on every parameter. Most teams only need to steer behavior on a narrow domain — not rewrite the entire representation.
+
+## Core mechanism
+
+Freeze pretrained weights W. Inject trainable low-rank updates:
+
+**W' = W + BA** where B ∈ ℝ^{d×r}, A ∈ ℝ^{r×k}, with rank r ≪ min(d,k).
+
+Only A and B get gradients. Memory drops sharply; you can stack multiple LoRA modules per layer for different tasks.
+
+## What to look for in the paper
+
+- Rank sweeps: r=4, 8, 16 often match full FT on GLUE-style tasks — until the task needs new knowledge, not style.
+- Where adapters attach: attention projections (q,v) dominate quality per parameter in many reproductions.
+- Merging adapters into base weights for inference — deployment story matters as much as training.
+
+## BUILD reproduction sketch
+
+1. Pick a small instruction dataset (500–2k examples).
+2. Compare full FT vs LoRA r=8 on the same GPU budget.
+3. Measure perplexity **and** task accuracy — cheap LoRA can overfit tone without improving facts.
+
+## BUILD take
+
+LoRA is not "free fine-tuning." It is a **controlled subspace** for steering. If your eval does not move, you need data or rank — not another epoch.`,
+    published: true,
+    published_at: "2026-03-12T00:00:00Z",
+    created_at: "2026-03-12T00:00:00Z",
+    updated_at: "2026-03-12T00:00:00Z",
+  },
+  {
+    id: "seed-mamba",
+    slug: "mamba-selective-state-spaces",
+    title: "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+    authors: "Gu & Dao",
+    year: 2023,
+    arxiv_url: "https://arxiv.org/abs/2312.00752",
+    tags: ["Sequence models", "SSM", "Efficiency"],
+    is_classic: false,
+    summary:
+      "State-space models that select what to remember — sub-quadratic context at long horizons, with transformer-class quality on some benchmarks.",
+    review_body: `## Why people cared
+
+Transformers scale well but attention is O(n²) in sequence length. SSMs (S4, H3) offered O(n) recurrence but struggled on discrete copying tasks. Mamba makes the state transition **input-dependent** — a selective gate on what enters and leaves the hidden state.
+
+## Intuition
+
+Classic SSM: same linear dynamics for every token. Mamba: dynamics change per token, like content-based addressing without full attention matrices.
+
+## Evidence to weigh
+
+- Long-context synthetic tasks (selective copying) where prior SSMs failed.
+- Language modeling perplexity competitive with small transformers at matched parameter counts — check **training FLOPs**, not just params.
+- Hardware-aware parallel scan — the implementation is part of the result.
+
+## Limits (as of the paper era)
+
+- Ecosystem maturity vs FlashAttention transformers.
+- Multimodal and tool-use stacks still transformer-centric in production.
+- Scaling laws at 10B+ less settled than dense decoder-only transformers.
+
+## BUILD take
+
+Mamba is a bet on **long context + throughput**, not a universal transformer replacement. Prototype on your actual sequence length distribution — not LM perplexity alone.`,
+    published: true,
+    published_at: "2026-03-14T00:00:00Z",
+    created_at: "2026-03-14T00:00:00Z",
+    updated_at: "2026-03-14T00:00:00Z",
+  },
 ];
 
 export const SEED_NEWSLETTERS: NewsletterIssue[] = [

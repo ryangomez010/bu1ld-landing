@@ -1,12 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { ContentCard, EmptyState } from "@/components/member/ContentCard";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 import { fetchNewsletters } from "@/lib/content";
 import { formatDate } from "@/lib/date";
+import { isNewsletterSubscribed, setNewsletterSubscribed } from "@/lib/newsletter-subscribe";
 import type { NewsletterIssue } from "@/lib/types";
 
 export const Route = createFileRoute("/newsletter/")({
@@ -22,8 +26,11 @@ function NewsletterPage() {
 }
 
 function NewsletterContent() {
+  const { user } = useAuth();
   const [issues, setIssues] = useState<NewsletterIssue[]>([]);
   const [loading, setLoading] = useState(true);
+  const [subscribed, setSubscribed] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     void fetchNewsletters().then((data) => {
@@ -32,12 +39,50 @@ function NewsletterContent() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+    void isNewsletterSubscribed(user.id).then(setSubscribed);
+  }, [user]);
+
+  const toggleSubscribe = () => {
+    if (!user) return;
+    setSaving(true);
+    const next = !subscribed;
+    void setNewsletterSubscribed(user.id, next).then(() => {
+      setSubscribed(next);
+      setSaving(false);
+      toast.success(next ? "Subscribed to BUILD digest" : "Unsubscribed from digest emails");
+    });
+  };
+
   return (
     <MemberLayout title="Newsletter" eyebrow="build digest">
-      <p className="text-muted-foreground mb-8 max-w-2xl leading-relaxed -mt-4">
+      <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
         Archived BUILD digests — community updates, paper picks, event reminders, and startup
         spotlights.
       </p>
+      {user ? (
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-sm border border-border/50 px-5 py-4">
+          <div>
+            <p className="text-sm text-bone">Email digest</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {subscribed
+                ? "You will receive new issue announcements by email."
+                : "You are not subscribed to digest emails."}
+            </p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={saving}
+            onClick={toggleSubscribe}
+            className="font-mono text-[9px] uppercase"
+          >
+            {subscribed ? "Unsubscribe" : "Subscribe"}
+          </Button>
+        </div>
+      ) : null}
       {loading ? (
         <ListSkeleton rows={4} />
       ) : issues.length === 0 ? (

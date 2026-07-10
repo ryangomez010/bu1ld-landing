@@ -15,6 +15,7 @@ import { PitchTemplates } from "@/components/member/PitchTemplates";
 import { SaveButton } from "@/components/member/SaveButton";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
+import { ProjectMemberWorkspace } from "@/components/member/ProjectMemberWorkspace";
 import { ProjectUpdatesSection } from "@/components/member/ProjectUpdatesSection";
 import { ShareButton } from "@/components/member/ShareButton";
 import {
@@ -338,6 +339,14 @@ function ProjectDetail() {
           <p className="mt-10 text-sm text-muted-foreground font-mono uppercase tracking-wider">
             This project is not accepting applications.
           </p>
+        ) : null}
+
+        {application && user ? (
+          <ProjectMemberWorkspace
+            project={project}
+            application={application}
+            teamMembers={teamMembers}
+          />
         ) : null}
 
         <ProjectUpdatesSection
