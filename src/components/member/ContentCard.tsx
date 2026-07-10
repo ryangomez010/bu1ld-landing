@@ -48,7 +48,7 @@ export function ContentCard({
   children?: React.ReactNode;
 }) {
   return (
-    <Link to={to} className="panel panel-interactive group block p-6 rounded-sm">
+    <Link to={to} className="panel panel-interactive group block p-6 rounded-xl">
       {tag ? (
         <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-blue/80">
           {tag}

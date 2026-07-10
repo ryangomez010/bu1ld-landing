@@ -345,22 +345,125 @@
     animation: marquee 60s linear infinite;
   }
 
-  /* Member hub surfaces */
+  /* Member hub — liquid glass */
   .member-canvas {
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, color-mix(in oklab, var(--accent-blue) 12%, transparent), transparent),
-      radial-gradient(rgba(242, 235, 221, 0.02) 1px, transparent 1px);
+    position: relative;
+    isolation: isolate;
+    background-color: var(--background);
+  }
+  .liquid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .liquid-sheen {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 90% 55% at 50% -15%, color-mix(in oklab, var(--accent-blue) 14%, transparent), transparent 55%),
+      radial-gradient(ellipse 60% 45% at 100% 40%, color-mix(in oklab, var(--accent-violet) 10%, transparent), transparent 50%),
+      radial-gradient(ellipse 50% 40% at 0% 75%, color-mix(in oklab, var(--accent-green) 8%, transparent), transparent 45%),
+      radial-gradient(rgba(242, 235, 221, 0.018) 1px, transparent 1px);
     background-size:
       100% 100%,
-      24px 24px;
+      100% 100%,
+      100% 100%,
+      28px 28px;
+  }
+  .liquid-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(72px);
+    will-change: transform;
+  }
+  .liquid-orb-a {
+    width: min(42vw, 420px);
+    height: min(42vw, 420px);
+    top: -8%;
+    right: 10%;
+    background: color-mix(in oklab, var(--accent-blue) 55%, transparent);
+    opacity: 0.22;
+    animation: liquid-drift-a 22s ease-in-out infinite;
+  }
+  .liquid-orb-b {
+    width: min(36vw, 360px);
+    height: min(36vw, 360px);
+    bottom: 8%;
+    left: -6%;
+    background: color-mix(in oklab, var(--accent-violet) 50%, transparent);
+    opacity: 0.18;
+    animation: liquid-drift-b 26s ease-in-out infinite;
+  }
+  .liquid-orb-c {
+    width: min(28vw, 280px);
+    height: min(28vw, 280px);
+    top: 42%;
+    left: 38%;
+    background: color-mix(in oklab, var(--accent-green) 45%, transparent);
+    opacity: 0.12;
+    animation: liquid-drift-c 30s ease-in-out infinite;
+  }
+  .glass {
+    position: relative;
+    background: color-mix(in oklab, var(--background) 42%, transparent);
+    border: 1px solid color-mix(in oklab, var(--bone) 14%, transparent);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--bone) 12%, transparent),
+      inset 0 -1px 0 color-mix(in oklab, var(--bone) 3%, transparent),
+      0 8px 32px -16px rgba(0, 0, 0, 0.65);
+  }
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--bone) 8%, transparent) 0%,
+      transparent 42%,
+      color-mix(in oklab, var(--accent-blue) 4%, transparent) 100%
+    );
+    pointer-events: none;
+    opacity: 0.85;
+  }
+  .glass-strong {
+    background: color-mix(in oklab, var(--background) 58%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border-color: color-mix(in oklab, var(--bone) 18%, transparent);
+  }
+  .glass-subtle {
+    background: color-mix(in oklab, var(--background) 28%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
   }
   .panel {
-    background: color-mix(in oklab, var(--background) 75%, transparent);
-    border: 1px solid color-mix(in oklab, var(--bone) 10%, transparent);
-    backdrop-filter: blur(12px);
+    position: relative;
+    background: color-mix(in oklab, var(--background) 42%, transparent);
+    border: 1px solid color-mix(in oklab, var(--bone) 14%, transparent);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
     box-shadow:
-      inset 0 1px 0 color-mix(in oklab, var(--bone) 5%, transparent),
-      0 4px 24px -12px rgba(0, 0, 0, 0.45);
+      inset 0 1px 0 color-mix(in oklab, var(--bone) 12%, transparent),
+      inset 0 -1px 0 color-mix(in oklab, var(--bone) 3%, transparent),
+      0 8px 32px -16px rgba(0, 0, 0, 0.65);
+    overflow: hidden;
+  }
+  .panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      125deg,
+      color-mix(in oklab, var(--bone) 7%, transparent) 0%,
+      transparent 38%,
+      color-mix(in oklab, var(--accent-blue) 5%, transparent) 100%
+    );
+    pointer-events: none;
   }
   .panel-interactive {
     transition:
@@ -370,13 +473,14 @@
       box-shadow 0.25s ease;
   }
   .panel-interactive:hover {
-    background: color-mix(in oklab, var(--background) 55%, transparent);
-    border-color: color-mix(in oklab, var(--bone) 22%, transparent);
-    transform: translateY(-1px);
+    background: color-mix(in oklab, var(--background) 32%, transparent);
+    border-color: color-mix(in oklab, var(--bone) 26%, transparent);
+    transform: translateY(-2px);
     box-shadow:
-      inset 0 1px 0 color-mix(in oklab, var(--bone) 8%, transparent),
-      0 8px 32px -12px rgba(0, 0, 0, 0.55),
-      0 0 0 1px color-mix(in oklab, var(--bone) 8%, transparent);
+      inset 0 1px 0 color-mix(in oklab, var(--bone) 14%, transparent),
+      0 16px 48px -20px rgba(0, 0, 0, 0.7),
+      0 0 0 1px color-mix(in oklab, var(--accent-blue) 12%, transparent),
+      0 0 40px -20px color-mix(in oklab, var(--accent-blue) 35%, transparent);
   }
   .chip {
     font-family: "JetBrains Mono", ui-monospace, monospace;
@@ -411,10 +515,13 @@
   }
   .nav-active {
     position: relative;
-    background: color-mix(in oklab, var(--accent-blue) 12%, transparent);
-    border: 1px solid color-mix(in oklab, var(--accent-blue) 32%, transparent);
+    background: color-mix(in oklab, var(--accent-blue) 16%, transparent);
+    border: 1px solid color-mix(in oklab, var(--accent-blue) 38%, transparent);
     color: var(--bone);
-    box-shadow: inset 0 1px 0 color-mix(in oklab, var(--accent-blue) 15%, transparent);
+    backdrop-filter: blur(12px) saturate(150%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--bone) 15%, transparent),
+      0 0 24px -8px color-mix(in oklab, var(--accent-blue) 45%, transparent);
   }
   .nav-active::before {
     content: "";
@@ -463,9 +570,10 @@
     z-index: 30;
     margin-inline: -1rem;
     padding: 0.75rem 1rem;
-    background: color-mix(in oklab, var(--background) 85%, transparent);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid color-mix(in oklab, var(--bone) 8%, transparent);
+    background: color-mix(in oklab, var(--background) 55%, transparent);
+    backdrop-filter: blur(24px) saturate(160%);
+    border-bottom: 1px solid color-mix(in oklab, var(--bone) 10%, transparent);
+    box-shadow: 0 8px 24px -16px rgba(0, 0, 0, 0.5);
   }
   @media (min-width: 768px) {
     .filter-bar-sticky {
@@ -548,8 +656,20 @@
   .prose-build h2 {
     scroll-margin-top: 6rem;
   }
+  .glass-dock {
+    margin: 0 0.75rem max(0.65rem, env(safe-area-inset-bottom));
+    border-radius: 1.25rem;
+    border: 1px solid color-mix(in oklab, var(--bone) 16%, transparent);
+    background: color-mix(in oklab, var(--background) 48%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--bone) 14%, transparent),
+      0 12px 40px -12px rgba(0, 0, 0, 0.75),
+      0 0 0 1px color-mix(in oklab, var(--bone) 6%, transparent);
+  }
   .page-enter {
-    animation: page-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: page-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   .detail-header {
     max-width: 42rem;
@@ -571,6 +691,40 @@
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+@keyframes liquid-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-4%, 6%) scale(1.06);
+  }
+  66% {
+    transform: translate(3%, -4%) scale(0.96);
+  }
+}
+@keyframes liquid-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(8%, -5%) scale(1.08);
+  }
+}
+@keyframes liquid-drift-c {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    transform: translate(-6%, 4%) scale(1.04);
+  }
+  80% {
+    transform: translate(5%, 6%) scale(0.94);
   }
 }
 
@@ -624,7 +778,8 @@
   .animate-pulse,
   .scanline,
   .shimmer,
-  .page-enter {
+  .page-enter,
+  .liquid-orb {
     animation: none !important;
   }
   .panel-interactive:hover,

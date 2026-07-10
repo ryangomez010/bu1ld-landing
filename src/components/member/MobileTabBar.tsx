@@ -15,10 +15,11 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 inset-x-0 z-50 border-t border-border/60 bg-background/92 backdrop-blur-xl shadow-[0_-4px_24px_-4px_rgba(0,0,0,0.5)]"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-50 px-1 pt-2 pointer-events-none"
       aria-label="Primary"
     >
-      <ul className="flex items-stretch justify-around px-2 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="glass-dock pointer-events-auto">
+      <ul className="flex items-stretch justify-around px-2 pt-1 pb-2">
         {TABS.map(({ to, label, icon: Icon }) => {
           const active = pathname === to || (to !== "/dashboard" && pathname.startsWith(to));
           return (
@@ -27,17 +28,17 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
                 to={to}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex flex-col items-center gap-1 rounded-md py-2 font-mono text-[8px] tracking-[0.1em] uppercase transition-colors duration-200",
+                  "relative flex flex-col items-center gap-1 rounded-xl py-2 font-mono text-[8px] tracking-[0.1em] uppercase transition-all duration-300",
                   active ? "text-accent-blue" : "text-muted-foreground hover:text-bone",
                 )}
               >
                 {active ? (
-                  <span className="absolute inset-x-2 -top-px h-[2px] rounded-full bg-accent-blue shadow-[0_0_10px_var(--accent-blue)]" />
+                  <span className="absolute inset-x-3 -top-px h-[2px] rounded-full bg-accent-blue shadow-[0_0_14px_var(--accent-blue)]" />
                 ) : null}
                 <span
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-md transition-colors duration-200",
-                    active && "bg-accent-blue/10",
+                    "flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-300",
+                    active && "bg-accent-blue/15 shadow-[0_0_20px_-6px_color-mix(in_oklab,var(--accent-blue)_60%,transparent)]",
                   )}
                 >
                   <Icon
@@ -67,6 +68,7 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
           </button>
         </li>
       </ul>
+      </div>
     </nav>
   );
 }

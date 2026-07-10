@@ -15,7 +15,7 @@ export function FeedCard({
   cta: string;
 }) {
   return (
-    <div className="panel panel-interactive group relative flex flex-col rounded-sm p-6 overflow-hidden">
+    <div className="panel panel-interactive group relative flex flex-col rounded-xl p-6 overflow-hidden">
       <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-accent-blue/5 blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-0" />
       <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-blue">
         {tag}

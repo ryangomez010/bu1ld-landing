@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { LiquidBackdrop } from "@/components/member/LiquidBackdrop";
 import { NotificationBell } from "@/components/member/NotificationBell";
 import { MobileTabBar } from "@/components/member/MobileTabBar";
 import { RoleBadge } from "@/components/member/RoleBadge";
@@ -167,6 +168,7 @@ export function MemberLayout({
 
   return (
     <div className="relative min-h-screen bg-background text-foreground member-canvas">
+      <LiquidBackdrop />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-sm focus:bg-bone focus:px-3 focus:py-2 focus:font-mono focus:text-[10px] focus:tracking-[0.2em] focus:uppercase focus:text-background"
@@ -174,7 +176,7 @@ export function MemberLayout({
         Skip to content
       </a>
       <div className="relative z-10 flex min-h-screen">
-        <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border/60 bg-background/50 backdrop-blur-xl p-4">
+        <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border/40 glass-strong p-4">
           <Link to="/" className="px-3 py-2 mb-6 block">
             <Wordmark className="text-lg" />
           </Link>
@@ -187,14 +189,14 @@ export function MemberLayout({
         </aside>
 
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65">
+          <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border/40 px-4 py-2.5 glass-strong">
             <Link to="/dashboard" className="lg:hidden">
               <Wordmark />
             </Link>
             <div className="hidden lg:flex flex-1 items-center max-w-md ml-2">
               <Link
                 to="/search"
-                className="panel flex flex-1 items-center justify-between gap-2 rounded-sm px-3 py-2.5 font-mono text-[10px] tracking-[0.12em] uppercase text-muted-foreground hover:text-bone transition"
+                className="panel glass-subtle flex flex-1 items-center justify-between gap-2 rounded-xl px-3 py-2.5 font-mono text-[10px] tracking-[0.12em] uppercase text-muted-foreground hover:text-bone transition"
               >
                 <span className="flex items-center gap-2">
                   <Search className="h-3.5 w-3.5" />
@@ -226,7 +228,7 @@ export function MemberLayout({
                       <Menu className="h-5 w-5" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-72 bg-background/95 border-border/60 p-0">
+                  <SheetContent side="left" className="w-72 glass-strong border-border/40 p-0">
                     <SheetHeader className="border-b border-border/60 px-5 py-4">
                       <SheetTitle>
                         <Wordmark />
@@ -249,22 +251,22 @@ export function MemberLayout({
             className="flex-1 px-4 py-8 md:px-8 md:py-10 max-w-5xl w-full mx-auto pb-24 lg:pb-10 page-enter"
           >
             {title ? (
-              <header className="mb-8 pb-6 border-b border-border/40">
+              <header className="mb-8 pb-6 glass rounded-2xl px-6 py-6 md:px-8">
                 {eyebrow ? (
-                  <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-accent-green">
+                  <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-accent-green relative z-[1]">
                     {eyebrow}
                   </p>
                 ) : null}
-                <h1 className="font-display text-3xl md:text-4xl lg:text-[2.75rem] text-bone tracking-tight mt-2 leading-[1.1]">
+                <h1 className="font-display text-3xl md:text-4xl lg:text-[2.75rem] text-bone tracking-tight mt-2 leading-[1.1] relative z-[1]">
                   {title}
                 </h1>
-                <div className="divider-grad mt-5 max-w-xs" />
+                <div className="divider-grad mt-5 max-w-xs relative z-[1]" />
               </header>
             ) : null}
             {children}
           </main>
 
-          <footer className="border-t border-border/50 px-4 py-3.5 pb-20 lg:pb-3.5 flex flex-wrap items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/80 bg-background/30 backdrop-blur-sm">
+          <footer className="border-t border-border/40 px-4 py-3.5 pb-20 lg:pb-3.5 flex flex-wrap items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/80 glass-subtle">
             <span className="truncate max-w-[200px]">{user?.email}</span>
             {profile?.role ? <RoleBadge role={profile.role} /> : null}
             <span className="text-bone/20">·</span>

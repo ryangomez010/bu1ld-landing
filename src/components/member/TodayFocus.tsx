@@ -9,18 +9,18 @@ export function TodayFocus({ items }: { items: AttentionItem[] }) {
   if (!focus.length) return null;
 
   return (
-    <section className="mb-8 border border-border/50 rounded-sm">
-      <div className="px-5 py-3 border-b border-border/40">
+    <section className="mb-8 panel glass rounded-2xl overflow-hidden">
+      <div className="px-5 py-3 border-b border-border/30 relative z-[1]">
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
           Today
         </p>
       </div>
-      <ul className="divide-y divide-border/40">
+      <ul className="divide-y divide-border/30 relative z-[1]">
         {focus.map((item) => (
           <li key={item.id}>
             <Link
               to={item.href}
-              className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-bone/[0.02] transition"
+              className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-bone/[0.04] transition-colors duration-300"
             >
               <div>
                 <p className="text-sm text-bone">{item.title}</p>

@@ -43,7 +43,7 @@ function ReaderSidebar({
   return (
     <div className="space-y-5">
       {toc.length > 0 ? (
-        <nav className="rounded-sm border border-border/50 p-4">
+        <nav className="rounded-xl border border-border/40 panel glass p-4 relative z-[1]">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3">
             Sections
           </p>
@@ -67,7 +67,7 @@ function ReaderSidebar({
         </nav>
       ) : null}
 
-      <div className="rounded-sm border border-border/50 p-4">
+      <div className="rounded-xl border border-border/40 panel glass p-4 relative z-[1]">
         <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
           Your notes
         </p>
@@ -82,7 +82,7 @@ function ReaderSidebar({
       </div>
 
       {relatedGuides.length > 0 ? (
-        <div className="rounded-sm border border-border/50 p-4">
+        <div className="rounded-xl border border-border/40 panel glass p-4 relative z-[1]">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-3 flex items-center gap-2">
             <BookOpen className="h-3.5 w-3.5" />
             Read first
@@ -291,13 +291,14 @@ export function PaperReader({
         </aside>
       </div>
 
-      <div className="fixed bottom-16 lg:bottom-4 left-4 right-4 z-[60] flex gap-2 lg:hidden">
+      <div className="fixed bottom-20 lg:bottom-4 left-4 right-4 z-[60] lg:hidden">
+        <div className="glass-dock flex gap-2 p-1.5">
         <Sheet>
           <SheetTrigger asChild>
             <Button
               type="button"
-              variant="outline"
-              className="flex-1 font-mono text-[9px] uppercase bg-background/95 backdrop-blur"
+              variant="ghost"
+              className="flex-1 font-mono text-[9px] uppercase h-10 rounded-xl hover:bg-bone/5"
             >
               <List className="h-3.5 w-3.5 mr-2" />
               Sections
@@ -338,8 +339,8 @@ export function PaperReader({
           <SheetTrigger asChild>
             <Button
               type="button"
-              variant="outline"
-              className="flex-1 font-mono text-[9px] uppercase bg-background/95 backdrop-blur"
+              variant="ghost"
+              className="flex-1 font-mono text-[9px] uppercase h-10 rounded-xl hover:bg-bone/5"
             >
               <StickyNote className="h-3.5 w-3.5 mr-2" />
               Notes
@@ -358,6 +359,7 @@ export function PaperReader({
             />
           </SheetContent>
         </Sheet>
+        </div>
       </div>
     </>
   );
