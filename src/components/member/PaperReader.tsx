@@ -186,7 +186,7 @@ export function PaperReader({
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:gap-16">
         <article className="min-w-0 pb-28 lg:pb-24">
-          <header className="mb-10 border-l-2 border-bone/25 pl-6 md:pl-8">
+          <header className="mb-10 border-l-2 border-accent-blue/30 pl-6 md:pl-8 paper-hero">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-4">
               <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
                 {paper.is_classic ? "Classic" : "Review"}

@@ -9,11 +9,12 @@ export function TodayFocus({ items }: { items: AttentionItem[] }) {
   if (!focus.length) return null;
 
   return (
-    <section className="mb-8 panel glass rounded-2xl overflow-hidden">
+    <section className="mb-8 panel glass rounded-2xl overflow-hidden" aria-label="Today's focus">
       <div className="px-5 py-3 border-b border-border/30 relative z-[1]">
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
-          Today
+          Today&apos;s focus
         </p>
+        <p className="mt-0.5 text-xs text-muted-foreground/80">Your top priorities right now</p>
       </div>
       <ul className="divide-y divide-border/30 relative z-[1]">
         {focus.map((item) => (

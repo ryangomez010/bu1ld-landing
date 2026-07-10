@@ -84,14 +84,16 @@ export function EmptyState({
   return (
     <div
       role="status"
-      className="panel rounded-sm border border-dashed border-border/50 p-12 text-center max-w-lg mx-auto"
+      className="panel glass rounded-2xl border border-dashed border-border/40 p-12 text-center max-w-lg mx-auto"
     >
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-sm border border-border/60 bg-bone/3">
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-border/50 bg-bone/3 relative z-[1]">
         <Icon className="h-5 w-5 text-muted-foreground/70" aria-hidden />
       </div>
-      <h3 className="font-display text-xl text-bone">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">{body}</p>
-      {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
+      <h3 className="font-display text-xl text-bone relative z-[1]">{title}</h3>
+      <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto leading-relaxed relative z-[1]">
+        {body}
+      </p>
+      {action ? <div className="mt-5 flex justify-center relative z-[1]">{action}</div> : null}
     </div>
   );
 }

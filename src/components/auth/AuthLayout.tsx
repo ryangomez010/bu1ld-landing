@@ -28,9 +28,17 @@ export function AuthLayout({
         <Link to="/" className="mb-10 inline-flex transition-opacity hover:opacity-80">
           <Wordmark />
         </Link>
-        <div className="panel glass rounded-2xl p-8 sm:p-10 relative overflow-hidden">
+        <div
+          className="panel glass rounded-2xl p-8 sm:p-10 relative overflow-hidden"
+          aria-labelledby="auth-title"
+        >
           <div className="divider-grad mb-7 relative z-[1]" />
-          <h1 className="font-display text-3xl tracking-tight text-bone relative z-[1]">{title}</h1>
+          <h1
+            id="auth-title"
+            className="font-display text-3xl tracking-tight text-bone relative z-[1]"
+          >
+            {title}
+          </h1>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed relative z-[1]">
             {subtitle}
           </p>

@@ -621,14 +621,17 @@
   }
   .stat-cell {
     background: color-mix(in oklab, var(--background) 75%, transparent);
-    padding: 1rem;
+    padding: 1.5rem;
     transition:
       background-color 0.2s ease,
-      transform 0.2s ease;
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.25s ease;
   }
   .stat-cell:hover {
     background: color-mix(in oklab, var(--background) 55%, transparent);
     transform: translateY(-1px);
+    box-shadow: 0 12px 40px -20px rgba(0, 0, 0, 0.55);
   }
   .admin-tab {
     font-family: "JetBrains Mono", ui-monospace, monospace;
@@ -688,6 +691,20 @@
   }
   .paper-hero {
     position: relative;
+  }
+  .paper-hero::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--accent-blue) 60%, transparent),
+      color-mix(in oklab, var(--accent-blue) 10%, transparent)
+    );
+    box-shadow: 0 0 20px color-mix(in oklab, var(--accent-blue) 30%, transparent);
   }
   .list-row-hover {
     transition: background-color 0.15s ease;

@@ -12,6 +12,9 @@ import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
+  head: () => ({
+    meta: [{ title: "Log in — The Bu1ld" }],
+  }),
 });
 
 function LoginPage() {
@@ -38,12 +41,15 @@ function LoginForm() {
       toast.error(error);
       return;
     }
-    toast.success("Welcome back.");
+    toast.success("Welcome back to BUILD.");
     void navigate({ to: "/dashboard" });
   };
 
   return (
-    <AuthLayout title="Log in" subtitle="Access your member dashboard, projects, and profile.">
+    <AuthLayout
+      title="Log in"
+      subtitle="Access your member hub — projects, research library, and profile."
+    >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">
           Supabase is not configured yet. Copy{" "}

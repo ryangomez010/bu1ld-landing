@@ -12,6 +12,9 @@ import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
+  head: () => ({
+    meta: [{ title: "Become a member — The Bu1ld" }],
+  }),
 });
 
 function SignupPage() {
@@ -39,14 +42,14 @@ function SignupForm() {
       toast.error(error);
       return;
     }
-    toast.success("Account created. Complete your profile next.");
+    toast.success("Account created — let's set up your profile.");
     void navigate({ to: "/onboarding" });
   };
 
   return (
     <AuthLayout
       title="Become a member"
-      subtitle="Join the membership pool — free at launch. Get access to projects, learning, papers, and events."
+      subtitle="Join the membership pool — free at launch. Projects, learning paths, paper reviews, and events."
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">

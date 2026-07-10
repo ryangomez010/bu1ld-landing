@@ -16,10 +16,10 @@ export function AttentionPanel({ items }: { items: AttentionItem[] }) {
     <section className="section-gap">
       <div className="mb-4">
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
-          Needs your attention
+          Attention queue
         </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Prioritized actions across applications, deadlines, and your profile.
+          Prioritized next steps — applications, deadlines, and profile gaps.
         </p>
       </div>
       <ul className="grid gap-2 sm:grid-cols-2">
@@ -37,7 +37,8 @@ export function AttentionPanel({ items }: { items: AttentionItem[] }) {
             </div>
             <Link
               to={item.href}
-              className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone self-start"
+              className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone self-start transition-colors"
+              aria-label={`${item.cta}: ${item.title}`}
             >
               {item.cta} →
             </Link>

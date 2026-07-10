@@ -271,7 +271,7 @@ export function MemberLayout({
             <span className="truncate max-w-[200px]">{user?.email}</span>
             {profile?.role ? <RoleBadge role={profile.role} /> : null}
             <span className="text-bone/20">·</span>
-            <span>BUILD member</span>
+            <span>BUILD member hub</span>
           </footer>
         </div>
       </div>

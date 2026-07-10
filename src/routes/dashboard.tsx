@@ -59,6 +59,9 @@ import type {
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
+  head: () => ({
+    meta: [{ title: "Member hub — The Bu1ld" }],
+  }),
 });
 
 function DashboardPage() {
@@ -208,13 +211,13 @@ function DashboardHome() {
     <MemberLayout>
       <DashboardHero
         displayName={displayName}
-        bio={profile?.bio || "Your BUILD hub — events, guides, papers, and digests in one place."}
+        bio={profile?.bio || "Your BUILD hub — papers, guides, projects, and events in one place."}
         completenessPercent={completeness.percent}
         roleBadge={profile?.role ? <RoleBadge role={profile.role} /> : null}
       />
 
       {loading ? (
-        <LoadingState label="Loading hub…" />
+        <LoadingState label="Loading your hub…" />
       ) : (
         <>
           <section className="section-gap grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
@@ -296,7 +299,7 @@ function DashboardHome() {
           {profile?.onboarding_completed && !checklistComplete ? (
             <section className="mb-8 rounded-sm border border-accent-violet/30 bg-accent-violet/5 px-5 py-5">
               <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-violet mb-4">
-                Get started — 3 steps to full member
+                Get started — 3 steps to full membership
               </h2>
               <ol className="space-y-3">
                 {onboardingSteps.map((step) => (
@@ -336,8 +339,7 @@ function DashboardHome() {
           {!profile?.onboarding_completed ? (
             <div className="mb-8 rounded-sm border border-accent-blue/30 bg-accent-blue/5 px-5 py-4 flex flex-wrap items-center justify-between gap-4">
               <p className="text-sm text-foreground/90">
-                Complete your profile so project leads see your background and LinkedIn when you
-                apply.
+                Complete your profile so project leads see your background and links when you apply.
               </p>
               <Link
                 to="/onboarding"
@@ -513,7 +515,8 @@ function DashboardHome() {
           ) : profile?.interests?.length ? (
             <section className="mb-8 rounded-sm border border-border/60 bg-background/60 px-5 py-4">
               <p className="text-sm text-muted-foreground">
-                No personalized matches yet — try adding more interests or explore new content.
+                No personalized matches yet — add more interests or explore new content in the
+                research library.
               </p>
               <Link
                 to="/profile"
@@ -525,8 +528,8 @@ function DashboardHome() {
           ) : (
             <section className="mb-8 rounded-sm border border-accent-green/20 bg-accent-green/5 px-5 py-4">
               <p className="text-sm text-foreground/90">
-                Set your interests to get a personalized For You feed across projects, papers, and
-                events.
+                Set your interests to unlock a personalized For You feed across projects, papers,
+                and events.
               </p>
               <Link
                 to="/profile"

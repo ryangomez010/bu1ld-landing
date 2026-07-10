@@ -24,6 +24,9 @@ import type { MemberBackground } from "@/lib/types";
 
 export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
+  head: () => ({
+    meta: [{ title: "Set up your profile — The Bu1ld" }],
+  }),
 });
 
 const STEPS = ["About you", "Background", "Links", "Timezone"] as const;
@@ -152,7 +155,7 @@ function OnboardingForm() {
       } catch {
         /* ignore */
       }
-      toast.success("Profile complete. Welcome to The Bu1ld.");
+      toast.success("You're in. Welcome to The Bu1ld.");
       void navigate({ to: "/dashboard" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not save profile.");
@@ -166,8 +169,8 @@ function OnboardingForm() {
 
   return (
     <AuthLayout
-      title="Create your profile"
-      subtitle="Tell us who you are and what you're building toward. This helps us match you to projects and community."
+      title="Set up your profile"
+      subtitle="Tell us who you are and what you're building toward. This powers project matching and your personalized feed."
     >
       <div className="mb-6 flex gap-2">
         {STEPS.map((label, i) => (
@@ -223,7 +226,7 @@ function OnboardingForm() {
               <Textarea
                 id="bio"
                 rows={3}
-                placeholder="What are you working on? What do you want to learn or build?"
+                placeholder="What are you building? What do you want to learn or ship?"
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
               />

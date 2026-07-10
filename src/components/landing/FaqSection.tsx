@@ -14,8 +14,7 @@ export function FaqSection() {
             A few things people ask right away.
           </h2>
           <p className="max-w-xl text-muted-foreground leading-relaxed">
-            The answer is usually that this is meant to be practical, ambitious, and a little weird
-            in the best way.
+            Practical, ambitious, and a little unconventional — by design.
           </p>
         </div>
         <div className="divider-grad mt-10" />

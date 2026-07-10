@@ -15,10 +15,18 @@ export function DashboardHero({
   roleBadge?: React.ReactNode;
 }) {
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greeting =
+    hour < 12
+      ? "Good morning"
+      : hour < 17
+        ? "Good afternoon"
+        : hour < 22
+          ? "Good evening"
+          : "Late session";
 
   return (
     <div className="mb-10 panel glass rounded-2xl p-6 md:p-8 relative overflow-hidden">
+      <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent-blue/8 blur-3xl" />
       <div className="relative z-[1] flex flex-wrap items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
           <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-accent-green">
@@ -30,11 +38,19 @@ export function DashboardHero({
           </h1>
           <p className="mt-3 max-w-2xl text-muted-foreground leading-relaxed">{bio}</p>
           <p className="mt-4 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground/80">
-            <kbd className="kbd">⌘K</kbd> quick nav · <kbd className="kbd">/</kbd> search
+            <kbd className="kbd" aria-label="Command K">
+              ⌘K
+            </kbd>{" "}
+            quick nav ·{" "}
+            <kbd className="kbd" aria-label="Forward slash">
+              /
+            </kbd>{" "}
+            search
           </p>
         </div>
         <Link
           to="/profile"
+          aria-label={`Profile ${completenessPercent}% complete`}
           className="panel glass-subtle panel-interactive rounded-xl px-5 py-4 min-w-[160px] shrink-0"
         >
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground relative z-[1]">

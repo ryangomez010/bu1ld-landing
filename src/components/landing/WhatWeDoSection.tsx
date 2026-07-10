@@ -19,14 +19,14 @@ export function WhatWeDoSection() {
           <div className="md:col-span-7 space-y-6 text-muted-foreground text-lg leading-relaxed">
             <p>
               Most labs publish. Most startups iterate on shipped tech. The Bu1ld sits between them
-              — a single community where frontier research and production systems are built by the
-              same people, on the same week, in the same room.
+              — one community where frontier research and production systems are built by the same
+              people, in the same week.
             </p>
             <p>
               We organize around <span className="text-bone">research threads</span>, not job
               titles. A thread may begin as a paper read on Monday, a prototype by Friday, and a
-              startup pitch within a quarter. Every project is held to two standards at once:
-              scientific honesty and engineering rigor.
+              startup pitch within a quarter. Every project is held to two standards: scientific
+              honesty and engineering rigor.
             </p>
             <ul className="grid sm:grid-cols-2 gap-3 pt-4">
               {BENEFITS.map((item, i) => (

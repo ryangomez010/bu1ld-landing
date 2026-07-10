@@ -125,35 +125,35 @@ export const TEAM = [
 ] as const;
 
 export const BENEFITS = [
-  "Research threads that turn into real prototypes fast",
-  "A community for builders of all ages and backgrounds",
-  "Academic depth with startup urgency",
-  "Open projects, visible output, and high standards",
+  "Research threads that ship as prototypes, not slide decks",
+  "A builder community — researchers, engineers, founders, students",
+  "Academic rigor with the urgency of a startup",
+  "Open projects, visible output, and a high bar for what counts",
 ] as const;
 
 export const MEMBERSHIP_PERKS = [
   {
     id: "01",
     title: "Join projects",
-    desc: "Apply to active research threads and startup builds matched to your skills and interests.",
+    desc: "Apply to live research threads and startup builds — matched to your skills, interests, and pitch.",
     color: "blue",
   },
   {
     id: "02",
     title: "Learn ML deeply",
-    desc: "Curated learning paths, internal notes, and builder-led sessions across frontier topics.",
+    desc: "Curated reading paths, internal guides, and builder-led sessions across frontier topics.",
     color: "green",
   },
   {
     id: "03",
     title: "Paper insights",
-    desc: "Distilled takes on important ML papers — what matters, what breaks, and what to build next.",
+    desc: "Member-written reviews — what matters, what breaks, and what to build next.",
     color: "red",
   },
   {
     id: "04",
     title: "Events & conferences",
-    desc: "Stay ahead of deadlines, meetups, and conferences across the ML ecosystem.",
+    desc: "Deadlines, meetups, and conferences across the ML ecosystem — with prep notes and calendar sync.",
     color: "bone",
   },
 ] as const;
@@ -161,23 +161,23 @@ export const MEMBERSHIP_PERKS = [
 export const FAQ = [
   {
     q: "Is this only for ML researchers?",
-    a: "No. The best teams mix researchers, engineers, product-minded builders, and people who can turn ambiguity into shipping momentum.",
+    a: "No. The strongest teams mix researchers, engineers, product-minded builders, and people who turn ambiguity into shipping momentum.",
   },
   {
     q: "Do you prefer papers or products?",
-    a: "Both. Papers are useful when they create leverage, but the end goal is systems people can actually use, test, and build on.",
+    a: "Both — papers when they create leverage, products when they create users. The bar is systems people can actually run, test, and build on.",
   },
   {
-    q: "What happens after someone joins?",
-    a: "Create your account, complete your profile, and land on the member hub — events, guides, papers, open projects, and applications. Match to threads by applying; leads review with your full profile attached.",
+    q: "What happens after I join?",
+    a: "Create your account, complete your profile, and land on the member hub — events, guides, papers, open projects, and applications. Apply to threads you're excited about; leads review with your full profile attached.",
   },
   {
     q: "How do project applications work?",
-    a: "Browse open projects, write a short pitch (templates provided), and submit. Your bio, background, interests, and LinkedIn go to the project lead. Track status in Applications.",
+    a: "Browse open projects, write a short pitch (templates provided), and submit. Your bio, background, interests, and links go to the project lead. Track status anytime in Applications.",
   },
   {
     q: "Is membership free?",
-    a: "Yes at launch. Create an account, complete your profile, and you're in the pool for projects, learning, and community access.",
+    a: "Yes at launch. Create an account, complete your profile, and you're in the pool for projects, learning paths, and community access.",
   },
 ] as const;
 

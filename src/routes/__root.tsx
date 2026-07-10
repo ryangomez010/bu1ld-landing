@@ -15,15 +15,19 @@ import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden member-canvas">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-accent-blue/10 via-transparent to-accent-red/5" />
-      <div className="relative max-w-md text-center">
-        <p className="font-mono text-[10px] tracking-[0.35em] uppercase text-accent-blue">404</p>
-        <h1 className="mt-4 font-display text-5xl text-bone tracking-tight">Page not found</h1>
-        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-          This route doesn&apos;t exist — or the link is outdated.
+      <div className="relative panel glass rounded-2xl p-10 md:p-12 max-w-md text-center">
+        <p className="font-mono text-[10px] tracking-[0.35em] uppercase text-accent-blue relative z-[1]">
+          404
         </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <h1 className="mt-4 font-display text-4xl md:text-5xl text-bone tracking-tight relative z-[1]">
+          Page not found
+        </h1>
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed relative z-[1]">
+          This route doesn&apos;t exist — the link may be outdated or mistyped.
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3 relative z-[1]">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] tracking-[0.25em] uppercase text-background hover:bg-accent-blue transition"
@@ -47,17 +51,19 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden member-canvas">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-accent-red/10 via-transparent to-transparent" />
-      <div className="relative max-w-md text-center">
-        <p className="font-mono text-[10px] tracking-[0.35em] uppercase text-accent-red">error</p>
-        <h1 className="mt-4 font-display text-3xl text-bone tracking-tight">
+      <div className="relative panel glass rounded-2xl p-10 md:p-12 max-w-md text-center">
+        <p className="font-mono text-[10px] tracking-[0.35em] uppercase text-accent-red relative z-[1]">
+          error
+        </p>
+        <h1 className="mt-4 font-display text-3xl text-bone tracking-tight relative z-[1]">
           This page didn&apos;t load
         </h1>
-        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-          Something went wrong on our end. Try again, or head back home.
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed relative z-[1]">
+          Something went wrong on our end. Refresh the page or head back home.
         </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <div className="mt-8 flex flex-wrap justify-center gap-3 relative z-[1]">
           <button
             type="button"
             onClick={() => {

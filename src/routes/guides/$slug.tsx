@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { GuideReader } from "@/components/member/GuideReader";
 import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { NotFoundResource } from "@/components/member/NotFoundResource";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { ShareButton } from "@/components/member/ShareButton";
 import { getGuide } from "@/content/guides";
@@ -40,10 +41,13 @@ function GuideDetail() {
 
   if (!guide) {
     return (
-      <MemberLayout title="Guide not found">
-        <Link to="/guides" className="text-accent-blue text-sm">
-          ← Back to guides
-        </Link>
+      <MemberLayout>
+        <NotFoundResource
+          title="Guide not found"
+          body="This guide may have moved or isn't published yet. Browse the library for available essays."
+          backTo="/guides"
+          backLabel="Back to guides"
+        />
       </MemberLayout>
     );
   }

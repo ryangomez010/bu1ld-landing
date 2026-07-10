@@ -19,6 +19,9 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/papers/")({
   component: PapersPage,
+  head: () => ({
+    meta: [{ title: "Paper reviews — The Bu1ld" }],
+  }),
 });
 
 function PapersPage() {
@@ -77,7 +80,8 @@ function PapersContent() {
     <MemberLayout title="Paper reviews" eyebrow="research library">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 -mt-4">
         <p className="text-muted-foreground max-w-2xl leading-relaxed">
-          Member-written reviews — what matters, what to skip, and how it connects to BUILD threads.
+          Member-written reviews — what matters, what to skip, and how each connects to BUILD
+          threads.
         </p>
         <Link
           to="/research"

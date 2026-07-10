@@ -68,9 +68,9 @@ function HomePage() {
         <HeroSection />
         <MarqueeStrip />
         <section className="mx-auto max-w-7xl px-6 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/30 border border-border/40 backdrop-blur-md">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/30 border border-border/40 backdrop-blur-md rounded-sm overflow-hidden">
             {STATS.map(([n, l], idx) => (
-              <div key={l} className="bg-background/70 p-6">
+              <div key={l} className="stat-cell glass-subtle relative z-[1]">
                 <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-bone/40">
                   0{idx + 1}
                 </div>

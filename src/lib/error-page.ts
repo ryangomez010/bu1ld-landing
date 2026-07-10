@@ -42,7 +42,7 @@ export function renderErrorPage(): string {
     <div class="card">
       <p class="eyebrow">error</p>
       <h1>This page didn't load</h1>
-      <p>Something went wrong on our end. Try refreshing or head back home.</p>
+      <p>Something went wrong on our end. Refresh the page or head back home.</p>
       <div class="actions">
         <button class="primary" onclick="location.reload()">Try again</button>
         <a class="secondary" href="/">Go home</a>

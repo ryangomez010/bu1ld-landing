@@ -23,6 +23,9 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/research/")({
   component: ResearchHubPage,
+  head: () => ({
+    meta: [{ title: "Research library — The Bu1ld" }],
+  }),
 });
 
 function ResearchHubPage() {

@@ -11,6 +11,9 @@ import { getAllGuideProgress } from "@/lib/reading-progress";
 
 export const Route = createFileRoute("/guides/")({
   component: GuidesPage,
+  head: () => ({
+    meta: [{ title: "Reference guides — The Bu1ld" }],
+  }),
 });
 
 function GuidesPage() {

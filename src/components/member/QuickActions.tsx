@@ -15,7 +15,7 @@ export function QuickActions() {
   return (
     <section className="section-gap">
       <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-        Quick actions
+        Shortcuts
       </p>
       <div className="flex flex-wrap gap-2">
         {ACTIONS.map((action) => (

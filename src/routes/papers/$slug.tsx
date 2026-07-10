@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { PaperReader } from "@/components/member/PaperReader";
 import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { NotFoundResource } from "@/components/member/NotFoundResource";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { useAuth } from "@/lib/auth";
 import { fetchPaperBySlug, fetchPapers } from "@/lib/content";
@@ -57,10 +58,13 @@ function PaperDetail() {
     );
   if (!paper) {
     return (
-      <MemberLayout title="Review not found">
-        <Link to="/papers" className="text-accent-blue text-sm">
-          ← Back to paper reviews
-        </Link>
+      <MemberLayout>
+        <NotFoundResource
+          title="Review not found"
+          body="This paper review may have moved or doesn't exist yet. Browse the library for available reviews."
+          backTo="/papers"
+          backLabel="Back to paper reviews"
+        />
       </MemberLayout>
     );
   }
