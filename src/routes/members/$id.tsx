@@ -48,8 +48,8 @@ function MemberProfileContent() {
     return (
       <MemberLayout>
         <ResourceNotFound
-          title="Member not found"
-          body="This profile may be private or onboarding isn't complete."
+          title="Profile not available"
+          body="This member chose to hide their profile from the directory, or onboarding isn't complete yet."
           backTo="/members"
           backLabel="← Back to members"
         />

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bell,
   Bookmark,
@@ -193,6 +193,8 @@ function DashboardHome() {
     .filter((d) => d.days >= 0 && d.days <= 7)
     .sort((a, b) => a.days - b.days)
     .slice(0, 5);
+
+  const rsvpEventIds = useMemo(() => new Set(myRsvps.map((e) => e.id)), [myRsvps]);
 
   return (
     <MemberLayout>
@@ -412,9 +414,14 @@ function DashboardHome() {
                   >
                     <Link
                       to={`/events/${d.event.slug}`}
-                      className="text-bone hover:text-accent-blue transition"
+                      className="text-bone hover:text-accent-blue transition flex items-center gap-2"
                     >
                       {d.event.title} — {d.label}
+                      {rsvpEventIds.has(d.event.id) ? (
+                        <span className="font-mono text-[8px] tracking-[0.15em] uppercase text-accent-green border border-accent-green/30 px-1.5 py-0.5 rounded-sm">
+                          Going
+                        </span>
+                      ) : null}
                     </Link>
                     <div className="flex items-center gap-2 shrink-0">
                       <button

@@ -6,7 +6,9 @@ import { ContentCard, EmptyState, TagList } from "@/components/member/ContentCar
 import { FilterBar } from "@/components/member/FilterBar";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { useAuth } from "@/lib/auth";
 import { fetchEvents } from "@/lib/content";
+import { fetchMyRsvpEventIds } from "@/lib/event-rsvp";
 import { daysUntil, formatDate, nearestDeadline } from "@/lib/date";
 import type { MlEvent } from "@/lib/types";
 
@@ -23,9 +25,11 @@ function EventsPage() {
 }
 
 function EventsContent() {
+  const { user } = useAuth();
   const [events, setEvents] = useState<MlEvent[]>([]);
+  const [rsvpIds, setRsvpIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "upcoming" | "past">("upcoming");
+  const [filter, setFilter] = useState<"all" | "upcoming" | "past" | "going">("upcoming");
 
   useEffect(() => {
     void fetchEvents().then((data) => {
@@ -33,6 +37,11 @@ function EventsContent() {
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    void fetchMyRsvpEventIds(user.id).then(setRsvpIds);
+  }, [user]);
 
   const categorized = useMemo(() => {
     const upcoming: MlEvent[] = [];
@@ -52,8 +61,17 @@ function EventsContent() {
     return { upcoming, past };
   }, [events]);
 
-  const visible =
-    filter === "all" ? events : filter === "upcoming" ? categorized.upcoming : categorized.past;
+  const goingEvents = useMemo(
+    () => events.filter((e) => rsvpIds.has(e.id)),
+    [events, rsvpIds],
+  );
+
+  const visible = useMemo(() => {
+    if (filter === "going") return goingEvents;
+    if (filter === "all") return events;
+    if (filter === "upcoming") return categorized.upcoming;
+    return categorized.past;
+  }, [filter, events, categorized, goingEvents]);
 
   return (
     <MemberLayout title="Events & Conferences" eyebrow="member hub">
@@ -62,9 +80,10 @@ function EventsContent() {
         CFPs, and notes.
       </p>
 
-      <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3">
+      <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">
         <StatCell label="Total events" value={String(events.length)} />
         <StatCell label="Upcoming" value={String(categorized.upcoming.length)} />
+        <StatCell label="You're going" value={String(goingEvents.length)} />
         <StatCell
           label="Topics tracked"
           value={String(new Set(events.flatMap((e) => e.topics)).size)}
@@ -78,6 +97,7 @@ function EventsContent() {
         options={(
           [
             ["upcoming", "Upcoming", categorized.upcoming.length],
+            ["going", "Going", goingEvents.length],
             ["past", "Past", categorized.past.length],
             ["all", "All", events.length],
           ] as const
@@ -88,8 +108,12 @@ function EventsContent() {
         <ListSkeleton rows={5} />
       ) : visible.length === 0 ? (
         <EmptyState
-          title="No events in this view"
-          body="Add conference entries from Admin to keep this radar live."
+          title={filter === "going" ? "No RSVPs yet" : "No events in this view"}
+          body={
+            filter === "going"
+              ? "RSVP on an event page to track conferences you're attending."
+              : "Add conference entries from Admin to keep this radar live."
+          }
         />
       ) : (
         <div className="grid gap-px bg-border/40 border border-border/40">
@@ -120,11 +144,18 @@ function EventsContent() {
                   .filter(Boolean)
                   .join(" · ")}
               >
-                {countdown ? (
-                  <span className="inline-block mt-3 font-mono text-[9px] tracking-[0.2em] uppercase text-accent-red border border-accent-red/30 px-2 py-1 rounded-sm">
-                    {countdown} · {next!.label}
-                  </span>
-                ) : null}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {rsvpIds.has(event.id) ? (
+                    <span className="inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green border border-accent-green/30 px-2 py-1 rounded-sm">
+                      Going ✓
+                    </span>
+                  ) : null}
+                  {countdown ? (
+                    <span className="inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-red border border-accent-red/30 px-2 py-1 rounded-sm">
+                      {countdown} · {next!.label}
+                    </span>
+                  ) : null}
+                </div>
                 <TagList tags={event.topics} linkToSearch className="mt-4" />
               </ContentCard>
             );

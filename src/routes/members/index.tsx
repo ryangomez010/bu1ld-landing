@@ -70,8 +70,18 @@ function MembersContent() {
   return (
     <MemberLayout title="Members" eyebrow="community">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Builders who completed onboarding — discover collaborators by background and interests.
+        Builders who completed onboarding and opted into the directory — discover collaborators by
+        background and interests.
       </p>
+
+      {profile?.directory_visible === false ? (
+        <div className="mb-6 max-w-2xl rounded-sm border border-border/60 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
+          Your profile is hidden from this directory.{" "}
+          <Link to="/profile" className="text-accent-blue hover:text-bone">
+            Update visibility in profile →
+          </Link>
+        </div>
+      ) : null}
 
       <Input
         value={query}

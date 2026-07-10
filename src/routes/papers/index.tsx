@@ -72,8 +72,9 @@ function PapersContent() {
         Human editorial voice, not auto-generated summaries.
       </p>
 
-      <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-3">
+      <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">
         <Stat label="Total reviews" value={String(papers.length)} />
+        <Stat label="Read" value={String(readCount)} />
         <Stat label="Classics" value={String(classics)} />
         <Stat label="Interesting now" value={String(recent)} />
       </div>
@@ -147,6 +148,11 @@ function PaperCard({ paper, isRead }: { paper: Paper; isRead?: boolean }) {
       summary={paper.summary}
       meta={[paper.authors, paper.year].filter(Boolean).join(" · ")}
     >
+      {isRead ? (
+        <span className="inline-block mt-3 font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green border border-accent-green/30 px-2 py-1 rounded-sm">
+          Read ✓
+        </span>
+      ) : null}
       <TagList tags={paper.tags} linkToSearch className="mt-4" />
     </ContentCard>
   );
