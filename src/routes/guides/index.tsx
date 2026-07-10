@@ -49,12 +49,32 @@ function GuidesContent() {
     return true;
   });
 
+  const progressStats = useMemo(() => {
+    let done = 0;
+    let continuing = 0;
+    let notStarted = 0;
+    for (const g of guides) {
+      const pct = progress[g.slug] ?? 0;
+      if (pct >= 95) done++;
+      else if (pct > 0) continuing++;
+      else notStarted++;
+    }
+    return { done, continuing, notStarted, total: guides.length };
+  }, [guides, progress]);
+
   return (
     <MemberLayout title="Guides" eyebrow="reference reading">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
         Long-form reference essays — not a course platform. Scroll progress saves automatically so
         you can pick up where you left off.
       </p>
+
+      <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">
+        <GuideStat label="Total" value={progressStats.total} />
+        <GuideStat label="Finished" value={progressStats.done} />
+        <GuideStat label="In progress" value={progressStats.continuing} />
+        <GuideStat label="Not started" value={progressStats.notStarted} />
+      </div>
 
       <FilterBar
         className="mb-4"
@@ -150,5 +170,16 @@ function GuidesContent() {
         </Link>
       </p>
     </MemberLayout>
+  );
+}
+
+function GuideStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-background/75 p-4">
+      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-2 font-display text-2xl text-bone">{value}</p>
+    </div>
   );
 }

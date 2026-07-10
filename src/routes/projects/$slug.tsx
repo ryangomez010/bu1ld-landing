@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { clearPitchDraft, loadPitchDraft, savePitchDraft } from "@/lib/application-draft";
 import { InterestMatchTags } from "@/components/member/InterestMatchTags";
+import { ApplicationNextSteps } from "@/components/member/ApplicationNextSteps";
+import { ApplicationStatusTimeline } from "@/components/member/ApplicationStatusTimeline";
 import { CapacityBar } from "@/components/member/CapacityBar";
 import { ResourceNotFound } from "@/components/member/ResourceNotFound";
 import { LoadingState } from "@/components/member/LoadingState";
@@ -230,6 +232,8 @@ function ProjectDetail() {
                 </button>
               ) : null}
             </div>
+            <ApplicationStatusTimeline status={application.status} />
+            <ApplicationNextSteps status={application.status} />
             {editingPitch && application.status === "pending" ? (
               <form
                 className="mt-4 space-y-3"

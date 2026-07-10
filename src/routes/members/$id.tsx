@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { ResourceNotFound } from "@/components/member/ResourceNotFound";
+import { InterestMatchTags } from "@/components/member/InterestMatchTags";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { TagList } from "@/components/member/ContentCard";
-import { fetchDirectoryMember } from "@/lib/members";
+import { useAuth } from "@/lib/auth";
+import { fetchDirectoryMember, sharedInterests } from "@/lib/members";
 import type { DirectoryMember } from "@/lib/members";
 import { safeHref } from "@/lib/urls";
 
@@ -26,6 +28,7 @@ function MemberProfilePage() {
 
 function MemberProfileContent() {
   const { id } = Route.useParams();
+  const { user, profile } = useAuth();
   const [member, setMember] = useState<DirectoryMember | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,6 +62,11 @@ function MemberProfileContent() {
 
   const github = safeHref(member.github_url);
   const linkedin = safeHref(member.linkedin_url);
+  const overlap =
+    profile?.interests?.length && member.interests?.length
+      ? sharedInterests(profile.interests, member.interests)
+      : [];
+  const isSelf = user?.id === member.id;
 
   return (
     <MemberLayout title={member.full_name ?? "Member"} eyebrow="builder profile">
@@ -75,6 +83,15 @@ function MemberProfileContent() {
 
       {member.bio ? (
         <p className="mt-6 text-muted-foreground leading-relaxed max-w-2xl">{member.bio}</p>
+      ) : null}
+
+      {overlap.length > 0 && !isSelf ? (
+        <section className="mt-6 rounded-sm border border-accent-green/25 bg-accent-green/5 px-4 py-4">
+          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green mb-2">
+            Shared interests
+          </p>
+          <InterestMatchTags tags={member.interests ?? []} interests={profile!.interests} />
+        </section>
       ) : null}
 
       {member.interests?.length ? (
@@ -113,6 +130,15 @@ function MemberProfileContent() {
         >
           Browse projects →
         </Link>
+        {!isSelf ? (
+          <Link
+            to="/search"
+            search={{ q: overlap[0] ?? member.interests?.[0] ?? "" }}
+            className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"
+          >
+            Content you both might like →
+          </Link>
+        ) : null}
       </div>
     </MemberLayout>
   );

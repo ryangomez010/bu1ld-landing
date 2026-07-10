@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { AttentionPanel } from "@/components/member/AttentionPanel";
+import { ContinueReadingStrip } from "@/components/member/ContinueReadingStrip";
 import { EngagementSummaryPanel } from "@/components/member/EngagementSummary";
 import { FeedCard } from "@/components/member/FeedCard";
 import { LoadingState } from "@/components/member/LoadingState";
@@ -22,6 +24,8 @@ import { getAllGuides } from "@/content/guides";
 import { fetchAnnouncements } from "@/lib/announcements";
 import { buildActivityFeed } from "@/lib/activity";
 import type { ActivityItem } from "@/lib/activity";
+import { buildAttentionItems } from "@/lib/attention";
+import type { AttentionItem } from "@/lib/attention";
 import { useAuth } from "@/lib/auth";
 import { buildIcsEvent, downloadIcs } from "@/lib/calendar";
 import { fetchEvents, fetchNewsletters, fetchPapers } from "@/lib/content";
@@ -36,7 +40,7 @@ import { fetchMyUpcomingRsvps } from "@/lib/event-rsvp";
 import { profileCompleteness } from "@/lib/profile";
 import { unreadCount } from "@/lib/notifications";
 import { getAllGuideProgress } from "@/lib/reading-progress";
-import { getLastRecentView, getRecentViews } from "@/lib/recent-views";
+import { getRecentViews } from "@/lib/recent-views";
 import type { RecentView } from "@/lib/recent-views";
 import { fetchJobs, fetchMyApplications, fetchProjects } from "@/lib/projects";
 import { fetchSavedItems, savedItemHref } from "@/lib/saved";
@@ -84,6 +88,7 @@ function DashboardHome() {
   >([]);
   const [myRsvps, setMyRsvps] = useState<MlEvent[]>([]);
   const [engagement, setEngagement] = useState<EngagementSummary | null>(null);
+  const [attention, setAttention] = useState<AttentionItem[]>([]);
 
   useEffect(() => {
     void Promise.all([
@@ -112,8 +117,9 @@ function DashboardHome() {
     void fetchSavedItems(user.id).then(setSavedItems);
     void unreadCount(user.id).then(setUnreadNotifications);
     void fetchEngagementSummary(user.id).then(setEngagement);
+    void buildAttentionItems(user.id, profile ?? null).then(setAttention);
     setRecentViews(getRecentViews(user.id));
-  }, [user]);
+  }, [user, profile]);
 
   useEffect(() => {
     if (!user || !profile?.interests?.length) return;
@@ -150,13 +156,6 @@ function DashboardHome() {
     .map((g) => ({ ...g, progress: guideProgress[g.slug] ?? 0 }))
     .filter((g) => g.progress > 0 && g.progress < 100)
     .sort((a, b) => b.progress - a.progress)[0];
-
-  const lastViewed =
-    user && recentViews.length > 0
-      ? recentViews[0]
-      : user
-        ? getLastRecentView(user.id, ["project", "paper"])
-        : null;
 
   const onboardingSteps = [
     {
@@ -269,9 +268,13 @@ function DashboardHome() {
             />
           </section>
 
+          <AttentionPanel items={attention} />
+
           <QuickActions />
 
           {engagement ? <EngagementSummaryPanel stats={engagement} /> : null}
+
+          <ContinueReadingStrip views={recentViews} />
 
           {savedItems.length > 0 ? (
             <section className="section-gap">
@@ -337,18 +340,6 @@ function DashboardHome() {
                   </li>
                 ))}
               </ol>
-            </section>
-          ) : null}
-
-          {lastViewed ? (
-            <section className="mb-8">
-              <FeedCard
-                tag="pick up where you left off"
-                title={lastViewed.title}
-                body={`Last viewed ${lastViewed.type} — continue reading.`}
-                to={lastViewed.href}
-                cta="Resume →"
-              />
             </section>
           ) : null}
 
