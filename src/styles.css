@@ -554,6 +554,9 @@
   .detail-header {
     max-width: 42rem;
   }
+  .paper-hero {
+    position: relative;
+  }
   .list-row-hover {
     transition: background-color 0.15s ease;
   }

@@ -21,6 +21,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as SavedIndexRouteImport } from './routes/saved/index'
+import { Route as ResearchIndexRouteImport } from './routes/research/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as PapersIndexRouteImport } from './routes/papers/index'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
@@ -103,6 +104,11 @@ const SearchIndexRoute = SearchIndexRouteImport.update({
 const SavedIndexRoute = SavedIndexRouteImport.update({
   id: '/saved/',
   path: '/saved/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchIndexRoute = ResearchIndexRouteImport.update({
+  id: '/research/',
+  path: '/research/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
@@ -252,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/notifications/': typeof NotificationsIndexRoute
   '/papers/': typeof PapersIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/research/': typeof ResearchIndexRoute
   '/saved/': typeof SavedIndexRoute
   '/search/': typeof SearchIndexRoute
   '/projects/edit/$slug': typeof ProjectsEditSlugRoute
@@ -289,6 +296,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof NotificationsIndexRoute
   '/papers': typeof PapersIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/research': typeof ResearchIndexRoute
   '/saved': typeof SavedIndexRoute
   '/search': typeof SearchIndexRoute
   '/projects/edit/$slug': typeof ProjectsEditSlugRoute
@@ -327,6 +335,7 @@ export interface FileRoutesById {
   '/notifications/': typeof NotificationsIndexRoute
   '/papers/': typeof PapersIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/research/': typeof ResearchIndexRoute
   '/saved/': typeof SavedIndexRoute
   '/search/': typeof SearchIndexRoute
   '/projects/edit/$slug': typeof ProjectsEditSlugRoute
@@ -366,6 +375,7 @@ export interface FileRouteTypes {
     | '/notifications/'
     | '/papers/'
     | '/projects/'
+    | '/research/'
     | '/saved/'
     | '/search/'
     | '/projects/edit/$slug'
@@ -403,6 +413,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/papers'
     | '/projects'
+    | '/research'
     | '/saved'
     | '/search'
     | '/projects/edit/$slug'
@@ -440,6 +451,7 @@ export interface FileRouteTypes {
     | '/notifications/'
     | '/papers/'
     | '/projects/'
+    | '/research/'
     | '/saved/'
     | '/search/'
     | '/projects/edit/$slug'
@@ -478,6 +490,7 @@ export interface RootRouteChildren {
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   PapersIndexRoute: typeof PapersIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  ResearchIndexRoute: typeof ResearchIndexRoute
   SavedIndexRoute: typeof SavedIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
   ProjectsEditSlugRoute: typeof ProjectsEditSlugRoute
@@ -569,6 +582,13 @@ declare module '@tanstack/react-router' {
       path: '/saved'
       fullPath: '/saved/'
       preLoaderRoute: typeof SavedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research/': {
+      id: '/research/'
+      path: '/research'
+      fullPath: '/research/'
+      preLoaderRoute: typeof ResearchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/': {
@@ -766,6 +786,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsIndexRoute: NotificationsIndexRoute,
   PapersIndexRoute: PapersIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
+  ResearchIndexRoute: ResearchIndexRoute,
   SavedIndexRoute: SavedIndexRoute,
   SearchIndexRoute: SearchIndexRoute,
   ProjectsEditSlugRoute: ProjectsEditSlugRoute,

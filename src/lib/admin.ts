@@ -1,3 +1,4 @@
+import { logAdminAction } from "@/lib/audit-log";
 import { getSupabase } from "@/lib/supabase";
 import type { AdminStats, MemberRole, Profile } from "@/lib/types";
 import { SEED_JOBS, SEED_PROJECTS } from "@/data/seed/projects";
@@ -53,6 +54,7 @@ export async function fetchAllMembers(): Promise<Profile[]> {
 }
 
 export async function updateMemberRole(
+  actorId: string,
   userId: string,
   role: MemberRole,
 ): Promise<{ error: string | null }> {
@@ -62,6 +64,13 @@ export async function updateMemberRole(
     .from("profiles")
     .update({ role, updated_at: new Date().toISOString() })
     .eq("id", userId);
+  if (!error) {
+    await logAdminAction(actorId, "member.role_update", {
+      targetType: "profile",
+      targetId: userId,
+      detail: { role },
+    });
+  }
   return { error: error?.message ?? null };
 }
 

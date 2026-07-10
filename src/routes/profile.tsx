@@ -24,6 +24,7 @@ import { buildAccountExport, downloadAccountExport } from "@/lib/account-export"
 import { useAuth } from "@/lib/auth";
 import { buildForYouFeed } from "@/lib/personalization";
 import type { ForYouItem } from "@/lib/personalization";
+import { syncPaperEngagementToRemote } from "@/lib/paper-notes";
 import { syncPaperReadsToRemote } from "@/lib/paper-read";
 import { profileCompleteness, updateProfile, upsertProfile } from "@/lib/profile";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -83,6 +84,7 @@ function ProfileEditor() {
   useEffect(() => {
     if (!user) return;
     void syncPaperReadsToRemote(user.id);
+    void syncPaperEngagementToRemote(user.id);
   }, [user]);
 
   const completeness = profileCompleteness(profile);

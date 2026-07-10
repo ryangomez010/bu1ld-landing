@@ -8,6 +8,7 @@ import {
   FileText,
   FolderKanban,
   Home,
+  Library,
   LogOut,
   Mail,
   Menu,
@@ -37,6 +38,7 @@ const NAV_MAIN = [
 ] as const;
 
 const NAV_CONTENT = [
+  { to: "/research", label: "Research", icon: Library },
   { to: "/events", label: "Events", icon: Calendar },
   { to: "/guides", label: "Guides", icon: BookOpen },
   { to: "/papers", label: "Papers", icon: FileText },

@@ -21,8 +21,11 @@ function escapeHtml(value: string): string {
 
 function emailHeaders(): Record<string, string> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
-  const secret = import.meta.env.VITE_EMAIL_API_SECRET as string | undefined;
-  if (secret) headers.Authorization = `Bearer ${secret}`;
+  // Never ship API secrets in the client bundle for production builds.
+  if (!import.meta.env.PROD) {
+    const secret = import.meta.env.VITE_EMAIL_API_SECRET as string | undefined;
+    if (secret) headers.Authorization = `Bearer ${secret}`;
+  }
   return headers;
 }
 

@@ -6,7 +6,15 @@ import { updateMemberRole } from "@/lib/admin";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import type { MemberRole, Profile } from "@/lib/types";
 
-export function AdminMembersTab({ members, onSaved }: { members: Profile[]; onSaved: () => void }) {
+export function AdminMembersTab({
+  members,
+  actorId,
+  onSaved,
+}: {
+  members: Profile[];
+  actorId: string;
+  onSaved: () => void;
+}) {
   const [query, setQuery] = useState("");
 
   if (!isSupabaseConfigured) {
@@ -23,7 +31,11 @@ export function AdminMembersTab({ members, onSaved }: { members: Profile[]; onSa
   }
 
   const onRole = async (id: string, role: MemberRole) => {
-    const { error } = await updateMemberRole(id, role);
+    if (!actorId) {
+      toast.error("Not signed in.");
+      return;
+    }
+    const { error } = await updateMemberRole(actorId, id, role);
     if (error) toast.error(error);
     else {
       toast.success(`Role → ${role}`);

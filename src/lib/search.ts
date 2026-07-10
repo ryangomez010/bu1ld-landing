@@ -1,5 +1,6 @@
 import { getAllGuides } from "@/content/guides";
 import { fetchEvents, fetchNewsletters, fetchPapers } from "@/lib/content";
+import { searchPortalRemote } from "@/lib/remote-search";
 import { fetchJobs, fetchProjects } from "@/lib/projects";
 import type { SearchResult } from "@/lib/types";
 
@@ -97,6 +98,30 @@ export function searchIndex(items: SearchResult[], query: string): SearchResult[
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score)
     .map((x) => x.item);
+}
+
+/** Prefer Supabase RPC search; merge static guides from local index. */
+export async function searchPortal(
+  localIndex: SearchResult[],
+  query: string,
+): Promise<SearchResult[]> {
+  const remote = await searchPortalRemote(query);
+  const guides = searchIndex(
+    localIndex.filter((item) => item.type === "guide"),
+    query,
+  );
+
+  if (remote) {
+    const seen = new Set(remote.map((r) => `${r.type}:${r.slug}`));
+    const merged = [...remote];
+    for (const g of guides) {
+      const key = `${g.type}:${g.slug}`;
+      if (!seen.has(key)) merged.push(g);
+    }
+    return merged;
+  }
+
+  return searchIndex(localIndex, query);
 }
 
 export function interestScore(itemTags: string[], interests: string[]): number {

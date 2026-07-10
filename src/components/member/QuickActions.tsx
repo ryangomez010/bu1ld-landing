@@ -3,11 +3,13 @@ import {
   Calendar,
   FolderKanban,
   GraduationCap,
+  Library,
   Search,
   Users,
 } from "lucide-react";
 
 const ACTIONS = [
+  { to: "/research", label: "Research", icon: Library, accent: "text-bone" },
   { to: "/projects", label: "Apply", icon: FolderKanban, accent: "text-accent-blue" },
   { to: "/events", label: "Events", icon: Calendar, accent: "text-accent-green" },
   { to: "/guides", label: "Guides", icon: GraduationCap, accent: "text-violet-400" },

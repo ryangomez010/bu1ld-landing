@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { TodayFocus } from "@/components/member/TodayFocus";
 import { AttentionPanel } from "@/components/member/AttentionPanel";
 import { ContinueReadingStrip } from "@/components/member/ContinueReadingStrip";
 import { EngagementSummaryPanel } from "@/components/member/EngagementSummary";
@@ -267,6 +268,8 @@ function DashboardHome() {
               icon={GraduationCap}
             />
           </section>
+
+          <TodayFocus items={attention} />
 
           <AttentionPanel items={attention} />
 
