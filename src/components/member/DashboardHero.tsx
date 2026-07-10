@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 
@@ -14,6 +15,7 @@ export function DashboardHero({
   completenessPercent: number;
   roleBadge?: React.ReactNode;
 }) {
+  const reduce = useReducedMotion();
   const hour = new Date().getHours();
   const greeting =
     hour < 12
@@ -25,7 +27,12 @@ export function DashboardHero({
           : "Late session";
 
   return (
-    <div className="mb-10 panel glass rounded-2xl p-6 md:p-8 relative overflow-hidden">
+    <motion.div
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduce ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="mb-10 panel glass rounded-2xl p-6 md:p-8 relative overflow-hidden"
+    >
       <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent-blue/8 blur-3xl" />
       <div className="relative z-[1] flex flex-wrap items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
@@ -71,7 +78,7 @@ export function DashboardHero({
           </div>
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

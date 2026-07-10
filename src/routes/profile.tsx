@@ -4,8 +4,10 @@ import { toast } from "sonner";
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { TagList } from "@/components/member/ContentCard";
+import { IdentityCard } from "@/components/member/IdentityCard";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { ProfileCompletenessMeter } from "@/components/member/ProfileCompletenessMeter";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { BACKGROUND_OPTIONS, INTEREST_OPTIONS } from "@/data/landing";
+import { removeAvatar, uploadAvatar } from "@/lib/avatar-upload";
 import { buildAccountExport, downloadAccountExport } from "@/lib/account-export";
 import { buildProfileShareUrl, ensureProfileSlug } from "@/lib/profile-share";
 import { useAuth } from "@/lib/auth";
@@ -53,6 +56,13 @@ function ProfileEditor() {
   const [interests, setInterests] = useState<string[]>([]);
   const [githubUrl, setGithubUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [twitterUrl, setTwitterUrl] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [goals, setGoals] = useState<string[]>([]);
+  const [goalInput, setGoalInput] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [weeklyPaperGoal, setWeeklyPaperGoal] = useState(2);
   const [timezone, setTimezone] = useState("");
   const [directoryVisible, setDirectoryVisible] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -80,6 +90,11 @@ function ProfileEditor() {
     setInterests(profile.interests ?? []);
     setGithubUrl(profile.github_url ?? "");
     setLinkedinUrl(profile.linkedin_url ?? "");
+    setTwitterUrl(profile.twitter_url ?? "");
+    setWebsiteUrl(profile.website_url ?? "");
+    setGoals(profile.goals ?? []);
+    setAvatarUrl(profile.avatar_url ?? "");
+    setWeeklyPaperGoal(profile.weekly_paper_goal ?? 2);
     setTimezone(profile.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone);
     setDirectoryVisible(profile.directory_visible !== false);
     setShareSlug(profile.profile_slug ?? "");
@@ -110,6 +125,46 @@ function ProfileEditor() {
     );
   };
 
+  const addGoal = () => {
+    const trimmed = goalInput.trim();
+    if (!trimmed || goals.length >= 8) return;
+    if (goals.includes(trimmed)) return;
+    setGoals((prev) => [...prev, trimmed]);
+    setGoalInput("");
+  };
+
+  const removeGoal = (goal: string) => {
+    setGoals((prev) => prev.filter((g) => g !== goal));
+  };
+
+  const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploadingAvatar(true);
+    const { url, error } = await uploadAvatar(user.id, file);
+    setUploadingAvatar(false);
+    if (error) toast.error(error);
+    else if (url) {
+      setAvatarUrl(url);
+      await refreshProfile();
+      toast.success("Avatar updated.");
+    }
+    e.target.value = "";
+  };
+
+  const onRemoveAvatar = async () => {
+    if (!user) return;
+    setUploadingAvatar(true);
+    const { error } = await removeAvatar(user.id);
+    setUploadingAvatar(false);
+    if (error) toast.error(error);
+    else {
+      setAvatarUrl("");
+      await refreshProfile();
+      toast.success("Avatar removed.");
+    }
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -125,6 +180,14 @@ function ProfileEditor() {
       toast.error("LinkedIn URL must start with http:// or https://");
       return;
     }
+    if (twitterUrl.trim() && !isSafeUrl(twitterUrl)) {
+      toast.error("Twitter/X URL must start with http:// or https://");
+      return;
+    }
+    if (websiteUrl.trim() && !isSafeUrl(websiteUrl)) {
+      toast.error("Website URL must start with http:// or https://");
+      return;
+    }
     setSubmitting(true);
     try {
       await updateProfile(user.id, {
@@ -132,11 +195,17 @@ function ProfileEditor() {
         bio,
         background,
         interests,
+        goals,
         github_url: githubUrl,
         linkedin_url: linkedinUrl,
+        twitter_url: twitterUrl,
+        website_url: websiteUrl,
         timezone,
       });
-      await upsertProfile(user.id, { directory_visible: directoryVisible });
+      await upsertProfile(user.id, {
+        directory_visible: directoryVisible,
+        weekly_paper_goal: weeklyPaperGoal,
+      });
       await refreshProfile();
       toast.success("Profile updated.");
       void navigate({ to: "/dashboard" });
@@ -163,7 +232,36 @@ function ProfileEditor() {
 
   return (
     <MemberLayout title="Profile" eyebrow="member settings">
-      <div className="mb-8 -mt-4 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-2 lg:grid-cols-4">
+      <p className="text-sm text-muted-foreground mb-8 -mt-4 max-w-xl leading-relaxed">
+        Your identity powers recommendations, the member directory, and shareable intro cards.
+        Complete each section for a richer BUILD experience.
+      </p>
+
+      <div className="mb-8 grid gap-6 lg:grid-cols-2">
+        <ProfileCompletenessMeter percent={completeness.percent} steps={completeness.steps} />
+        <IdentityCard
+          profile={
+            profile
+              ? {
+                  ...profile,
+                  full_name: fullName || profile.full_name,
+                  bio: bio || profile.bio,
+                  interests,
+                  goals,
+                  avatar_url: avatarUrl || profile.avatar_url,
+                  github_url: githubUrl || profile.github_url,
+                  linkedin_url: linkedinUrl || profile.linkedin_url,
+                  twitter_url: twitterUrl || profile.twitter_url,
+                  website_url: websiteUrl || profile.website_url,
+                }
+              : null
+          }
+          displayName={fullName || profile?.full_name || "Member"}
+          shareUrl={shareUrl || undefined}
+        />
+      </div>
+
+      <div className="mb-8 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-background/75 p-4">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Completeness
@@ -217,39 +315,56 @@ function ProfileEditor() {
         </div>
       </div>
 
-      <section className="mb-8 max-w-xl rounded-sm border border-border/60 bg-background/70 p-5">
-        <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
-          Public member card preview
-        </p>
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="font-display text-xl text-bone">{fullName || "Your name"}</h3>
-          {profile?.role ? <RoleBadge role={profile.role} /> : null}
-          {background ? (
-            <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground capitalize border border-border/60 px-2 py-1 rounded-sm">
-              {background}
-            </span>
-          ) : null}
-        </div>
-        {bio ? (
-          <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">{bio}</p>
-        ) : (
-          <p className="mt-3 text-sm text-muted-foreground italic">
-            Add a bio to stand out in the directory.
-          </p>
-        )}
-        {interests.length ? <TagList tags={interests.slice(0, 6)} className="mt-4" /> : null}
-        {user ? (
-          <Link
-            to="/members/$id"
-            params={{ id: user.id }}
-            className="mt-4 inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
-          >
-            View public profile →
-          </Link>
-        ) : null}
-      </section>
-
       <form onSubmit={onSubmit} className="max-w-xl space-y-5">
+        <div className="rounded-sm border border-border/50 bg-background/60 p-4 space-y-3">
+          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+            Avatar
+          </p>
+          <p className="text-xs text-muted-foreground">
+            A clear photo helps collaborators recognize you in project teams and the directory.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt=""
+                className="h-16 w-16 rounded-full object-cover border border-border/50"
+              />
+            ) : (
+              <div className="h-16 w-16 rounded-full bg-accent-blue/15 flex items-center justify-center font-display text-xl text-bone">
+                {(fullName || "M")[0]?.toUpperCase()}
+              </div>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <Label
+                htmlFor="avatar-upload"
+                className="cursor-pointer inline-flex items-center rounded-sm border border-border/60 px-3 py-2 font-mono text-[9px] tracking-[0.15em] uppercase hover:border-bone/30 transition"
+              >
+                {uploadingAvatar ? "Uploading…" : "Upload photo"}
+              </Label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="sr-only"
+                disabled={uploadingAvatar}
+                onChange={(e) => void onAvatarChange(e)}
+              />
+              {avatarUrl ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={uploadingAvatar}
+                  onClick={() => void onRemoveAvatar()}
+                  className="font-mono text-[9px] tracking-[0.15em] uppercase"
+                >
+                  Remove
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        </div>
         <div className="space-y-2">
           <Label htmlFor="fullName">Full name</Label>
           <Input
@@ -330,6 +445,50 @@ function ProfileEditor() {
             </p>
           ) : null}
         </div>
+        <div className="space-y-2">
+          <Label>Goals this quarter</Label>
+          <p className="text-xs text-muted-foreground">
+            What do you want to learn, ship, or contribute? Shown on your identity card.
+          </p>
+          <div className="flex gap-2">
+            <Input
+              value={goalInput}
+              onChange={(e) => setGoalInput(e.target.value)}
+              placeholder="e.g. Ship a diffusion fine-tune baseline"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addGoal();
+                }
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addGoal}
+              disabled={goals.length >= 8}
+              className="shrink-0 font-mono text-[9px] uppercase"
+            >
+              Add
+            </Button>
+          </div>
+          {goals.length ? (
+            <ul className="flex flex-wrap gap-2 mt-2">
+              {goals.map((goal) => (
+                <li key={goal}>
+                  <button
+                    type="button"
+                    onClick={() => removeGoal(goal)}
+                    className="rounded-sm border border-accent-green/30 bg-accent-green/5 px-3 py-1 font-mono text-[9px] tracking-[0.1em] uppercase text-bone hover:border-accent-red/40 transition"
+                    title="Click to remove"
+                  >
+                    {goal} ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="github">GitHub URL</Label>
@@ -347,6 +506,26 @@ function ProfileEditor() {
               placeholder="https://linkedin.com/in/you"
               value={linkedinUrl}
               onChange={(e) => setLinkedinUrl(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="twitter">Twitter / X URL</Label>
+            <Input
+              id="twitter"
+              placeholder="https://x.com/you"
+              value={twitterUrl}
+              onChange={(e) => setTwitterUrl(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="website">Website</Label>
+            <Input
+              id="website"
+              placeholder="https://yoursite.com"
+              value={websiteUrl}
+              onChange={(e) => setWebsiteUrl(e.target.value)}
             />
           </div>
         </div>
@@ -374,6 +553,20 @@ function ProfileEditor() {
               <option key={tz} value={tz} />
             ))}
           </datalist>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="weeklyGoal">Weekly paper goal</Label>
+          <p className="text-xs text-muted-foreground">
+            Powers your reading streak and &ldquo;Your week&rdquo; dashboard summary.
+          </p>
+          <Input
+            id="weeklyGoal"
+            type="number"
+            min={1}
+            max={20}
+            value={weeklyPaperGoal}
+            onChange={(e) => setWeeklyPaperGoal(Number(e.target.value) || 2)}
+          />
         </div>
         <div className="flex items-start gap-3 rounded-sm border border-border/50 bg-background/60 p-4">
           <Checkbox

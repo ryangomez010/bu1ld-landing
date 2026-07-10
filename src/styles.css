@@ -576,6 +576,14 @@
   .section-gap {
     margin-bottom: var(--section-gap-lg);
   }
+  .density-compact {
+    --section-gap: 1.25rem;
+    --section-gap-lg: 1.5rem;
+  }
+  .density-spacious {
+    --section-gap: 2.75rem;
+    --section-gap-lg: 3.5rem;
+  }
   .filter-bar-sticky {
     position: sticky;
     top: 3.25rem;

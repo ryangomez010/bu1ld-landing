@@ -38,9 +38,13 @@ export function HeroSection() {
             </span>
           </h1>
           <p className="mt-10 max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
-            The Bu1ld is a hub for startups, research, and exploration in machine learning — built
-            for people who ship. Researchers, engineers, and founders work with academic partners to
-            turn hard ideas into products, prototypes, and production systems.
+            The Bu1ld is where researchers, engineers, and founders turn frontier ML ideas into
+            systems people use. Join a member hub built for reading deeply, shipping fast, and
+            collaborating across startups, research labs, and open projects.
+          </p>
+          <p className="mt-4 max-w-xl text-sm text-muted-foreground/90">
+            One account unlocks papers, guides, project workspaces, events, and a directory of
+            builders working on the same hard problems.
           </p>
           <div className="mt-12 flex flex-wrap gap-4">
             <Link
@@ -54,7 +58,7 @@ export function HeroSection() {
               href="#research"
               className="inline-flex items-center gap-3 px-7 py-3.5 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:border-bone/50 hover:bg-bone/5 active:scale-[0.98] transition-all duration-200"
             >
-              Explore research
+              See what we ship
             </a>
           </div>
         </motion.div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { MarkdownBody } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { ReportContentButton } from "@/components/member/ReportContentButton";
 import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { fetchNewsletterBySlug, fetchNewsletters } from "@/lib/content";
 import { formatDate } from "@/lib/date";
@@ -73,12 +74,13 @@ function NewsletterDetail() {
           {issue.issue_number ? ` · issue ${issue.issue_number}` : ""}
         </p>
         <h1 className="font-display text-4xl text-bone mt-3 tracking-tight">{issue.title}</h1>
-        <div className="mt-2">
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           <SaveToCollectionButton
             itemType="newsletter"
             itemSlug={issue.slug}
             itemTitle={issue.title}
           />
+          <ReportContentButton contentType="newsletter" contentSlug={issue.slug} />
         </div>
         {issue.summary ? (
           <p className="mt-4 text-lg text-muted-foreground">{issue.summary}</p>

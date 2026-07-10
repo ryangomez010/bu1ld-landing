@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
+import { guardAuthAttempt } from "@/lib/auth-rate-limit";
 
 export const Route = createFileRoute("/forgot-password")({
   component: ForgotPasswordPage,
@@ -29,6 +30,11 @@ function ForgotPasswordForm() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const blocked = guardAuthAttempt("forgot-password", email);
+    if (blocked) {
+      toast.error(blocked);
+      return;
+    }
     setSubmitting(true);
     const { error } = await resetPassword(email);
     setSubmitting(false);

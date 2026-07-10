@@ -2,14 +2,28 @@ export type MemberRole = "member" | "project_lead" | "admin";
 
 export type MemberBackground = "researcher" | "engineer" | "founder" | "student" | "other";
 
+export type ContentDensity = "compact" | "comfortable" | "spacious";
+export type EmailDigestFrequency = "daily" | "weekly" | "never";
+
+export type MemberPreferences = {
+  user_id: string;
+  content_density: ContentDensity;
+  email_digest_frequency: EmailDigestFrequency;
+  updated_at: string;
+};
+
 export type Profile = {
   id: string;
   full_name: string | null;
   bio: string | null;
   background: MemberBackground | null;
   interests: string[];
+  goals?: string[];
   github_url: string | null;
   linkedin_url: string | null;
+  twitter_url?: string | null;
+  website_url?: string | null;
+  avatar_url?: string | null;
   timezone: string | null;
   onboarding_completed: boolean;
   directory_visible?: boolean;
@@ -25,8 +39,11 @@ export type OnboardingData = {
   bio: string;
   background: MemberBackground;
   interests: string[];
+  goals?: string[];
   github_url: string;
   linkedin_url: string;
+  twitter_url?: string;
+  website_url?: string;
   timezone: string;
 };
 

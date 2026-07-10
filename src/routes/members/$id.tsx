@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
+import { ReportContentButton } from "@/components/member/ReportContentButton";
 import { ResourceNotFound } from "@/components/member/ResourceNotFound";
 import { InterestMatchTags } from "@/components/member/InterestMatchTags";
 import { ListSkeleton } from "@/components/member/LoadingState";
@@ -98,12 +99,21 @@ function MemberProfileContent() {
     <MemberLayout title={member.full_name ?? "Member"} eyebrow="builder profile">
       <PageBackLink to="/members" label="All members" />
 
-      <div className="flex flex-wrap items-center gap-2 -mt-2">
-        <RoleBadge role={member.role} />
-        {member.background ? (
-          <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground capitalize border border-border/60 px-2 py-1 rounded-sm">
-            {member.background}
-          </span>
+      <div className="flex flex-wrap items-center justify-between gap-3 -mt-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <RoleBadge role={member.role} />
+          {member.background ? (
+            <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground capitalize border border-border/60 px-2 py-1 rounded-sm">
+              {member.background}
+            </span>
+          ) : null}
+        </div>
+        {!isSelf ? (
+          <ReportContentButton
+            contentType="member"
+            contentSlug={member.id}
+            label="Report profile"
+          />
         ) : null}
       </div>
 

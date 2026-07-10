@@ -45,6 +45,7 @@ import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
 import { Route as EventsSlugRouteImport } from './routes/events/$slug'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AccountSecurityRouteImport } from './routes/account/security'
+import { Route as AccountPreferencesRouteImport } from './routes/account/preferences'
 import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
 import { Route as ProjectsManageIndexRouteImport } from './routes/projects/manage/index'
 import { Route as ProjectsManageSlugRouteImport } from './routes/projects/manage/$slug'
@@ -230,6 +231,11 @@ const AccountSecurityRoute = AccountSecurityRouteImport.update({
   path: '/account/security',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountPreferencesRoute = AccountPreferencesRouteImport.update({
+  id: '/account/preferences',
+  path: '/account/preferences',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
   id: '/account/notifications',
   path: '/account/notifications',
@@ -263,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/account/notifications': typeof AccountNotificationsRoute
+  '/account/preferences': typeof AccountPreferencesRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
@@ -305,6 +312,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/account/notifications': typeof AccountNotificationsRoute
+  '/account/preferences': typeof AccountPreferencesRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
@@ -348,6 +356,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/account/notifications': typeof AccountNotificationsRoute
+  '/account/preferences': typeof AccountPreferencesRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
@@ -392,6 +401,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/terms'
     | '/account/notifications'
+    | '/account/preferences'
     | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
@@ -434,6 +444,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/terms'
     | '/account/notifications'
+    | '/account/preferences'
     | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
@@ -476,6 +487,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/terms'
     | '/account/notifications'
+    | '/account/preferences'
     | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
@@ -519,6 +531,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   AccountNotificationsRoute: typeof AccountNotificationsRoute
+  AccountPreferencesRoute: typeof AccountPreferencesRoute
   AccountSecurityRoute: typeof AccountSecurityRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   EventsSlugRoute: typeof EventsSlugRoute
@@ -804,6 +817,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountSecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/preferences': {
+      id: '/account/preferences'
+      path: '/account/preferences'
+      fullPath: '/account/preferences'
+      preLoaderRoute: typeof AccountPreferencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account/notifications': {
       id: '/account/notifications'
       path: '/account/notifications'
@@ -847,6 +867,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   AccountNotificationsRoute: AccountNotificationsRoute,
+  AccountPreferencesRoute: AccountPreferencesRoute,
   AccountSecurityRoute: AccountSecurityRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   EventsSlugRoute: EventsSlugRoute,

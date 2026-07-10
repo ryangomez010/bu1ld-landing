@@ -63,8 +63,9 @@ function ResearchHub() {
   return (
     <MemberLayout title="Research library" eyebrow="academic resources">
       <p className="text-muted-foreground mb-8 max-w-2xl -mt-4 leading-relaxed">
-        Guides for intuition, paper reviews for depth, reading paths that connect them. Everything
-        here is written by BUILD members — not scraped abstracts.
+        Guides build intuition. Paper reviews go deep on claims, methods, and what BUILD would ship
+        next. Reading paths connect both — progress syncs to your account so you can resume on any
+        device.
       </p>
 
       {user ? <ResearchContinueCard userId={user.id} /> : null}

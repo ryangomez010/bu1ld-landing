@@ -17,10 +17,42 @@ export const LIMITS = {
   profileName: 120,
   profileBio: 2_000,
   profileUrl: 500,
+  profileGoal: 120,
   applicationPitch: 4_000,
   collectionName: 80,
   collectionDescription: 500,
+  feedbackBody: 2_000,
+  reportReason: 500,
 } as const;
+
+/** Client-side form submission throttle — pairs with server rate limits at scale. */
+const formBuckets = new Map<string, number[]>();
+
+export function checkFormRateLimit(
+  userId: string,
+  formId: string,
+  windowMs = 60_000,
+  maxHits = 10,
+): RateLimitResult {
+  return checkRateLimit(formBuckets, `${userId}:${formId}`, windowMs, maxHits);
+}
+
+export const SENSITIVE_ACTIONS = [
+  "password_change",
+  "email_change",
+  "account_deletion",
+  "avatar_updated",
+  "avatar_removed",
+  "preference_updated",
+  "profile_export",
+  "oauth_unlink",
+] as const;
+
+export type SensitiveAction = (typeof SENSITIVE_ACTIONS)[number];
+
+export function isSensitiveAction(value: string): value is SensitiveAction {
+  return (SENSITIVE_ACTIONS as readonly string[]).includes(value);
+}
 
 export type PasswordCheck = { ok: true } | { ok: false; reason: string };
 

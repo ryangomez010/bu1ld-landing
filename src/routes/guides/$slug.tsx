@@ -7,6 +7,8 @@ import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { NotFoundResource } from "@/components/member/NotFoundResource";
 import { PageBackLink } from "@/components/member/PageBackLink";
+import { ReportContentButton } from "@/components/member/ReportContentButton";
+import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { ShareButton } from "@/components/member/ShareButton";
 import { getGuide } from "@/content/guides";
 import { useAuth } from "@/lib/auth";
@@ -64,7 +66,11 @@ function GuideDetail() {
     <MemberLayout>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <PageBackLink to="/guides" label="Guides" />
-        <ShareButton title={guide.title} />
+        <div className="flex flex-wrap items-center gap-2">
+          <SaveToCollectionButton itemType="guide" itemSlug={guide.slug} itemTitle={guide.title} />
+          <ShareButton title={guide.title} />
+          <ReportContentButton contentType="guide" contentSlug={guide.slug} />
+        </div>
       </div>
       <GuideReader guide={guide} userId={user.id} initialProgress={initialProgress} />
     </MemberLayout>

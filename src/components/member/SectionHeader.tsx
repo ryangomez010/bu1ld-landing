@@ -4,11 +4,13 @@ import { cn } from "@/lib/utils";
 
 export function SectionHeader({
   title,
+  description,
   action,
   accent = "muted",
   className,
 }: {
   title: string;
+  description?: string;
   action?: ReactNode;
   accent?: "muted" | "green" | "blue";
   className?: string;
@@ -28,6 +30,11 @@ export function SectionHeader({
         </h2>
         {action}
       </div>
+      {description ? (
+        <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">
+          {description}
+        </p>
+      ) : null}
       <div className="divider-grad mt-3" />
     </div>
   );

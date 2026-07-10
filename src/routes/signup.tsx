@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
+import { guardAuthAttempt } from "@/lib/auth-rate-limit";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
@@ -35,6 +36,11 @@ function SignupForm() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const blocked = guardAuthAttempt("signup", email);
+    if (blocked) {
+      toast.error(blocked);
+      return;
+    }
     setSubmitting(true);
     const { error } = await signUp(email, password, fullName);
     setSubmitting(false);
@@ -49,7 +55,7 @@ function SignupForm() {
   return (
     <AuthLayout
       title="Become a member"
-      subtitle="Join the membership pool — free at launch. Projects, learning paths, paper reviews, and events."
+      subtitle="Create your BUILD account — personalized hub, reading paths, project applications, and a member directory. Free at launch."
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">

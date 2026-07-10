@@ -8,6 +8,7 @@ import {
   FileText,
   FolderKanban,
   Home,
+  Layers,
   Library,
   LogOut,
   Mail,
@@ -15,9 +16,10 @@ import {
   Search,
   Settings,
   Shield,
+  SlidersHorizontal,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FeedbackButton } from "@/components/member/FeedbackButton";
 import { KeyboardShortcutsDialog } from "@/components/member/KeyboardShortcutsDialog";
@@ -25,11 +27,18 @@ import { MemberCommandPalette } from "@/components/member/MemberCommandPalette";
 import { LiquidBackdrop } from "@/components/member/LiquidBackdrop";
 import { NotificationBell } from "@/components/member/NotificationBell";
 import { MobileTabBar } from "@/components/member/MobileTabBar";
+import { PageTransition } from "@/components/member/PageTransition";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { Wordmark } from "@/components/Wordmark";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth";
+import {
+  densityClass,
+  fetchMemberPreferences,
+  MEMBER_PREFS_CHANGED,
+} from "@/lib/member-preferences";
+import type { ContentDensity, MemberPreferences } from "@/lib/types";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +47,7 @@ const NAV_MAIN = [
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/applications", label: "Applications", icon: ClipboardList },
   { to: "/saved", label: "Saved", icon: Bookmark },
-  { to: "/saved/collections", label: "Collections", icon: Bookmark },
+  { to: "/saved/collections", label: "Collections", icon: Layers },
   { to: "/members", label: "Members", icon: Users },
 ] as const;
 
@@ -63,8 +72,32 @@ export function MemberLayout({
   const { user, profile, signOut } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
+  const [contentDensity, setContentDensity] = useState<ContentDensity>("comfortable");
   const isAdmin = profile?.role === "admin";
   const isLead = profile?.role === "project_lead" || isAdmin;
+
+  useEffect(() => {
+    if (!user) return;
+    void fetchMemberPreferences(user.id).then((p) => setContentDensity(p.content_density));
+  }, [user]);
+
+  useEffect(() => {
+    const onPrefs = (event: Event) => {
+      const detail = (event as CustomEvent<MemberPreferences>).detail;
+      if (detail?.content_density) setContentDensity(detail.content_density);
+    };
+    window.addEventListener(MEMBER_PREFS_CHANGED, onPrefs);
+    return () => window.removeEventListener(MEMBER_PREFS_CHANGED, onPrefs);
+  }, []);
+
+  const maskedEmail = user?.email
+    ? (() => {
+        const [local, domain] = user.email.split("@");
+        if (!domain) return user.email;
+        const shown = local.length <= 2 ? `${local[0] ?? ""}*` : `${local.slice(0, 2)}···`;
+        return `${shown}@${domain}`;
+      })()
+    : null;
 
   const navClass = (active: boolean) =>
     cn(
@@ -157,6 +190,22 @@ export function MemberLayout({
         Profile
       </Link>
       <Link
+        to="/account/notifications"
+        onClick={onNavigate}
+        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
+      >
+        <Mail className="h-4 w-4" />
+        Notifications
+      </Link>
+      <Link
+        to="/account/preferences"
+        onClick={onNavigate}
+        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
+      >
+        <SlidersHorizontal className="h-4 w-4" />
+        Preferences
+      </Link>
+      <Link
         to="/account/security"
         onClick={onNavigate}
         className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
@@ -179,7 +228,12 @@ export function MemberLayout({
   );
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground member-canvas">
+    <div
+      className={cn(
+        "relative min-h-screen bg-background text-foreground member-canvas",
+        densityClass(contentDensity),
+      )}
+    >
       <LiquidBackdrop />
       <a
         href="#main-content"
@@ -261,7 +315,7 @@ export function MemberLayout({
 
           <main
             id="main-content"
-            className="flex-1 px-4 py-8 md:px-8 md:py-10 max-w-5xl w-full mx-auto pb-24 lg:pb-10 page-enter"
+            className="flex-1 px-4 py-8 md:px-8 md:py-10 max-w-6xl w-full mx-auto pb-24 lg:pb-10 page-enter"
           >
             {title ? (
               <header className="mb-8 pb-6 glass rounded-2xl px-6 py-6 md:px-8">
@@ -276,11 +330,11 @@ export function MemberLayout({
                 <div className="divider-grad mt-5 max-w-xs relative z-[1]" />
               </header>
             ) : null}
-            {children}
+            <PageTransition>{children}</PageTransition>
           </main>
 
           <footer className="border-t border-border/40 px-4 py-3.5 pb-20 lg:pb-3.5 flex flex-wrap items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/80 glass-subtle">
-            <span className="truncate max-w-[200px]">{user?.email}</span>
+            {maskedEmail ? <span title={user?.email}>{maskedEmail}</span> : null}
             {profile?.role ? <RoleBadge role={profile.role} /> : null}
             <span className="text-bone/20">·</span>
             <span>BUILD member hub</span>

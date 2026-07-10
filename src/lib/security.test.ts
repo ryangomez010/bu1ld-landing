@@ -1,8 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
+import { guardAuthAttempt } from "./auth-rate-limit";
 import {
-  checkRateLimit,
+  checkFormRateLimit,
   clampText,
+  isSensitiveAction,
   isUuid,
   isValidEmail,
   sanitizeAppPath,
@@ -49,10 +51,24 @@ describe("security utilities", () => {
     expect(sanitizeText("<script>x</script>", 100)).not.toContain("<");
   });
 
-  test("checkRateLimit blocks excess hits", () => {
+  test("checkFormRateLimit throttles repeated submits", () => {
     const buckets = new Map<string, number[]>();
-    expect(checkRateLimit(buckets, "ip", 60_000, 2).allowed).toBe(true);
-    expect(checkRateLimit(buckets, "ip", 60_000, 2).allowed).toBe(true);
-    expect(checkRateLimit(buckets, "ip", 60_000, 2).allowed).toBe(false);
+    expect(checkFormRateLimit("user1", "profile", 60_000, 3).allowed).toBe(true);
+    expect(checkFormRateLimit("user1", "profile", 60_000, 3).allowed).toBe(true);
+    expect(checkFormRateLimit("user1", "profile", 60_000, 3).allowed).toBe(true);
+    expect(checkFormRateLimit("user1", "profile", 60_000, 3).allowed).toBe(false);
+  });
+
+  test("guardAuthAttempt throttles auth forms", () => {
+    const email = "throttle-test@example.com";
+    for (let i = 0; i < 8; i++) {
+      expect(guardAuthAttempt("login-test", email)).toBeNull();
+    }
+    expect(guardAuthAttempt("login-test", email)).toMatch(/Too many attempts/);
+  });
+
+  test("isSensitiveAction validates audit event types", () => {
+    expect(isSensitiveAction("avatar_updated")).toBe(true);
+    expect(isSensitiveAction("random_event")).toBe(false);
   });
 });

@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, ExternalLink, List, StickyNote } from "lucide-react";
+import { BookOpen, ExternalLink, Highlighter, List, StickyNote } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { TagList } from "@/components/member/ContentCard";
 import { PaperReviewBody } from "@/components/member/PaperReviewMarkdown";
+import { ProgressRing } from "@/components/member/ProgressRing";
+import { ReportContentButton } from "@/components/member/ReportContentButton";
 import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { ShareButton } from "@/components/member/ShareButton";
 import { Button } from "@/components/ui/button";
@@ -263,12 +265,19 @@ export function PaperReader({
         <article className="min-w-0 pb-28 lg:pb-24">
           <header className="mb-10 border-l-2 border-accent-blue/30 pl-6 md:pl-8 paper-hero">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-4">
+              <ProgressRing
+                value={scrollProgress}
+                size={40}
+                stroke={2.5}
+                label="Reading progress"
+              />
               <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
                 {paper.is_classic ? "Classic" : "Review"}
               </span>
               <span className="text-border">·</span>
               <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                {readMinutes} min read
+                {readMinutes} min · ~
+                {Math.max(1, Math.round(readMinutes * (1 - scrollProgress / 100)))} min left
               </span>
               {markedRead ? (
                 <>
@@ -305,6 +314,7 @@ export function PaperReader({
                 itemTitle={paper.title}
               />
               <ShareButton title={paper.title} />
+              <ReportContentButton contentType="paper" contentSlug={paper.slug} />
               <Button
                 type="button"
                 size="sm"
@@ -437,6 +447,55 @@ export function PaperReader({
                 placeholder="Claims to verify, reproduction ideas…"
                 className="mt-4 text-sm resize-none"
               />
+            </SheetContent>
+          </Sheet>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="flex-1 font-mono text-[9px] uppercase h-10 rounded-xl hover:bg-bone/5"
+              >
+                <Highlighter className="h-3.5 w-3.5 mr-2" />
+                Highlights
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[60vh] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="font-display text-left">Highlights</SheetTitle>
+              </SheetHeader>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={onSaveHighlight}
+                className="mt-4 w-full font-mono text-[8px] tracking-[0.12em] uppercase"
+              >
+                Save selection
+              </Button>
+              {highlights.length ? (
+                <ul className="mt-4 space-y-2">
+                  {highlights.map((h) => (
+                    <li
+                      key={h.id}
+                      className="text-xs text-muted-foreground border-l-2 border-accent-blue/40 pl-2"
+                    >
+                      <p className="line-clamp-4">{h.highlighted_text}</p>
+                      <button
+                        type="button"
+                        onClick={() => onDeleteHighlight(h.id)}
+                        className="mt-1 font-mono text-[7px] uppercase text-accent-red hover:text-bone"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-4 text-xs text-muted-foreground">
+                  Select text in the review, then tap save.
+                </p>
+              )}
             </SheetContent>
           </Sheet>
         </div>

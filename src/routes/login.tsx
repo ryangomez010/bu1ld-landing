@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
+import { guardAuthAttempt } from "@/lib/auth-rate-limit";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -34,6 +35,11 @@ function LoginForm() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const blocked = guardAuthAttempt("login", email);
+    if (blocked) {
+      toast.error(blocked);
+      return;
+    }
     setSubmitting(true);
     const { error } = await signIn(email, password);
     setSubmitting(false);
@@ -48,7 +54,7 @@ function LoginForm() {
   return (
     <AuthLayout
       title="Log in"
-      subtitle="Access your member hub — projects, research library, and profile."
+      subtitle="Sign in to your personalized BUILD hub — projects, research library, saved collections, and member directory."
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">

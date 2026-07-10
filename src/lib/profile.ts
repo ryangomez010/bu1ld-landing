@@ -39,11 +39,32 @@ export async function upsertProfile(userId: string, patch: Partial<Profile>): Pr
       ? clampText(safe.linkedin_url, LIMITS.profileUrl)
       : null;
   }
+  if (safe.twitter_url != null) {
+    safe.twitter_url = isSafeUrl(safe.twitter_url)
+      ? clampText(safe.twitter_url, LIMITS.profileUrl)
+      : null;
+  }
+  if (safe.website_url != null) {
+    safe.website_url = isSafeUrl(safe.website_url)
+      ? clampText(safe.website_url, LIMITS.profileUrl)
+      : null;
+  }
+  if (safe.avatar_url != null) {
+    safe.avatar_url = isSafeUrl(safe.avatar_url)
+      ? clampText(safe.avatar_url, LIMITS.profileUrl)
+      : null;
+  }
   if (safe.interests != null) {
     safe.interests = safe.interests
       .map((i) => clampText(i, 60))
       .filter(Boolean)
       .slice(0, 20);
+  }
+  if (safe.goals != null) {
+    safe.goals = safe.goals
+      .map((g) => clampText(g, 120))
+      .filter(Boolean)
+      .slice(0, 8);
   }
 
   const { data, error } = await supabase
@@ -78,23 +99,91 @@ export async function updateProfile(userId: string, data: OnboardingData): Promi
   });
 }
 
+export type CompletenessStep = {
+  label: string;
+  hint: string;
+  done: boolean;
+  href?: string;
+};
+
 export function profileCompleteness(profile: Profile | null): {
   percent: number;
   missing: string[];
+  steps: CompletenessStep[];
 } {
-  if (!profile) return { percent: 0, missing: ["Create your profile"] };
-  const checks: { label: string; ok: boolean }[] = [
-    { label: "Name", ok: !!profile.full_name?.trim() },
-    { label: "Bio", ok: !!profile.bio?.trim() },
-    { label: "Background", ok: !!profile.background },
-    { label: "Interests", ok: (profile.interests?.length ?? 0) > 0 },
-    { label: "Timezone", ok: !!profile.timezone?.trim() },
-    { label: "LinkedIn", ok: !!profile.linkedin_url?.trim() },
-    { label: "GitHub", ok: !!profile.github_url?.trim() },
+  if (!profile) {
+    return {
+      percent: 0,
+      missing: ["Create your profile"],
+      steps: [
+        {
+          label: "Create your profile",
+          hint: "Add your name and background so members know who you are.",
+          done: false,
+          href: "/onboarding",
+        },
+      ],
+    };
+  }
+  const checks: CompletenessStep[] = [
+    {
+      label: "Name",
+      hint: "Your display name appears on your card and in project teams.",
+      done: !!profile.full_name?.trim(),
+      href: "/profile",
+    },
+    {
+      label: "Bio",
+      hint: "A short intro helps leads and collaborators find you.",
+      done: !!profile.bio?.trim(),
+      href: "/profile",
+    },
+    {
+      label: "Avatar",
+      hint: "A photo makes your profile recognizable in the directory.",
+      done: !!profile.avatar_url?.trim(),
+      href: "/profile",
+    },
+    {
+      label: "Background",
+      hint: "Researcher, engineer, founder — sets context for matches.",
+      done: !!profile.background,
+      href: "/profile",
+    },
+    {
+      label: "Interests",
+      hint: "Powers your For You feed and member recommendations.",
+      done: (profile.interests?.length ?? 0) > 0,
+      href: "/profile",
+    },
+    {
+      label: "Goals",
+      hint: "What you want to learn or ship this quarter.",
+      done: (profile.goals?.length ?? 0) > 0,
+      href: "/profile",
+    },
+    {
+      label: "Timezone",
+      hint: "Helps coordinate across distributed teams and events.",
+      done: !!profile.timezone?.trim(),
+      href: "/profile",
+    },
+    {
+      label: "Social link",
+      hint: "GitHub, LinkedIn, or a personal site for credibility.",
+      done: !!(
+        profile.github_url?.trim() ||
+        profile.linkedin_url?.trim() ||
+        profile.twitter_url?.trim() ||
+        profile.website_url?.trim()
+      ),
+      href: "/profile",
+    },
   ];
-  const done = checks.filter((c) => c.ok).length;
+  const done = checks.filter((c) => c.done).length;
   return {
     percent: Math.round((done / checks.length) * 100),
-    missing: checks.filter((c) => !c.ok).map((c) => c.label),
+    missing: checks.filter((c) => !c.done).map((c) => c.label),
+    steps: checks,
   };
 }

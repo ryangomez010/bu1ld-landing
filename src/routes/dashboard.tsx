@@ -11,6 +11,8 @@ import {
 
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { DashboardHero } from "@/components/member/DashboardHero";
+import { ProfileCompletenessMeter } from "@/components/member/ProfileCompletenessMeter";
+import { YourWeekSection } from "@/components/member/YourWeekSection";
 import { ResearchContinueCard } from "@/components/member/ResearchContinueCard";
 import { TodayFocus } from "@/components/member/TodayFocus";
 import { AttentionPanel } from "@/components/member/AttentionPanel";
@@ -18,7 +20,9 @@ import { ContinueReadingStrip } from "@/components/member/ContinueReadingStrip";
 import { EngagementSummaryPanel } from "@/components/member/EngagementSummary";
 import { FeedCard } from "@/components/member/FeedCard";
 import { LoadingState } from "@/components/member/LoadingState";
+import { MetricCard } from "@/components/member/MetricCard";
 import { OnboardingChecklist } from "@/components/member/OnboardingChecklist";
+import { StaggerItem, StaggerList } from "@/components/member/PageTransition";
 import { ReadingStreakWidget } from "@/components/member/ReadingStreakWidget";
 import { QuickActions } from "@/components/member/QuickActions";
 import { MemberLayout } from "@/components/member/MemberLayout";
@@ -40,6 +44,7 @@ import { findSimilarMembers, fetchMemberDirectory } from "@/lib/members";
 import type { DirectoryMember } from "@/lib/members";
 import { fetchEngagementSummary } from "@/lib/engagement";
 import type { EngagementSummary } from "@/lib/engagement";
+import { fetchReadingStreakStats } from "@/lib/reading-streaks";
 import { fetchMyUpcomingRsvps } from "@/lib/event-rsvp";
 import { profileCompleteness } from "@/lib/profile";
 import { unreadCount } from "@/lib/notifications";
@@ -96,6 +101,7 @@ function DashboardHome() {
   const [myRsvps, setMyRsvps] = useState<MlEvent[]>([]);
   const [engagement, setEngagement] = useState<EngagementSummary | null>(null);
   const [attention, setAttention] = useState<AttentionItem[]>([]);
+  const [papersThisWeek, setPapersThisWeek] = useState(0);
 
   useEffect(() => {
     void Promise.all([
@@ -125,6 +131,7 @@ function DashboardHome() {
     void unreadCount(user.id).then(setUnreadNotifications);
     void fetchEngagementSummary(user.id).then(setEngagement);
     void buildAttentionItems(user.id, profile ?? null).then(setAttention);
+    void fetchReadingStreakStats(user.id).then((s) => setPapersThisWeek(s.papersThisWeek));
     setRecentViews(getRecentViews(user.id));
   }, [user, profile]);
 
@@ -156,6 +163,11 @@ function DashboardHome() {
   }, [user, profile?.interests, myApplications, forYouKey]);
 
   const displayName = profile?.full_name || user?.email || "Member";
+  const hubBio = profile?.bio?.trim()
+    ? profile.bio
+    : profile?.interests?.length
+      ? `Your hub is tuned for ${profile.interests.slice(0, 3).join(", ")}${profile.interests.length > 3 ? ` +${profile.interests.length - 3} more` : ""}. Papers, projects, and events surface here first.`
+      : "Your BUILD hub — papers, guides, projects, and events in one place. Complete your profile for a tailored experience.";
   const guides = getAllGuides();
   const completeness = profileCompleteness(profile);
 
@@ -193,7 +205,7 @@ function DashboardHome() {
     <MemberLayout>
       <DashboardHero
         displayName={displayName}
-        bio={profile?.bio || "Your BUILD hub — papers, guides, projects, and events in one place."}
+        bio={hubBio}
         completenessPercent={completeness.percent}
         roleBadge={profile?.role ? <RoleBadge role={profile.role} /> : null}
       />
@@ -255,6 +267,25 @@ function DashboardHome() {
 
           {user ? <ReadingStreakWidget userId={user.id} className="section-gap" /> : null}
 
+          <YourWeekSection
+            events={events}
+            papers={papers}
+            projects={openProjects}
+            guideUnread={unreadGuides}
+            weeklyPaperGoal={profile?.weekly_paper_goal ?? 2}
+            papersReadThisWeek={papersThisWeek}
+          />
+
+          {completeness.percent < 100 ? (
+            <section className="section-gap">
+              <ProfileCompletenessMeter
+                percent={completeness.percent}
+                steps={completeness.steps}
+                compact
+              />
+            </section>
+          ) : null}
+
           <TodayFocus items={attention} />
 
           {user ? <ResearchContinueCard userId={user.id} /> : null}
@@ -308,28 +339,23 @@ function DashboardHome() {
             />
           ) : null}
 
-          {!profile?.onboarding_completed ? (
-            <div className="mb-8 rounded-sm border border-accent-blue/30 bg-accent-blue/5 px-5 py-4 flex flex-wrap items-center justify-between gap-4">
-              <p className="text-sm text-foreground/90">
-                Complete your profile so project leads see your background and links when you apply.
-              </p>
+          {!profile?.onboarding_completed || completeness.percent < 100 ? (
+            <div className="mb-8 rounded-xl border border-border/50 panel glass px-5 py-4 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
+                  {!profile?.onboarding_completed ? "Onboarding" : "Profile depth"}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xl leading-relaxed">
+                  {!profile?.onboarding_completed
+                    ? "Complete onboarding so project leads see your background, interests, and links when you apply."
+                    : `Your profile is ${completeness.percent}% complete — ${completeness.missing.slice(0, 3).join(", ")}${completeness.missing.length > 3 ? "…" : ""} unlock better matches and a shareable identity card.`}
+                </p>
+              </div>
               <Link
-                to="/onboarding"
-                className="font-mono text-[10px] tracking-[0.25em] uppercase text-accent-blue hover:text-bone"
+                to={!profile?.onboarding_completed ? "/onboarding" : "/profile"}
+                className="font-mono text-[10px] tracking-[0.25em] uppercase text-accent-blue hover:text-bone shrink-0"
               >
-                Complete profile →
-              </Link>
-            </div>
-          ) : completeness.percent < 100 ? (
-            <div className="mb-8 rounded-sm border border-border/60 bg-background/60 px-5 py-4 flex flex-wrap items-center justify-between gap-4">
-              <p className="text-sm text-muted-foreground">
-                Profile {completeness.percent}% — missing {completeness.missing.join(", ")}.
-              </p>
-              <Link
-                to="/profile"
-                className="font-mono text-[10px] tracking-[0.25em] uppercase text-accent-blue hover:text-bone"
-              >
-                Finish profile →
+                {!profile?.onboarding_completed ? "Complete onboarding →" : "Finish profile →"}
               </Link>
             </div>
           ) : null}
@@ -443,6 +469,7 @@ function DashboardHome() {
               <SectionHeader
                 title="For you"
                 accent="green"
+                description="Personalized picks from open projects, papers, events, and guides — ranked by interest overlap and what you have not saved yet."
                 action={
                   <button
                     type="button"
@@ -516,6 +543,7 @@ function DashboardHome() {
             <section className="section-gap">
               <SectionHeader
                 title="People like you"
+                description="Members who share your interests — useful for finding collaborators and study partners."
                 action={
                   <Link
                     to="/members"
@@ -548,7 +576,10 @@ function DashboardHome() {
 
           {activity.length > 0 ? (
             <section className="section-gap">
-              <SectionHeader title="Activity" />
+              <SectionHeader
+                title="Activity"
+                description="Your recent applications, saves, reads, and RSVPs — a live pulse of what you have touched in BUILD."
+              />
               <div className="grid gap-px border border-border/40 bg-border/40">
                 {activity.slice(0, 6).map((item) => (
                   <Link
@@ -569,100 +600,123 @@ function DashboardHome() {
             </section>
           ) : null}
 
-          <div className="grid gap-2 sm:grid-cols-2">
-            <FeedCard
-              tag="continue reading"
-              title={continueGuide ? continueGuide.title : "Explore guides"}
-              body={
-                continueGuide
-                  ? `${Math.round(continueGuide.progress)}% through — pick up where you left off.`
-                  : "Reference essays on LLMs, attention, JEPA, PINNs, and how BUILD ships."
-              }
-              to={continueGuide ? `/guides/${continueGuide.slug}` : "/guides"}
-              cta={continueGuide ? "Resume →" : "Browse guides →"}
-            />
-            <FeedCard
-              tag="events radar"
-              title={nextEvent ? nextEvent.event.title : "No upcoming deadlines"}
-              body={
-                nextEvent?.deadline
-                  ? `${nextEvent.deadline.label} in ${nextEvent.deadline.days} days — ${formatDate(nextEvent.deadline.date)}`
-                  : "Conference calendar, prep notes, and LaTeX resources."
-              }
-              to={nextEvent ? `/events/${nextEvent.event.slug}` : "/events"}
-              cta="View events →"
-            />
-            <FeedCard
-              tag="latest paper"
-              title={latestPaper?.title ?? "Paper reviews"}
-              body={
-                latestPaper?.summary ??
-                "Curated BUILD reviews on classics and active research threads."
-              }
-              to={latestPaper ? `/papers/${latestPaper.slug}` : "/papers"}
-              cta="Read review →"
-            />
-            <FeedCard
-              tag="open projects"
-              title={openProjects[0]?.title ?? "Browse projects"}
-              body={
-                openProjects.length
-                  ? `${openProjects.length} project${openProjects.length !== 1 ? "s" : ""} accepting applications.`
-                  : "Research threads, startups, and program tracks."
-              }
-              to={openProjects[0] ? `/projects/${openProjects[0].slug}` : "/projects"}
-              cta="View projects →"
-            />
-            <FeedCard
-              tag="your applications"
-              title={
-                myApplications[0]
-                  ? (myApplications[0].project_title ?? "Application")
-                  : "Apply to a project"
-              }
-              body={
-                myApplications.length
-                  ? `${myApplications.length} application${myApplications.length !== 1 ? "s" : ""} — latest: ${myApplications[0].status}.`
-                  : "Join a research thread or startup build."
-              }
-              to="/applications"
-              cta={myApplications.length ? "Track applications →" : "Browse projects →"}
-            />
-          </div>
+          <SectionHeader
+            title="Explore"
+            description="Jump back into reading, track deadlines, and follow your applications — curated from your recent activity."
+          />
+          <StaggerList className="grid gap-2 sm:grid-cols-2">
+            <StaggerItem>
+              <FeedCard
+                tag="continue reading"
+                title={continueGuide ? continueGuide.title : "Explore guides"}
+                body={
+                  continueGuide
+                    ? `${Math.round(continueGuide.progress)}% through — pick up where you left off.`
+                    : "Reference essays on LLMs, attention, JEPA, PINNs, and how BUILD ships."
+                }
+                to={continueGuide ? `/guides/${continueGuide.slug}` : "/guides"}
+                cta={continueGuide ? "Resume →" : "Browse guides →"}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <FeedCard
+                tag="events radar"
+                title={nextEvent ? nextEvent.event.title : "No upcoming deadlines"}
+                body={
+                  nextEvent?.deadline
+                    ? `${nextEvent.deadline.label} in ${nextEvent.deadline.days} days — ${formatDate(nextEvent.deadline.date)}`
+                    : "Conference calendar, prep notes, and LaTeX resources."
+                }
+                to={nextEvent ? `/events/${nextEvent.event.slug}` : "/events"}
+                cta="View events →"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <FeedCard
+                tag="latest paper"
+                title={latestPaper?.title ?? "Paper reviews"}
+                body={
+                  latestPaper?.summary ??
+                  "Curated BUILD reviews on classics and active research threads."
+                }
+                to={latestPaper ? `/papers/${latestPaper.slug}` : "/papers"}
+                cta="Read review →"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <FeedCard
+                tag="open projects"
+                title={openProjects[0]?.title ?? "Browse projects"}
+                body={
+                  openProjects.length
+                    ? `${openProjects.length} project${openProjects.length !== 1 ? "s" : ""} accepting applications.`
+                    : "Research threads, startups, and program tracks."
+                }
+                to={openProjects[0] ? `/projects/${openProjects[0].slug}` : "/projects"}
+                cta="View projects →"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <FeedCard
+                tag="your applications"
+                title={
+                  myApplications[0]
+                    ? (myApplications[0].project_title ?? "Application")
+                    : "Apply to a project"
+                }
+                body={
+                  myApplications.length
+                    ? `${myApplications.length} application${myApplications.length !== 1 ? "s" : ""} — latest: ${myApplications[0].status}.`
+                    : "Join a research thread or startup build."
+                }
+                to="/applications"
+                cta={myApplications.length ? "Track applications →" : "Browse projects →"}
+              />
+            </StaggerItem>
+          </StaggerList>
 
-          <div className="mt-6 grid gap-2 sm:grid-cols-2">
-            <FeedCard
-              tag="newsletter"
-              title={latestNewsletter?.title ?? "BUILD digest"}
-              body={
-                latestNewsletter?.summary ??
-                "Community updates, paper picks, and startup spotlights."
-              }
-              to={latestNewsletter ? `/newsletter/${latestNewsletter.slug}` : "/newsletter"}
-              cta="Read issue →"
-            />
-            <FeedCard
-              tag="jobs"
-              title={internalJobs[0]?.title ?? "Job board"}
-              body={
-                internalJobs.length
-                  ? `${internalJobs.length} BUILD role${internalJobs.length !== 1 ? "s" : ""} + curated external listings.`
-                  : "BUILD opportunities and curated external ML roles."
-              }
-              to={internalJobs[0] ? `/jobs/${internalJobs[0].slug}` : "/jobs"}
-              cta="View jobs →"
-            />
-            <FeedCard
-              tag="project lead"
-              title="Want to run a thread?"
-              body="Verified leads create projects and review applications. Request access if you are ready to ship."
-              to="/lead/apply"
-              cta="Request lead status →"
-            />
-          </div>
+          <StaggerList className="mt-6 grid gap-2 sm:grid-cols-2" stagger={0.05}>
+            <StaggerItem>
+              <FeedCard
+                tag="newsletter"
+                title={latestNewsletter?.title ?? "BUILD digest"}
+                body={
+                  latestNewsletter?.summary ??
+                  "Community updates, paper picks, and startup spotlights."
+                }
+                to={latestNewsletter ? `/newsletter/${latestNewsletter.slug}` : "/newsletter"}
+                cta="Read issue →"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <FeedCard
+                tag="jobs"
+                title={internalJobs[0]?.title ?? "Job board"}
+                body={
+                  internalJobs.length
+                    ? `${internalJobs.length} BUILD role${internalJobs.length !== 1 ? "s" : ""} + curated external listings.`
+                    : "BUILD opportunities and curated external ML roles."
+                }
+                to={internalJobs[0] ? `/jobs/${internalJobs[0].slug}` : "/jobs"}
+                cta="View jobs →"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <FeedCard
+                tag="project lead"
+                title="Want to run a thread?"
+                body="Verified leads create projects and review applications. Request access if you are ready to ship."
+                to="/lead/apply"
+                cta="Request lead status →"
+              />
+            </StaggerItem>
+          </StaggerList>
 
           <section className="mt-10 section-gap">
-            <SectionHeader title="Quick links" />
+            <SectionHeader
+              title="Quick links"
+              description="Every corner of the member hub — search, saved items, applications, and your account settings."
+            />
             <div className="flex flex-wrap gap-3">
               {[
                 ["/search", "Search"],
