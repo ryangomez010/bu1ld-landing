@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { Session, User } from "@supabase/supabase-js";
 
 import { fetchProfile } from "@/lib/profile";
+import { logSecurityEvent, currentDeviceLabel } from "@/lib/account-security";
 import { migrateLegacyNotifications } from "@/lib/notifications";
 import { migrateLegacySaved } from "@/lib/saved";
 import { isValidEmail, validatePassword } from "@/lib/security";
@@ -64,10 +65,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
       setLoading(false);
+      if (event === "SIGNED_IN" && nextSession?.user) {
+        void logSecurityEvent(nextSession.user.id, "sign_in", {
+          device: currentDeviceLabel(),
+          user_agent:
+            typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 200) : undefined,
+        });
+      }
     });
 
     return () => {

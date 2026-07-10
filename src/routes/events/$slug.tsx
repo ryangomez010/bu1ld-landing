@@ -8,7 +8,8 @@ import { TagList } from "@/components/member/ContentCard";
 import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
-import { SaveButton } from "@/components/member/SaveButton";
+import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
+import { ReportContentButton } from "@/components/member/ReportContentButton";
 import { ShareButton } from "@/components/member/ShareButton";
 import { Button } from "@/components/ui/button";
 import { buildIcsEvent, downloadIcs } from "@/lib/calendar";
@@ -95,8 +96,9 @@ function EventDetail() {
         </p>
         <h1 className="font-display text-4xl text-bone mt-3 tracking-tight">{event.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <SaveButton itemType="event" itemSlug={event.slug} itemTitle={event.title} />
+          <SaveToCollectionButton itemType="event" itemSlug={event.slug} itemTitle={event.title} />
           <ShareButton title={event.title} />
+          <ReportContentButton contentType="event" contentSlug={event.slug} />
           {event.start_date ? (
             <Button
               type="button"

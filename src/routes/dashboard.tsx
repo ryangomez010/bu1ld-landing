@@ -18,7 +18,8 @@ import { ContinueReadingStrip } from "@/components/member/ContinueReadingStrip";
 import { EngagementSummaryPanel } from "@/components/member/EngagementSummary";
 import { FeedCard } from "@/components/member/FeedCard";
 import { LoadingState } from "@/components/member/LoadingState";
-import { MetricCard } from "@/components/member/MetricCard";
+import { OnboardingChecklist } from "@/components/member/OnboardingChecklist";
+import { ReadingStreakWidget } from "@/components/member/ReadingStreakWidget";
 import { QuickActions } from "@/components/member/QuickActions";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { RoleBadge } from "@/components/member/RoleBadge";
@@ -163,25 +164,6 @@ function DashboardHome() {
     .filter((g) => g.progress > 0 && g.progress < 100)
     .sort((a, b) => b.progress - a.progress)[0];
 
-  const onboardingSteps = [
-    {
-      label: "Complete profile",
-      done: !!profile?.onboarding_completed && completeness.percent >= 80,
-      href: profile?.onboarding_completed ? "/profile" : "/onboarding",
-    },
-    {
-      label: "Apply or save something",
-      done: myApplications.length > 0 || savedItems.length > 0,
-      href: myApplications.length ? "/applications" : "/projects",
-    },
-    {
-      label: "Read a guide",
-      done: Object.values(guideProgress).some((p) => p >= 95),
-      href: continueGuide ? `/guides/${continueGuide.slug}` : "/guides",
-    },
-  ];
-  const checklistComplete = onboardingSteps.every((s) => s.done);
-
   const nextEvent = events
     .map((e) => ({ event: e, deadline: nearestDeadline(e.deadlines) }))
     .filter((x) => x.deadline)
@@ -271,6 +253,8 @@ function DashboardHome() {
             />
           </section>
 
+          {user ? <ReadingStreakWidget userId={user.id} className="section-gap" /> : null}
+
           <TodayFocus items={attention} />
 
           {user ? <ResearchContinueCard userId={user.id} /> : null}
@@ -310,44 +294,18 @@ function DashboardHome() {
             </section>
           ) : null}
 
-          {profile?.onboarding_completed && !checklistComplete ? (
-            <section className="mb-8 rounded-sm border border-accent-violet/30 bg-accent-violet/5 px-5 py-5">
-              <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-violet mb-4">
-                Get started — 3 steps to full membership
-              </h2>
-              <ol className="space-y-3">
-                {onboardingSteps.map((step) => (
-                  <li key={step.label} className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`font-mono text-[10px] w-5 h-5 flex items-center justify-center rounded-sm border ${
-                          step.done
-                            ? "border-accent-green/40 bg-accent-green/10 text-accent-green"
-                            : "border-border/60 text-muted-foreground"
-                        }`}
-                      >
-                        {step.done ? "✓" : "·"}
-                      </span>
-                      <span
-                        className={
-                          step.done ? "text-muted-foreground line-through" : "text-bone text-sm"
-                        }
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-                    {!step.done ? (
-                      <Link
-                        to={step.href}
-                        className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone shrink-0"
-                      >
-                        Go →
-                      </Link>
-                    ) : null}
-                  </li>
-                ))}
-              </ol>
-            </section>
+          {user && profile ? (
+            <OnboardingChecklist
+              userId={user.id}
+              progress={{
+                profileComplete: !!profile.onboarding_completed && completeness.percent >= 80,
+                hasApplicationOrSave: myApplications.length > 0 || savedItems.length > 0,
+                hasReadGuide: Object.values(guideProgress).some((p) => p >= 95),
+                hasVerifiedEmail: emailVerified,
+                hasSetInterests: (profile.interests?.length ?? 0) > 0,
+                continueGuideHref: continueGuide ? `/guides/${continueGuide.slug}` : undefined,
+              }}
+            />
           ) : null}
 
           {!profile?.onboarding_completed ? (

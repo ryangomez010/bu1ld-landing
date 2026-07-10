@@ -1,5 +1,8 @@
 import { readUserJson, writeUserJson } from "@/lib/storage";
 import { clampText } from "@/lib/security";
+import { createNotification } from "@/lib/notifications";
+import { shouldNotifyInApp } from "@/lib/notification-preferences";
+import { fetchProjectUpdateSubscribers } from "@/lib/project-follows";
 import { getSupabase } from "@/lib/supabase";
 import type { ProjectUpdate } from "@/lib/types";
 
@@ -39,6 +42,7 @@ export async function createProjectUpdate(
   authorId: string,
   authorName: string,
   body: string,
+  opts?: { projectSlug?: string; projectTitle?: string; mentionUserIds?: string[] },
 ): Promise<{ error: string | null }> {
   const safeBody = clampText(body, 2000);
   if (!safeBody) return { error: "Update cannot be empty." };
@@ -52,7 +56,10 @@ export async function createProjectUpdate(
       author_id: authorId,
       body: safeBody,
     });
-    if (!error) return { error: null };
+    if (!error) {
+      void notifyProjectUpdateSubscribers(projectId, authorId, authorName, safeBody, opts);
+      return { error: null };
+    }
     if (error.code !== "42P01") return { error: error.message };
   }
 
@@ -65,7 +72,60 @@ export async function createProjectUpdate(
     created_at: now,
   };
   writeLocal(projectId, [update, ...readLocal(projectId)]);
+  void notifyProjectUpdateSubscribers(projectId, authorId, authorName, safeBody, opts);
   return { error: null };
+}
+
+/** Parse @mentions like @[Name](userId) or @username patterns — returns unique user IDs. */
+export function parseMentionUserIds(body: string, knownMembers?: Map<string, string>): string[] {
+  const ids = new Set<string>();
+  const bracket = /@\[([^\]]+)\]\(([0-9a-f-]{36})\)/gi;
+  let m: RegExpExecArray | null;
+  while ((m = bracket.exec(body))) {
+    ids.add(m[2]!);
+  }
+  if (knownMembers) {
+    const atWord = /@([a-zA-Z0-9_-]{3,40})/g;
+    while ((m = atWord.exec(body))) {
+      const id = knownMembers.get(m[1]!.toLowerCase());
+      if (id) ids.add(id);
+    }
+  }
+  return [...ids];
+}
+
+async function notifyProjectUpdateSubscribers(
+  projectId: string,
+  authorId: string,
+  authorName: string,
+  body: string,
+  opts?: { projectSlug?: string; projectTitle?: string; mentionUserIds?: string[] },
+): Promise<void> {
+  const href = opts?.projectSlug ? `/projects/${opts.projectSlug}` : "/projects";
+  const title = opts?.projectTitle ?? "Project update";
+  const mentionIds = opts?.mentionUserIds ?? [];
+
+  const subscribers = await fetchProjectUpdateSubscribers(projectId);
+  const targets = new Set(subscribers.filter((id) => id !== authorId));
+
+  for (const userId of mentionIds) {
+    if (userId !== authorId) targets.add(userId);
+  }
+
+  await Promise.all(
+    [...targets].map(async (userId) => {
+      const isMention = mentionIds.includes(userId);
+      const prefKey = isMention ? "mention" : "project_update";
+      const allowed = await shouldNotifyInApp(userId, prefKey);
+      if (!allowed) return;
+
+      await createNotification(userId, {
+        title: isMention ? `${authorName} mentioned you` : `Update: ${title}`,
+        body: body.slice(0, 200),
+        href,
+      });
+    }),
+  );
 }
 
 function mapRow(row: Record<string, unknown>): ProjectUpdate {

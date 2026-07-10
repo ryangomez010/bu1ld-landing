@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { AdminAuditTab } from "@/components/admin/AdminAuditTab";
+import { AdminBulkPublishTab } from "@/components/admin/AdminBulkPublishTab";
+import { AdminModerationTab } from "@/components/admin/AdminModerationTab";
 import { AdminSecurityTab } from "@/components/admin/AdminSecurityTab";
 import { AdminAnnouncementsTab } from "@/components/admin/AdminAnnouncementsTab";
 import { AdminEventsTab } from "@/components/admin/AdminEventsTab";
@@ -62,6 +64,8 @@ function AdminContent() {
     | "guides"
     | "members"
     | "leads"
+    | "bulk"
+    | "moderation"
     | "audit"
     | "security"
   >("overview");
@@ -115,6 +119,8 @@ function AdminContent() {
             "guides",
             "members",
             "leads",
+            "bulk",
+            "moderation",
             "audit",
             "security",
           ] as const
@@ -151,6 +157,16 @@ function AdminContent() {
         <AdminAuditTab entries={auditLog} />
       ) : tab === "security" ? (
         <AdminSecurityTab events={securityEvents} />
+      ) : tab === "bulk" ? (
+        <AdminBulkPublishTab
+          events={events}
+          papers={papers}
+          newsletters={newsletters}
+          jobs={jobs}
+          onSaved={reload}
+        />
+      ) : tab === "moderation" ? (
+        <AdminModerationTab />
       ) : (
         <AdminLeadsTab requests={leadRequests} adminId={user?.id ?? ""} onSaved={reload} />
       )}

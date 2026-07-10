@@ -21,6 +21,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { BACKGROUND_OPTIONS, INTEREST_OPTIONS } from "@/data/landing";
 import { buildAccountExport, downloadAccountExport } from "@/lib/account-export";
+import { buildProfileShareUrl, ensureProfileSlug } from "@/lib/profile-share";
 import { useAuth } from "@/lib/auth";
 import { buildForYouFeed } from "@/lib/personalization";
 import type { ForYouItem } from "@/lib/personalization";
@@ -57,6 +58,8 @@ function ProfileEditor() {
   const [submitting, setSubmitting] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [previewFeed, setPreviewFeed] = useState<ForYouItem[]>([]);
+  const [shareSlug, setShareSlug] = useState("");
+  const [shareUrl, setShareUrl] = useState("");
 
   useEffect(() => {
     if (!interests.length) {
@@ -79,7 +82,11 @@ function ProfileEditor() {
     setLinkedinUrl(profile.linkedin_url ?? "");
     setTimezone(profile.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone);
     setDirectoryVisible(profile.directory_visible !== false);
-  }, [profile]);
+    setShareSlug(profile.profile_slug ?? "");
+    if (user) {
+      setShareUrl(buildProfileShareUrl(user.id, profile.profile_slug));
+    }
+  }, [profile, user]);
 
   useEffect(() => {
     if (!user) return;
@@ -383,6 +390,43 @@ function ProfileEditor() {
               still use the portal normally.
             </p>
           </div>
+        </div>
+        <div className="rounded-sm border border-border/50 bg-background/60 p-4 space-y-3">
+          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+            Share profile
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Copy a public link to your member card for applications or intros.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!user) return;
+                void ensureProfileSlug(user.id, fullName || "member").then(({ slug, error }) => {
+                  if (error) {
+                    toast.error(error);
+                    return;
+                  }
+                  if (slug) {
+                    setShareSlug(slug);
+                    const url = buildProfileShareUrl(user.id, slug);
+                    setShareUrl(url);
+                    void navigator.clipboard.writeText(url);
+                    toast.success("Profile link copied.");
+                  }
+                });
+              }}
+              className="font-mono text-[9px] tracking-[0.15em] uppercase"
+            >
+              Copy share link
+            </Button>
+          </div>
+          {shareUrl ? (
+            <p className="font-mono text-[10px] text-muted-foreground break-all">{shareUrl}</p>
+          ) : null}
         </div>
         <div className="rounded-sm border border-border/50 bg-background/60 p-4 space-y-3">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">

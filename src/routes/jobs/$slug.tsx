@@ -1,12 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { TagList } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { JobSourceBadge } from "@/components/member/ProjectBadges";
-import { SaveButton } from "@/components/member/SaveButton";
+import { ReportContentButton } from "@/components/member/ReportContentButton";
+import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
+import { getJobApplicationStatus, upsertJobApplication } from "@/lib/job-applications";
 import { fetchJobBySlug, fetchJobs } from "@/lib/projects";
 import type { Job } from "@/lib/types";
 
@@ -24,9 +29,11 @@ function JobDetailPage() {
 
 function JobDetail() {
   const { slug } = Route.useParams();
+  const { user } = useAuth();
   const [job, setJob] = useState<Job | null>(null);
   const [related, setRelated] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tracked, setTracked] = useState(false);
 
   useEffect(() => {
     void Promise.all([fetchJobBySlug(slug), fetchJobs()]).then(([j, all]) => {
@@ -49,6 +56,22 @@ function JobDetail() {
       setLoading(false);
     });
   }, [slug]);
+
+  useEffect(() => {
+    if (!user || !job) return;
+    void getJobApplicationStatus(user.id, job.slug).then((a) => setTracked(!!a));
+  }, [user, job]);
+
+  const onTrack = async () => {
+    if (!user || !job) return;
+    const { error } = await upsertJobApplication(user.id, job.slug, job.title, "applied");
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    setTracked(true);
+    toast.success("Added to your job tracker.");
+  };
 
   if (loading) {
     return (
@@ -89,8 +112,27 @@ function JobDetail() {
           ) : null}
         </div>
         <h1 className="font-display text-4xl text-bone mt-4 tracking-tight">{job.title}</h1>
-        <div className="mt-2 flex items-center gap-3">
-          <SaveButton itemType="job" itemSlug={job.slug} itemTitle={job.title} />
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <SaveToCollectionButton itemType="job" itemSlug={job.slug} itemTitle={job.title} />
+          {tracked ? (
+            <Link
+              to="/jobs/tracker"
+              className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-green hover:text-bone"
+            >
+              Tracked →
+            </Link>
+          ) : (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => void onTrack()}
+              className="font-mono text-[9px] tracking-[0.15em] uppercase"
+            >
+              Track application
+            </Button>
+          )}
+          <ReportContentButton contentType="job" contentSlug={job.slug} />
         </div>
         <p className="mt-3 text-muted-foreground">
           {job.company}

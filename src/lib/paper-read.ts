@@ -1,4 +1,5 @@
 import { readUserJson, writeUserJson } from "@/lib/storage";
+import { recordPaperRead } from "@/lib/reading-streaks";
 import { getSupabase } from "@/lib/supabase";
 
 const STORAGE_BASE = "build:papers-read";
@@ -52,6 +53,8 @@ export async function markPaperRead(userId: string, slug: string): Promise<void>
       { user_id: userId, paper_slug: slug, read_at: new Date().toISOString() },
       { onConflict: "user_id,paper_slug" },
     );
+
+  void recordPaperRead(userId);
 }
 
 export async function unmarkPaperRead(userId: string, slug: string): Promise<void> {

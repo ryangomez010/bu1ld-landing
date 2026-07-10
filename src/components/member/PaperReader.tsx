@@ -5,12 +5,19 @@ import { toast } from "sonner";
 
 import { TagList } from "@/components/member/ContentCard";
 import { PaperReviewBody } from "@/components/member/PaperReviewMarkdown";
-import { SaveButton } from "@/components/member/SaveButton";
+import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { ShareButton } from "@/components/member/ShareButton";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { getAllGuides } from "@/content/guides";
+import {
+  addPaperHighlight,
+  deletePaperHighlight,
+  fetchPaperHighlights,
+  getSelectedHighlightText,
+  type PaperHighlight,
+} from "@/lib/paper-highlights";
 import {
   fetchPaperNotes,
   fetchPaperScrollProgress,
@@ -28,11 +35,17 @@ function ReaderSidebar({
   notes,
   onNotesChange,
   relatedGuides,
+  highlights,
+  onSaveHighlight,
+  onDeleteHighlight,
 }: {
   toc: ReturnType<typeof parseReviewSections>;
   notes: string;
   onNotesChange: (value: string) => void;
   relatedGuides: ReturnType<typeof relatedGuidesForPaper>;
+  highlights: PaperHighlight[];
+  onSaveHighlight: () => void;
+  onDeleteHighlight: (id: string) => void;
 }) {
   return (
     <div className="space-y-5">
@@ -75,6 +88,42 @@ function ReaderSidebar({
           placeholder="Claims to verify, reproduction ideas, questions for the thread…"
           className="text-sm resize-none bg-background/50"
         />
+      </div>
+
+      <div className="rounded-xl border border-border/40 panel glass p-4 relative z-[1]">
+        <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
+          Highlights
+        </p>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={onSaveHighlight}
+          className="w-full font-mono text-[8px] tracking-[0.12em] uppercase mb-3"
+        >
+          Save selection
+        </Button>
+        {highlights.length ? (
+          <ul className="space-y-2 max-h-40 overflow-y-auto">
+            {highlights.map((h) => (
+              <li
+                key={h.id}
+                className="text-xs text-muted-foreground border-l-2 border-accent-blue/40 pl-2"
+              >
+                <p className="line-clamp-3">{h.highlighted_text}</p>
+                <button
+                  type="button"
+                  onClick={() => onDeleteHighlight(h.id)}
+                  className="mt-1 font-mono text-[7px] uppercase text-accent-red hover:text-bone"
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-xs text-muted-foreground">Select text in the review, then save.</p>
+        )}
       </div>
 
       {relatedGuides.length > 0 ? (
@@ -128,6 +177,7 @@ export function PaperReader({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [markedRead, setMarkedRead] = useState(false);
   const [notes, setNotes] = useState("");
+  const [highlights, setHighlights] = useState<PaperHighlight[]>([]);
   const progressSaveRef = useRef(0);
 
   useEffect(() => {
@@ -135,10 +185,12 @@ export function PaperReader({
       isPaperRead(userId, paper.slug),
       fetchPaperScrollProgress(userId, paper.slug),
       fetchPaperNotes(userId, paper.slug),
-    ]).then(([read, progress, savedNotes]) => {
+      fetchPaperHighlights(userId, paper.slug),
+    ]).then(([read, progress, savedNotes, savedHighlights]) => {
       setMarkedRead(read);
       setScrollProgress(progress);
       setNotes(savedNotes);
+      setHighlights(savedHighlights);
     });
   }, [userId, paper.slug]);
 
@@ -165,6 +217,29 @@ export function PaperReader({
     const t = window.setTimeout(() => savePaperNotes(userId, paper.slug, notes), 600);
     return () => window.clearTimeout(t);
   }, [notes, userId, paper.slug]);
+
+  const onSaveHighlight = () => {
+    const text = getSelectedHighlightText();
+    if (!text) {
+      toast.error("Select some text in the review first.");
+      return;
+    }
+    void addPaperHighlight(userId, paper.slug, text).then(({ highlight, error }) => {
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      if (highlight) setHighlights((prev) => [highlight, ...prev]);
+      toast.success("Highlight saved.");
+    });
+  };
+
+  const onDeleteHighlight = (id: string) => {
+    void deletePaperHighlight(userId, paper.slug, id).then(({ error }) => {
+      if (error) toast.error(error);
+      else setHighlights((prev) => prev.filter((h) => h.id !== id));
+    });
+  };
 
   const toggleRead = () => {
     void (
@@ -224,7 +299,11 @@ export function PaperReader({
             ) : null}
 
             <div className="mt-6 flex flex-wrap gap-2">
-              <SaveButton itemType="paper" itemSlug={paper.slug} itemTitle={paper.title} />
+              <SaveToCollectionButton
+                itemType="paper"
+                itemSlug={paper.slug}
+                itemTitle={paper.title}
+              />
               <ShareButton title={paper.title} />
               <Button
                 type="button"
@@ -284,6 +363,9 @@ export function PaperReader({
               notes={notes}
               onNotesChange={setNotes}
               relatedGuides={relatedGuides}
+              highlights={highlights}
+              onSaveHighlight={onSaveHighlight}
+              onDeleteHighlight={onDeleteHighlight}
             />
           </div>
         </aside>

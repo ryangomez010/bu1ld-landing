@@ -12,10 +12,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   fetchMySecurityEvents,
+  fetchSignInSessions,
   getConnectedIdentities,
   logSecurityEvent,
   requestAccountDeletion,
   type SecurityEvent,
+  type SignInSession,
 } from "@/lib/account-security";
 import { useAuth } from "@/lib/auth";
 import { relativeTime } from "@/lib/date";
@@ -47,6 +49,7 @@ function AccountSecurityContent() {
   const [signingOutAll, setSigningOutAll] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [events, setEvents] = useState<SecurityEvent[]>([]);
+  const [sessions, setSessions] = useState<SignInSession[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
 
   const reloadEvents = useCallback(() => {
@@ -55,6 +58,7 @@ function AccountSecurityContent() {
       setEvents(data);
       setLoadingEvents(false);
     });
+    void fetchSignInSessions(user.id).then(setSessions);
   }, [user]);
 
   useEffect(() => {
@@ -244,6 +248,22 @@ function AccountSecurityContent() {
           <p className="text-sm text-muted-foreground">
             Sign out on every device where you&apos;re logged in to BUILD.
           </p>
+          {sessions.length > 0 ? (
+            <ul className="space-y-2 rounded-sm border border-border/50 p-3">
+              {sessions.map((s) => (
+                <li key={s.id} className="flex items-center justify-between text-sm gap-3">
+                  <span className="text-bone">{s.device}</span>
+                  <span className="font-mono text-[8px] tracking-[0.1em] uppercase text-muted-foreground shrink-0">
+                    {relativeTime(s.created_at)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Sign-in history appears after your next login.
+            </p>
+          )}
           <ConfirmButton
             title="Sign out everywhere?"
             description="You'll need to log in again on all devices."
@@ -323,6 +343,13 @@ function AccountSecurityContent() {
             </ul>
           )}
         </section>
+
+        <Link
+          to="/account/notifications"
+          className="inline-block font-mono text-[10px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
+        >
+          Notification preferences →
+        </Link>
 
         <Link
           to="/profile"

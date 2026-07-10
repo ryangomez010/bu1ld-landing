@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
+import { clearLeadDraft, loadLeadDraft, saveLeadDraft } from "@/lib/lead-draft";
 import { hasPendingLeadRequest, isProjectLead, submitLeadRequest } from "@/lib/projects";
 
 export const Route = createFileRoute("/lead/apply")({
@@ -35,7 +36,14 @@ function LeadApplyForm() {
       setPending(p);
       setChecked(true);
     });
+    setMessage(loadLeadDraft(user.id));
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const t = window.setTimeout(() => saveLeadDraft(user.id, message), 500);
+    return () => window.clearTimeout(t);
+  }, [message, user]);
 
   if (isProjectLead(profile?.role)) {
     return (
@@ -61,6 +69,7 @@ function LeadApplyForm() {
       return;
     }
     toast.success("Request submitted. An admin will review it.");
+    if (user) clearLeadDraft(user.id);
     setPending(true);
   };
 
@@ -94,6 +103,7 @@ function LeadApplyForm() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Past projects, research, startups, or threads you want to run..."
             />
+            <p className="text-xs text-muted-foreground">Draft autosaved locally as you type.</p>
           </div>
           <Button
             type="submit"

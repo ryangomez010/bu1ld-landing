@@ -12,7 +12,9 @@ import { ResourceNotFound } from "@/components/member/ResourceNotFound";
 import { LoadingState } from "@/components/member/LoadingState";
 import { TagList } from "@/components/member/ContentCard";
 import { PitchTemplates } from "@/components/member/PitchTemplates";
-import { SaveButton } from "@/components/member/SaveButton";
+import { FollowProjectButton } from "@/components/member/FollowProjectButton";
+import { ReportContentButton } from "@/components/member/ReportContentButton";
+import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { ProjectMemberWorkspace } from "@/components/member/ProjectMemberWorkspace";
@@ -153,8 +155,14 @@ function ProjectDetail() {
         </div>
         <h1 className="font-display text-4xl text-bone mt-4 tracking-tight">{project.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <SaveButton itemType="project" itemSlug={project.slug} itemTitle={project.title} />
+          <SaveToCollectionButton
+            itemType="project"
+            itemSlug={project.slug}
+            itemTitle={project.title}
+          />
+          <FollowProjectButton projectId={project.id} />
           <ShareButton title={project.title} />
+          <ReportContentButton contentType="project" contentSlug={project.slug} />
         </div>
         {profile?.interests?.length ? (
           <InterestMatchTags
@@ -351,6 +359,8 @@ function ProjectDetail() {
 
         <ProjectUpdatesSection
           projectId={project.id}
+          projectSlug={project.slug}
+          projectTitle={project.title}
           canPost={isLead}
           authorId={user?.id}
           authorName={profile?.full_name ?? undefined}

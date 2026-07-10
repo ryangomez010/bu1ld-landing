@@ -82,3 +82,47 @@ export async function requestAccountDeletion(userId: string): Promise<{ error: s
   await logSecurityEvent(userId, "account_deletion_completed");
   return { error: null };
 }
+
+export type SignInSession = {
+  id: string;
+  event_type: string;
+  created_at: string;
+  device: string;
+  user_agent?: string;
+};
+
+const SIGN_IN_EVENTS = new Set(["sign_in", "password_changed", "global_sign_out"]);
+
+/** Recent sign-in / security sessions derived from security_events. */
+export async function fetchSignInSessions(userId: string, limit = 10): Promise<SignInSession[]> {
+  const events = await fetchMySecurityEvents(userId, 50);
+  return events
+    .filter((e) => SIGN_IN_EVENTS.has(e.event_type) || e.event_type.includes("sign"))
+    .slice(0, limit)
+    .map((e) => {
+      const detail = e.detail ?? {};
+      const ua = typeof detail.user_agent === "string" ? detail.user_agent : undefined;
+      return {
+        id: e.id,
+        event_type: e.event_type,
+        created_at: e.created_at,
+        device: typeof detail.device === "string" ? detail.device : parseDeviceLabel(ua),
+        user_agent: ua,
+      };
+    });
+}
+
+function parseDeviceLabel(userAgent?: string): string {
+  if (!userAgent) return "Unknown device";
+  if (/iPhone|iPad/i.test(userAgent)) return "iOS device";
+  if (/Android/i.test(userAgent)) return "Android device";
+  if (/Mac OS/i.test(userAgent)) return "Mac";
+  if (/Windows/i.test(userAgent)) return "Windows";
+  if (/Linux/i.test(userAgent)) return "Linux";
+  return "Web browser";
+}
+
+export function currentDeviceLabel(): string {
+  if (typeof navigator === "undefined") return "This device";
+  return parseDeviceLabel(navigator.userAgent);
+}

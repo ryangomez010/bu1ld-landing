@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { ResourceNotFound } from "@/components/member/ResourceNotFound";
@@ -9,9 +10,16 @@ import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { TagList } from "@/components/member/ContentCard";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { fetchDirectoryMember, sharedInterests } from "@/lib/members";
 import type { DirectoryMember } from "@/lib/members";
+import { resolveMemberId } from "@/lib/profile-share";
+import {
+  endorseSkill,
+  fetchEndorsementsForProfile,
+  groupEndorsementsBySkill,
+} from "@/lib/skill-endorsements";
 import { safeHref } from "@/lib/urls";
 
 export const Route = createFileRoute("/members/$id")({
@@ -31,12 +39,18 @@ function MemberProfileContent() {
   const { user, profile } = useAuth();
   const [member, setMember] = useState<DirectoryMember | null>(null);
   const [loading, setLoading] = useState(true);
+  const [endorsements, setEndorsements] = useState<
+    Awaited<ReturnType<typeof fetchEndorsementsForProfile>>
+  >([]);
 
   useEffect(() => {
-    void fetchDirectoryMember(id).then((m) => {
+    void (async () => {
+      const resolvedId = (await resolveMemberId(id)) ?? id;
+      const m = await fetchDirectoryMember(resolvedId);
       setMember(m);
+      if (m) void fetchEndorsementsForProfile(m.id).then(setEndorsements);
       setLoading(false);
-    });
+    })();
   }, [id]);
 
   if (loading) {
@@ -67,6 +81,18 @@ function MemberProfileContent() {
       ? sharedInterests(profile.interests, member.interests)
       : [];
   const isSelf = user?.id === member.id;
+  const endorsementGroups = groupEndorsementsBySkill(endorsements);
+
+  const onEndorse = async (skill: string) => {
+    if (!user || !member) return;
+    const { error } = await endorseSkill(user.id, member.id, skill);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    toast.success(`Endorsed ${skill}`);
+    void fetchEndorsementsForProfile(member.id).then(setEndorsements);
+  };
 
   return (
     <MemberLayout title={member.full_name ?? "Member"} eyebrow="builder profile">
@@ -100,6 +126,43 @@ function MemberProfileContent() {
             Interests
           </h2>
           <TagList tags={member.interests} />
+          {!isSelf && user ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {member.interests.slice(0, 6).map((skill) => (
+                <Button
+                  key={skill}
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => void onEndorse(skill)}
+                  className="font-mono text-[8px] tracking-[0.12em] uppercase"
+                >
+                  + Endorse {skill}
+                </Button>
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
+      {endorsementGroups.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
+            Endorsements
+          </h2>
+          <ul className="space-y-2">
+            {endorsementGroups.map((g) => (
+              <li
+                key={g.skill}
+                className="rounded-sm border border-border/50 px-4 py-3 text-sm text-muted-foreground"
+              >
+                <span className="text-bone font-medium">{g.skill}</span>
+                <span className="ml-2 font-mono text-[8px] uppercase">
+                  {g.count} · {g.endorsers.slice(0, 3).join(", ")}
+                </span>
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 

@@ -11,6 +11,7 @@ import { MemberLayout } from "@/components/member/MemberLayout";
 import { highlightMatch } from "@/components/member/ResourceNotFound";
 import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useAuth } from "@/lib/auth";
 import { clearRecentSearches, getRecentSearches, pushRecentSearch } from "@/lib/recent-search";
 import { getTrendingBrowse } from "@/lib/personalization";
 import { buildSearchIndex, searchIndex, searchPortal } from "@/lib/search";
@@ -42,6 +43,7 @@ const TYPE_LABELS: Record<SearchResult["type"], string> = {
 
 function SearchContent() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { q: initialQ } = Route.useSearch();
   const [query, setQuery] = useState(initialQ);
   const debouncedQuery = useDebouncedValue(query);
@@ -58,8 +60,8 @@ function SearchContent() {
       setLoading(false);
     });
     void getTrendingBrowse().then(setTrending);
-    setRecent(getRecentSearches());
-  }, []);
+    setRecent(getRecentSearches(user?.id));
+  }, [user?.id]);
 
   useEffect(() => {
     setQuery(initialQ);
@@ -68,10 +70,10 @@ function SearchContent() {
   useEffect(() => {
     void navigate({ to: "/search", search: { q: debouncedQuery }, replace: true });
     if (debouncedQuery.trim()) {
-      pushRecentSearch(debouncedQuery);
-      setRecent(getRecentSearches());
+      pushRecentSearch(debouncedQuery, user?.id);
+      setRecent(getRecentSearches(user?.id));
     }
-  }, [debouncedQuery, navigate]);
+  }, [debouncedQuery, navigate, user?.id]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -203,7 +205,8 @@ function SearchContent() {
           <button
             type="button"
             onClick={() => {
-              clearRecentSearches();
+              clearRecentSearches(user?.id);
+              setRecent([]);
               setRecent([]);
             }}
             className="font-mono text-[9px] uppercase text-accent-red hover:text-bone"

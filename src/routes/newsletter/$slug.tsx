@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { MarkdownBody } from "@/components/member/ContentCard";
 import { MemberLayout } from "@/components/member/MemberLayout";
-import { SaveButton } from "@/components/member/SaveButton";
+import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { fetchNewsletterBySlug, fetchNewsletters } from "@/lib/content";
 import { formatDate } from "@/lib/date";
 import type { NewsletterIssue } from "@/lib/types";
@@ -74,7 +74,11 @@ function NewsletterDetail() {
         </p>
         <h1 className="font-display text-4xl text-bone mt-3 tracking-tight">{issue.title}</h1>
         <div className="mt-2">
-          <SaveButton itemType="newsletter" itemSlug={issue.slug} itemTitle={issue.title} />
+          <SaveToCollectionButton
+            itemType="newsletter"
+            itemSlug={issue.slug}
+            itemTitle={issue.title}
+          />
         </div>
         {issue.summary ? (
           <p className="mt-4 text-lg text-muted-foreground">{issue.summary}</p>

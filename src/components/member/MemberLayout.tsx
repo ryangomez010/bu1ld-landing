@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { FeedbackButton } from "@/components/member/FeedbackButton";
 import { KeyboardShortcutsDialog } from "@/components/member/KeyboardShortcutsDialog";
 import { MemberCommandPalette } from "@/components/member/MemberCommandPalette";
 import { LiquidBackdrop } from "@/components/member/LiquidBackdrop";
@@ -226,6 +227,7 @@ export function MemberLayout({
                   Live
                 </span>
               ) : null}
+              <FeedbackButton />
               <NotificationBell />
               <div className="lg:hidden">
                 <Sheet open={open} onOpenChange={setOpen}>

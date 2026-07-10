@@ -39,11 +39,13 @@ import { Route as PapersSlugRouteImport } from './routes/papers/$slug'
 import { Route as NewsletterSlugRouteImport } from './routes/newsletter/$slug'
 import { Route as MembersIdRouteImport } from './routes/members/$id'
 import { Route as LeadApplyRouteImport } from './routes/lead/apply'
+import { Route as JobsTrackerRouteImport } from './routes/jobs/tracker'
 import { Route as JobsSlugRouteImport } from './routes/jobs/$slug'
 import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
 import { Route as EventsSlugRouteImport } from './routes/events/$slug'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AccountSecurityRouteImport } from './routes/account/security'
+import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
 import { Route as ProjectsManageIndexRouteImport } from './routes/projects/manage/index'
 import { Route as ProjectsManageSlugRouteImport } from './routes/projects/manage/$slug'
 import { Route as ProjectsEditSlugRouteImport } from './routes/projects/edit/$slug'
@@ -198,6 +200,11 @@ const LeadApplyRoute = LeadApplyRouteImport.update({
   path: '/lead/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JobsTrackerRoute = JobsTrackerRouteImport.update({
+  id: '/jobs/tracker',
+  path: '/jobs/tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JobsSlugRoute = JobsSlugRouteImport.update({
   id: '/jobs/$slug',
   path: '/jobs/$slug',
@@ -221,6 +228,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
 const AccountSecurityRoute = AccountSecurityRouteImport.update({
   id: '/account/security',
   path: '/account/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
+  id: '/account/notifications',
+  path: '/account/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsManageIndexRoute = ProjectsManageIndexRouteImport.update({
@@ -250,11 +262,13 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
+  '/jobs/tracker': typeof JobsTrackerRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
@@ -290,11 +304,13 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
+  '/jobs/tracker': typeof JobsTrackerRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
@@ -331,11 +347,13 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
+  '/jobs/tracker': typeof JobsTrackerRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
@@ -373,11 +391,13 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/account/notifications'
     | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
     | '/guides/$slug'
     | '/jobs/$slug'
+    | '/jobs/tracker'
     | '/lead/apply'
     | '/members/$id'
     | '/newsletter/$slug'
@@ -413,11 +433,13 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/account/notifications'
     | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
     | '/guides/$slug'
     | '/jobs/$slug'
+    | '/jobs/tracker'
     | '/lead/apply'
     | '/members/$id'
     | '/newsletter/$slug'
@@ -453,11 +475,13 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/account/notifications'
     | '/account/security'
     | '/auth/callback'
     | '/events/$slug'
     | '/guides/$slug'
     | '/jobs/$slug'
+    | '/jobs/tracker'
     | '/lead/apply'
     | '/members/$id'
     | '/newsletter/$slug'
@@ -494,11 +518,13 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
+  AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountSecurityRoute: typeof AccountSecurityRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   EventsSlugRoute: typeof EventsSlugRoute
   GuidesSlugRoute: typeof GuidesSlugRoute
   JobsSlugRoute: typeof JobsSlugRoute
+  JobsTrackerRoute: typeof JobsTrackerRoute
   LeadApplyRoute: typeof LeadApplyRoute
   MembersIdRoute: typeof MembersIdRoute
   NewsletterSlugRoute: typeof NewsletterSlugRoute
@@ -736,6 +762,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeadApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/jobs/tracker': {
+      id: '/jobs/tracker'
+      path: '/jobs/tracker'
+      fullPath: '/jobs/tracker'
+      preLoaderRoute: typeof JobsTrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/jobs/$slug': {
       id: '/jobs/$slug'
       path: '/jobs/$slug'
@@ -769,6 +802,13 @@ declare module '@tanstack/react-router' {
       path: '/account/security'
       fullPath: '/account/security'
       preLoaderRoute: typeof AccountSecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account/notifications': {
+      id: '/account/notifications'
+      path: '/account/notifications'
+      fullPath: '/account/notifications'
+      preLoaderRoute: typeof AccountNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/manage/': {
@@ -806,11 +846,13 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
+  AccountNotificationsRoute: AccountNotificationsRoute,
   AccountSecurityRoute: AccountSecurityRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   EventsSlugRoute: EventsSlugRoute,
   GuidesSlugRoute: GuidesSlugRoute,
   JobsSlugRoute: JobsSlugRoute,
+  JobsTrackerRoute: JobsTrackerRoute,
   LeadApplyRoute: LeadApplyRoute,
   MembersIdRoute: MembersIdRoute,
   NewsletterSlugRoute: NewsletterSlugRoute,

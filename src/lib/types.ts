@@ -13,6 +13,8 @@ export type Profile = {
   timezone: string | null;
   onboarding_completed: boolean;
   directory_visible?: boolean;
+  profile_slug?: string | null;
+  weekly_paper_goal?: number;
   role: MemberRole;
   created_at: string;
   updated_at: string;

@@ -214,7 +214,7 @@ async function requireSupabase() {
 }
 
 export async function setContentPublished(
-  table: "events" | "papers" | "newsletter_issues",
+  table: "events" | "papers" | "newsletter_issues" | "jobs",
   id: string,
   published: boolean,
   actorId?: string,
@@ -232,6 +232,31 @@ export async function setContentPublished(
     });
   }
   return { error: err?.message ?? null };
+}
+
+export async function bulkSetContentPublished(
+  table: "events" | "papers" | "newsletter_issues" | "jobs",
+  ids: string[],
+  published: boolean,
+  actorId?: string,
+): Promise<{ error: string | null; count: number }> {
+  const { supabase, error } = await requireSupabase();
+  if (!supabase) return { error, count: 0 };
+  if (!ids.length) return { error: null, count: 0 };
+
+  const { error: err } = await supabase
+    .from(table)
+    .update({ published, updated_at: new Date().toISOString() })
+    .in("id", ids);
+
+  if (!err && actorId) {
+    await logAdminAction(actorId, published ? "content.bulk_publish" : "content.bulk_unpublish", {
+      targetType: table,
+      targetIds: ids,
+      count: ids.length,
+    });
+  }
+  return { error: err?.message ?? null, count: err ? 0 : ids.length };
 }
 
 export async function deleteContentRow(

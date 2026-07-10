@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { SaveButton } from "@/components/member/SaveButton";
+import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { Button } from "@/components/ui/button";
 import { getAllGuides } from "@/content/guides";
 import { saveReadingProgress } from "@/lib/reading-progress";
@@ -108,7 +108,11 @@ export function GuideReader({
             {guide.title}
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <SaveButton itemType="guide" itemSlug={guide.slug} itemTitle={guide.title} />
+            <SaveToCollectionButton
+              itemType="guide"
+              itemSlug={guide.slug}
+              itemTitle={guide.title}
+            />
             <Link
               to="/research"
               className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"

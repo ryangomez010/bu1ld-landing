@@ -7,17 +7,22 @@ import { relativeTime } from "@/lib/date";
 import {
   createProjectUpdate,
   fetchProjectUpdates,
+  parseMentionUserIds,
   subscribeProjectUpdates,
   type ProjectUpdate,
 } from "@/lib/project-updates";
 
 export function ProjectUpdatesSection({
   projectId,
+  projectSlug,
+  projectTitle,
   canPost,
   authorId,
   authorName,
 }: {
   projectId: string;
+  projectSlug?: string;
+  projectTitle?: string;
   canPost: boolean;
   authorId?: string;
   authorName?: string;
@@ -39,7 +44,12 @@ export function ProjectUpdatesSection({
     e.preventDefault();
     if (!authorId || !authorName) return;
     setSubmitting(true);
-    const { error } = await createProjectUpdate(projectId, authorId, authorName, body);
+    const mentionUserIds = parseMentionUserIds(body);
+    const { error } = await createProjectUpdate(projectId, authorId, authorName, body, {
+      projectSlug,
+      projectTitle,
+      mentionUserIds,
+    });
     setSubmitting(false);
     if (error) {
       toast.error(error);
@@ -63,9 +73,12 @@ export function ProjectUpdatesSection({
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={3}
-            placeholder="Share progress, blockers, or next milestones with applicants and team."
+            placeholder="Share progress, blockers, or next milestones. Mention members with @[Name](user-id)."
             required
           />
+          <p className="text-xs text-muted-foreground">
+            Followers and accepted members get notified. Use @[Name](uuid) to @mention someone.
+          </p>
           <Button
             type="submit"
             size="sm"
