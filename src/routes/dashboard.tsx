@@ -9,145 +9,81 @@ import {
   GraduationCap,
 } from "lucide-react";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { DashboardHero } from "@/components/member/DashboardHero";
 import { ProfileCompletenessMeter } from "@/components/member/ProfileCompletenessMeter";
+import { WatchedProjectsPanel } from "@/components/member/WatchedProjectsPanel";
 import { YourWeekSection } from "@/components/member/YourWeekSection";
 import { ResearchContinueCard } from "@/components/member/ResearchContinueCard";
 import { TodayFocus } from "@/components/member/TodayFocus";
 import { AttentionPanel } from "@/components/member/AttentionPanel";
+import { CollectionsStrip } from "@/components/member/CollectionsStrip";
 import { ContinueReadingStrip } from "@/components/member/ContinueReadingStrip";
+import { DigestPreviewCard } from "@/components/member/DigestPreviewCard";
 import { EngagementSummaryPanel } from "@/components/member/EngagementSummary";
 import { FeedCard } from "@/components/member/FeedCard";
 import { LoadingState } from "@/components/member/LoadingState";
 import { MetricCard } from "@/components/member/MetricCard";
 import { OnboardingChecklist } from "@/components/member/OnboardingChecklist";
 import { StaggerItem, StaggerList } from "@/components/member/PageTransition";
+import { ReadingHeatmap } from "@/components/member/ReadingHeatmap";
 import { ReadingStreakWidget } from "@/components/member/ReadingStreakWidget";
 import { QuickActions } from "@/components/member/QuickActions";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { SectionHeader } from "@/components/member/SectionHeader";
 import { getAllGuides } from "@/content/guides";
-import { fetchAnnouncements } from "@/lib/announcements";
-import { buildActivityFeed } from "@/lib/activity";
-import type { ActivityItem } from "@/lib/activity";
-import { buildAttentionItems } from "@/lib/attention";
-import type { AttentionItem } from "@/lib/attention";
 import { useAuth } from "@/lib/auth";
+import {
+  useDashboardCatalogQuery,
+  useDashboardMemberQuery,
+} from "@/lib/queries/use-dashboard-data";
 import { buildIcsEvent, downloadIcs } from "@/lib/calendar";
-import { fetchEvents, fetchNewsletters, fetchPapers } from "@/lib/content";
 import { daysUntil, formatDate, nearestDeadline } from "@/lib/date";
 import { buildForYouFeed } from "@/lib/personalization";
 import type { ForYouItem } from "@/lib/personalization";
-import { findSimilarMembers, fetchMemberDirectory } from "@/lib/members";
-import type { DirectoryMember } from "@/lib/members";
-import { fetchEngagementSummary } from "@/lib/engagement";
-import type { EngagementSummary } from "@/lib/engagement";
-import { fetchReadingStreakStats } from "@/lib/reading-streaks";
-import { fetchMyUpcomingRsvps } from "@/lib/event-rsvp";
 import { profileCompleteness } from "@/lib/profile";
-import { unreadCount } from "@/lib/notifications";
-import { getAllGuideProgress } from "@/lib/reading-progress";
-import { getRecentViews } from "@/lib/recent-views";
-import type { RecentView } from "@/lib/recent-views";
-import { fetchJobs, fetchMyApplications, fetchProjects } from "@/lib/projects";
 import { fetchSavedItems, savedItemHref } from "@/lib/saved";
-import type { Announcement } from "@/data/seed/announcements";
-import type {
-  Job,
-  MlEvent,
-  NewsletterIssue,
-  Paper,
-  Project,
-  ProjectApplication,
-} from "@/lib/types";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
   head: () => ({
-    meta: [{ title: "Member hub — The Bu1ld" }],
+    meta: [{ title: "Dashboard — The Bu1ld" }],
   }),
 });
 
 function DashboardPage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <DashboardHome />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
 function DashboardHome() {
   const { user, profile, emailVerified } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState<MlEvent[]>([]);
-  const [papers, setPapers] = useState<Paper[]>([]);
-  const [newsletters, setNewsletters] = useState<NewsletterIssue[]>([]);
-  const [guideProgress, setGuideProgress] = useState<Record<string, number>>({});
-  const [openProjects, setOpenProjects] = useState<Project[]>([]);
-  const [myApplications, setMyApplications] = useState<ProjectApplication[]>([]);
-  const [internalJobs, setInternalJobs] = useState<Job[]>([]);
+  const catalogQuery = useDashboardCatalogQuery();
+  const loading = catalogQuery.isLoading;
+  const events = catalogQuery.data?.events ?? [];
+  const papers = catalogQuery.data?.papers ?? [];
+  const newsletters = catalogQuery.data?.newsletters ?? [];
+  const openProjects = catalogQuery.data?.openProjects ?? [];
+  const internalJobs = catalogQuery.data?.internalJobs ?? [];
+  const announcements = catalogQuery.data?.announcements ?? [];
+  const memberQuery = useDashboardMemberQuery(user?.id, profile, events);
+  const guideProgress = memberQuery.data?.guideProgress ?? {};
+  const myApplications = memberQuery.data?.myApplications ?? [];
+  const activity = memberQuery.data?.activity ?? [];
+  const savedItems = memberQuery.data?.savedItems ?? [];
+  const unreadNotifications = memberQuery.data?.unreadNotifications ?? 0;
+  const recentViews = memberQuery.data?.recentViews ?? [];
+  const similarMembers = memberQuery.data?.similarMembers ?? [];
+  const myRsvps = memberQuery.data?.myRsvps ?? [];
+  const engagement = memberQuery.data?.engagement ?? null;
+  const attention = memberQuery.data?.attention ?? [];
+  const papersThisWeek = memberQuery.data?.papersThisWeek ?? 0;
   const [forYou, setForYou] = useState<ForYouItem[]>([]);
   const [forYouKey, setForYouKey] = useState(0);
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [activity, setActivity] = useState<ActivityItem[]>([]);
-  const [savedItems, setSavedItems] = useState<Awaited<ReturnType<typeof fetchSavedItems>>>([]);
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
-  const [recentViews, setRecentViews] = useState<RecentView[]>([]);
-  const [similarMembers, setSimilarMembers] = useState<
-    Array<{ member: DirectoryMember; overlap: string[] }>
-  >([]);
-  const [myRsvps, setMyRsvps] = useState<MlEvent[]>([]);
-  const [engagement, setEngagement] = useState<EngagementSummary | null>(null);
-  const [attention, setAttention] = useState<AttentionItem[]>([]);
-  const [papersThisWeek, setPapersThisWeek] = useState(0);
-
-  useEffect(() => {
-    void Promise.all([
-      fetchEvents(),
-      fetchPapers(),
-      fetchNewsletters(),
-      fetchProjects("open"),
-      fetchJobs("internal"),
-      fetchAnnouncements(),
-    ]).then(([e, p, n, proj, jobs, anns]) => {
-      setEvents(e);
-      setPapers(p);
-      setNewsletters(n);
-      setOpenProjects(proj);
-      setInternalJobs(jobs);
-      setAnnouncements(anns);
-      setLoading(false);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    void getAllGuideProgress(user.id).then(setGuideProgress);
-    void fetchMyApplications(user.id).then(setMyApplications);
-    void buildActivityFeed(user.id).then(setActivity);
-    void fetchSavedItems(user.id).then(setSavedItems);
-    void unreadCount(user.id).then(setUnreadNotifications);
-    void fetchEngagementSummary(user.id).then(setEngagement);
-    void buildAttentionItems(user.id, profile ?? null).then(setAttention);
-    void fetchReadingStreakStats(user.id).then((s) => setPapersThisWeek(s.papersThisWeek));
-    setRecentViews(getRecentViews(user.id));
-  }, [user, profile]);
-
-  useEffect(() => {
-    if (!user || !profile?.interests?.length) return;
-    void fetchMemberDirectory().then((members) => {
-      setSimilarMembers(
-        findSimilarMembers(members, profile.interests, { excludeId: user.id, limit: 4 }),
-      );
-    });
-  }, [user, profile?.interests]);
-
-  useEffect(() => {
-    if (!user || !events.length) return;
-    void fetchMyUpcomingRsvps(user.id, events).then(setMyRsvps);
-  }, [user, events]);
 
   useEffect(() => {
     if (!user || !profile?.interests?.length) return;
@@ -166,8 +102,8 @@ function DashboardHome() {
   const hubBio = profile?.bio?.trim()
     ? profile.bio
     : profile?.interests?.length
-      ? `Your hub is tuned for ${profile.interests.slice(0, 3).join(", ")}${profile.interests.length > 3 ? ` +${profile.interests.length - 3} more` : ""}. Papers, projects, and events surface here first.`
-      : "Your BUILD hub — papers, guides, projects, and events in one place. Complete your profile for a tailored experience.";
+      ? `Interests set to ${profile.interests.slice(0, 3).join(", ")}${profile.interests.length > 3 ? ` +${profile.interests.length - 3} more` : ""}. Your For You feed, digest, and directory matches are ranked from these tags.`
+      : "Your dashboard — open projects, paper reviews, reading paths, event deadlines, and saved collections. Add interests in your profile to rank the For You feed.";
   const guides = getAllGuides();
   const completeness = profileCompleteness(profile);
 
@@ -225,7 +161,7 @@ function DashboardHome() {
       ) : null}
 
       {loading ? (
-        <LoadingState label="Loading your hub…" />
+        <LoadingState label="Loading dashboard…" />
       ) : (
         <>
           <section className="section-gap grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
@@ -265,7 +201,12 @@ function DashboardHome() {
             />
           </section>
 
-          {user ? <ReadingStreakWidget userId={user.id} className="section-gap" /> : null}
+          {user ? (
+            <div className="section-gap grid gap-4 lg:grid-cols-2">
+              <ReadingStreakWidget userId={user.id} className="h-full" />
+              <ReadingHeatmap userId={user.id} />
+            </div>
+          ) : null}
 
           <YourWeekSection
             events={events}
@@ -285,6 +226,12 @@ function DashboardHome() {
               />
             </section>
           ) : null}
+
+          {user ? <WatchedProjectsPanel userId={user.id} /> : null}
+
+          {user ? <CollectionsStrip userId={user.id} /> : null}
+
+          <DigestPreviewCard />
 
           <TodayFocus items={attention} />
 
@@ -348,7 +295,7 @@ function DashboardHome() {
                 <p className="mt-2 text-sm text-muted-foreground max-w-xl leading-relaxed">
                   {!profile?.onboarding_completed
                     ? "Complete onboarding so project leads see your background, interests, and links when you apply."
-                    : `Your profile is ${completeness.percent}% complete — ${completeness.missing.slice(0, 3).join(", ")}${completeness.missing.length > 3 ? "…" : ""} unlock better matches and a shareable identity card.`}
+                    : `Profile is ${completeness.percent}% complete — still missing ${completeness.missing.slice(0, 3).join(", ")}${completeness.missing.length > 3 ? "…" : ""}. Project leads and the member directory weight complete profiles higher in search and application review.`}
                 </p>
               </div>
               <Link
@@ -417,6 +364,7 @@ function DashboardHome() {
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         type="button"
+                        aria-label={`Add ${d.event.title} — ${d.label} to calendar`}
                         title="Add to calendar"
                         onClick={() => {
                           const ics = buildIcsEvent({
@@ -469,7 +417,7 @@ function DashboardHome() {
               <SectionHeader
                 title="For you"
                 accent="green"
-                description="Personalized picks from open projects, papers, events, and guides — ranked by interest overlap and what you have not saved yet."
+                description="Open projects, paper reviews, events, and guides ranked by interest-tag overlap — items you have already saved or applied to are excluded."
                 action={
                   <button
                     type="button"
@@ -514,8 +462,8 @@ function DashboardHome() {
           ) : profile?.interests?.length ? (
             <section className="mb-8 rounded-sm border border-border/60 bg-background/60 px-5 py-4">
               <p className="text-sm text-muted-foreground">
-                No personalized matches yet — add more interests or explore new content in the
-                research library.
+                No matches for your current interests — add tags in your profile or browse the
+                research library to seed new ones.
               </p>
               <Link
                 to="/profile"
@@ -527,8 +475,8 @@ function DashboardHome() {
           ) : (
             <section className="mb-8 rounded-sm border border-accent-green/20 bg-accent-green/5 px-5 py-4">
               <p className="text-sm text-foreground/90">
-                Set your interests to unlock a personalized For You feed across projects, papers,
-                and events.
+                Add research interests in your profile to populate the For You feed — it ranks open
+                projects, paper reviews, events, and guides by tag overlap and upcoming deadlines.
               </p>
               <Link
                 to="/profile"
@@ -543,7 +491,7 @@ function DashboardHome() {
             <section className="section-gap">
               <SectionHeader
                 title="People like you"
-                description="Members who share your interests — useful for finding collaborators and study partners."
+                description="Directory members who share at least one interest tag with you — useful for finding co-authors, reviewers, or project teammates."
                 action={
                   <Link
                     to="/members"
@@ -578,7 +526,7 @@ function DashboardHome() {
             <section className="section-gap">
               <SectionHeader
                 title="Activity"
-                description="Your recent applications, saves, reads, and RSVPs — a live pulse of what you have touched in BUILD."
+                description="Chronological log of your applications, saves, paper reads, guide progress, and event RSVPs — each entry links back to the source."
               />
               <div className="grid gap-px border border-border/40 bg-border/40">
                 {activity.slice(0, 6).map((item) => (
@@ -602,7 +550,7 @@ function DashboardHome() {
 
           <SectionHeader
             title="Explore"
-            description="Jump back into reading, track deadlines, and follow your applications — curated from your recent activity."
+            description="Resume in-progress guides, check the nearest conference deadline, read the latest paper review, and jump to your most recent application — sourced from your account activity, not a generic feed."
           />
           <StaggerList className="grid gap-2 sm:grid-cols-2">
             <StaggerItem>
@@ -612,7 +560,7 @@ function DashboardHome() {
                 body={
                   continueGuide
                     ? `${Math.round(continueGuide.progress)}% through — pick up where you left off.`
-                    : "Reference essays on LLMs, attention, JEPA, PINNs, and how BUILD ships."
+                    : "Reference essays on attention, JEPA, PINNs, LLM internals, and the paper-to-prototype method — scroll progress saves per guide."
                 }
                 to={continueGuide ? `/guides/${continueGuide.slug}` : "/guides"}
                 cta={continueGuide ? "Resume →" : "Browse guides →"}
@@ -625,7 +573,7 @@ function DashboardHome() {
                 body={
                   nextEvent?.deadline
                     ? `${nextEvent.deadline.label} in ${nextEvent.deadline.days} days — ${formatDate(nextEvent.deadline.date)}`
-                    : "Conference calendar, prep notes, and LaTeX resources."
+                    : "Conference calendar with CFP dates, prep notes, RSVP tracking, and .ics export."
                 }
                 to={nextEvent ? `/events/${nextEvent.event.slug}` : "/events"}
                 cta="View events →"
@@ -637,7 +585,7 @@ function DashboardHome() {
                 title={latestPaper?.title ?? "Paper reviews"}
                 body={
                   latestPaper?.summary ??
-                  "Curated BUILD reviews on classics and active research threads."
+                  "Member reviews on transformer classics and active research threads — methods, failure modes, and prototype ideas."
                 }
                 to={latestPaper ? `/papers/${latestPaper.slug}` : "/papers"}
                 cta="Read review →"
@@ -667,7 +615,7 @@ function DashboardHome() {
                 body={
                   myApplications.length
                     ? `${myApplications.length} application${myApplications.length !== 1 ? "s" : ""} — latest: ${myApplications[0].status}.`
-                    : "Join a research thread or startup build."
+                    : "Join a research thread, startup build, or program cohort — pitch required."
                 }
                 to="/applications"
                 cta={myApplications.length ? "Track applications →" : "Browse projects →"}
@@ -679,7 +627,7 @@ function DashboardHome() {
             <StaggerItem>
               <FeedCard
                 tag="newsletter"
-                title={latestNewsletter?.title ?? "BUILD digest"}
+                title={latestNewsletter?.title ?? "The Bu1ld digest"}
                 body={
                   latestNewsletter?.summary ??
                   "Community updates, paper picks, and startup spotlights."
@@ -694,8 +642,8 @@ function DashboardHome() {
                 title={internalJobs[0]?.title ?? "Job board"}
                 body={
                   internalJobs.length
-                    ? `${internalJobs.length} BUILD role${internalJobs.length !== 1 ? "s" : ""} + curated external listings.`
-                    : "BUILD opportunities and curated external ML roles."
+                    ? `${internalJobs.length} internal role${internalJobs.length !== 1 ? "s" : ""} posted by The Bu1ld + vetted external listings from partner labs.`
+                    : "Internal research-engineering roles and vetted external ML positions — track status in the job tracker."
                 }
                 to={internalJobs[0] ? `/jobs/${internalJobs[0].slug}` : "/jobs"}
                 cta="View jobs →"
@@ -705,7 +653,7 @@ function DashboardHome() {
               <FeedCard
                 tag="project lead"
                 title="Want to run a thread?"
-                body="Verified leads create projects and review applications. Request access if you are ready to ship."
+                body="Verified leads create project listings, review application queues, and post updates. Submit a lead request with shipped work and the thread you want to run."
                 to="/lead/apply"
                 cta="Request lead status →"
               />
@@ -715,7 +663,7 @@ function DashboardHome() {
           <section className="mt-10 section-gap">
             <SectionHeader
               title="Quick links"
-              description="Every corner of the member hub — search, saved items, applications, and your account settings."
+              description="Direct links to search, saved items, applications, reading paths, and account settings — every member route in one row."
             />
             <div className="flex flex-wrap gap-3">
               {[

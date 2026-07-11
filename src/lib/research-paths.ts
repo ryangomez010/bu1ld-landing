@@ -27,7 +27,7 @@ export const RESEARCH_PATHS: ResearchPath[] = [
     id: "world-models",
     title: "World models & JEPA",
     description:
-      "LeCun's representation-space prediction thesis, our internal tokenization thread, and the guide that ties them to BUILD prototypes.",
+      "LeCun's representation-space prediction thesis, our internal tokenization thread, and the guide that ties them to member prototypes.",
     steps: [
       { kind: "guide", slug: "what-is-jepa" },
       { kind: "paper", slug: "lecun-jepa-world-models" },
@@ -49,7 +49,7 @@ export const RESEARCH_PATHS: ResearchPath[] = [
     id: "build-method",
     title: "Paper → prototype",
     description:
-      "How we actually read and ship inside BUILD — read this before joining a research thread.",
+      "How The Bu1ld reads papers and scopes prototypes — read before applying to any research thread.",
     steps: [
       { kind: "guide", slug: "paper-to-prototype" },
       { kind: "guide", slug: "physics-informed-nns" },

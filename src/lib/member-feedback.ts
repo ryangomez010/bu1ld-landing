@@ -30,6 +30,21 @@ export async function submitFeedback(
   return { error: error?.message ?? null };
 }
 
+export async function fetchMyFeedback(userId: string, limit = 20): Promise<MemberFeedback[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("member_feedback")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) return [];
+  return data as MemberFeedback[];
+}
+
 export async function fetchAdminFeedback(limit = 50): Promise<MemberFeedback[]> {
   const supabase = getSupabase();
   if (!supabase) return [];

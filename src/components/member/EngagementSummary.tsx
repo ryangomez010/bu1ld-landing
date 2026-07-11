@@ -19,7 +19,8 @@ export function EngagementSummaryPanel({ stats }: { stats: EngagementSummary }) 
             Your activity
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Depth across reading, projects, and events — synced when Supabase is connected.
+            Counts from your account — papers marked read, guides finished, applications in review,
+            accepted project slots, and event RSVPs.
           </p>
         </div>
         <Link

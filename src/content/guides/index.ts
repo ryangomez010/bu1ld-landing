@@ -5,7 +5,7 @@ export const GUIDES: Guide[] = [
     slug: "how-llms-work",
     title: "How Large Language Models Work",
     description:
-      "Tokens, training, and inference — the minimum viable mental model for anyone joining a BUILD thread.",
+      "Tokenization, pretraining objective, and inference loop — the baseline vocabulary before reading scaling-law or alignment papers.",
     readMinutes: 14,
     tags: ["LLMs", "Foundations"],
     sections: [
@@ -47,14 +47,15 @@ export const GUIDES: Guide[] = [
       },
       {
         type: "callout",
-        text: "BUILD take: when a project 'uses an LLM,' ask whether they need pretraining-scale data, fine-tuning, or just prompting + retrieval. Most products are the last one.",
+        text: "The Bu1ld take: when a project 'uses an LLM,' ask whether they need pretraining-scale data, fine-tuning, or just prompting + retrieval. Most products are the last one.",
       },
     ],
   },
   {
     slug: "math-behind-ai",
     title: "The Math Behind AI (Oversimplified)",
-    description: "Gradients, loss, and high-dimensional geometry — without a PhD prerequisite.",
+    description:
+      "Loss landscapes, gradient descent, and why high-dimensional optimization behaves unlike 2D plots — prerequisite for reading training-instability papers.",
     readMinutes: 12,
     tags: ["Math", "Foundations"],
     sections: [
@@ -90,7 +91,7 @@ export const GUIDES: Guide[] = [
       },
       {
         type: "callout",
-        text: "When a BUILD paper review mentions 'intrinsic dimension' or 'curvature,' they are talking about the shape of these representation spaces — not abstract math for its own sake.",
+        text: "When a paper review mentions 'intrinsic dimension' or 'curvature,' they are talking about the shape of these representation spaces — not abstract math for its own sake.",
       },
     ],
   },
@@ -98,7 +99,7 @@ export const GUIDES: Guide[] = [
     slug: "what-is-attention",
     title: "What Is Attention?",
     description:
-      "Queries, keys, values, and why self-attention replaced recurrence for many tasks.",
+      "Scaled dot-product attention step by step — the mechanism behind every transformer block, with notation matched to the Attention Is All You Need review.",
     readMinutes: 10,
     tags: ["Transformers", "Attention"],
     sections: [
@@ -139,7 +140,7 @@ export const GUIDES: Guide[] = [
     slug: "what-is-jepa",
     title: "What Is a JEPA?",
     description:
-      "LeCun's Joint Embedding Predictive Architecture — predict in representation space, not pixel space.",
+      "Representation-space prediction vs pixel reconstruction — the architecture thesis behind several open world-model projects at The Bu1ld.",
     readMinutes: 11,
     tags: ["World models", "JEPA", "LeCun"],
     sections: [
@@ -155,7 +156,7 @@ export const GUIDES: Guide[] = [
           "JEPA: predict ẑ (embedding) from context — forces abstract sufficient statistics.",
         ],
       },
-      { type: "h2", text: "Why it matters for BUILD" },
+      { type: "h2", text: "Why it matters here" },
       {
         type: "p",
         text: "Our world-model and latent-safety threads ask whether latents encode causal structure. JEPA is the clearest articulation of that design goal at architecture level. It connects to I-JEPA, V-JEPA, and ongoing work on video world models.",
@@ -169,7 +170,8 @@ export const GUIDES: Guide[] = [
   {
     slug: "physics-informed-nns",
     title: "Physics-Informed Neural Networks",
-    description: "When to bake physical laws into the loss — and when classical solvers still win.",
+    description:
+      "PDE residuals in the loss vs classical solvers — when PINNs help with sparse boundary data and when they fail on stiff multi-scale systems.",
     readMinutes: 13,
     tags: ["Physics ML", "PINNs", "PDEs"],
     sections: [
@@ -197,16 +199,17 @@ export const GUIDES: Guide[] = [
       },
       {
         type: "callout",
-        text: "BUILD's PDE surrogate thread tracks representation phase transitions — where the learned surrogate looks fine on metrics but fails catastrophically off-distribution.",
+        text: "Our PDE surrogate thread tracks representation phase transitions — where the learned surrogate looks fine on metrics but fails catastrophically off-distribution.",
       },
     ],
   },
   {
     slug: "paper-to-prototype",
     title: "From Paper to Prototype",
-    description: "How BUILD reads research and ships — our institution's working method.",
+    description:
+      "Read → isolate one falsifiable claim → smallest experiment → ship code or kill the idea — the weekly loop project leads expect in application pitches.",
     readMinutes: 9,
-    tags: ["BUILD", "Research process"],
+    tags: ["Research process", "Prototyping"],
     sections: [
       {
         type: "p",
@@ -228,7 +231,7 @@ export const GUIDES: Guide[] = [
       },
       {
         type: "callout",
-        text: "When you join a BUILD project, expect this pace. If you want slow certainty, academia has that. If you want hype without code, Twitter has that. We sit in the middle.",
+        text: "When you join an open project, expect this pace. If you want slow certainty, academia has that. If you want hype without code, Twitter has that. We sit in the middle.",
       },
     ],
   },

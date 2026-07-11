@@ -37,7 +37,8 @@ export function KeyboardShortcutsDialog() {
         <DialogHeader>
           <DialogTitle className="font-display text-xl text-bone">Keyboard shortcuts</DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Quick navigation across the member hub.
+            Keyboard shortcuts work anywhere in the member area — except when you are typing in a
+            form field or text area.
           </DialogDescription>
         </DialogHeader>
         <ul className="mt-4 space-y-3">

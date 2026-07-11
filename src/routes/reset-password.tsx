@@ -112,7 +112,10 @@ function ResetPasswordPage() {
   }
 
   return (
-    <AuthLayout title="New password" subtitle="Choose a new password for your account.">
+    <AuthLayout
+      title="New password"
+      subtitle="Must meet the strength rules below — you will be signed out of other sessions after saving."
+    >
       {!ready ? (
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground leading-relaxed">

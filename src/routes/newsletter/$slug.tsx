@@ -49,6 +49,10 @@ function NewsletterDetail() {
   if (!issue) {
     return (
       <MemberLayout title="Issue not found">
+        <p className="text-muted-foreground mb-4 max-w-xl leading-relaxed">
+          This digest issue may have been removed or the URL is outdated. Browse past issues on the
+          newsletter archive.
+        </p>
         <Link to="/newsletter" className="text-accent-blue text-sm">
           ← Back to newsletter
         </Link>

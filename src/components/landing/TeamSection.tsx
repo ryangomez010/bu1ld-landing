@@ -8,7 +8,7 @@ export function TeamSection() {
       eyebrow="06"
       label="collective"
       title="Builders and researchers."
-      subtitle="A growing collective of engineers, scientists, and founders. More members are joining as the work expands."
+      subtitle="A growing roster of engineers, physicists, and founders — distributed across time zones, working on the same research threads."
     >
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-border/40 border border-border/40">
         {TEAM.map((m) => (

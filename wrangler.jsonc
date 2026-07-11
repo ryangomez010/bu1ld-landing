@@ -12,4 +12,11 @@
   "observability": {
     "enabled": true,
   },
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT_KV",
+      "id": "00000000000000000000000000000000",
+      "preview_id": "00000000000000000000000000000000",
+    },
+  ],
 }

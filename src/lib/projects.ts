@@ -3,8 +3,10 @@ import { SEED_JOBS, SEED_PROJECTS } from "@/data/seed/projects";
 import { notifyApplicationUpdate, notifyLeadApproved } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
 import { clampText, LIMITS } from "@/lib/security";
+import { parseCreateProjectInput, parseLeadRequestInput } from "@/lib/validation";
+import { isLocalPersistenceEnabled } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
-import { withSeedFallback } from "@/lib/supabase-fallback";
+import { withSeedFallback, resolveSeedItem, isDemoMode } from "@/lib/supabase-fallback";
 import type {
   ApplicationStatus,
   Job,
@@ -122,6 +124,7 @@ export function isProjectLead(role: string | undefined): boolean {
 // ─── Projects ───────────────────────────────────────────────────────────────
 
 function localProjects(status?: ProjectStatus): Project[] {
+  if (!isLocalPersistenceEnabled()) return [];
   const all = [...readCustomProjects(), ...SEED_PROJECTS];
   return status ? all.filter((p) => p.status === status) : all;
 }
@@ -142,9 +145,9 @@ export async function fetchProjects(status?: ProjectStatus): Promise<Project[]> 
         localProjects(status),
       );
     }
-    return localProjects(status);
+    return isDemoMode() ? localProjects(status) : [];
   }
-  return localProjects(status);
+  return isDemoMode() ? localProjects(status) : [];
 }
 
 export async function fetchProjectBySlug(slug: string): Promise<Project | null> {
@@ -152,9 +155,9 @@ export async function fetchProjectBySlug(slug: string): Promise<Project | null> 
   if (supabase) {
     const { data } = await supabase.from("projects").select("*").eq("slug", slug).maybeSingle();
     if (data) return normalizeProject(data as Record<string, unknown>);
-    return localProjects().find((p) => p.slug === slug) ?? null;
+    return resolveSeedItem(null, () => localProjects().find((p) => p.slug === slug));
   }
-  return localProjects().find((p) => p.slug === slug) ?? null;
+  return resolveSeedItem(null, () => localProjects().find((p) => p.slug === slug));
 }
 
 export async function fetchLeadProjects(leadId: string): Promise<Project[]> {
@@ -184,7 +187,11 @@ export async function createProject(
     discord_url?: string | null;
   },
 ): Promise<{ project: Project | null; error: string | null }> {
-  const slug = input.title
+  const parsed = parseCreateProjectInput(input);
+  if (!parsed.data) return { project: null, error: parsed.error };
+
+  const valid = parsed.data;
+  const slug = valid.title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
@@ -196,18 +203,18 @@ export async function createProject(
       .from("projects")
       .insert({
         slug,
-        title: input.title,
-        description: input.description,
-        type: input.type,
+        title: valid.title,
+        description: valid.description,
+        type: valid.type,
         status: "open",
-        skills_needed: input.skills_needed,
-        tags: input.tags,
+        skills_needed: valid.skills_needed,
+        tags: valid.tags,
         lead_id: leadId,
         lead_name: leadName,
-        capacity: input.capacity,
+        capacity: valid.capacity,
         team_count: 0,
         published: true,
-        discord_url: input.discord_url ?? null,
+        discord_url: valid.discord_url ?? null,
       })
       .select("*")
       .single();
@@ -215,21 +222,25 @@ export async function createProject(
     return { project: normalizeProject(data as Record<string, unknown>), error: null };
   }
 
+  if (!isLocalPersistenceEnabled()) {
+    return { project: null, error: "Projects require a live database connection." };
+  }
+
   const project: Project = {
     id: `local-${slug}`,
     slug,
-    title: input.title,
-    description: input.description,
-    type: input.type,
+    title: valid.title,
+    description: valid.description,
+    type: valid.type,
     status: "open",
-    skills_needed: input.skills_needed,
-    tags: input.tags,
+    skills_needed: valid.skills_needed,
+    tags: valid.tags,
     lead_id: leadId,
     lead_name: leadName,
-    capacity: input.capacity,
+    capacity: valid.capacity,
     team_count: 0,
     published: true,
-    discord_url: input.discord_url ?? null,
+    discord_url: valid.discord_url ?? null,
     created_at: now,
     updated_at: now,
   };
@@ -326,6 +337,10 @@ export async function applyToProject(
       status: "pending",
     });
     return { error: error?.message ?? null };
+  }
+
+  if (!isLocalPersistenceEnabled()) {
+    return { error: "Applications require a live database connection." };
   }
 
   const apps = readLocalApps();
@@ -628,9 +643,9 @@ export async function fetchJobs(source?: Job["source"]): Promise<Job[]> {
         source ? SEED_JOBS.filter((j) => j.source === source) : SEED_JOBS,
       );
     }
-    return source ? SEED_JOBS.filter((j) => j.source === source) : SEED_JOBS;
+    return isDemoMode() ? (source ? SEED_JOBS.filter((j) => j.source === source) : SEED_JOBS) : [];
   }
-  return source ? SEED_JOBS.filter((j) => j.source === source) : SEED_JOBS;
+  return isDemoMode() ? (source ? SEED_JOBS.filter((j) => j.source === source) : SEED_JOBS) : [];
 }
 
 export async function fetchAllJobsAdmin(): Promise<Job[]> {
@@ -642,7 +657,7 @@ export async function fetchAllJobsAdmin(): Promise<Job[]> {
       .order("created_at", { ascending: false });
     return data?.length ? data.map((r) => normalizeJob(r as Record<string, unknown>)) : [];
   }
-  return SEED_JOBS;
+  return isDemoMode() ? SEED_JOBS : [];
 }
 
 export async function createJob(payload: {
@@ -719,6 +734,9 @@ export async function submitLeadRequest(
   userId: string,
   message: string,
 ): Promise<{ error: string | null }> {
+  const parsed = parseLeadRequestInput(message);
+  if (!parsed.data) return { error: parsed.error };
+
   const supabase = getSupabase();
   if (supabase) {
     const { data: existing } = await supabase
@@ -731,8 +749,12 @@ export async function submitLeadRequest(
 
     const { error } = await supabase
       .from("lead_verification_requests")
-      .insert({ user_id: userId, message });
+      .insert({ user_id: userId, message: parsed.data.message });
     return { error: error?.message ?? null };
+  }
+
+  if (!isLocalPersistenceEnabled()) {
+    return { error: "Lead verification requires a live database connection." };
   }
 
   if (localStorage.getItem(leadReqKey(userId))) {
@@ -740,7 +762,11 @@ export async function submitLeadRequest(
   }
   localStorage.setItem(
     leadReqKey(userId),
-    JSON.stringify({ message, status: "pending", created_at: new Date().toISOString() }),
+    JSON.stringify({
+      message: parsed.data.message,
+      status: "pending",
+      created_at: new Date().toISOString(),
+    }),
   );
   return { error: null };
 }

@@ -76,7 +76,12 @@ function NewProjectForm() {
 
   return (
     <MemberLayout title="Create project" eyebrow="project lead">
-      <form onSubmit={onSubmit} className="max-w-xl space-y-5 -mt-4">
+      <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
+        Published projects appear on the open listings page. Set skills, tags, and capacity so
+        applicants know what you need. You can add workspace links and Discord after creation from
+        the project page.
+      </p>
+      <form onSubmit={onSubmit} className="max-w-xl space-y-5">
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
           <Input id="title" required value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -117,7 +122,7 @@ function NewProjectForm() {
           <Label htmlFor="tags">Tags (comma-separated)</Label>
           <Input
             id="tags"
-            placeholder="World models, BUILD"
+            placeholder="World models, tokenization"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
           />

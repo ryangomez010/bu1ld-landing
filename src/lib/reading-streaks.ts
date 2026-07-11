@@ -123,20 +123,11 @@ export async function recordPaperRead(userId: string): Promise<void> {
   const supabase = getSupabase();
   if (!supabase) return;
 
-  const { data } = await supabase
-    .from("reading_activity")
-    .select("papers_read")
-    .eq("user_id", userId)
-    .eq("activity_date", today)
-    .maybeSingle();
-
-  const count = (data?.papers_read ?? 0) + 1;
-  await supabase
-    .from("reading_activity")
-    .upsert(
-      { user_id: userId, activity_date: today, papers_read: count },
-      { onConflict: "user_id,activity_date" },
-    );
+  const { error } = await supabase.rpc("increment_reading_activity", {
+    p_user_id: userId,
+    p_date: today,
+  });
+  if (error) console.error("[reading-streaks]", error.message);
 }
 
 export async function fetchReadingStreakStats(userId: string): Promise<ReadingStreakStats> {
@@ -178,4 +169,48 @@ export async function fetchReadingStreakStats(userId: string): Promise<ReadingSt
     weeklyGoal,
     goalMet: papersThisWeek >= weeklyGoal,
   };
+}
+
+/** Last N days of reading activity for heatmap UI (ISO date → papers read). */
+export async function fetchReadingActivityDays(
+  userId: string,
+  days = 28,
+): Promise<Record<string, number>> {
+  const supabase = getSupabase();
+  let rows = readLocalActivity(userId);
+
+  if (supabase) {
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+    const { data } = await supabase
+      .from("reading_activity")
+      .select("activity_date, papers_read")
+      .eq("user_id", userId)
+      .gte("activity_date", since.toISOString().slice(0, 10))
+      .order("activity_date", { ascending: true });
+    if (data?.length) {
+      const map = new Map(rows.map((r) => [r.activity_date, r.papers_read]));
+      for (const row of data) {
+        const date = String(row.activity_date);
+        const count = Number(row.papers_read);
+        map.set(date, Math.max(map.get(date) ?? 0, count));
+      }
+      rows = [...map.entries()].map(([activity_date, papers_read]) => ({
+        activity_date,
+        papers_read,
+      }));
+    }
+  }
+
+  const out: Record<string, number> = {};
+  const start = new Date();
+  start.setDate(start.getDate() - (days - 1));
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const iso = d.toISOString().slice(0, 10);
+    const row = rows.find((r) => r.activity_date === iso);
+    out[iso] = row?.papers_read ?? 0;
+  }
+  return out;
 }

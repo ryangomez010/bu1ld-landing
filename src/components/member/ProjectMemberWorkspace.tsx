@@ -22,7 +22,8 @@ export function ProjectMemberWorkspace({
           Member workspace
         </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          You are on this team. Use updates below, Discord, and member profiles to coordinate.
+          Accepted members see team roster, pinned repo links, project updates, and Discord here.
+          Coordinate via updates below — leads can @mention you in posts.
         </p>
       </div>
       <div className="p-5 space-y-6 relative z-[1]">

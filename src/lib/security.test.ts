@@ -2,15 +2,22 @@ import { describe, expect, test } from "bun:test";
 
 import { guardAuthAttempt } from "./auth-rate-limit";
 import {
+  applySecurityHeaders,
   checkFormRateLimit,
   clampText,
+  isSameOriginRequest,
   isSensitiveAction,
+  isTrustedSupabaseUrl,
   isUuid,
   isValidEmail,
   sanitizeAppPath,
   sanitizeEmailHtml,
   sanitizeText,
+  securityHeaders,
+  validateImageMagicBytes,
   validatePassword,
+  checkRateLimit,
+  jsonResponse,
 } from "./security";
 
 describe("security utilities", () => {
@@ -69,6 +76,67 @@ describe("security utilities", () => {
 
   test("isSensitiveAction validates audit event types", () => {
     expect(isSensitiveAction("avatar_updated")).toBe(true);
+    expect(isSensitiveAction("sign_in")).toBe(true);
     expect(isSensitiveAction("random_event")).toBe(false);
+  });
+
+  test("isSameOriginRequest blocks cross-origin posts", () => {
+    const req = new Request("https://app.example.com/api/email", {
+      headers: { origin: "https://evil.com" },
+    });
+    expect(isSameOriginRequest(req, "app.example.com")).toBe(false);
+    expect(
+      isSameOriginRequest(
+        new Request("https://app.example.com/api/email", {
+          headers: { origin: "https://app.example.com" },
+        }),
+        "app.example.com",
+      ),
+    ).toBe(true);
+  });
+
+  test("isTrustedSupabaseUrl accepts only https supabase hosts", () => {
+    expect(isTrustedSupabaseUrl("https://abc123.supabase.co")).toBe(true);
+    expect(isTrustedSupabaseUrl("http://abc123.supabase.co")).toBe(false);
+    expect(isTrustedSupabaseUrl("https://evil.com")).toBe(false);
+  });
+
+  test("securityHeaders include baseline protections", () => {
+    const headers = securityHeaders({ hsts: true });
+    expect(headers["X-Frame-Options"]).toBe("DENY");
+    expect(headers["Content-Security-Policy"]).toContain("object-src 'none'");
+    expect(headers["Strict-Transport-Security"]).toContain("max-age");
+  });
+
+  test("applySecurityHeaders preserves status and adds headers", () => {
+    const res = applySecurityHeaders(new Response("ok", { status: 201 }), true);
+    expect(res.status).toBe(201);
+    expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
+  });
+
+  test("checkRateLimit returns retryAfterMs when blocked", () => {
+    const buckets = new Map<string, number[]>();
+    const key = "test-ip";
+    for (let i = 0; i < 3; i++) {
+      expect(checkRateLimit(buckets, key, 60_000, 3).allowed).toBe(true);
+    }
+    const blocked = checkRateLimit(buckets, key, 60_000, 3);
+    expect(blocked.allowed).toBe(false);
+    if (!blocked.allowed) {
+      expect(blocked.retryAfterMs).toBeGreaterThan(0);
+    }
+  });
+
+  test("jsonResponse sets security headers", async () => {
+    const res = jsonResponse({ ok: true });
+    expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
+    expect(res.headers.get("content-type")).toContain("application/json");
+  });
+
+  test("validateImageMagicBytes rejects mismatched content", async () => {
+    const pngHeader = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const blob = new Blob([pngHeader], { type: "image/png" });
+    expect(await validateImageMagicBytes(blob, "image/png")).toBe(true);
+    expect(await validateImageMagicBytes(blob, "image/jpeg")).toBe(false);
   });
 });

@@ -89,8 +89,8 @@ function PreferencesContent() {
   return (
     <MemberLayout title="Preferences" eyebrow="your experience">
       <p className="text-sm text-muted-foreground mb-8 max-w-xl -mt-4 leading-relaxed">
-        Customize how BUILD looks and how often we reach you. Notification categories are managed
-        separately in{" "}
+        Customize layout density and digest email frequency. Per-category notification toggles
+        (applications, project updates, mentions, events) are in{" "}
         <Link to="/account/notifications" className="text-accent-blue hover:text-bone">
           notification settings
         </Link>
@@ -105,7 +105,7 @@ function PreferencesContent() {
             <div>
               <h2 className="font-display text-xl text-bone">Content density</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Controls spacing across the member hub — applies immediately on save.
+                Controls spacing across all member pages — applies immediately on save.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">

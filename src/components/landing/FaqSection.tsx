@@ -14,7 +14,8 @@ export function FaqSection() {
             A few things people ask right away.
           </h2>
           <p className="max-w-xl text-muted-foreground leading-relaxed">
-            Practical, ambitious, and a little unconventional — by design.
+            Answers about who belongs here, how applications work, and what you get access to on day
+            one.
           </p>
         </div>
         <div className="divider-grad mt-10" />

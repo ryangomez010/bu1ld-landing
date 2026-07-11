@@ -22,7 +22,8 @@ export function ProfileCompletenessMeter({
           Profile complete
         </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Your member card is ready to share. Keep interests fresh for better recommendations.
+          Your member card is ready to share from your profile page. Update interests periodically —
+          they drive For You ranking, digest content, and directory search.
         </p>
       </div>
     );
@@ -66,8 +67,9 @@ export function ProfileCompletenessMeter({
 
       {!compact ? (
         <p className="text-sm text-muted-foreground mb-4">
-          Complete these steps to unlock better matches, a shareable identity card, and tailored
-          recommendations.
+          Each field below appears somewhere specific: your name and avatar on the directory card,
+          bio and links in project application review, interests in For You ranking, goals on your
+          public profile, timezone for event coordination.
         </p>
       ) : null}
 

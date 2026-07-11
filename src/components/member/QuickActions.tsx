@@ -1,6 +1,7 @@
 import { Calendar, FolderKanban, GraduationCap, Library, Search, Users } from "lucide-react";
 
 import { QuickActionChip } from "@/components/member/DashboardHero";
+import { SectionHeader } from "@/components/member/SectionHeader";
 
 const ACTIONS = [
   { to: "/research", label: "Research", icon: Library, accent: "text-bone" },
@@ -14,9 +15,10 @@ const ACTIONS = [
 export function QuickActions() {
   return (
     <section className="section-gap">
-      <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-        Shortcuts
-      </p>
+      <SectionHeader
+        title="Shortcuts"
+        description="One-click routes to the surfaces members use daily — research library, open projects, event deadlines, guides, directory, and search."
+      />
       <div className="flex flex-wrap gap-2">
         {ACTIONS.map((action) => (
           <QuickActionChip key={action.to} {...action} />

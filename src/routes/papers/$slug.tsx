@@ -61,7 +61,7 @@ function PaperDetail() {
       <MemberLayout>
         <NotFoundResource
           title="Review not found"
-          body="This paper review may have moved or doesn't exist yet. Browse the library for available reviews."
+          body="This slug is not in the library — it may have been renamed. Browse Paper reviews for the current catalog."
           backTo="/papers"
           backLabel="Back to paper reviews"
         />

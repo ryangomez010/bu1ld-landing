@@ -76,8 +76,9 @@ function LeadApplyForm() {
   return (
     <MemberLayout title="Become a project lead" eyebrow="verification">
       <p className="text-muted-foreground mb-8 max-w-xl leading-relaxed -mt-4">
-        Project leads can create projects, review applications, and build teams. Tell us what you
-        have shipped or researched and why you want to lead a BUILD thread.
+        Verified project leads can create open listings, set team capacity, review application
+        queues with full applicant profiles attached, post milestone updates, and approve or decline
+        pitches with optional notes. Admins review lead requests before granting access.
       </p>
 
       {!checked ? (
@@ -88,7 +89,8 @@ function LeadApplyForm() {
         <div className="rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-6">
           <p className="text-bone font-display text-lg">Request pending</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            An admin will review your request. You will be able to create projects once approved.
+            An admin will read your request and email you when approved or declined. Until then you
+            can still apply to open projects as a member.
           </p>
         </div>
       ) : (
@@ -101,7 +103,7 @@ function LeadApplyForm() {
               rows={6}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Past projects, research, startups, or threads you want to run..."
+              placeholder="List shipped repos, papers, or startups. Name the research thread you want to run, team size you expect, and how you would review applications."
             />
             <p className="text-xs text-muted-foreground">Draft autosaved locally as you type.</p>
           </div>

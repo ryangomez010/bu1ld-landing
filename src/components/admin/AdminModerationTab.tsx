@@ -1,9 +1,19 @@
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { EmptyState } from "@/components/member/ContentCard";
+import { ListSkeleton } from "@/components/member/LoadingState";
+import { SectionHeader } from "@/components/member/SectionHeader";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { relativeTime } from "@/lib/date";
-import { fetchAllReports, updateReportStatus, type ContentReport } from "@/lib/content-reports";
+import {
+  contentReportHref,
+  fetchAllReports,
+  updateReportStatus,
+  type ContentReport,
+} from "@/lib/content-reports";
 import { fetchAdminFeedback, type MemberFeedback } from "@/lib/member-feedback";
 import { useAuth } from "@/lib/auth";
 
@@ -12,6 +22,7 @@ export function AdminModerationTab() {
   const [reports, setReports] = useState<ContentReport[]>([]);
   const [feedback, setFeedback] = useState<MemberFeedback[]>([]);
   const [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState<Record<string, string>>({});
 
   const reload = () => {
     void Promise.all([fetchAllReports(), fetchAdminFeedback()]).then(([r, f]) => {
@@ -27,7 +38,7 @@ export function AdminModerationTab() {
 
   const onReview = async (reportId: string, status: "reviewed" | "dismissed") => {
     if (!user) return;
-    const { error } = await updateReportStatus(reportId, user.id, status);
+    const { error } = await updateReportStatus(reportId, user.id, status, notes[reportId]);
     if (error) {
       toast.error(error);
       return;
@@ -37,11 +48,7 @@ export function AdminModerationTab() {
   };
 
   if (loading) {
-    return (
-      <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
-        Loading moderation queue…
-      </p>
-    );
+    return <ListSkeleton rows={4} />;
   }
 
   const pending = reports.filter((r) => r.status === "pending");
@@ -49,31 +56,42 @@ export function AdminModerationTab() {
   return (
     <div className="space-y-10">
       <section>
-        <h3 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-red mb-4">
-          Content reports ({pending.length} pending)
-        </h3>
+        <SectionHeader title={`Content reports (${pending.length} pending)`} accent="red" />
         {pending.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No pending reports.</p>
+          <EmptyState
+            title="Queue clear"
+            body="No pending content reports — new flags from members will appear here."
+          />
         ) : (
-          <div className="grid gap-px border border-border/40 bg-border/40">
+          <div className="grid gap-px border border-border/40 bg-border/40 surface-card overflow-hidden">
             {pending.map((r) => (
-              <div key={r.id} className="bg-background/75 p-4 space-y-2">
+              <div key={r.id} className="bg-background/75 p-4 space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
-                    {r.content_type}
-                  </span>
-                  <span className="text-bone text-sm">{r.content_slug}</span>
-                  <span className="font-mono text-[8px] text-muted-foreground">
+                  <span className="label-xs text-accent-blue">{r.content_type}</span>
+                  <Link
+                    to={contentReportHref(r.content_type, r.content_slug)}
+                    className="text-bone text-sm hover:text-accent-blue transition-colors"
+                  >
+                    {r.content_slug}
+                  </Link>
+                  <span className="label-xs text-muted-foreground/80">
                     {relativeTime(r.created_at)}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground">{r.reason}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{r.reason}</p>
+                <Textarea
+                  value={notes[r.id] ?? ""}
+                  onChange={(e) => setNotes((n) => ({ ...n, [r.id]: e.target.value }))}
+                  rows={2}
+                  placeholder="Admin notes (optional, visible to reporter when reviewed)"
+                  className="text-sm resize-none"
+                />
                 <div className="flex gap-2">
                   <Button
                     type="button"
                     size="sm"
                     onClick={() => void onReview(r.id, "reviewed")}
-                    className="font-mono text-[9px] tracking-[0.15em] uppercase"
+                    className="label-xs"
                   >
                     Reviewed
                   </Button>
@@ -82,7 +100,7 @@ export function AdminModerationTab() {
                     size="sm"
                     variant="outline"
                     onClick={() => void onReview(r.id, "dismissed")}
-                    className="font-mono text-[9px] tracking-[0.15em] uppercase"
+                    className="label-xs"
                   >
                     Dismiss
                   </Button>
@@ -94,24 +112,25 @@ export function AdminModerationTab() {
       </section>
 
       <section>
-        <h3 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-violet mb-4">
-          Member feedback
-        </h3>
+        <SectionHeader title="Member feedback" accent="violet" />
         {feedback.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No feedback yet.</p>
+          <EmptyState
+            title="No feedback yet"
+            body="Member bug reports, feature ideas, and content notes will appear here."
+          />
         ) : (
-          <div className="grid gap-px border border-border/40 bg-border/40 max-h-[400px] overflow-y-auto">
+          <div className="grid gap-px border border-border/40 bg-border/40 max-h-[400px] overflow-y-auto surface-card">
             {feedback.slice(0, 30).map((f) => (
               <div key={f.id} className="bg-background/75 p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-violet">
-                    {f.category}
-                  </span>
-                  <span className="font-mono text-[8px] text-muted-foreground">
+                  <span className="label-xs text-accent-violet">{f.category}</span>
+                  <span className="label-xs text-muted-foreground/80">
                     {relativeTime(f.created_at)}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{f.body}</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                  {f.body}
+                </p>
               </div>
             ))}
           </div>

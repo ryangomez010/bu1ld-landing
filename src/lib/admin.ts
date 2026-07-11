@@ -1,20 +1,19 @@
+import { INSTITUTION_TAKE } from "@/data/copy";
 import { logAdminAction } from "@/lib/audit-log";
 import { getSupabase } from "@/lib/supabase";
 import type { AdminStats, MemberRole, Profile } from "@/lib/types";
-import { SEED_JOBS, SEED_PROJECTS } from "@/data/seed/projects";
-import { SEED_EVENTS, SEED_PAPERS } from "@/data/seed/content";
 
 export async function fetchAdminStats(): Promise<AdminStats> {
   const supabase = getSupabase();
   if (!supabase) {
     return {
       members: 0,
-      projects: SEED_PROJECTS.length,
+      projects: 0,
       applications: 0,
       pendingLeads: 0,
-      events: SEED_EVENTS.length,
-      papers: SEED_PAPERS.length,
-      jobs: SEED_JOBS.length,
+      events: 0,
+      papers: 0,
+      jobs: 0,
     };
   }
 
@@ -96,9 +95,9 @@ ${notes || "Summarize the core contribution in 2–3 sentences."}
 2. Identify the figure that carries the paper. Everything else supports it.
 3. Ask: does this generalize beyond the benchmark?
 
-## BUILD take
+## ${INSTITUTION_TAKE}
 
-How does this connect to active BUILD threads? What would a 2-week prototype look like that tests one claim from this paper?`;
+How does this connect to active research threads? What would a 2-week prototype look like that tests one claim from this paper?`;
 }
 
 export function generateEventPrep(title: string, topics: string, notes: string): string {

@@ -1,5 +1,5 @@
 import { getSupabase } from "@/lib/supabase";
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 
 const STORAGE = "build:newsletter-subscribe";
 
@@ -16,12 +16,13 @@ export async function isNewsletterSubscribed(userId: string): Promise<boolean> {
       .eq("user_id", userId)
       .maybeSingle();
     if (data) return !!data.subscribed;
+    return withLocalFallback(true, () => localSubscribed(userId));
   }
-  return localSubscribed(userId);
+  return withLocalFallback(true, () => localSubscribed(userId));
 }
 
 export async function setNewsletterSubscribed(userId: string, subscribed: boolean): Promise<void> {
-  writeUserJson(STORAGE, userId, subscribed);
+  persistLocally(() => writeUserJson(STORAGE, userId, subscribed));
 
   const supabase = getSupabase();
   if (!supabase) return;

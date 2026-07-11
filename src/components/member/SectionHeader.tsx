@@ -12,7 +12,7 @@ export function SectionHeader({
   title: string;
   description?: string;
   action?: ReactNode;
-  accent?: "muted" | "green" | "blue";
+  accent?: "muted" | "green" | "blue" | "violet" | "red";
   className?: string;
 }) {
   const accentClass =
@@ -20,14 +20,16 @@ export function SectionHeader({
       ? "text-accent-green"
       : accent === "blue"
         ? "text-accent-blue"
-        : "text-muted-foreground";
+        : accent === "violet"
+          ? "text-accent-violet"
+          : accent === "red"
+            ? "text-accent-red"
+            : "text-muted-foreground";
 
   return (
     <div className={cn("section-header", className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className={cn("font-mono text-[10px] tracking-[0.3em] uppercase", accentClass)}>
-          {title}
-        </h2>
+        <h2 className={cn("label-sm", accentClass)}>{title}</h2>
         {action}
       </div>
       {description ? (

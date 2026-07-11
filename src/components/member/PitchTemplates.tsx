@@ -4,7 +4,7 @@ export function PitchTemplates({ onSelect }: { onSelect: (text: string) => void 
   return (
     <div className="space-y-2">
       <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-        Pitch templates
+        Pitch templates — prefills the textarea; edit before submitting
       </p>
       <div className="flex flex-wrap gap-2">
         {PITCH_TEMPLATES.map((t) => (

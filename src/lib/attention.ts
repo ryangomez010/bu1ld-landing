@@ -33,7 +33,7 @@ export async function buildAttentionItems(
       id: "onboarding",
       priority: "high",
       title: "Complete your member profile",
-      body: "Project leads see your background and links when you apply.",
+      body: "Project leads cannot review your pitch until onboarding is done — they need your bio, background, and at least one interest tag.",
       href: "/onboarding",
       cta: "Finish onboarding",
     });
@@ -44,7 +44,7 @@ export async function buildAttentionItems(
         id: "profile",
         priority: "medium",
         title: `Profile ${completeness.percent}% complete`,
-        body: `Add ${completeness.missing.slice(0, 2).join(", ")} to stand out in the directory.`,
+        body: `Add ${completeness.missing.slice(0, 2).join(", ")} — incomplete profiles rank lower in directory search and give leads less context in application review.`,
         href: "/profile",
         cta: "Update profile",
       });
@@ -59,7 +59,7 @@ export async function buildAttentionItems(
       title: `${pending.length} application${pending.length === 1 ? "" : "s"} in review`,
       body: pending[0]?.project_title
         ? `Latest: ${pending[0].project_title}`
-        : "Leads are reviewing your pitches.",
+        : "Leads typically respond within one to two weeks — check back or follow the project for updates.",
       href: "/applications",
       cta: "View applications",
     });
@@ -71,7 +71,7 @@ export async function buildAttentionItems(
       id: "accepted-apps",
       priority: "low",
       title: `You're on ${accepted.length} project team${accepted.length === 1 ? "" : "s"}`,
-      body: "Check project updates and Discord links from your project pages.",
+      body: "Check project updates (leads post milestones here), open the member workspace, and join Discord if linked on the project page.",
       href: accepted[0]?.project_slug ? `/projects/${accepted[0].project_slug}` : "/applications",
       cta: "Open project",
     });
@@ -82,7 +82,7 @@ export async function buildAttentionItems(
       id: "notifications",
       priority: unread >= 5 ? "high" : "medium",
       title: `${unread} unread notification${unread === 1 ? "" : "s"}`,
-      body: "Application updates, announcements, and lead messages.",
+      body: "Application status changes, lead @mentions, pinned announcements, and event deadline reminders.",
       href: "/notifications",
       cta: "Open inbox",
     });

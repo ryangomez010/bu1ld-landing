@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
+import { AddToCollectionMenu } from "@/components/member/AddToCollectionMenu";
 import { ConfirmButton } from "@/components/member/ConfirmButton";
-import { EmptyState } from "@/components/member/ContentCard";
+import { CtaLink, EmptyState } from "@/components/member/ContentCard";
 import { FilterBar } from "@/components/member/FilterBar";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
@@ -105,32 +106,26 @@ function SavedContent() {
 
   return (
     <MemberLayout title="Saved" eyebrow="your bookmarks">
-      <div className="mb-6 flex flex-wrap gap-3 -mt-4">
-        <Link
-          to="/saved/collections"
-          className="font-mono text-[10px] tracking-[0.2em] uppercase text-accent-green hover:text-bone"
-        >
+      <p className="text-muted-foreground mb-4 max-w-2xl leading-relaxed -mt-4">
+        Bookmarks for papers, guides, projects, events, jobs, and newsletter issues. Saved items
+        sync to your account — add them to collections for thread-specific reading lists.
+      </p>
+      <div className="mb-6">
+        <CtaLink to="/saved/collections" accent="green">
           Research collections →
-        </Link>
+        </CtaLink>
       </div>
       {loading ? (
         <ListSkeleton rows={4} />
       ) : items.length === 0 ? (
         <EmptyState
           title="Nothing saved yet"
-          body="Use the Save button on events, papers, projects, jobs, guides, and newsletter issues."
-          action={
-            <Link
-              to="/search"
-              className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"
-            >
-              Browse content →
-            </Link>
-          }
+          body="Use Save on any detail page — papers, guides, projects, events, jobs, newsletter issues. Saved items appear here and can be added to collections."
+          action={<CtaLink to="/search">Browse content →</CtaLink>}
         />
       ) : (
         <>
-          <div className="flex flex-wrap items-center gap-2 mb-4 -mt-4">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
             <FilterBar
               value={sort}
               onChange={setSort}
@@ -150,12 +145,7 @@ function SavedContent() {
                 destructive
                 onConfirm={() => void onBulkUnsave()}
                 trigger={
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="ml-auto font-mono text-[9px] tracking-[0.15em] uppercase"
-                  >
+                  <Button type="button" size="sm" variant="outline" className="ml-auto label-xs">
                     Unsave all ({filtered.length})
                   </Button>
                 }
@@ -176,32 +166,45 @@ function SavedContent() {
           />
 
           {filtered.length === 0 ? (
-            <EmptyState title="No items in this filter" body="Try another type." />
+            <EmptyState
+              title="No items for this type"
+              body="Change the type filter to All, or save content from its detail page first."
+            />
           ) : (
-            <div className="grid gap-px bg-border/40 border border-border/40">
+            <div className="grid gap-px bg-border/40 border border-border/40 surface-card overflow-hidden">
               {filtered.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-background/75 p-5 flex items-start justify-between gap-4"
+                  className="bg-background/75 p-5 flex items-start justify-between gap-4 list-row-hover"
                 >
                   <Link
                     to={savedItemHref(item.item_type, item.item_slug)}
                     className="min-w-0 hover:opacity-90 transition"
                   >
-                    <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-green">
+                    <span className="label-xs text-accent-green">
                       {TYPE_LABELS[item.item_type]}
                     </span>
                     <h3 className="font-display text-lg text-bone mt-2">{item.item_title}</h3>
                   </Link>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => void onUnsave(item)}
-                    className="shrink-0 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground"
-                  >
-                    <Bookmark className="h-3.5 w-3.5 mr-1 fill-current" />
-                    Unsave
-                  </Button>
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    {user ? (
+                      <AddToCollectionMenu
+                        userId={user.id}
+                        itemType={item.item_type}
+                        itemSlug={item.item_slug}
+                        itemTitle={item.item_title}
+                      />
+                    ) : null}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => void onUnsave(item)}
+                      className="label-xs text-muted-foreground"
+                    >
+                      <Bookmark className="h-3.5 w-3.5 mr-1 fill-current" />
+                      Unsave
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>

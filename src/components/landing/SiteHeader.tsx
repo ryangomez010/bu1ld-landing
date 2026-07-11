@@ -33,12 +33,10 @@ export function SiteHeader() {
         <a href="#top" className="text-xl tracking-tight shrink-0 flex items-center gap-3">
           <Wordmark />
           <span className="hidden sm:inline-block h-4 w-px bg-bone/20" />
-          <span className="hidden sm:inline font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground">
-            ml institution
-          </span>
+          <span className="hidden sm:inline label-xs text-muted-foreground">ml institution</span>
         </a>
 
-        <nav className="hidden lg:flex items-center gap-7 font-mono text-[10px] tracking-[0.28em] uppercase text-muted-foreground">
+        <nav className="hidden lg:flex items-center gap-7 label-sm text-muted-foreground">
           {NAV_ITEMS.map(([label, href]) => (
             <a key={href} href={`#${href}`} className="group relative hover:text-bone transition">
               <span className="text-bone/40 mr-1">·</span>
@@ -49,7 +47,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2 md:gap-3">
-          <span className="hidden md:flex items-center gap-2 font-mono text-[9px] tracking-[0.28em] uppercase text-muted-foreground">
+          <span className="hidden md:flex items-center gap-2 label-xs text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-accent-green animate-pulse" />
             {time}
           </span>
@@ -57,7 +55,7 @@ export function SiteHeader() {
           {user ? (
             <Link
               to="/dashboard"
-              className="hidden sm:inline-flex font-mono text-[10px] tracking-[0.28em] uppercase px-3.5 py-2 border border-bone/25 text-bone hover:bg-bone/5 transition rounded-sm"
+              className="hidden sm:inline-flex label-sm px-3.5 py-2 border border-bone/25 text-bone hover:bg-bone/5 transition rounded-sm"
             >
               Dashboard
             </Link>
@@ -65,13 +63,13 @@ export function SiteHeader() {
             <>
               <Link
                 to="/login"
-                className="hidden sm:inline-flex font-mono text-[10px] tracking-[0.28em] uppercase px-3.5 py-2 text-muted-foreground hover:text-bone transition"
+                className="hidden sm:inline-flex label-sm px-3.5 py-2 text-muted-foreground hover:text-bone transition"
               >
                 Log in
               </Link>
               <Link
                 to="/signup"
-                className="font-mono text-[10px] tracking-[0.28em] uppercase px-3.5 py-2 border border-accent-blue/40 text-bone hover:bg-accent-blue/10 hover:border-accent-blue transition rounded-sm"
+                className="label-sm px-3.5 py-2 border border-accent-blue/40 text-bone hover:bg-accent-blue/10 hover:border-accent-blue transition rounded-sm"
               >
                 Join →
               </Link>
@@ -98,7 +96,7 @@ export function SiteHeader() {
                   <Wordmark />
                 </SheetTitle>
               </SheetHeader>
-              <nav className="mt-8 flex flex-col gap-4 font-mono text-[11px] tracking-[0.28em] uppercase">
+              <nav className="mt-8 flex flex-col gap-4 label-sm">
                 {NAV_ITEMS.map(([label, href]) => (
                   <a
                     key={href}

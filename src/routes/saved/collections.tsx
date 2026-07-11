@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FolderPlus, Layers } from "lucide-react";
+import { Layers } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -8,6 +8,8 @@ import { ConfirmButton } from "@/components/member/ConfirmButton";
 import { EmptyState } from "@/components/member/ContentCard";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { PageBackLink } from "@/components/member/PageBackLink";
+import { SectionHeader } from "@/components/member/SectionHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -110,40 +112,30 @@ function CollectionsContent() {
 
   return (
     <MemberLayout title="Research collections" eyebrow="organized bookmarks">
+      <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
+        Named reading lists separate from your main saved queue — one collection per research
+        thread, paper sprint, or conference prep cycle. Items stay in Saved even if you delete a
+        collection.
+      </p>
       {!isSupabaseConfigured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red mb-6">
           Collections require Supabase. Run <code className="font-mono text-xs">phase13.sql</code>.
         </p>
       ) : null}
 
-      <div className="mb-6 flex flex-wrap gap-3">
-        <Link
-          to="/saved"
-          className="font-mono text-[10px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
-        >
-          ← All saved items
-        </Link>
-      </div>
+      <PageBackLink to="/saved" label="All saved items" />
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="space-y-6">
-          <form
-            onSubmit={onCreate}
-            className="rounded-sm border border-border/60 bg-background/70 p-5 space-y-4"
-          >
-            <div className="flex items-center gap-2">
-              <FolderPlus className="h-4 w-4 text-accent-green" />
-              <h2 className="font-mono text-[10px] tracking-[0.25em] uppercase text-bone">
-                New collection
-              </h2>
-            </div>
+          <form onSubmit={onCreate} className="panel glass-subtle surface-card p-5 space-y-4">
+            <SectionHeader title="New collection" accent="green" className="mb-0" />
             <div className="space-y-2">
               <Label htmlFor="colName">Name</Label>
               <Input
                 id="colName"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="World models reading list"
+                placeholder="e.g. ICLR 2026 world-model prep — papers to read before the defect-injection sprint"
                 required
                 maxLength={80}
               />
@@ -172,17 +164,25 @@ function CollectionsContent() {
           ) : collections.length === 0 ? (
             <EmptyState
               title="No collections yet"
-              body="Group papers, guides, and events into themed reading lists."
+              body="Create a collection on the left, then add saved papers, guides, or events from the Saved page or any item's Add to collection menu."
             />
           ) : (
-            <div className="grid gap-px bg-border/40 border border-border/40">
+            <div
+              className="grid gap-px bg-border/40 border border-border/40 surface-card overflow-hidden"
+              role="listbox"
+              aria-label="Your collections"
+            >
               {collections.map((c) => (
                 <button
                   key={c.id}
                   type="button"
+                  role="option"
+                  aria-selected={selected?.id === c.id}
                   onClick={() => setSelected(c)}
-                  className={`bg-background/75 p-4 text-left transition hover:bg-bone/5 ${
-                    selected?.id === c.id ? "ring-1 ring-accent-blue/40" : ""
+                  className={`bg-background/75 p-4 text-left transition hover:bg-bone/5 list-row-hover ${
+                    selected?.id === c.id
+                      ? "ring-1 ring-inset ring-accent-blue/40 bg-accent-blue/5"
+                      : ""
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -196,7 +196,7 @@ function CollectionsContent() {
                     </div>
                     <Layers className="h-4 w-4 shrink-0 text-muted-foreground" />
                   </div>
-                  <p className="mt-2 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
+                  <p className="mt-2 label-xs text-muted-foreground">
                     {c.item_count ?? 0} items · Updated {relativeTime(c.updated_at)}
                   </p>
                 </button>
@@ -207,7 +207,7 @@ function CollectionsContent() {
 
         <div>
           {selected ? (
-            <div className="rounded-sm border border-border/60 bg-background/70 p-5">
+            <div className="panel glass-subtle surface-card p-5">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <h2 className="font-display text-xl text-bone">{selected.name}</h2>
                 <ConfirmButton
@@ -231,7 +231,7 @@ function CollectionsContent() {
               {items.length === 0 ? (
                 <EmptyState
                   title="Empty collection"
-                  body="Save content from papers, guides, or events — then add it here from the item page (coming soon) or via your saved list."
+                  body="Save content from papers, guides, or events using the Save button — then add items to a collection from this page or from any saved item row."
                   action={
                     <Link
                       to="/saved"

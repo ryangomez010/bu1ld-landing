@@ -25,24 +25,25 @@ function TermsPage() {
           <section>
             <h2 className="font-display text-xl text-bone mb-2">Membership</h2>
             <p>
-              The Bu1ld is a machine learning institution and membership community. Membership is
-              free at launch. You are responsible for the accuracy of your profile and applications.
+              The Bu1ld is a machine learning institution. Member accounts are free at launch. You
+              are responsible for accurate profile information — project leads rely on it during
+              application review.
             </p>
           </section>
           <section>
             <h2 className="font-display text-xl text-bone mb-2">Projects & applications</h2>
             <p>
-              Project leads review applications at their discretion. Acceptance into a project does
-              not constitute employment unless separately agreed. BUILD facilitates matching;
-              outcomes depend on project leads and participants.
+              Project leads accept or decline applications at their discretion. Acceptance grants
+              access to the project workspace — not employment, compensation, or IP assignment
+              unless agreed separately in writing with the lead.
             </p>
           </section>
           <section>
             <h2 className="font-display text-xl text-bone mb-2">Content</h2>
             <p>
               Guides, paper reviews, and newsletter content are for educational reference. Do not
-              redistribute BUILD editorial content without permission. Research and code contributed
-              to projects may be subject to separate licenses set by project leads.
+              redistribute The Bu1ld editorial content without permission. Research and code
+              contributed to projects may be subject to separate licenses set by project leads.
             </p>
           </section>
           <section>

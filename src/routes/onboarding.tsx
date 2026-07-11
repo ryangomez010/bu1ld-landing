@@ -170,38 +170,39 @@ function OnboardingForm() {
   return (
     <AuthLayout
       title="Set up your profile"
-      subtitle="Tell us who you are and what you're building toward. This powers project matching and your personalized feed."
+      subtitle="Four steps: name and bio, background and interests, GitHub/LinkedIn links, and timezone. Project leads see this when you apply; interests also rank your For You feed and digest."
     >
-      <div className="mb-6 flex gap-2">
+      <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {STEPS.map((label, i) => (
-          <div key={label} className="flex-1">
+          <div key={label}>
             <div className={`h-1 rounded-full ${i <= step ? "bg-accent-blue" : "bg-border/60"}`} />
             <p
-              className={`mt-2 font-mono text-[8px] tracking-[0.15em] uppercase ${i === step ? "text-bone" : "text-muted-foreground"}`}
+              className={`mt-2 label-xs hidden sm:block ${i === step ? "text-bone" : "text-muted-foreground"}`}
             >
               {i + 1}. {label}
+            </p>
+            <p
+              className={`mt-2 label-xs sm:hidden ${i === step ? "text-bone" : "text-muted-foreground"}`}
+              aria-hidden
+            >
+              {i + 1}
             </p>
           </div>
         ))}
       </div>
 
-      <div className="mb-6 rounded-sm border border-border/60 bg-background/60 p-4">
-        <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">
-          Profile preview
-        </p>
+      <div className="mb-6 panel glass-subtle surface-card p-4">
+        <p className="label-xs text-muted-foreground mb-2">Profile preview</p>
         <p className="font-display text-lg text-bone">{fullName.trim() || "Your name"}</p>
         {background ? (
-          <p className="mt-1 font-mono text-[9px] tracking-[0.15em] uppercase text-accent-green capitalize">
-            {background}
-          </p>
+          <p className="mt-1 label-xs text-accent-green capitalize">{background}</p>
         ) : null}
         <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
-          {bio.trim() || "Your bio will appear here for project leads when you apply."}
+          {bio.trim() ||
+            "Bio preview — project leads read this verbatim in the application review queue."}
         </p>
         {interests.length > 0 ? (
-          <p className="mt-2 font-mono text-[8px] tracking-[0.12em] uppercase text-muted-foreground">
-            {interests.slice(0, 5).join(" · ")}
-          </p>
+          <p className="mt-2 label-xs text-muted-foreground">{interests.slice(0, 5).join(" · ")}</p>
         ) : null}
       </div>
 
@@ -226,7 +227,7 @@ function OnboardingForm() {
               <Textarea
                 id="bio"
                 rows={3}
-                placeholder="What are you building? What do you want to learn or ship?"
+                placeholder="What are you working on now? What papers, systems, or products do you want to ship in the next six months?"
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
               />
@@ -265,7 +266,7 @@ function OnboardingForm() {
                       type="button"
                       aria-pressed={active}
                       onClick={() => toggleInterest(interest)}
-                      className={`rounded-sm border px-3 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition ${
+                      className={`rounded-sm border px-3 py-1.5 label-xs transition ${
                         active
                           ? "border-accent-blue bg-accent-blue/10 text-bone"
                           : "border-border/60 text-muted-foreground hover:border-bone/30"
@@ -278,7 +279,8 @@ function OnboardingForm() {
               </div>
               {interests.length > 0 ? (
                 <p className="text-xs text-muted-foreground">
-                  Your feed will prioritize: {interests.slice(0, 4).join(", ")}
+                  These tags rank your For You feed, digest emails, and member directory matches:{" "}
+                  {interests.slice(0, 4).join(", ")}
                   {interests.length > 4 ? "…" : ""}
                 </p>
               ) : null}
@@ -322,7 +324,7 @@ function OnboardingForm() {
               type="button"
               variant="outline"
               onClick={() => setStep((s) => s - 1)}
-              className="font-mono text-[10px] tracking-[0.2em] uppercase"
+              className="label-sm"
             >
               Back
             </Button>
@@ -332,16 +334,12 @@ function OnboardingForm() {
               type="button"
               disabled={!canNext}
               onClick={() => setStep((s) => s + 1)}
-              className="ml-auto font-mono text-[11px] tracking-[0.2em] uppercase"
+              className="ml-auto label-sm"
             >
               Continue
             </Button>
           ) : (
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="ml-auto font-mono text-[11px] tracking-[0.2em] uppercase"
-            >
+            <Button type="submit" disabled={submitting} className="ml-auto label-sm">
               {submitting ? "Saving…" : "Complete profile"}
             </Button>
           )}
@@ -349,7 +347,7 @@ function OnboardingForm() {
       </form>
       <p className="mt-4 text-center text-xs text-muted-foreground">
         <Link to="/dashboard" className="hover:text-bone transition">
-          Skip for now — explore the hub first →
+          Skip for now — go to your dashboard →
         </Link>
       </p>
     </AuthLayout>

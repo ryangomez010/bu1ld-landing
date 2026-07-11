@@ -1,21 +1,23 @@
 import { SEED_ANNOUNCEMENTS } from "@/data/seed/announcements";
 import { fetchMemberIds } from "@/lib/admin";
-import { createNotification } from "@/lib/notifications";
+import { notifyUsers } from "@/lib/notifications";
 import { clampText, LIMITS, sanitizeAppPath } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
-import { withSeedFallback } from "@/lib/supabase-fallback";
+import { withSeedFallback, isDemoMode } from "@/lib/supabase-fallback";
+import { isLocalPersistenceEnabled } from "@/lib/storage";
 import { isSafeUrl } from "@/lib/urls";
 import type { Announcement } from "@/data/seed/announcements";
 
 const key = "build:announcements";
 
 function readLocal(): Announcement[] {
-  if (typeof window === "undefined") return SEED_ANNOUNCEMENTS;
+  if (!isLocalPersistenceEnabled()) return [];
+  if (typeof window === "undefined") return isDemoMode() ? SEED_ANNOUNCEMENTS : [];
   try {
     const stored = JSON.parse(localStorage.getItem(key) ?? "[]") as Announcement[];
-    return stored.length ? stored : SEED_ANNOUNCEMENTS;
+    return stored.length ? stored : isDemoMode() ? SEED_ANNOUNCEMENTS : [];
   } catch {
-    return SEED_ANNOUNCEMENTS;
+    return isDemoMode() ? SEED_ANNOUNCEMENTS : [];
   }
 }
 
@@ -37,6 +39,7 @@ function normalize(row: Record<string, unknown>): Announcement {
 }
 
 function seedAnnouncements(): Announcement[] {
+  if (!isDemoMode()) return [];
   return SEED_ANNOUNCEMENTS.filter((a) => a.published).sort((a, b) => {
     if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
     return b.created_at.localeCompare(a.created_at);
@@ -84,15 +87,11 @@ export async function fetchAllAnnouncementsAdmin(): Promise<Announcement[]> {
 async function fanOutAnnouncement(payload: { title: string; body: string; href?: string }) {
   const ids = await fetchMemberIds();
   const href = sanitizeAppPath(payload.href) ?? "/dashboard";
-  await Promise.all(
-    ids.map((id) =>
-      createNotification(id, {
-        title: payload.title,
-        body: payload.body.slice(0, LIMITS.notificationBody),
-        href,
-      }),
-    ),
-  );
+  await notifyUsers(ids, {
+    title: payload.title,
+    body: payload.body.slice(0, LIMITS.notificationBody),
+    href,
+  });
 }
 
 function normalizeAnnouncementHref(href?: string): string | null {

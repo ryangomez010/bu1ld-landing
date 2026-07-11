@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { AdminAuditTab } from "@/components/admin/AdminAuditTab";
 import { AdminBulkPublishTab } from "@/components/admin/AdminBulkPublishTab";
@@ -40,6 +40,9 @@ import type {
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
+  head: () => ({
+    meta: [{ title: "Admin — The Bu1ld" }],
+  }),
 });
 
 function AdminPage() {
@@ -52,23 +55,25 @@ function AdminPage() {
   );
 }
 
+type AdminTab =
+  | "overview"
+  | "announcements"
+  | "events"
+  | "papers"
+  | "newsletter"
+  | "jobs"
+  | "guides"
+  | "members"
+  | "leads"
+  | "bulk"
+  | "moderation"
+  | "audit"
+  | "security";
+
 function AdminContent() {
   const { user } = useAuth();
-  const [tab, setTab] = useState<
-    | "overview"
-    | "announcements"
-    | "events"
-    | "papers"
-    | "newsletter"
-    | "jobs"
-    | "guides"
-    | "members"
-    | "leads"
-    | "bulk"
-    | "moderation"
-    | "audit"
-    | "security"
-  >("overview");
+  const [tab, setTab] = useState<AdminTab>("overview");
+  const [loadedTabs, setLoadedTabs] = useState<Set<AdminTab>>(new Set(["overview"]));
   const [events, setEvents] = useState<MlEvent[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
   const [newsletters, setNewsletters] = useState<NewsletterIssue[]>([]);
@@ -80,22 +85,68 @@ function AdminContent() {
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
 
-  const reload = () => {
-    void fetchAllEventsAdmin().then(setEvents);
-    void fetchAllPapersAdmin().then(setPapers);
-    void fetchAllNewslettersAdmin().then(setNewsletters);
-    void fetchAllJobsAdmin().then(setJobs);
-    void fetchAllMembers().then(setMembers);
-    void fetchAllAnnouncementsAdmin().then(setAnnouncements);
-    void fetchAdminStats().then(setStats);
-    void fetchPendingLeadRequests().then(setLeadRequests);
-    void fetchAdminAuditLog().then(setAuditLog);
-    void fetchAdminSecurityEvents().then(setSecurityEvents);
-  };
+  const markLoaded = useCallback((t: AdminTab) => {
+    setLoadedTabs((prev) => new Set([...prev, t]));
+  }, []);
+
+  const reloadTab = useCallback(
+    (t: AdminTab) => {
+      switch (t) {
+        case "overview":
+          void fetchAdminStats().then(setStats);
+          void fetchPendingLeadRequests().then(setLeadRequests);
+          break;
+        case "announcements":
+          void fetchAllAnnouncementsAdmin().then(setAnnouncements);
+          break;
+        case "events":
+          void fetchAllEventsAdmin().then(setEvents);
+          break;
+        case "papers":
+          void fetchAllPapersAdmin().then(setPapers);
+          break;
+        case "newsletter":
+          void fetchAllNewslettersAdmin().then(setNewsletters);
+          break;
+        case "jobs":
+          void fetchAllJobsAdmin().then(setJobs);
+          break;
+        case "members":
+          void fetchAllMembers().then(setMembers);
+          break;
+        case "leads":
+          void fetchPendingLeadRequests().then(setLeadRequests);
+          break;
+        case "bulk":
+          void fetchAllEventsAdmin().then(setEvents);
+          void fetchAllPapersAdmin().then(setPapers);
+          void fetchAllNewslettersAdmin().then(setNewsletters);
+          void fetchAllJobsAdmin().then(setJobs);
+          break;
+        case "audit":
+          void fetchAdminAuditLog().then(setAuditLog);
+          break;
+        case "security":
+          void fetchAdminSecurityEvents().then(setSecurityEvents);
+          break;
+        default:
+          break;
+      }
+      markLoaded(t);
+    },
+    [markLoaded],
+  );
 
   useEffect(() => {
-    reload();
-  }, []);
+    reloadTab("overview");
+  }, [reloadTab]);
+
+  useEffect(() => {
+    if (loadedTabs.has(tab)) return;
+    reloadTab(tab);
+  }, [tab, loadedTabs, reloadTab]);
+
+  const onSaved = () => reloadTab(tab);
 
   return (
     <MemberLayout title="Admin" eyebrow="content management">
@@ -140,19 +191,19 @@ function AdminContent() {
       {tab === "overview" ? (
         <AdminOverviewTab stats={stats} pendingLeads={leadRequests.length} />
       ) : tab === "announcements" ? (
-        <AdminAnnouncementsTab items={announcements} onSaved={reload} />
+        <AdminAnnouncementsTab items={announcements} onSaved={onSaved} />
       ) : tab === "events" ? (
-        <AdminEventsTab events={events} onSaved={reload} />
+        <AdminEventsTab events={events} onSaved={onSaved} />
       ) : tab === "papers" ? (
-        <AdminPapersTab papers={papers} onSaved={reload} />
+        <AdminPapersTab papers={papers} onSaved={onSaved} />
       ) : tab === "newsletter" ? (
-        <AdminNewslettersTab issues={newsletters} onSaved={reload} />
+        <AdminNewslettersTab issues={newsletters} onSaved={onSaved} />
       ) : tab === "jobs" ? (
-        <AdminJobsTab jobs={jobs} onSaved={reload} />
+        <AdminJobsTab jobs={jobs} onSaved={onSaved} />
       ) : tab === "guides" ? (
         <AdminGuidesTab />
       ) : tab === "members" ? (
-        <AdminMembersTab members={members} actorId={user?.id ?? ""} onSaved={reload} />
+        <AdminMembersTab members={members} actorId={user?.id ?? ""} onSaved={onSaved} />
       ) : tab === "audit" ? (
         <AdminAuditTab entries={auditLog} />
       ) : tab === "security" ? (
@@ -163,12 +214,12 @@ function AdminContent() {
           papers={papers}
           newsletters={newsletters}
           jobs={jobs}
-          onSaved={reload}
+          onSaved={onSaved}
         />
       ) : tab === "moderation" ? (
         <AdminModerationTab />
       ) : (
-        <AdminLeadsTab requests={leadRequests} adminId={user?.id ?? ""} onSaved={reload} />
+        <AdminLeadsTab requests={leadRequests} adminId={user?.id ?? ""} onSaved={onSaved} />
       )}
 
       <Link

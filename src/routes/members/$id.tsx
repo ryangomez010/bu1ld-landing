@@ -3,13 +3,16 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
+import { CtaLink } from "@/components/member/ContentCard";
 import { ReportContentButton } from "@/components/member/ReportContentButton";
 import { ResourceNotFound } from "@/components/member/ResourceNotFound";
+import { IdentityCard } from "@/components/member/IdentityCard";
 import { InterestMatchTags } from "@/components/member/InterestMatchTags";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { RoleBadge } from "@/components/member/RoleBadge";
+import { SectionHeader } from "@/components/member/SectionHeader";
 import { TagList } from "@/components/member/ContentCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
@@ -20,6 +23,7 @@ import {
   endorseSkill,
   fetchEndorsementsForProfile,
   groupEndorsementsBySkill,
+  removeEndorsement,
 } from "@/lib/skill-endorsements";
 import { safeHref } from "@/lib/urls";
 
@@ -77,6 +81,8 @@ function MemberProfileContent() {
 
   const github = safeHref(member.github_url);
   const linkedin = safeHref(member.linkedin_url);
+  const twitter = safeHref(member.twitter_url);
+  const website = safeHref(member.website_url);
   const overlap =
     profile?.interests?.length && member.interests?.length
       ? sharedInterests(profile.interests, member.interests)
@@ -86,12 +92,22 @@ function MemberProfileContent() {
 
   const onEndorse = async (skill: string) => {
     if (!user || !member) return;
-    const { error } = await endorseSkill(user.id, member.id, skill);
-    if (error) {
-      toast.error(error);
-      return;
+    const existing = endorsements.find((e) => e.endorser_id === user.id && e.skill === skill);
+    if (existing) {
+      const { error } = await removeEndorsement(user.id, existing.id, member.id);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      toast.success(`Removed endorsement for ${skill}`);
+    } else {
+      const { error } = await endorseSkill(user.id, member.id, skill);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      toast.success(`Endorsed ${skill}`);
     }
-    toast.success(`Endorsed ${skill}`);
     void fetchEndorsementsForProfile(member.id).then(setEndorsements);
   };
 
@@ -103,7 +119,7 @@ function MemberProfileContent() {
         <div className="flex flex-wrap items-center gap-2">
           <RoleBadge role={member.role} />
           {member.background ? (
-            <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground capitalize border border-border/60 px-2 py-1 rounded-sm">
+            <span className="label-xs text-muted-foreground capitalize border border-border/60 px-2 py-1 rounded-sm">
               {member.background}
             </span>
           ) : null}
@@ -117,57 +133,73 @@ function MemberProfileContent() {
         ) : null}
       </div>
 
-      {member.bio ? (
-        <p className="mt-6 text-muted-foreground leading-relaxed max-w-2xl">{member.bio}</p>
-      ) : null}
+      <IdentityCard
+        profile={{
+          ...member,
+          goals: member.goals ?? [],
+          avatar_url: member.avatar_url ?? null,
+          twitter_url: member.twitter_url ?? null,
+          website_url: member.website_url ?? null,
+          profile_slug: member.profile_slug ?? null,
+          onboarding_completed: true,
+          directory_visible: true,
+          weekly_paper_goal: 2,
+          timezone: null,
+          updated_at: member.created_at,
+        }}
+        displayName={member.full_name ?? "Member"}
+        className="mt-4"
+      />
 
       {overlap.length > 0 && !isSelf ? (
-        <section className="mt-6 rounded-sm border border-accent-green/25 bg-accent-green/5 px-4 py-4">
-          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green mb-2">
-            Shared interests
-          </p>
+        <section className="mt-6 panel glass-subtle surface-card border border-accent-green/25 px-4 py-4">
+          <p className="label-xs text-accent-green mb-2">Shared interests</p>
           <InterestMatchTags tags={member.interests ?? []} interests={profile!.interests} />
         </section>
       ) : null}
 
       {member.interests?.length ? (
         <section className="mt-8">
-          <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-            Interests
-          </h2>
-          <TagList tags={member.interests} />
-          {!isSelf && user ? (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {member.interests.slice(0, 6).map((skill) => (
-                <Button
-                  key={skill}
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => void onEndorse(skill)}
-                  className="font-mono text-[8px] tracking-[0.12em] uppercase"
-                >
-                  + Endorse {skill}
-                </Button>
-              ))}
-            </div>
-          ) : null}
+          <SectionHeader title="Interests" />
+          <div className="panel glass-subtle surface-card p-4">
+            <TagList tags={member.interests} />
+            {!isSelf && user ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {member.interests.slice(0, 6).map((skill) => {
+                  const endorsed = endorsements.some(
+                    (e) => e.endorser_id === user.id && e.skill === skill,
+                  );
+                  return (
+                    <Button
+                      key={skill}
+                      type="button"
+                      size="sm"
+                      variant={endorsed ? "secondary" : "outline"}
+                      onClick={() => void onEndorse(skill)}
+                      className="label-xs min-h-8"
+                      aria-pressed={endorsed}
+                    >
+                      {endorsed ? `✓ ${skill}` : `+ Endorse ${skill}`}
+                    </Button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
         </section>
       ) : null}
 
       {endorsementGroups.length > 0 ? (
         <section className="mt-8">
-          <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-            Endorsements
-          </h2>
-          <ul className="space-y-2">
+          <SectionHeader title="Endorsements" accent="green" />
+          <ul className="grid gap-2">
             {endorsementGroups.map((g) => (
               <li
                 key={g.skill}
-                className="rounded-sm border border-border/50 px-4 py-3 text-sm text-muted-foreground"
+                className="panel glass-subtle surface-card px-4 py-3 text-sm text-muted-foreground"
               >
                 <span className="text-bone font-medium">{g.skill}</span>
-                <span className="ml-2 font-mono text-[8px] uppercase">
+                <span className="ml-2 label-xs">
                   {g.count} · {g.endorsers.slice(0, 3).join(", ")}
                 </span>
               </li>
@@ -178,39 +210,30 @@ function MemberProfileContent() {
 
       <div className="mt-8 flex flex-wrap gap-4">
         {github ? (
-          <a
-            href={github}
-            target="_blank"
-            rel="noreferrer"
-            className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"
-          >
+          <a href={github} target="_blank" rel="noreferrer" className="cta-link">
             GitHub →
           </a>
         ) : null}
         {linkedin ? (
-          <a
-            href={linkedin}
-            target="_blank"
-            rel="noreferrer"
-            className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"
-          >
+          <a href={linkedin} target="_blank" rel="noreferrer" className="cta-link">
             LinkedIn →
           </a>
         ) : null}
-        <Link
-          to="/projects"
-          className="font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone"
-        >
-          Browse projects →
-        </Link>
+        {twitter ? (
+          <a href={twitter} target="_blank" rel="noreferrer" className="cta-link">
+            X / Twitter →
+          </a>
+        ) : null}
+        {website ? (
+          <a href={website} target="_blank" rel="noreferrer" className="cta-link">
+            Website →
+          </a>
+        ) : null}
+        <CtaLink to="/projects">Browse projects →</CtaLink>
         {!isSelf ? (
-          <Link
-            to="/search"
-            search={{ q: overlap[0] ?? member.interests?.[0] ?? "" }}
-            className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"
-          >
+          <CtaLink to="/search" search={{ q: overlap[0] ?? member.interests?.[0] ?? "" }}>
             Content you both might like →
-          </Link>
+          </CtaLink>
         ) : null}
       </div>
     </MemberLayout>

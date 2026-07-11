@@ -86,6 +86,10 @@ function JobDetail() {
   if (!job) {
     return (
       <MemberLayout title="Job not found">
+        <p className="text-muted-foreground mb-4 max-w-xl leading-relaxed">
+          This listing may have been removed or the URL is wrong. Browse all roles on the jobs page
+          or check your saved collections.
+        </p>
         <Link to="/jobs" className="text-accent-blue text-sm">
           ← Back to jobs
         </Link>

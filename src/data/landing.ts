@@ -3,7 +3,7 @@ export const RESEARCH = [
     id: "01",
     name: "Counterfactual Defect Worlds",
     color: "red",
-    href: "/projects/counterfactual-defect-worlds",
+    href: "/projects",
     desc: "Probing how generative world models reason about broken, perturbed, and out-of-distribution environments by injecting controlled defects and studying recovery.",
   },
   {
@@ -17,28 +17,28 @@ export const RESEARCH = [
     id: "03",
     name: "Adaptive Theory Geometry in World Models",
     color: "green",
-    href: "/papers/lecun-jepa-world-models",
+    href: "/papers",
     desc: "Mapping curvature, intrinsic dimension, and theory-laden structure inside latent manifolds as models adapt to new physical regimes.",
   },
   {
     id: "04",
     name: "Residual Event Tokenization",
     color: "bone",
-    href: "/projects/residual-event-tokenization",
+    href: "/projects",
     desc: "A tokenization scheme that encodes only residual, surprise-bearing events from continuous streams, compressing video, sensor, and agent trajectories without losing causal signal.",
   },
   {
     id: "05",
     name: "Dynamical Representation Phase Transitions for PDE Surrogates",
     color: "blue",
-    href: "/projects/pde-surrogate-phase-transitions",
+    href: "/projects",
     desc: "Tracking phase transitions in learned representations as neural PDE surrogates scale, and using them to predict where a surrogate will silently break.",
   },
   {
     id: "06",
     name: "Latent Safety and Recovery",
     color: "green",
-    href: "/projects/latent-safety-recovery",
+    href: "/projects",
     desc: "Studying whether a model can detect when it has become confidently wrong, then recover through self-consistency, retrieval, or replanning.",
   },
 ] as const;
@@ -48,14 +48,14 @@ export const PROGRAMS = [
     tag: "P-01",
     name: "AI Builder Cohort",
     time: "12 weeks, rolling",
-    href: "/projects/ai-builder-cohort-q2",
+    href: "/projects",
     body: "A project-driven cohort where builders ship a production ML system end to end, from paper reading to deployed inference.",
   },
   {
     tag: "P-02",
     name: "Research Fellowship",
     time: "6 months, selective",
-    href: "/jobs/research-fellowship-2026",
+    href: "/jobs",
     body: "Co-advised research with academic collaborators, targeting strong venue submissions and clean open-source reference code.",
   },
   {
@@ -72,14 +72,14 @@ export const STARTUPS = [
     name: "NeuroCad",
     stage: "scaling",
     domain: "Text to CAD",
-    href: "/projects/neurocad",
+    href: "/projects",
     thesis: "Natural language to manufacturable CAD assemblies, with a learned mechanical prior.",
   },
   {
     name: "Colorworld",
     stage: "seed",
     domain: "Generative color",
-    href: "/newsletter/issue-12-march-2026",
+    href: "/newsletter",
     thesis:
       "An AI color coding generator that produces brand-coherent palettes and full design tokens from intent.",
   },
@@ -87,7 +87,7 @@ export const STARTUPS = [
     name: "Exovian Games",
     stage: "prototype",
     domain: "AI native games",
-    href: "/newsletter/issue-12-march-2026",
+    href: "/newsletter",
     thesis:
       "Game worlds where the simulator, NPCs, and narrative are driven by on-device learned models.",
   },
@@ -95,7 +95,7 @@ export const STARTUPS = [
     name: "Eigen Δ",
     stage: "research",
     domain: "Foundation models",
-    href: "/papers/attention-is-all-you-need",
+    href: "/papers",
     thesis: "Compact delta-trained foundation models that specialize in hours, not weeks.",
   },
   {
@@ -104,7 +104,7 @@ export const STARTUPS = [
     domain: "Open thread",
     href: "/projects",
     thesis:
-      "New ventures spin out of the lab every cycle. Builders propose, the community pressure tests, the best ideas get shipped.",
+      "New threads start when a member proposes a falsifiable claim and finds two others willing to ship weekly. Some become startups; most get cut after a documented postmortem.",
   },
 ] as const;
 
@@ -125,35 +125,35 @@ export const TEAM = [
 ] as const;
 
 export const BENEFITS = [
-  "Research threads that ship as prototypes, not slide decks",
-  "A builder community — researchers, engineers, founders, students",
-  "Academic rigor with the urgency of a startup",
-  "Open projects, visible output, and a high bar for what counts",
+  "Research threads with weekly demos, not quarterly slide decks",
+  "A distributed roster — researchers, systems engineers, founders, and students on the same threads",
+  "Paper reviews that name failure modes, not just benchmark deltas",
+  "Open project listings with public output, application history, and lead review notes",
 ] as const;
 
 export const MEMBERSHIP_PERKS = [
   {
     id: "01",
     title: "Join projects",
-    desc: "Apply to live research threads and startup builds — matched to your skills, interests, and pitch.",
+    desc: "Browse open threads, submit a short pitch, and attach your full profile — leads see bio, background, interests, and links in one review queue.",
     color: "blue",
   },
   {
     id: "02",
     title: "Learn ML deeply",
-    desc: "Curated reading paths, internal guides, and builder-led sessions across frontier topics.",
+    desc: "Six reading paths across transformers, world models, scaling laws, and alignment — each links internal guides to member paper reviews with progress tracking.",
     color: "green",
   },
   {
     id: "03",
     title: "Paper insights",
-    desc: "Member-written reviews — what matters, what breaks, and what to build next.",
+    desc: "Member-written reviews on classics and active threads — methods, reproducibility gaps, and what we would prototype next.",
     color: "red",
   },
   {
     id: "04",
     title: "Events & conferences",
-    desc: "Deadlines, meetups, and conferences across the ML ecosystem — with prep notes and calendar sync.",
+    desc: "Submission deadlines, workshop dates, and meetups with prep notes, RSVP tracking, and one-click .ics export.",
     color: "bone",
   },
 ] as const;
@@ -161,23 +161,23 @@ export const MEMBERSHIP_PERKS = [
 export const FAQ = [
   {
     q: "Is this only for ML researchers?",
-    a: "No. The strongest teams mix researchers, engineers, product-minded builders, and people who turn ambiguity into shipping momentum.",
+    a: "No. Open projects list required skills explicitly — many threads need systems engineers for training infra, product-minded builders for demos, and students for reproduction work. Researchers anchor methodology; engineers ship the codebase.",
   },
   {
     q: "Do you prefer papers or products?",
-    a: "Both — papers when they create leverage, products when they create users. The bar is systems people can actually run, test, and build on.",
+    a: "Both, depending on the thread. Research threads target venue submissions with reproducible code. Startup builds target working demos and first users. The application pitch should name which outcome you are optimizing for in the first 30 days.",
   },
   {
     q: "What happens after I join?",
-    a: "Create your account, complete your profile, and land on the member hub — events, guides, papers, open projects, and applications. Apply to threads you're excited about; leads review with your full profile attached.",
+    a: "You create an account, walk through a four-step profile setup (background, interests, links, timezone), and land on your dashboard. From there you can browse open projects, read guides and paper reviews, RSVP to events, save items into collections, and apply to threads — each application sends your full profile to the project lead automatically.",
   },
   {
     q: "How do project applications work?",
-    a: "Browse open projects, write a short pitch (templates provided), and submit. Your bio, background, interests, and links go to the project lead. Track status anytime in Applications.",
+    a: "Open a project page, write a short pitch (templates available), and submit. Your full profile attaches automatically — bio, background, interests, GitHub, LinkedIn. The lead reviews in the manage queue; you track status under Applications and get notified on change.",
   },
   {
     q: "Is membership free?",
-    a: "Yes at launch. Create an account, complete your profile, and you're in the pool for projects, learning paths, and community access.",
+    a: "Yes at launch. No payment step — create an account, finish your profile, and you have access to the full member area: projects, reading paths, paper reviews, events, jobs, and the member directory.",
   },
 ] as const;
 

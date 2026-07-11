@@ -46,7 +46,7 @@ function GuideDetail() {
       <MemberLayout>
         <NotFoundResource
           title="Guide not found"
-          body="This guide may have moved or isn't published yet. Browse the library for available essays."
+          body="This guide slug is not published — check Guides for the six available reference essays."
           backTo="/guides"
           backLabel="Back to guides"
         />

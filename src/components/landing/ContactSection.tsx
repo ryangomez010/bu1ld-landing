@@ -19,8 +19,9 @@ export function ContactSection() {
           Build with <Wordmark />.
         </h2>
         <p className="mt-10 max-w-xl mx-auto text-muted-foreground text-lg leading-relaxed">
-          Researchers, engineers, founders of all ages. If you want work that compounds — join the
-          membership pool.
+          Researchers, engineers, and founders at any stage. If you want to read deeply, ship
+          prototypes, and work on threads where the bar is reproducibility and working code — start
+          with a member account or reach out directly.
         </p>
         <div className="mt-14 flex flex-wrap justify-center gap-4">
           <Link

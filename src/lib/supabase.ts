@@ -120,20 +120,119 @@ export type Database = {
         };
         Update: Partial<Announcement>;
       };
-      project_updates: {
+      member_preferences: {
+        Row: {
+          user_id: string;
+          content_density: string;
+          email_digest_frequency: string;
+          last_digest_sent_at: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          content_density?: string;
+          email_digest_frequency?: string;
+          last_digest_sent_at?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          content_density?: string;
+          email_digest_frequency?: string;
+          last_digest_sent_at?: string | null;
+          updated_at?: string;
+        };
+      };
+      notification_preferences: {
+        Row: {
+          user_id: string;
+          pref_key: string;
+          email_enabled: boolean;
+          in_app_enabled: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          pref_key: string;
+          email_enabled?: boolean;
+          in_app_enabled?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          email_enabled?: boolean;
+          in_app_enabled?: boolean;
+          updated_at?: string;
+        };
+      };
+      paper_highlights: {
         Row: {
           id: string;
-          project_id: string;
-          author_id: string | null;
-          body: string;
+          user_id: string;
+          paper_slug: string;
+          highlighted_text: string;
           created_at: string;
         };
         Insert: {
-          project_id: string;
-          author_id: string;
-          body: string;
+          user_id: string;
+          paper_slug: string;
+          highlighted_text: string;
         };
-        Update: { body?: string };
+        Update: { highlighted_text?: string };
+      };
+      project_follows: {
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          notify_updates: boolean;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          project_id: string;
+          notify_updates?: boolean;
+        };
+        Update: { notify_updates?: boolean };
+      };
+      job_applications: {
+        Row: {
+          id: string;
+          user_id: string;
+          job_slug: string;
+          job_title: string;
+          status: string;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          job_slug: string;
+          job_title: string;
+          status?: string;
+          notes?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          status?: string;
+          notes?: string | null;
+          updated_at?: string;
+        };
+      };
+      newsletter_subscriptions: {
+        Row: {
+          user_id: string;
+          subscribed: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          subscribed?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          subscribed?: boolean;
+          updated_at?: string;
+        };
       };
     };
   };
@@ -152,6 +251,17 @@ const supabaseAnonKey =
   readEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") ??
   readEnv("VITE_SUPABASE_PUBLISHABLE_KEY") ??
   readEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+
+/** Runtime check — reads current env (used by demo-mode helpers and tests). */
+export function checkSupabaseConfigured(): boolean {
+  const url = readEnv("VITE_SUPABASE_URL") ?? readEnv("NEXT_PUBLIC_SUPABASE_URL");
+  const key =
+    readEnv("VITE_SUPABASE_ANON_KEY") ??
+    readEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") ??
+    readEnv("VITE_SUPABASE_PUBLISHABLE_KEY") ??
+    readEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+  return Boolean(url && key);
+}
 
 export const supabaseProjectUrl = supabaseUrl;
 

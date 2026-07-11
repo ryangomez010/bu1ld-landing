@@ -11,7 +11,7 @@ export function ProgramsSection() {
       eyebrow="04"
       label="entry tracks"
       title="Three ways in."
-      subtitle="Different entry points for different kinds of builders: people who want to ship, people who want to study, and people who want to turn threads into companies."
+      subtitle="Three entry points: ship a production ML system in 12 weeks, pursue a six-month research fellowship, or spin a thread into a venture with technical due diligence."
     >
       <div className="grid md:grid-cols-3 gap-px bg-border/40 border border-border/40">
         {PROGRAMS.map((p, i) => (

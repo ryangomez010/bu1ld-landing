@@ -1,4 +1,4 @@
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { clampText } from "@/lib/security";
 import { createNotification } from "@/lib/notifications";
 import { shouldNotifyInApp } from "@/lib/notification-preferences";
@@ -33,8 +33,13 @@ export async function fetchProjectUpdates(projectId: string): Promise<ProjectUpd
     if (!error && data?.length) {
       return data.map((row) => mapRow(row as Record<string, unknown>));
     }
+    return withLocalFallback([], () =>
+      readLocal(projectId).sort((a, b) => b.created_at.localeCompare(a.created_at)),
+    );
   }
-  return readLocal(projectId).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return withLocalFallback([], () =>
+    readLocal(projectId).sort((a, b) => b.created_at.localeCompare(a.created_at)),
+  );
 }
 
 export async function createProjectUpdate(
@@ -71,7 +76,7 @@ export async function createProjectUpdate(
     body: safeBody,
     created_at: now,
   };
-  writeLocal(projectId, [update, ...readLocal(projectId)]);
+  persistLocally(() => writeLocal(projectId, [update, ...readLocal(projectId)]));
   void notifyProjectUpdateSubscribers(projectId, authorId, authorName, safeBody, opts);
   return { error: null };
 }
@@ -119,11 +124,15 @@ async function notifyProjectUpdateSubscribers(
       const allowed = await shouldNotifyInApp(userId, prefKey);
       if (!allowed) return;
 
-      await createNotification(userId, {
-        title: isMention ? `${authorName} mentioned you` : `Update: ${title}`,
-        body: body.slice(0, 200),
-        href,
-      });
+      await createNotification(
+        userId,
+        {
+          title: isMention ? `${authorName} mentioned you` : `Update: ${title}`,
+          body: body.slice(0, 200),
+          href,
+        },
+        { projectId },
+      );
     }),
   );
 }

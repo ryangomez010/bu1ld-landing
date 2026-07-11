@@ -1,5 +1,6 @@
 import { logSecurityEvent } from "@/lib/account-security";
 import { upsertProfile } from "@/lib/profile";
+import { validateImageMagicBytes } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
 import { isSafeUrl } from "@/lib/urls";
 
@@ -15,6 +16,9 @@ export async function uploadAvatar(
   }
   if (file.size > MAX_BYTES) {
     return { url: null, error: "Image must be under 2 MB." };
+  }
+  if (!(await validateImageMagicBytes(file, file.type))) {
+    return { url: null, error: "File content does not match an allowed image type." };
   }
 
   const supabase = getSupabase();

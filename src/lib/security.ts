@@ -39,19 +39,57 @@ export function checkFormRateLimit(
 
 export const SENSITIVE_ACTIONS = [
   "password_change",
+  "password_changed",
   "email_change",
   "account_deletion",
+  "account_deletion_completed",
+  "account_deletion_requested",
   "avatar_updated",
   "avatar_removed",
   "preference_updated",
   "profile_export",
   "oauth_unlink",
+  "sign_in",
+  "global_sign_out",
 ] as const;
 
 export type SensitiveAction = (typeof SENSITIVE_ACTIONS)[number];
 
 export function isSensitiveAction(value: string): value is SensitiveAction {
   return (SENSITIVE_ACTIONS as readonly string[]).includes(value);
+}
+
+/** Allowed Supabase project URLs for server-side fetches (SSRF guard). */
+export function isTrustedSupabaseUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url.trim());
+    return parsed.protocol === "https:" && parsed.hostname.endsWith(".supabase.co");
+  } catch {
+    return false;
+  }
+}
+
+const IMAGE_MAGIC: Record<string, number[][]> = {
+  "image/jpeg": [[0xff, 0xd8, 0xff]],
+  "image/png": [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
+  "image/gif": [[0x47, 0x49, 0x46, 0x38]],
+  "image/webp": [[0x52, 0x49, 0x46, 0x46]], // RIFF header; WEBP marker checked below
+};
+
+/** Verify file header bytes match declared image MIME (defense beyond client-reported type). */
+export async function validateImageMagicBytes(file: Blob, declaredType: string): Promise<boolean> {
+  const patterns = IMAGE_MAGIC[declaredType];
+  if (!patterns) return false;
+
+  const header = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  const matchesPattern = patterns.some((pattern) => pattern.every((byte, i) => header[i] === byte));
+  if (!matchesPattern) return false;
+
+  if (declaredType === "image/webp") {
+    const marker = String.fromCharCode(header[8]!, header[9]!, header[10]!, header[11]!);
+    return marker === "WEBP";
+  }
+  return true;
 }
 
 export type PasswordCheck = { ok: true } | { ok: false; reason: string };
@@ -178,6 +216,7 @@ export function securityHeaders(opts?: { hsts?: boolean }): Record<string, strin
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https: blob:",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+      "object-src 'none'",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

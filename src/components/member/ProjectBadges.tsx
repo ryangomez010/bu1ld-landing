@@ -14,7 +14,7 @@ export function ProjectTypeBadge({ type }: { type: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 font-mono text-[9px] tracking-[0.25em] uppercase px-2.5 py-1 border rounded-sm",
+        "inline-flex items-center gap-1.5 label-xs px-2.5 py-1 border rounded-sm",
         colors[type] ?? "text-bone border-bone/30",
       )}
     >
@@ -31,12 +31,7 @@ export function ProjectStatusBadge({ status }: { status: string }) {
     closed: "text-muted-foreground border-border/60",
   };
   return (
-    <span
-      className={cn(
-        "font-mono text-[9px] tracking-[0.25em] uppercase px-2.5 py-1 border rounded-sm",
-        colors[status] ?? "",
-      )}
-    >
+    <span className={cn("label-xs px-2.5 py-1 border rounded-sm", colors[status] ?? "")}>
       {PROJECT_STATUS_LABEL[status] ?? status}
     </span>
   );
@@ -50,12 +45,7 @@ export function ApplicationStatusBadge({ status }: { status: string }) {
     waitlist: "text-accent-blue border-accent-blue/40",
   };
   return (
-    <span
-      className={cn(
-        "font-mono text-[9px] tracking-[0.25em] uppercase px-2.5 py-1 border rounded-sm",
-        colors[status] ?? "",
-      )}
-    >
+    <span className={cn("label-xs px-2.5 py-1 border rounded-sm", colors[status] ?? "")}>
       {APPLICATION_STATUS_LABEL[status] ?? status}
     </span>
   );
@@ -65,13 +55,13 @@ export function JobSourceBadge({ source }: { source: string }) {
   return (
     <span
       className={cn(
-        "font-mono text-[9px] tracking-[0.25em] uppercase px-2.5 py-1 border rounded-sm",
+        "label-xs px-2.5 py-1 border rounded-sm",
         source === "internal"
           ? "text-accent-green border-accent-green/40"
           : "text-muted-foreground border-border/60",
       )}
     >
-      {source === "internal" ? "BUILD" : "External"}
+      {source === "internal" ? "Internal" : "External"}
     </span>
   );
 }

@@ -1,8 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+  Bell,
   BookOpen,
   Calendar,
+  ClipboardList,
   FolderKanban,
   GraduationCap,
   Home,
@@ -10,6 +12,7 @@ import {
   Search,
   Settings,
   Shield,
+  SlidersHorizontal,
   Users,
 } from "lucide-react";
 
@@ -34,7 +37,9 @@ const NAV = [
   { to: "/search", label: "Search", icon: Search },
   { to: "/profile", label: "Profile & export", icon: Settings },
   { to: "/account/security", label: "Account security", icon: Shield },
-  { to: "/account/notifications", label: "Notification prefs", icon: Settings },
+  { to: "/account/notifications", label: "Notification prefs", icon: Bell },
+  { to: "/account/preferences", label: "Preferences", icon: SlidersHorizontal },
+  { to: "/account/activity", label: "Your submissions", icon: ClipboardList },
   { to: "/jobs/tracker", label: "Job tracker", icon: FolderKanban },
   { to: "/saved/collections", label: "Research collections", icon: BookOpen },
 ] as const;
@@ -56,7 +61,7 @@ export function MemberCommandPalette() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Jump to…" />
+      <CommandInput placeholder="Go to dashboard, papers, profile, job tracker…" />
       <CommandList>
         <CommandEmpty>No matches.</CommandEmpty>
         <CommandGroup heading="Navigate">

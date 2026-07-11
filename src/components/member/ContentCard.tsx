@@ -1,9 +1,32 @@
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import { Inbox } from "lucide-react";
 import type { LucideIcon, ReactNode } from "react";
 
 import { safeHref } from "@/lib/urls";
 import { cn } from "@/lib/utils";
+
+export function CtaLink({
+  to,
+  children,
+  accent = "blue",
+  className,
+  ...props
+}: {
+  to: LinkProps["to"];
+  children: ReactNode;
+  accent?: "blue" | "green";
+  className?: string;
+} & Omit<LinkProps, "to" | "children" | "className">) {
+  return (
+    <Link
+      to={to}
+      className={cn("cta-link", accent === "green" && "cta-link-green", className)}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+}
 
 export function TagList({
   tags,
@@ -49,24 +72,40 @@ export function ContentCard({
 }) {
   return (
     <Link to={to} className="panel panel-interactive group block p-6 rounded-xl">
-      {tag ? (
-        <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-blue/80">
-          {tag}
-        </span>
-      ) : null}
+      {tag ? <span className="label-xs text-accent-blue/80">{tag}</span> : null}
       <h3 className="font-display text-xl text-bone mt-2 tracking-tight group-hover:text-accent-blue transition-colors">
         {title}
       </h3>
       {summary ? (
         <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">{summary}</p>
       ) : null}
-      {meta ? (
-        <p className="mt-4 font-mono text-[9px] tracking-[0.22em] uppercase text-muted-foreground/80">
-          {meta}
-        </p>
-      ) : null}
+      {meta ? <p className="mt-4 label-xs text-muted-foreground/80">{meta}</p> : null}
       {children}
     </Link>
+  );
+}
+
+export function InlineEmpty({
+  title,
+  body,
+  action,
+  className,
+}: {
+  title: string;
+  body?: string;
+  action?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div role="status" className={cn("panel glass-subtle surface-card p-5 text-center", className)}>
+      <p className="font-display text-sm text-bone relative z-[1]">{title}</p>
+      {body ? (
+        <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed relative z-[1]">
+          {body}
+        </p>
+      ) : null}
+      {action ? <div className="mt-3 relative z-[1]">{action}</div> : null}
+    </div>
   );
 }
 

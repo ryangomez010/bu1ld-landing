@@ -87,7 +87,9 @@ function JobTrackerContent() {
   return (
     <MemberLayout title="Job tracker" eyebrow="applications">
       <p className="text-sm text-muted-foreground mb-8 max-w-xl -mt-4">
-        Track roles you've saved or applied to — status is private to your account.
+        Private pipeline for roles you saved or marked applied — status moves through saved,
+        applied, interviewing, offered, rejected, or withdrawn. Notes are only visible to you and
+        sync to your account.
       </p>
 
       {loading ? (
@@ -95,7 +97,7 @@ function JobTrackerContent() {
       ) : apps.length === 0 ? (
         <EmptyState
           title="No tracked jobs"
-          body="Open a job listing and mark it as applied to start tracking."
+          body="On any job listing, use Track this role to add it here. Update status as you hear back and add interview dates or recruiter contacts in the notes field."
           action={
             <Link
               to="/jobs"
@@ -135,7 +137,7 @@ function JobTrackerContent() {
               <Textarea
                 defaultValue={app.notes ?? ""}
                 rows={2}
-                placeholder="Notes (interview dates, contacts…)"
+                placeholder="Recruiter name, interview slot (2026-07-15 14:00 PT), take-home due date, comp range discussed…"
                 className="text-sm"
                 onBlur={(e) => void onNotesChange(app, e.target.value)}
               />

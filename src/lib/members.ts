@@ -8,11 +8,19 @@ export type DirectoryMember = Pick<
   | "bio"
   | "background"
   | "interests"
+  | "goals"
   | "github_url"
   | "linkedin_url"
+  | "twitter_url"
+  | "website_url"
+  | "avatar_url"
+  | "profile_slug"
   | "role"
   | "created_at"
 >;
+
+const DIRECTORY_SELECT =
+  "id, full_name, bio, background, interests, goals, github_url, linkedin_url, twitter_url, website_url, avatar_url, profile_slug, role, created_at";
 
 function normalize(row: Record<string, unknown>): DirectoryMember {
   return {
@@ -21,8 +29,13 @@ function normalize(row: Record<string, unknown>): DirectoryMember {
     bio: row.bio != null ? String(row.bio) : null,
     background: (row.background as MemberBackground) ?? null,
     interests: (row.interests as string[]) ?? [],
+    goals: (row.goals as string[]) ?? [],
     github_url: row.github_url != null ? String(row.github_url) : null,
     linkedin_url: row.linkedin_url != null ? String(row.linkedin_url) : null,
+    twitter_url: row.twitter_url != null ? String(row.twitter_url) : null,
+    website_url: row.website_url != null ? String(row.website_url) : null,
+    avatar_url: row.avatar_url != null ? String(row.avatar_url) : null,
+    profile_slug: row.profile_slug != null ? String(row.profile_slug) : null,
     role: (row.role as Profile["role"]) ?? "member",
     created_at: String(row.created_at),
   };
@@ -34,8 +47,9 @@ export async function fetchMemberDirectory(): Promise<DirectoryMember[]> {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, bio, background, interests, github_url, linkedin_url, role, created_at")
+    .select(DIRECTORY_SELECT)
     .eq("onboarding_completed", true)
+    .eq("directory_visible", true)
     .order("created_at", { ascending: false })
     .limit(200);
 
@@ -43,13 +57,13 @@ export async function fetchMemberDirectory(): Promise<DirectoryMember[]> {
   return data.map((r) => normalize(r as Record<string, unknown>));
 }
 
-/** Shared interest tags between two members (case-insensitive). */
+/** Shared interest tags between two members (exact match, case-insensitive). */
 export function sharedInterests(a: string[], b: string[]): string[] {
   if (!a.length || !b.length) return [];
-  const normalized = b.map((i) => i.toLowerCase());
+  const normalizedB = new Set(b.map((i) => i.trim().toLowerCase()).filter(Boolean));
   return a.filter((tag) => {
-    const t = tag.toLowerCase();
-    return normalized.some((i) => t === i || t.includes(i) || i.includes(t));
+    const t = tag.trim().toLowerCase();
+    return t.length > 0 && normalizedB.has(t);
   });
 }
 
@@ -83,9 +97,10 @@ export async function fetchDirectoryMember(id: string): Promise<DirectoryMember 
 
   const { data } = await supabase
     .from("profiles")
-    .select("id, full_name, bio, background, interests, github_url, linkedin_url, role, created_at")
+    .select(DIRECTORY_SELECT)
     .eq("id", id)
     .eq("onboarding_completed", true)
+    .eq("directory_visible", true)
     .maybeSingle();
 
   if (!data) return null;

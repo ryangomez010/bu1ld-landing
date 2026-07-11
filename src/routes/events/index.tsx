@@ -92,10 +92,11 @@ function EventsContent() {
   }, [filter, events, categorized, goingEvents]);
 
   return (
-    <MemberLayout title="Events & Conferences" eyebrow="member hub">
+    <MemberLayout title="Events & Conferences" eyebrow="deadlines & RSVPs">
       <p className="text-muted-foreground mb-8 max-w-2xl leading-relaxed -mt-4">
-        Upcoming ML conferences, BUILD events, deadlines, and prep resources — LaTeX templates,
-        CFPs, and notes.
+        ML conference submission deadlines, workshop dates, and internal meetups. Each event lists
+        CFP dates, prep notes, and LaTeX templates — RSVP to track attendance and export deadlines
+        to your calendar as .ics files.
       </p>
 
       <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">
@@ -129,8 +130,8 @@ function EventsContent() {
           title={filter === "going" ? "No RSVPs yet" : "No events in this view"}
           body={
             filter === "going"
-              ? "RSVP on an event page to track conferences you're attending."
-              : "Add conference entries from Admin to keep this radar live."
+              ? "RSVP on an event detail page — your attendance shows here and in dashboard deadlines."
+              : "No events match this filter. Upcoming includes conferences with open submission deadlines; Past shows ended events."
           }
         />
       ) : (

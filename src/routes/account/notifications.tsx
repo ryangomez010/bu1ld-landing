@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -59,7 +59,12 @@ function NotificationPrefsContent() {
   return (
     <MemberLayout title="Notifications" eyebrow="preferences">
       <p className="text-sm text-muted-foreground mb-8 max-w-xl -mt-4">
-        Control which updates reach your inbox and in-app notification center.
+        Per-category toggles for in-app notifications and email. Digest frequency (daily/weekly/off)
+        is set separately in{" "}
+        <Link to="/account/preferences" className="text-accent-blue hover:text-bone">
+          preferences
+        </Link>
+        .
       </p>
 
       {loading ? (

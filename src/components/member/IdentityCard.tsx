@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ExternalLink, Github, Globe, Linkedin } from "lucide-react";
 
 import { TagList } from "@/components/member/ContentCard";
+import { CtaLink } from "@/components/member/ContentCard";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Profile } from "@/lib/types";
@@ -55,9 +56,7 @@ export function IdentityCard({
             {profile?.role ? <RoleBadge role={profile.role} /> : null}
           </div>
           {profile?.background ? (
-            <p className="mt-1 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground capitalize">
-              {profile.background}
-            </p>
+            <p className="mt-1 label-xs text-muted-foreground capitalize">{profile.background}</p>
           ) : null}
           {profile?.bio ? (
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-4">
@@ -77,9 +76,7 @@ export function IdentityCard({
 
       {profile?.goals?.length ? (
         <div className="mt-5 relative z-[1]">
-          <p className="font-mono text-[8px] tracking-[0.2em] uppercase text-accent-green mb-2">
-            Goals this quarter
-          </p>
+          <p className="label-xs text-accent-green mb-2">Goals this quarter</p>
           <ul className="space-y-1">
             {profile.goals.slice(0, 4).map((goal) => (
               <li key={goal} className="text-sm text-muted-foreground flex items-start gap-2">
@@ -97,7 +94,7 @@ export function IdentityCard({
             href={profile.github_url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border/40 px-3 py-1.5 font-mono text-[8px] tracking-[0.15em] uppercase text-muted-foreground hover:text-bone transition"
+            className="inline-flex items-center gap-1.5 surface-card border border-border/40 px-3 py-1.5 label-xs text-muted-foreground hover:text-bone transition-colors"
           >
             <Github className="h-3.5 w-3.5" /> GitHub
           </a>
@@ -107,7 +104,7 @@ export function IdentityCard({
             href={profile.linkedin_url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border/40 px-3 py-1.5 font-mono text-[8px] tracking-[0.15em] uppercase text-muted-foreground hover:text-bone transition"
+            className="inline-flex items-center gap-1.5 surface-card border border-border/40 px-3 py-1.5 label-xs text-muted-foreground hover:text-bone transition-colors"
           >
             <Linkedin className="h-3.5 w-3.5" /> LinkedIn
           </a>
@@ -117,7 +114,7 @@ export function IdentityCard({
             href={profile.website_url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border/40 px-3 py-1.5 font-mono text-[8px] tracking-[0.15em] uppercase text-muted-foreground hover:text-bone transition"
+            className="inline-flex items-center gap-1.5 surface-card border border-border/40 px-3 py-1.5 label-xs text-muted-foreground hover:text-bone transition-colors"
           >
             <Globe className="h-3.5 w-3.5" /> Site
           </a>
@@ -125,20 +122,20 @@ export function IdentityCard({
       </div>
 
       {shareUrl ? (
-        <p className="mt-5 font-mono text-[9px] text-muted-foreground break-all relative z-[1] flex items-center gap-2">
+        <p className="mt-5 label-xs text-muted-foreground break-all relative z-[1] flex items-center gap-2">
           <ExternalLink className="h-3 w-3 shrink-0" />
           {shareUrl}
         </p>
       ) : null}
 
       {profile?.id ? (
-        <Link
+        <CtaLink
           to="/members/$id"
           params={{ id: profile.id }}
-          className="mt-4 inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone relative z-[1]"
+          className="mt-4 inline-block relative z-[1]"
         >
           View public profile →
-        </Link>
+        </CtaLink>
       ) : null}
     </Wrapper>
   );

@@ -80,6 +80,10 @@ function EventDetail() {
   if (!event) {
     return (
       <MemberLayout title="Event not found">
+        <p className="text-muted-foreground mb-4 max-w-xl leading-relaxed">
+          This event may have been removed or the slug changed. Check the events calendar for
+          upcoming deadlines and prep notes.
+        </p>
         <Link to="/events" className="text-accent-blue hover:text-bone text-sm">
           ← Back to events
         </Link>

@@ -9,8 +9,8 @@ export function MembershipSection() {
       id="membership"
       eyebrow="02"
       label="membership"
-      title="Join the pool."
-      subtitle="Free at launch. Create your profile, get matched to projects, and stay plugged into papers, events, and the builder community."
+      title="Become a member."
+      subtitle="Free at launch — no payment step. Set up your profile in four steps, apply to open research threads, and get notified when deadlines, applications, and project updates change."
     >
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border/40 border border-border/40">
         {MEMBERSHIP_PERKS.map((perk) => (

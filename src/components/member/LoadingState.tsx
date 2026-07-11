@@ -22,16 +22,19 @@ export function LoadingState({
           />
         ))}
       </div>
-      <span className="font-mono text-[10px] tracking-[0.28em] uppercase text-muted-foreground">
-        {label}
-      </span>
+      <span className="label-sm text-muted-foreground">{label}</span>
     </div>
   );
 }
 
-export function ListSkeleton({ rows = 4 }: { rows?: number }) {
+export function ListSkeleton({ rows = 4, className }: { rows?: number; className?: string }) {
   return (
-    <div role="status" aria-live="polite" aria-label="Loading content" className="space-y-2">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-label="Loading content"
+      className={cn("space-y-2", className)}
+    >
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="panel h-28 rounded-sm overflow-hidden">
           <div className="h-full w-full shimmer opacity-60" />

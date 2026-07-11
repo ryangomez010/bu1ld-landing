@@ -1,4 +1,4 @@
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 import type { ContentDensity, EmailDigestFrequency, MemberPreferences } from "@/lib/types";
 
@@ -21,7 +21,7 @@ export const CONTENT_DENSITY_LABELS: Record<
   },
   comfortable: {
     label: "Comfortable",
-    description: "Balanced spacing and typography — the default BUILD experience.",
+    description: "Balanced spacing and typography — default layout across all member pages.",
   },
   spacious: {
     label: "Spacious",
@@ -35,15 +35,17 @@ export const DIGEST_FREQUENCY_LABELS: Record<
 > = {
   daily: {
     label: "Daily",
-    description: "A short morning summary of papers, events, and project activity.",
+    description:
+      "Morning email with new paper reviews, open project slots, and deadlines due within seven days.",
   },
   weekly: {
     label: "Weekly",
-    description: "One digest every Monday with highlights from your interests.",
+    description:
+      "Monday email with the week's highlights — ranked by your interest tags, excluding saved items.",
   },
   never: {
     label: "Never",
-    description: "In-app notifications only — no digest emails.",
+    description: "In-app notifications only — no digest emails sent to your account email.",
   },
 };
 
@@ -67,7 +69,7 @@ function writeLocal(userId: string, prefs: MemberPreferences) {
 
 export async function fetchMemberPreferences(userId: string): Promise<MemberPreferences> {
   const supabase = getSupabase();
-  if (!supabase) return readLocal(userId);
+  if (!supabase) return withLocalFallback(defaults(userId), () => readLocal(userId));
 
   const { data, error } = await supabase
     .from("member_preferences")
@@ -75,7 +77,7 @@ export async function fetchMemberPreferences(userId: string): Promise<MemberPref
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (error || !data) return readLocal(userId);
+  if (error || !data) return withLocalFallback(defaults(userId), () => readLocal(userId));
 
   return {
     user_id: data.user_id,
@@ -95,7 +97,7 @@ export async function updateMemberPreferences(
     ...patch,
     updated_at: new Date().toISOString(),
   };
-  writeLocal(userId, next);
+  persistLocally(() => writeLocal(userId, next));
   notifyMemberPreferencesChanged(next);
 
   const supabase = getSupabase();

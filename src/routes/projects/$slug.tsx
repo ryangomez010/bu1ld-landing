@@ -172,7 +172,7 @@ function ProjectDetail() {
           />
         ) : null}
         <p className="mt-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
-          {project.lead_name ? `Lead: ${project.lead_name}` : "BUILD collective"} ·{" "}
+          {project.lead_name ? `Lead: ${project.lead_name}` : "The Bu1ld collective"} ·{" "}
           {project.team_count}/{project.capacity} builders
         </p>
         <CapacityBar
@@ -295,8 +295,9 @@ function ProjectDetail() {
           >
             <h2 className="font-display text-lg text-bone">Apply to this project</h2>
             <p className="text-sm text-muted-foreground">
-              Your profile (bio, background, interests, LinkedIn, GitHub) will be attached for the
-              lead.
+              Submitting attaches your full profile to the lead's review queue: display name, bio,
+              background, interest tags, GitHub, and LinkedIn. The pitch below is the only free-text
+              field — be specific about what you would ship in the first 30 days.
             </p>
             <div className="space-y-2">
               <Label htmlFor="pitch">Why you? What would you ship in 30 days?</Label>
@@ -307,7 +308,7 @@ function ProjectDetail() {
                 rows={5}
                 value={pitch}
                 onChange={(e) => setPitch(e.target.value)}
-                placeholder="Short pitch — specific beats generic."
+                placeholder="Name the thread, cite one relevant repo or paper, and list a concrete 30-day deliverable — not a generic interest statement."
               />
             </div>
             {profile?.linkedin_url ? (

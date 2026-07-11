@@ -28,23 +28,24 @@ export function HeroSection() {
           <h1 className="font-display font-bold mt-8 text-[clamp(2.8rem,8.2vw,7.8rem)] leading-[0.9] tracking-[-0.035em]">
             <Wordmark />
             <span className="block text-foreground/90 mt-5">
-              Where alternative intelligence
+              Research threads, prototypes,
               <br className="hidden md:block" />
-              becomes{" "}
+              and{" "}
               <span className="italic text-bone relative">
-                real systems.
+                systems that ship.
                 <span className="caret-blink" />
               </span>
             </span>
           </h1>
           <p className="mt-10 max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
-            The Bu1ld is where researchers, engineers, and founders turn frontier ML ideas into
-            systems people use. Join a member hub built for reading deeply, shipping fast, and
-            collaborating across startups, research labs, and open projects.
+            The Bu1ld is a machine learning institution where researchers, engineers, and founders
+            work on the same threads — reading papers on Monday, prototyping by Friday, and
+            pressure-testing ideas before they become products.
           </p>
           <p className="mt-4 max-w-xl text-sm text-muted-foreground/90">
-            One account unlocks papers, guides, project workspaces, events, and a directory of
-            builders working on the same hard problems.
+            One member account gives you paper reviews, internal guides, open project applications,
+            event deadlines with calendar export, job listings, and a searchable directory of
+            builders filtered by background and interests.
           </p>
           <div className="mt-12 flex flex-wrap gap-4">
             <Link

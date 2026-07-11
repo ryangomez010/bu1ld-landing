@@ -1,4 +1,4 @@
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 import type { SavedItem, SavedItemType } from "@/lib/types";
 
@@ -39,7 +39,9 @@ export async function fetchSavedItems(userId: string): Promise<SavedItem[]> {
       .order("created_at", { ascending: false });
     if (!error && data) return data as SavedItem[];
   }
-  return readLocal(userId).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return withLocalFallback([], () =>
+    readLocal(userId).sort((a, b) => b.created_at.localeCompare(a.created_at)),
+  );
 }
 
 export async function isSaved(
@@ -69,9 +71,11 @@ export async function toggleSaved(
         .eq("item_type", itemType)
         .eq("item_slug", itemSlug);
     } else {
-      writeLocal(
-        userId,
-        readLocal(userId).filter((s) => !(s.item_type === itemType && s.item_slug === itemSlug)),
+      persistLocally(() =>
+        writeLocal(
+          userId,
+          readLocal(userId).filter((s) => !(s.item_type === itemType && s.item_slug === itemSlug)),
+        ),
       );
     }
     return false;
@@ -94,7 +98,7 @@ export async function toggleSaved(
       item_title: itemTitle,
     });
   } else {
-    writeLocal(userId, [item, ...readLocal(userId)]);
+    persistLocally(() => writeLocal(userId, [item, ...readLocal(userId)]));
   }
   return true;
 }
@@ -120,11 +124,13 @@ export async function bulkUnsaveSavedItems(
     return { error: null };
   }
 
-  const remove = new Set(items.map((i) => `${i.item_type}:${i.item_slug}`));
-  writeLocal(
-    userId,
-    readLocal(userId).filter((s) => !remove.has(`${s.item_type}:${s.item_slug}`)),
-  );
+  persistLocally(() => {
+    const remove = new Set(items.map((i) => `${i.item_type}:${i.item_slug}`));
+    writeLocal(
+      userId,
+      readLocal(userId).filter((s) => !remove.has(`${s.item_type}:${s.item_slug}`)),
+    );
+  });
   return { error: null };
 }
 

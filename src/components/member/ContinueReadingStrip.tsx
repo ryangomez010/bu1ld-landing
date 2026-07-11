@@ -13,8 +13,11 @@ export function ContinueReadingStrip({ views }: { views: RecentView[] }) {
 
   return (
     <section className="section-gap">
-      <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-        Continue where you left off
+      <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-1">
+        Recently opened
+      </p>
+      <p className="text-xs text-muted-foreground/80 mb-3">
+        Last six project, paper, or guide pages you visited — stored locally and on your account.
       </p>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {views.slice(0, 6).map((view) => (

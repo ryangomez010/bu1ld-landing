@@ -21,39 +21,58 @@ function PrivacyPage() {
         <h1 className="font-display text-4xl text-bone mt-4 tracking-tight">Privacy Policy</h1>
         <p className="mt-2 text-sm text-muted-foreground">Last updated: July 2026</p>
 
+        <p className="mt-4 text-muted-foreground leading-relaxed max-w-2xl">
+          How The Bu1ld handles member data: what we store, who can see it, and how to request
+          deletion or export.
+        </p>
+
         <div className="mt-10 space-y-6 text-muted-foreground leading-relaxed text-sm">
           <section>
             <h2 className="font-display text-xl text-bone mb-2">What we collect</h2>
             <p>
               When you create an account, we store your email, profile information (name, bio,
-              background, interests, links), and activity within the platform such as project
-              applications, saved items, and reading progress.
+              background, interests, links), and activity within the member area: project
+              applications, saved papers and jobs, reading progress, highlights, collections, job
+              tracker status, and notification preferences.
             </p>
           </section>
           <section>
             <h2 className="font-display text-xl text-bone mb-2">How we use it</h2>
             <p>
-              Profile data is shared with project leads when you apply to a project. We use your
-              email for account access and optional notifications about applications and platform
-              updates. We do not sell your data.
+              Profile data is shared with project leads when you apply to a project — they see your
+              application answers and public profile fields. We use your email for sign-in,
+              password reset, and optional notifications (applications, digests, event reminders).
+              Reading progress and highlights stay private unless you share a collection. We do not
+              sell your data or run third-party ad tracking.
             </p>
           </section>
           <section>
-            <h2 className="font-display text-xl text-bone mb-2">Storage</h2>
+            <h2 className="font-display text-xl text-bone mb-2">Who can access it</h2>
             <p>
-              Data is stored in Supabase (PostgreSQL) with row-level security. You can request
-              deletion by contacting{" "}
+              You can view and edit your profile anytime. Project leads see applicants on their
+              threads only. Admins can moderate content reports and manage published listings.
+              Row-level security in Supabase limits database access to your own rows unless a role
+              explicitly requires broader read access (e.g. public project listings).
+            </p>
+          </section>
+          <section>
+            <h2 className="font-display text-xl text-bone mb-2">Storage & retention</h2>
+            <p>
+              Data is stored in Supabase (PostgreSQL) with row-level security. Security events and
+              sign-in sessions are retained for account safety. You can delete your account from
+              Account security — that removes profile, saves, and applications from the member area.
+              Contact{" "}
               <a href="mailto:ryan@thebu1ld.com" className="text-accent-blue hover:text-bone">
                 ryan@thebu1ld.com
-              </a>
-              .
+              </a>{" "}
+              for full auth credential purge or data export.
             </p>
           </section>
           <section>
             <h2 className="font-display text-xl text-bone mb-2">Cookies</h2>
             <p>
-              We use session cookies for authentication. No third-party advertising trackers at
-              launch.
+              We use session cookies for authentication only. No third-party advertising trackers
+              at launch. If we add analytics later, this page will be updated before they go live.
             </p>
           </section>
         </div>

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Calendar, FileText, FolderKanban, GraduationCap } from "lucide-react";
 
+import { CtaLink, InlineEmpty } from "@/components/member/ContentCard";
 import { SectionHeader } from "@/components/member/SectionHeader";
 import { StaggerItem, StaggerList } from "@/components/member/PageTransition";
 import { formatDate } from "@/lib/date";
@@ -78,9 +79,9 @@ export function YourWeekSection({
       <SectionHeader
         title="Your week"
         accent="green"
-        description="Deadlines, reading picks, and open roles tailored to your hub activity."
+        description="Conference submission deadlines, new paper reviews, and open project roles — ranked by your interest tags and sorted by due date."
         action={
-          <span className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
+          <span className="label-xs text-muted-foreground">
             through {formatDate(weekEnd.toISOString())}
           </span>
         }
@@ -93,7 +94,7 @@ export function YourWeekSection({
               <StaggerItem key={item.id}>
                 <Link
                   to={item.href}
-                  className="panel glass-subtle panel-interactive rounded-xl p-4 block h-full"
+                  className="panel glass-subtle panel-interactive surface-card-interactive p-4 block h-full"
                 >
                   <div className="flex items-start gap-3 relative z-[1]">
                     <item.icon className={cn("h-4 w-4 shrink-0 mt-0.5", item.accent)} />
@@ -103,7 +104,7 @@ export function YourWeekSection({
                         {item.sublabel}
                       </p>
                       {item.daysUntil != null ? (
-                        <p className="mt-2 font-mono text-[8px] tracking-[0.15em] uppercase text-accent-red">
+                        <p className="mt-2 label-xs text-accent-red">
                           {item.daysUntil === 0
                             ? "Due today"
                             : item.daysUntil === 1
@@ -117,33 +118,25 @@ export function YourWeekSection({
               </StaggerItem>
             ))
           ) : (
-            <div className="sm:col-span-2 rounded-xl border border-dashed border-border/50 p-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                Your week is clear — explore papers or apply to an open project.
-              </p>
-              <div className="mt-3 flex flex-wrap justify-center gap-3">
-                <Link
-                  to="/papers"
-                  className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
-                >
-                  Browse papers →
-                </Link>
-                <Link
-                  to="/projects"
-                  className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-green hover:text-bone"
-                >
-                  Open projects →
-                </Link>
-              </div>
-            </div>
+            <InlineEmpty
+              className="sm:col-span-2"
+              title="A quiet week"
+              body="No upcoming deadlines — browse paper reviews or check open project slots."
+              action={
+                <div className="flex flex-wrap justify-center gap-3">
+                  <CtaLink to="/papers">Browse papers →</CtaLink>
+                  <CtaLink to="/projects" accent="green">
+                    Open projects →
+                  </CtaLink>
+                </div>
+              }
+            />
           )}
         </StaggerList>
 
-        <div className="panel glass rounded-xl p-4 space-y-4">
+        <div className="panel glass surface-card p-4 space-y-4">
           <div>
-            <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-              Reading goal
-            </p>
+            <p className="label-xs text-muted-foreground">Reading goal</p>
             <p className="mt-2 font-display text-2xl text-bone">
               {papersReadThisWeek}/{weeklyPaperGoal}
             </p>
@@ -158,7 +151,7 @@ export function YourWeekSection({
           {guideUnread > 0 ? (
             <Link
               to="/guides"
-              className="flex items-center gap-2 rounded-lg border border-border/40 px-3 py-2 hover:border-bone/20 transition"
+              className="flex items-center gap-2 surface-card border border-border/40 px-3 py-2 hover:border-bone/20 transition-colors"
             >
               <GraduationCap className="h-4 w-4 text-accent-violet" />
               <span className="text-xs text-muted-foreground">
@@ -166,12 +159,9 @@ export function YourWeekSection({
               </span>
             </Link>
           ) : null}
-          <Link
-            to="/account/preferences"
-            className="block font-mono text-[8px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"
-          >
+          <CtaLink to="/account/preferences" className="block">
             Adjust preferences →
-          </Link>
+          </CtaLink>
         </div>
       </div>
     </section>

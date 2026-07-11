@@ -51,15 +51,15 @@ function NewsletterContent() {
     void setNewsletterSubscribed(user.id, next).then(() => {
       setSubscribed(next);
       setSaving(false);
-      toast.success(next ? "Subscribed to BUILD digest" : "Unsubscribed from digest emails");
+      toast.success(next ? "Subscribed to The Bu1ld digest" : "Unsubscribed from digest emails");
     });
   };
 
   return (
-    <MemberLayout title="Newsletter" eyebrow="build digest">
+    <MemberLayout title="Newsletter" eyebrow="institution digest">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Archived BUILD digests — community updates, paper picks, event reminders, and startup
-        spotlights.
+        Archived issues of The Bu1ld digest — new member welcomes, paper picks, open project
+        announcements, event deadlines, and startup spotlights from active research threads.
       </p>
       {user ? (
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-sm border border-border/50 px-5 py-4">
@@ -67,8 +67,8 @@ function NewsletterContent() {
             <p className="text-sm text-bone">Email digest</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               {subscribed
-                ? "You will receive new issue announcements by email."
-                : "You are not subscribed to digest emails."}
+                ? "New issues trigger an in-app notification. Digest emails (daily/weekly) are controlled separately in Account → Preferences."
+                : "Issue announcement emails are off — you will still see new issues in-app when published."}
             </p>
           </div>
           <Button
@@ -88,7 +88,7 @@ function NewsletterContent() {
       ) : issues.length === 0 ? (
         <EmptyState
           title="No issues yet"
-          body="Newsletter digests will appear here once an issue is published."
+          body="Issues publish from the admin panel — each includes a summary, body markdown, and issue number for the archive."
         />
       ) : (
         <div className="grid gap-px bg-border/40 border border-border/40">

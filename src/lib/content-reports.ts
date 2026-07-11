@@ -44,6 +44,42 @@ export async function submitContentReport(
   return { error: error?.message ?? null };
 }
 
+export async function fetchMyReports(userId: string, limit = 20): Promise<ContentReport[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("content_reports")
+    .select("*")
+    .eq("reporter_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) return [];
+  return data as ContentReport[];
+}
+
+export function contentReportHref(type: ContentReportType, slug: string): string {
+  switch (type) {
+    case "paper":
+      return `/papers/${slug}`;
+    case "event":
+      return `/events/${slug}`;
+    case "project":
+      return `/projects/${slug}`;
+    case "job":
+      return `/jobs/${slug}`;
+    case "guide":
+      return `/guides/${slug}`;
+    case "newsletter":
+      return `/newsletter/${slug}`;
+    case "member":
+      return `/members/${slug}`;
+    default:
+      return "/dashboard";
+  }
+}
+
 export async function fetchPendingReports(limit = 50): Promise<ContentReport[]> {
   const supabase = getSupabase();
   if (!supabase) return [];

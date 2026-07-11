@@ -12,7 +12,7 @@ export const SEED_ANNOUNCEMENTS: Announcement[] = [
   {
     id: "seed-week-ml",
     title: "This week in ML",
-    body: "World models are having a moment — ICLR deadlines are stacking, and several BUILD threads are probing defect injection and latent recovery. Worth reading the JEPA guide if you're joining a world-model project.",
+    body: "World models are active across several open projects — ICLR submission deadlines are listed under Events, and the JEPA guide is the recommended prerequisite if you are applying to a world-model thread.",
     href: "/guides/what-is-jepa",
     pinned: true,
     published: true,
@@ -25,18 +25,18 @@ export const PITCH_TEMPLATES = [
     id: "why-thread",
     label: "Why this thread?",
     prompt:
-      "I'm drawn to this project because…\n\nRelevant experience:\n- \n\nWhat I'd ship in 30 days:\n- ",
+      "I'm applying because this thread needs…\n\nRelevant work (repo, paper, or shipped system):\n- \n\nFirst 30 days — concrete deliverable:\n- \n\nTimezone / hours per week:\n- ",
   },
   {
     id: "ship-fast",
-    label: "30-day ship plan",
+    label: "30-day deliverable plan",
     prompt:
-      "Week 1: reproduce baseline / read core papers\nWeek 2: first prototype on synthetic data\nWeek 3: ablation + failure modes\nWeek 4: demo + write-up for the team",
+      "Week 1: reproduce baseline or re-implement core method from the thread's anchor paper\nWeek 2: first runnable prototype on project dataset\nWeek 3: ablation + document failure modes\nWeek 4: demo notebook + short write-up for lead review",
   },
   {
     id: "research-angle",
     label: "Research angle",
     prompt:
-      "Hypothesis I'd test:\n\nWhy it matters for BUILD:\n\nPrior work I've read:\n\nConcrete first experiment:",
+      "Hypothesis I would test on this thread:\n\nWhy it matters (metric or system constraint):\n\nPapers I have already read:\n\nFirst experiment — dataset, baseline, success criterion:",
   },
 ] as const;

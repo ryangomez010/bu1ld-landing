@@ -18,7 +18,7 @@ export function InterestMatchTags({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-sm border border-accent-green/25 bg-accent-green/10 px-2 py-0.5 font-mono text-[8px] tracking-[0.1em] uppercase text-accent-green",
+        "inline-flex items-center gap-1 rounded-sm border border-accent-green/25 bg-accent-green/10 px-2 py-0.5 label-xs text-accent-green",
         className,
       )}
     >

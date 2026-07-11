@@ -22,7 +22,14 @@ export function ReadingStreakWidget({ userId, className }: { userId: string; cla
     });
   }, [userId]);
 
-  if (!stats) return null;
+  if (!stats) {
+    return (
+      <div className={cn("panel glass surface-card p-5 h-full", className)}>
+        <div className="shimmer h-3 w-28 rounded-sm" />
+        <div className="shimmer mt-4 h-10 w-24 rounded-sm" />
+      </div>
+    );
+  }
 
   const progress = Math.min(100, Math.round((stats.papersThisWeek / stats.weeklyGoal) * 100));
 
@@ -36,16 +43,11 @@ export function ReadingStreakWidget({ userId, className }: { userId: string; cla
   };
 
   return (
-    <section
-      className={cn(
-        "rounded-sm border border-accent-orange/25 bg-accent-orange/5 px-5 py-5",
-        className,
-      )}
-    >
-      <div className="flex flex-wrap items-start justify-between gap-4">
+    <section className={cn("panel glass surface-card p-5 h-full flex flex-col", className)}>
+      <div className="flex flex-wrap items-start justify-between gap-4 flex-1">
         <div>
-          <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-orange flex items-center gap-2">
-            <Flame className="h-3.5 w-3.5" />
+          <p className="label-xs text-accent-orange flex items-center gap-2">
+            <Flame className="h-3.5 w-3.5" aria-hidden />
             Reading streak
           </p>
           <p className="mt-2 font-display text-3xl text-bone">
@@ -59,8 +61,8 @@ export function ReadingStreakWidget({ userId, className }: { userId: string; cla
           </p>
         </div>
         <div className="min-w-[140px]">
-          <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-1.5">
-            <Target className="h-3 w-3" />
+          <p className="label-xs text-muted-foreground flex items-center gap-1.5">
+            <Target className="h-3 w-3" aria-hidden />
             Weekly goal
           </p>
           {editingGoal ? (
@@ -72,6 +74,7 @@ export function ReadingStreakWidget({ userId, className }: { userId: string; cla
                 value={goalInput}
                 onChange={(e) => setGoalInput(e.target.value)}
                 className="h-8 w-16 text-sm"
+                aria-label="Weekly paper goal"
               />
               <Button type="button" size="sm" variant="outline" onClick={() => void onSaveGoal()}>
                 Save
@@ -81,12 +84,20 @@ export function ReadingStreakWidget({ userId, className }: { userId: string; cla
             <button
               type="button"
               onClick={() => setEditingGoal(true)}
+              aria-label={`Weekly goal: ${stats.papersThisWeek} of ${stats.weeklyGoal} papers. Click to edit.`}
               className="mt-2 font-display text-2xl text-bone hover:text-accent-blue transition"
             >
               {stats.papersThisWeek}/{stats.weeklyGoal}
             </button>
           )}
-          <div className="mt-2 h-1 rounded-full bg-border/60 overflow-hidden">
+          <div
+            className="mt-2 h-1 rounded-full bg-border/60 overflow-hidden"
+            role="progressbar"
+            aria-valuenow={stats.papersThisWeek}
+            aria-valuemin={0}
+            aria-valuemax={stats.weeklyGoal}
+            aria-label="Weekly reading progress"
+          >
             <div
               className={cn(
                 "h-full transition-all",
@@ -96,9 +107,7 @@ export function ReadingStreakWidget({ userId, className }: { userId: string; cla
             />
           </div>
           {stats.goalMet ? (
-            <p className="mt-2 font-mono text-[8px] tracking-[0.15em] uppercase text-accent-green">
-              Goal met this week
-            </p>
+            <p className="mt-2 label-xs text-accent-green">Goal met this week</p>
           ) : null}
         </div>
       </div>

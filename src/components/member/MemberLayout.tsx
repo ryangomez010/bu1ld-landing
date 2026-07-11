@@ -6,17 +6,21 @@ import {
   Calendar,
   ClipboardList,
   FileText,
+  Bell,
   FolderKanban,
+  Highlighter,
   Home,
   Layers,
   Library,
   LogOut,
   Mail,
   Menu,
+  Moon,
   Search,
   Settings,
   Shield,
   SlidersHorizontal,
+  Sun,
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -40,6 +44,7 @@ import {
 } from "@/lib/member-preferences";
 import type { ContentDensity, MemberPreferences } from "@/lib/types";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { getStoredTheme, toggleTheme, type ThemePreference } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 const NAV_MAIN = [
@@ -53,6 +58,7 @@ const NAV_MAIN = [
 
 const NAV_CONTENT = [
   { to: "/research", label: "Research", icon: Library },
+  { to: "/research/highlights", label: "Highlights", icon: Highlighter },
   { to: "/events", label: "Events", icon: Calendar },
   { to: "/guides", label: "Guides", icon: BookOpen },
   { to: "/papers", label: "Papers", icon: FileText },
@@ -73,6 +79,7 @@ export function MemberLayout({
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const [contentDensity, setContentDensity] = useState<ContentDensity>("comfortable");
+  const [theme, setTheme] = useState<ThemePreference>(() => getStoredTheme());
   const isAdmin = profile?.role === "admin";
   const isLead = profile?.role === "project_lead" || isAdmin;
 
@@ -135,7 +142,7 @@ export function MemberLayout({
   const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
     <>
       <p className="px-3 pt-1 pb-2 font-mono text-[8px] tracking-[0.28em] uppercase text-muted-foreground/70">
-        Hub
+        Dashboard
       </p>
       {NAV_MAIN.map((item) => (
         <NavItem key={item.to} {...item} onNavigate={onNavigate} />
@@ -194,9 +201,19 @@ export function MemberLayout({
         onClick={onNavigate}
         className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
       >
-        <Mail className="h-4 w-4" />
-        Notifications
+        <Bell className="h-4 w-4" />
+        Alert settings
       </Link>
+      <button
+        type="button"
+        onClick={() => {
+          setTheme(toggleTheme());
+        }}
+        className="flex w-full items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
+      >
+        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        {theme === "dark" ? "Light mode" : "Dark mode"}
+      </button>
       <Link
         to="/account/preferences"
         onClick={onNavigate}
@@ -204,6 +221,14 @@ export function MemberLayout({
       >
         <SlidersHorizontal className="h-4 w-4" />
         Preferences
+      </Link>
+      <Link
+        to="/account/activity"
+        onClick={onNavigate}
+        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
+      >
+        <ClipboardList className="h-4 w-4" />
+        Submissions
       </Link>
       <Link
         to="/account/security"
@@ -266,7 +291,7 @@ export function MemberLayout({
               >
                 <span className="flex items-center gap-2">
                   <Search className="h-3.5 w-3.5" />
-                  Search BUILD…
+                  Search The Bu1ld…
                 </span>
                 <kbd className="kbd hidden xl:inline">/</kbd>
               </Link>
@@ -337,7 +362,7 @@ export function MemberLayout({
             {maskedEmail ? <span title={user?.email}>{maskedEmail}</span> : null}
             {profile?.role ? <RoleBadge role={profile.role} /> : null}
             <span className="text-bone/20">·</span>
-            <span>BUILD member hub</span>
+            <span>The Bu1ld · member area</span>
           </footer>
         </div>
       </div>

@@ -80,8 +80,8 @@ function PapersContent() {
     <MemberLayout title="Paper reviews" eyebrow="research library">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 -mt-4">
         <p className="text-muted-foreground max-w-2xl leading-relaxed">
-          Member-written reviews — what matters, what to skip, and how each connects to BUILD
-          threads.
+          Member-written reviews on transformer classics and active research threads — each covers
+          the method, reproducibility gaps, and what we would prototype next at The Bu1ld.
         </p>
         <Link
           to="/research"
@@ -139,7 +139,7 @@ function PapersContent() {
       <Input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search reviews, authors, tags…"
+        placeholder="Title, author, tag — e.g. chinchilla, DPO, JEPA"
         className="mb-4 max-w-md font-mono text-xs"
       />
 
@@ -157,7 +157,10 @@ function PapersContent() {
       {loading ? (
         <ListSkeleton rows={5} />
       ) : filtered.length === 0 ? (
-        <EmptyState title="No reviews match" body="Try another filter or search term." />
+        <EmptyState
+          title="No reviews match"
+          body="Try Classic/Recent, the unread filter, or search by author name — e.g. Vaswani, LeCun, or a tag like world-models."
+        />
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
           {filtered.map((paper) => (

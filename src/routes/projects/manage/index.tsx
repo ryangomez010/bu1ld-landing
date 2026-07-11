@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { RequireProjectLead } from "@/components/auth/RequireProjectLead";
 import { EmptyState } from "@/components/member/ContentCard";
+import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { ProjectStatusBadge, ProjectTypeBadge } from "@/components/member/ProjectBadges";
 import { useAuth } from "@/lib/auth";
@@ -27,10 +28,14 @@ function ManageProjectsPage() {
 function ManageContent() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
-    void fetchLeadProjects(user.id).then(setProjects);
+    void fetchLeadProjects(user.id).then((data) => {
+      setProjects(data);
+      setLoading(false);
+    });
   }, [user]);
 
   const open = projects.filter((p) => p.status === "open").length;
@@ -39,7 +44,10 @@ function ManageContent() {
   return (
     <MemberLayout title="My projects" eyebrow="project lead">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6 -mt-4">
-        <p className="text-sm text-muted-foreground">Create projects and review applications.</p>
+        <p className="text-sm text-muted-foreground">
+          Create listings, review application queues with attached profiles, and post milestone
+          updates to accepted members.
+        </p>
         <Link
           to="/projects/new"
           className="font-mono text-[10px] tracking-[0.25em] uppercase px-4 py-2 bg-bone text-background rounded-sm hover:bg-accent-blue transition"
@@ -56,10 +64,12 @@ function ManageContent() {
         </div>
       ) : null}
 
-      {projects.length === 0 ? (
+      {loading ? (
+        <ListSkeleton rows={3} />
+      ) : projects.length === 0 ? (
         <EmptyState
           title="No projects yet"
-          body="Create a research thread, startup build, or program track and start reviewing applications."
+          body="Create a listing with title, description, capacity, required skills, and optional Discord link — then share the public URL and start reviewing pitches."
           action={
             <Link
               to="/projects/new"

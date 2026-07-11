@@ -41,7 +41,7 @@ export function FeedbackButton({ className }: { className?: string }) {
       toast.error(error);
       return;
     }
-    toast.success("Thanks — your feedback was sent to the BUILD team.");
+    toast.success("Sent to The Bu1ld team — view status in Your submissions.");
     setBody("");
     setOpen(false);
   };
@@ -63,7 +63,8 @@ export function FeedbackButton({ className }: { className?: string }) {
         <DialogHeader>
           <DialogTitle>Send feedback</DialogTitle>
           <DialogDescription>
-            Report bugs, request features, or tell us what to improve in the portal.
+            Bugs, feature requests, and content corrections go to admins. Include the page URL and
+            steps to reproduce when reporting a bug.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -85,7 +86,7 @@ export function FeedbackButton({ className }: { className?: string }) {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={5}
-            placeholder="Describe your feedback…"
+            placeholder="Page: /papers/attention-is-all-you-need. Expected: highlight saves. Actual: button does nothing on mobile Safari."
           />
         </div>
         <DialogFooter>

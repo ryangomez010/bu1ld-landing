@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { RedirectIfAuthed } from "@/components/auth/RequireAuth";
+import { CtaLink } from "@/components/member/ContentCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,14 +48,14 @@ function LoginForm() {
       toast.error(error);
       return;
     }
-    toast.success("Welcome back to BUILD.");
+    toast.success("Welcome back.");
     void navigate({ to: "/dashboard" });
   };
 
   return (
     <AuthLayout
       title="Log in"
-      subtitle="Sign in to your personalized BUILD hub — projects, research library, saved collections, and member directory."
+      subtitle="Sign in to your dashboard — track project applications, resume reading paths, manage saved collections, and browse the member directory."
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">
@@ -79,12 +80,7 @@ function LoginForm() {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-            <Link
-              to="/forgot-password"
-              className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone transition"
-            >
-              Forgot?
-            </Link>
+            <CtaLink to="/forgot-password">Forgot?</CtaLink>
           </div>
           <Input
             id="password"
@@ -97,11 +93,7 @@ function LoginForm() {
             className="bg-background/50"
           />
         </div>
-        <Button
-          type="submit"
-          className="w-full font-mono text-[11px] tracking-[0.2em] uppercase"
-          disabled={submitting}
-        >
+        <Button type="submit" className="w-full label-sm" disabled={submitting}>
           {submitting ? "Signing in…" : "Log in"}
         </Button>
       </form>

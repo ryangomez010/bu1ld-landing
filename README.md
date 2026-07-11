@@ -6,7 +6,7 @@ A machine learning institution membership hub: projects, guides, papers, events,
 
 - TanStack Start + React 19
 - Tailwind CSS v4 + shadcn UI
-- Supabase (auth, Postgres) with seed + localStorage fallbacks
+- Supabase (auth, Postgres) with seed fallbacks for local demo mode only
 
 ## Quick start
 
@@ -67,6 +67,27 @@ Deploy `api/email.ts` on Vercel (or use `/api/email` on Cloudflare via `src/serv
 | `EMAIL_FROM`                | Optional sender override                             |
 
 Client: set `VITE_EMAIL_ENDPOINT` and matching `VITE_EMAIL_API_SECRET`.
+
+## Digest emails
+
+Deploy `api/digest.ts` and schedule a daily cron (e.g. `0 8 * * *` UTC via Vercel Cron).
+
+| Server secret               | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `DIGEST_API_SECRET`         | Bearer token for `POST /api/digest` (or reuse `EMAIL_API_SECRET`) |
+| `RESEND_API_KEY`            | Sends digest emails via Resend                       |
+| `SUPABASE_SERVICE_ROLE_KEY` | Loads member preferences and content for ranking     |
+
+Apply `supabase/phase17.sql` to add `last_digest_sent_at` tracking on `member_preferences`.
+
+Test a dry run:
+
+```bash
+curl -X POST https://your-app.vercel.app/api/digest \
+  -H "Authorization: Bearer $DIGEST_API_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"dryRun":true,"frequency":"daily"}'
+```
 
 ## Deploy
 

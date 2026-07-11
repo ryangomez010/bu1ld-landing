@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireMember } from "@/components/auth/RequireAuth";
 import { TagList } from "@/components/member/ContentCard";
 import { IdentityCard } from "@/components/member/IdentityCard";
 import { ListSkeleton } from "@/components/member/LoadingState";
@@ -37,13 +37,16 @@ import type { MemberBackground } from "@/lib/types";
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
+  head: () => ({
+    meta: [{ title: "Profile — The Bu1ld" }],
+  }),
 });
 
 function ProfilePage() {
   return (
-    <RequireAuth>
+    <RequireMember>
       <ProfileEditor />
-    </RequireAuth>
+    </RequireMember>
   );
 }
 
@@ -233,8 +236,9 @@ function ProfileEditor() {
   return (
     <MemberLayout title="Profile" eyebrow="member settings">
       <p className="text-sm text-muted-foreground mb-8 -mt-4 max-w-xl leading-relaxed">
-        Your identity powers recommendations, the member directory, and shareable intro cards.
-        Complete each section for a richer BUILD experience.
+        Your name, bio, interests, and links feed three places: the member directory, project
+        application review (leads see your full profile), and For You / digest ranking. Each section
+        below maps to a specific surface.
       </p>
 
       <div className="mb-8 grid gap-6 lg:grid-cols-2">
@@ -379,7 +383,7 @@ function ProfileEditor() {
           <Textarea
             id="bio"
             rows={4}
-            placeholder="What are you working on? What do you want to learn or build?"
+            placeholder="Two to four sentences: current role, active project, and what you want to ship at The Bu1ld in the next two quarters."
             value={bio}
             onChange={(e) => setBio(e.target.value)}
           />
@@ -454,7 +458,7 @@ function ProfileEditor() {
             <Input
               value={goalInput}
               onChange={(e) => setGoalInput(e.target.value)}
-              placeholder="e.g. Ship a diffusion fine-tune baseline"
+              placeholder="e.g. Ship a JEPA baseline on project defect-injection data by September"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
@@ -589,7 +593,8 @@ function ProfileEditor() {
             Share profile
           </p>
           <p className="text-xs text-muted-foreground">
-            Copy a public link to your member card for applications or intros.
+            Copy your public /members/{slug} URL — project leads and collaborators can view your
+            identity card without signing in.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button

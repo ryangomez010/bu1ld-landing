@@ -1,4 +1,5 @@
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
+import { shouldUseNotifyUsersRpc } from "@/lib/auth-guards";
 import { clampText, LIMITS, sanitizeAppPath } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
 import type { Notification } from "@/lib/types";
@@ -29,7 +30,9 @@ export async function fetchNotifications(userId: string): Promise<Notification[]
       })) as Notification[];
     }
   }
-  return readLocal(userId).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return withLocalFallback([], () =>
+    readLocal(userId).sort((a, b) => b.created_at.localeCompare(a.created_at)),
+  );
 }
 
 export async function unreadCount(userId: string): Promise<number> {
@@ -43,9 +46,11 @@ export async function markNotificationRead(userId: string, id: string): Promise<
     await supabase.from("notifications").update({ read: true }).eq("id", id).eq("user_id", userId);
     return;
   }
-  writeLocal(
-    userId,
-    readLocal(userId).map((n) => (n.id === id ? { ...n, read: true } : n)),
+  persistLocally(() =>
+    writeLocal(
+      userId,
+      readLocal(userId).map((n) => (n.id === id ? { ...n, read: true } : n)),
+    ),
   );
 }
 
@@ -55,9 +60,11 @@ export async function markAllRead(userId: string): Promise<void> {
     await supabase.from("notifications").update({ read: true }).eq("user_id", userId);
     return;
   }
-  writeLocal(
-    userId,
-    readLocal(userId).map((n) => ({ ...n, read: true })),
+  persistLocally(() =>
+    writeLocal(
+      userId,
+      readLocal(userId).map((n) => ({ ...n, read: true })),
+    ),
   );
 }
 
@@ -67,15 +74,23 @@ export async function deleteNotification(userId: string, id: string): Promise<vo
     await supabase.from("notifications").delete().eq("id", id).eq("user_id", userId);
     return;
   }
-  writeLocal(
-    userId,
-    readLocal(userId).filter((n) => n.id !== id),
+  persistLocally(() =>
+    writeLocal(
+      userId,
+      readLocal(userId).filter((n) => n.id !== id),
+    ),
   );
 }
+
+export type CreateNotificationOptions = {
+  /** Required when notifying project subscribers or mentions from a project update. */
+  projectId?: string;
+};
 
 export async function createNotification(
   userId: string,
   payload: { title: string; body: string; href?: string },
+  opts?: CreateNotificationOptions,
 ): Promise<void> {
   const now = new Date().toISOString();
   const supabase = getSupabase();
@@ -85,14 +100,30 @@ export async function createNotification(
   if (!title || !body) return;
 
   if (supabase) {
-    const { error } = await supabase.from("notifications").insert({
-      user_id: userId,
-      title,
-      body,
-      href,
-      read: false,
+    const {
+      data: { user: sessionUser },
+    } = await supabase.auth.getUser();
+
+    if (!shouldUseNotifyUsersRpc(sessionUser?.id, userId)) {
+      const { error } = await supabase.from("notifications").insert({
+        user_id: userId,
+        title,
+        body,
+        href,
+        read: false,
+      });
+      if (error) console.error("[notifications]", error.message);
+      return;
+    }
+
+    const { error } = await supabase.rpc("notify_users", {
+      target_user_ids: [userId],
+      p_title: title,
+      p_body: body,
+      p_href: href,
+      p_project_id: opts?.projectId ?? null,
     });
-    if (error) console.error("[notifications]", error.message);
+    if (error) console.error("[notifications:rpc]", error.message);
     return;
   }
 
@@ -105,7 +136,47 @@ export async function createNotification(
     read: false,
     created_at: now,
   };
-  writeLocal(userId, [notification, ...readLocal(userId)]);
+  persistLocally(() => writeLocal(userId, [notification, ...readLocal(userId)]));
+}
+
+/** Fan-out notifications to many users (admin announcements, etc.). */
+export async function notifyUsers(
+  userIds: string[],
+  payload: { title: string; body: string; href?: string },
+  opts?: CreateNotificationOptions,
+): Promise<void> {
+  const unique = [...new Set(userIds.filter(Boolean))];
+  if (!unique.length) return;
+
+  const title = clampText(payload.title, LIMITS.notificationTitle);
+  const body = clampText(payload.body, LIMITS.notificationBody);
+  const href = sanitizeAppPath(payload.href) ?? null;
+  if (!title || !body) return;
+
+  const supabase = getSupabase();
+  if (supabase) {
+    const {
+      data: { user: sessionUser },
+    } = await supabase.auth.getUser();
+    const selfOnly = unique.length === 1 && unique[0] === sessionUser?.id;
+
+    if (selfOnly && sessionUser) {
+      await createNotification(sessionUser.id, payload, opts);
+      return;
+    }
+
+    const { error } = await supabase.rpc("notify_users", {
+      target_user_ids: unique,
+      p_title: title,
+      p_body: body,
+      p_href: href,
+      p_project_id: opts?.projectId ?? null,
+    });
+    if (error) console.error("[notifications:rpc-bulk]", error.message);
+    return;
+  }
+
+  await Promise.all(unique.map((id) => createNotification(id, payload, opts)));
 }
 
 /** Subscribe to realtime notification inserts/updates for the current user. */

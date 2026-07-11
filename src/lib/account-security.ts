@@ -1,4 +1,4 @@
-import { LIMITS, sanitizeText } from "@/lib/security";
+import { isSensitiveAction, LIMITS, sanitizeText } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
 
 export type SecurityEvent = {
@@ -33,6 +33,11 @@ export async function logSecurityEvent(
   eventType: string,
   detail?: Record<string, unknown>,
 ): Promise<void> {
+  if (!isSensitiveAction(eventType)) {
+    console.warn("[security] rejected unknown event type:", eventType);
+    return;
+  }
+
   const supabase = getSupabase();
   if (!supabase) return;
 
@@ -79,6 +84,30 @@ export async function requestAccountDeletion(userId: string): Promise<{ error: s
   const { error } = await supabase.rpc("request_account_deletion");
   if (error) return { error: error.message };
 
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token;
+  const endpoint =
+    import.meta.env.VITE_ACCOUNT_DELETION_ENDPOINT?.trim() ||
+    (typeof window !== "undefined" ? `${window.location.origin}/api/account-deletion` : null);
+
+  if (token && endpoint) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) {
+        console.warn("[account-deletion] auth user removal failed:", await res.text());
+      }
+    } catch (e) {
+      console.warn("[account-deletion] finalize request failed:", e);
+    }
+  }
+
+  await supabase.auth.signOut({ scope: "global" });
   await logSecurityEvent(userId, "account_deletion_completed");
   return { error: null };
 }

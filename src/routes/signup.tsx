@@ -55,7 +55,7 @@ function SignupForm() {
   return (
     <AuthLayout
       title="Become a member"
-      subtitle="Create your BUILD account — personalized hub, reading paths, project applications, and a member directory. Free at launch."
+      subtitle="Create your The Bu1ld account — access to open projects, six reading paths, paper reviews, event deadlines, job listings, and the member directory. Free at launch, no payment step."
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">

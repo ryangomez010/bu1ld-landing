@@ -55,6 +55,19 @@ const TABLES = [
   "event_rsvps",
   "newsletter_subscriptions",
   "admin_audit_log",
+  "saved_collections",
+  "saved_collection_items",
+  "security_events",
+  "notification_preferences",
+  "reading_activity",
+  "paper_highlights",
+  "project_follows",
+  "skill_endorsements",
+  "job_applications",
+  "member_feedback",
+  "content_reports",
+  "member_preferences",
+  "schema_migrations",
 ];
 
 const supabase = createClient(url, key);

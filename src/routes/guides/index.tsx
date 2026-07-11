@@ -68,8 +68,9 @@ function GuidesContent() {
   return (
     <MemberLayout title="Guides" eyebrow="reference reading">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Long-form reference essays — not a course platform. Scroll progress saves automatically so
-        you can pick up where you left off.
+        Long-form reference essays on attention, JEPA, PINNs, LLM internals, and how The Bu1ld reads
+        papers. Scroll position saves automatically — filter by progress to resume an in-flight
+        guide or start one you have not opened yet.
       </p>
 
       <div className="mb-6 grid gap-px border border-border/40 bg-border/40 sm:grid-cols-4">

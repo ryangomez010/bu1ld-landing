@@ -73,7 +73,7 @@ export function ProjectUpdatesSection({
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={3}
-            placeholder="Share progress, blockers, or next milestones. Mention members with @[Name](user-id)."
+            placeholder="Progress update for accepted members — mention @[Name](user-id) to notify. Links to repos welcome."
             required
           />
           <p className="text-xs text-muted-foreground">

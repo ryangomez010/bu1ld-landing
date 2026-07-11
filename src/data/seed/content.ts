@@ -87,16 +87,16 @@ export const SEED_EVENTS: MlEvent[] = [
     slug: "build-summit-2026-q3",
     title: "The Bu1ld Summit — Q3 2026",
     summary:
-      "Internal showcase: research threads, startup demos, and builder networking across the membership pool.",
-    location: "Distributed / Stanford hub",
+      "Internal showcase: research thread demos, startup pitches, and member networking — open to all members with RSVP.",
+    location: "Distributed / Stanford",
     start_date: "2026-09-20",
     end_date: "2026-09-21",
-    topics: ["BUILD community", "Startups", "Research threads"],
+    topics: ["Member community", "Startups", "Research threads"],
     prep_notes:
       "Members presenting prototypes should prepare a 5-minute demo and one slide on what broke. This is a shipping checkpoint, not a poster session.",
     resources: [
       {
-        label: "BUILD Discord",
+        label: "Member Discord",
         url: "https://discord.gg/NG4QYat4P",
         kind: "other",
       },
@@ -144,7 +144,7 @@ The √d scaling is easy to skip over. Without it, dot products blow up in high 
 2. Compare parameter count vs a tiny LSTM on the same synthetic copy task.
 3. Read Section 3.2 on multi-head — map each head's weights on a real sentence using a small pretrained model.
 
-## BUILD take
+## The Bu1ld take
 
 Every modern LLM is a descendant of this architecture choice. When you read MoE, RoPE, or sliding-window papers, you are reading patches on this foundation — not replacements. Our threads on long-context world models usually fail or succeed based on whether the patch preserves the **relational** inductive bias attention gives you.`,
     published: true,
@@ -175,7 +175,7 @@ If your latent must reconstruct every blade of grass, it will memorize texture. 
 | Generative (VAE, diffusion) | Raw observations | Spends capacity on texture |
 | JEPA | Abstract embeddings | Must design good abstraction |
 
-## Why BUILD cares
+## Why this matters here
 
 Several of our research threads — world models, latent safety, PDE surrogates — hinge on whether your latent space encodes **causal** structure or just compresses appearance. JEPA is the clearest public articulation of "predict in the right space."
 
@@ -185,7 +185,7 @@ When a surrogate model looks great on MSE but fails off-distribution, we usually
 
 Do not treat this as a single architecture paper. Read it as a research agenda: hierarchical planning, self-supervised pretraining, and energy-based models as components of one stack. Follow-ups (I-JEPA, V-JEPA) are worth skimming after the position paper lands.
 
-## BUILD take
+## The Bu1ld take
 
 Ask on every world-model prototype: *what is the embedding trained to ignore?* If the answer is "nothing," you are back in pixel reconstruction land.`,
     published: true,
@@ -196,11 +196,11 @@ Ask on every world-model prototype: *what is the embedding trained to ignore?* I
   {
     id: "seed-residual-tokenization",
     slug: "residual-event-tokenization",
-    title: "Residual Event Tokenization (BUILD thread)",
+    title: "Residual Event Tokenization (open thread)",
     authors: "The Bu1ld research collective",
     year: 2026,
     arxiv_url: null,
-    tags: ["Tokenization", "World models", "BUILD original"],
+    tags: ["Tokenization", "World models", "Institution original"],
     is_classic: false,
     summary: "Internal research direction: encode surprise, not every frame.",
     review_body: `## The intuition
@@ -225,9 +225,9 @@ As world models scale, sequence length becomes the bottleneck — not parameter 
 
 ## Status
 
-Active BUILD research — not a published paper. Members on the Residual Event Tokenization thread ship weekly demos or written postmortems. Reach out via the open project if you want in.
+Active institution research — not a published paper. Members on the Residual Event Tokenization thread ship weekly demos or written postmortems. Apply via the open project listing if you want in.
 
-## BUILD take
+## The Bu1ld take
 
 If you cannot explain what your tokenizer throws away, you do not have a tokenizer — you have a compressor.`,
     published: true,
@@ -262,7 +262,7 @@ Loss improves predictably with model size (N) and dataset size (D). The mistake 
 - Chinchilla vs Gopher at matched compute — the win is not magic architecture, it is budget allocation.
 - Appendix discussions of inference cost: training-optimal ≠ deployment-optimal. That tension still drives product decisions.
 
-## Reproduce at BUILD scale
+## Reproduce at small scale
 
 You will not rerun Chinchilla. You *can*:
 
@@ -270,7 +270,7 @@ You will not rerun Chinchilla. You *can*:
 2. Train three budgets: overweight params, overweight tokens, Chinchilla-balanced.
 3. Plot val loss vs FLOPs. The middle configuration should dominate.
 
-## BUILD take
+## The Bu1ld take
 
 When a startup says "we need a bigger model," ask for their token budget and data repeat count. Under-training is still the silent killer in fine-tunes — not just pretraining.`,
     published: true,
@@ -313,7 +313,7 @@ Practically: increase log-prob gap on chosen vs rejected completions, with a β 
 | DPO | No | No | β tuning, distribution shift |
 | ORPO / IPO variants | No | No | Different implicit constraints |
 
-## BUILD take
+## The Bu1ld take
 
 Most member projects should start with SFT + light DPO on **small, curated** preference sets — not full RL stacks. If alignment fails, fix the pairs before touching the optimizer.`,
     published: true,
@@ -350,13 +350,13 @@ Only A and B get gradients. Memory drops sharply; you can stack multiple LoRA mo
 - Where adapters attach: attention projections (q,v) dominate quality per parameter in many reproductions.
 - Merging adapters into base weights for inference — deployment story matters as much as training.
 
-## BUILD reproduction sketch
+## Reproduction sketch
 
 1. Pick a small instruction dataset (500–2k examples).
 2. Compare full FT vs LoRA r=8 on the same GPU budget.
 3. Measure perplexity **and** task accuracy — cheap LoRA can overfit tone without improving facts.
 
-## BUILD take
+## The Bu1ld take
 
 LoRA is not "free fine-tuning." It is a **controlled subspace** for steering. If your eval does not move, you need data or rank — not another epoch.`,
     published: true,
@@ -395,7 +395,7 @@ Classic SSM: same linear dynamics for every token. Mamba: dynamics change per to
 - Multimodal and tool-use stacks still transformer-centric in production.
 - Scaling laws at 10B+ less settled than dense decoder-only transformers.
 
-## BUILD take
+## The Bu1ld take
 
 Mamba is a bet on **long context + throughput**, not a universal transformer replacement. Prototype on your actual sequence length distribution — not LM perplexity alone.`,
     published: true,
@@ -409,11 +409,11 @@ export const SEED_NEWSLETTERS: NewsletterIssue[] = [
   {
     id: "seed-nl-12",
     slug: "issue-12-march-2026",
-    title: "BUILD Digest #12 — March 2026",
+    title: "The Bu1ld Digest #12 — March 2026",
     issue_number: 12,
     summary:
       "NeurIPS deadlines on the horizon, new startup spinout, and three papers worth your weekend.",
-    body: `## This month at BUILD
+    body: `## This month at The Bu1ld
 
 **Eigen Δ** closed a research milestone: delta-trained specialization in under 4 hours on a single A100 for a 7B base. Demo at the Q3 summit.
 
@@ -429,7 +429,7 @@ export const SEED_NEWSLETTERS: NewsletterIssue[] = [
 
 - ICML 2026 full paper deadline: **Feb 4** (passed — workshop track still open)
 - NeurIPS 2026 abstract: **May 15** — start internal reads now
-- BUILD Summit Q3: demo submissions due **Sep 1**
+- The Bu1ld Summit Q3: demo submissions due **Sep 1**
 
 ## Startup spotlight
 
@@ -446,7 +446,7 @@ export const SEED_NEWSLETTERS: NewsletterIssue[] = [
   {
     id: "seed-nl-11",
     slug: "issue-11-february-2026",
-    title: "BUILD Digest #11 — February 2026",
+    title: "The Bu1ld Digest #11 — February 2026",
     issue_number: 11,
     summary: "Fellowship applications open, physics ML reading group, and ICML deadline week.",
     body: `## Fellowship
@@ -463,7 +463,7 @@ ICML full paper deadline this week. Good luck to everyone submitting.
 
 ## New members
 
-Welcome to 14 new builders who joined the membership pool in January.`,
+Welcome to 14 new members who joined in January.`,
     published: true,
     published_at: "2026-02-01T00:00:00Z",
     created_at: "2026-02-01T00:00:00Z",

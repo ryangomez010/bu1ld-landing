@@ -13,20 +13,21 @@ export function WhatWeDoSection() {
         <SectionLabel id="01">what we do</SectionLabel>
         <div className="mt-10 grid md:grid-cols-12 gap-12">
           <h2 className="md:col-span-5 font-display text-4xl md:text-6xl leading-[1.0] tracking-[-0.025em] text-bone">
-            A living research environment{" "}
-            <span className="text-accent-blue text-glow-blue">that ships.</span>
+            Research that leaves{" "}
+            <span className="text-accent-blue text-glow-blue">the benchmark.</span>
           </h2>
           <div className="md:col-span-7 space-y-6 text-muted-foreground text-lg leading-relaxed">
             <p>
-              Most labs publish. Most startups iterate on shipped tech. The Bu1ld sits between them
-              — one community where frontier research and production systems are built by the same
-              people, in the same week.
+              Most labs optimize for publication. Most startups optimize for retention. The Bu1ld
+              runs both cycles in parallel — the same people read a paper, build a prototype, and
+              decide whether the idea survives contact with real data and real users.
             </p>
             <p>
-              We organize around <span className="text-bone">research threads</span>, not job
-              titles. A thread may begin as a paper read on Monday, a prototype by Friday, and a
-              startup pitch within a quarter. Every project is held to two standards: scientific
-              honesty and engineering rigor.
+              Work is organized around <span className="text-bone">research threads</span>, not
+              departments. A thread might start as a member paper review, become an open project
+              with a capacity limit and application queue, and graduate into a startup with its own
+              repo and demo day. Every thread is reviewed against two criteria: is the science
+              honest, and does the engineering hold up under load.
             </p>
             <ul className="grid sm:grid-cols-2 gap-3 pt-4">
               {BENEFITS.map((item, i) => (
@@ -45,7 +46,7 @@ export function WhatWeDoSection() {
               to="/signup"
               className="inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] uppercase text-accent-blue hover:text-bone transition pt-2"
             >
-              Join the membership pool →
+              Create your member account →
             </Link>
           </div>
         </div>

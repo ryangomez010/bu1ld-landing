@@ -1,6 +1,6 @@
 export function SectionLabel({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <div className="font-mono text-[10px] tracking-[0.32em] uppercase text-muted-foreground flex items-center gap-3">
+    <div className="label-sm text-muted-foreground flex items-center gap-3">
       <span className="h-px w-8 bg-gradient-to-r from-bone/40 to-transparent" />
       <span className="text-bone/70 tabular-nums">{id}</span>
       <span className="text-bone/25">/</span>

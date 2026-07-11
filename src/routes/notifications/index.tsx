@@ -1,17 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState } from "@/components/member/ContentCard";
 import { FilterBar } from "@/components/member/FilterBar";
 import { LoadingState } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { SectionHeader } from "@/components/member/SectionHeader";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { relativeTime } from "@/lib/date";
 import {
   deleteNotification,
-  fetchNotifications,
   groupNotificationsByDay,
   markAllRead,
   markNotificationRead,
@@ -19,11 +20,18 @@ import {
   subscribeNotifications,
   type NotificationCategory,
 } from "@/lib/notifications";
+import { queryKeys } from "@/lib/queries/keys";
+import { useNotificationsQuery } from "@/lib/queries/use-notifications";
 import type { Notification } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+const PAGE_SIZE = 20;
+
 export const Route = createFileRoute("/notifications/")({
   component: NotificationsPage,
+  head: () => ({
+    meta: [{ title: "Notifications — The Bu1ld" }],
+  }),
 });
 
 function NotificationsPage() {
@@ -36,18 +44,20 @@ function NotificationsPage() {
 
 function NotificationsContent() {
   const { user } = useAuth();
-  const [items, setItems] = useState<Notification[]>([]);
+  const queryClient = useQueryClient();
+  const { data: items = [], isLoading: loading } = useNotificationsQuery(user?.id);
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [typeFilter, setTypeFilter] = useState<NotificationCategory | "all">("all");
-  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   const refresh = useCallback(() => {
     if (!user) return;
-    void fetchNotifications(user.id).then((list) => {
-      setItems(list);
-      setLoading(false);
-    });
-  }, [user]);
+    void queryClient.invalidateQueries({ queryKey: queryKeys.notifications(user.id) });
+  }, [queryClient, user]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, typeFilter]);
 
   useEffect(() => {
     refresh();
@@ -67,7 +77,9 @@ function NotificationsContent() {
     }
     return list;
   }, [items, filter, typeFilter]);
-  const grouped = useMemo(() => groupNotificationsByDay(visible), [visible]);
+  const paged = useMemo(() => visible.slice(0, page * PAGE_SIZE), [visible, page]);
+  const grouped = useMemo(() => groupNotificationsByDay(paged), [paged]);
+  const hasMore = paged.length < visible.length;
 
   const typeCounts = useMemo(() => {
     const base = filter === "unread" ? items.filter((n) => !n.read) : items;
@@ -80,7 +92,11 @@ function NotificationsContent() {
 
   return (
     <MemberLayout title="Notifications" eyebrow="updates">
-      <div className="mb-6 -mt-2 flex flex-wrap items-center justify-between gap-3">
+      <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
+        Application status changes, project lead messages, pinned announcements, and event deadline
+        reminders — filter by category or mark all as read when you are caught up.
+      </p>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <FilterBar
           value={filter}
           onChange={setFilter}
@@ -94,7 +110,7 @@ function NotificationsContent() {
             variant="ghost"
             size="sm"
             onClick={() => void markAllRead(user!.id).then(refresh)}
-            className="font-mono text-[9px] tracking-[0.15em] uppercase shrink-0"
+            className="label-xs shrink-0"
           >
             Mark all read
           </Button>
@@ -120,17 +136,18 @@ function NotificationsContent() {
       ) : items.length === 0 ? (
         <EmptyState
           title="All caught up"
-          body="You'll see updates when application status changes, lead requests are reviewed, or announcements are posted."
+          body="Notifications appear when a project lead changes your application status, mentions you in an update, posts a pinned announcement, or an event deadline you saved is due within three days."
         />
       ) : visible.length === 0 ? (
-        <EmptyState title="No unread notifications" body="Switch to All to see your history." />
+        <EmptyState
+          title="No unread"
+          body="Switch to All to browse past notifications — they are grouped by day and link to the source page."
+        />
       ) : (
         <div className="space-y-8">
           {grouped.map((group) => (
             <section key={group.label}>
-              <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-                {group.label}
-              </h2>
+              <SectionHeader title={group.label} className="mb-3" />
               <div className="space-y-2">
                 {group.items.map((n) => (
                   <NotificationCard
@@ -143,6 +160,13 @@ function NotificationsContent() {
               </div>
             </section>
           ))}
+          {hasMore ? (
+            <div className="pt-4 text-center">
+              <Button variant="outline" size="sm" onClick={() => setPage((p) => p + 1)}>
+                Load more
+              </Button>
+            </div>
+          ) : null}
         </div>
       )}
     </MemberLayout>
@@ -173,8 +197,10 @@ function NotificationCard({
   const inner = (
     <div
       className={cn(
-        "rounded-sm border border-border/60 p-5 transition",
-        !n.read ? "bg-accent-blue/5 border-accent-blue/20" : "bg-background/70",
+        "surface-card border p-5 transition-colors list-row-hover",
+        !n.read
+          ? "panel glass-subtle border-accent-blue/20 bg-accent-blue/5"
+          : "panel glass-subtle border-border/60",
       )}
     >
       <div className="flex items-start justify-between gap-3">

@@ -1,5 +1,5 @@
 import { clampText, sanitizeText } from "@/lib/security";
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 
 export type JobApplicationStatus =
@@ -34,7 +34,9 @@ function writeLocal(userId: string, items: JobApplication[]) {
 export async function fetchMyJobApplications(userId: string): Promise<JobApplication[]> {
   const supabase = getSupabase();
   if (!supabase) {
-    return readLocal(userId).sort((a, b) => b.updated_at.localeCompare(a.updated_at));
+    return withLocalFallback([], () =>
+      readLocal(userId).sort((a, b) => b.updated_at.localeCompare(a.updated_at)),
+    );
   }
 
   const { data, error } = await supabase
@@ -43,7 +45,7 @@ export async function fetchMyJobApplications(userId: string): Promise<JobApplica
     .eq("user_id", userId)
     .order("updated_at", { ascending: false });
 
-  if (error || !data) return readLocal(userId);
+  if (error || !data) return withLocalFallback([], () => readLocal(userId));
   return data as JobApplication[];
 }
 
@@ -58,25 +60,27 @@ export async function upsertJobApplication(
   const safeTitle = sanitizeText(jobTitle, 300);
   const safeNotes = notes ? clampText(notes, 1000) : null;
 
-  const local = readLocal(userId);
-  const existing = local.find((a) => a.job_slug === jobSlug);
-  if (existing) {
-    existing.status = status;
-    existing.notes = safeNotes;
-    existing.updated_at = now;
-  } else {
-    local.push({
-      id: `local-ja-${Date.now()}`,
-      user_id: userId,
-      job_slug: jobSlug,
-      job_title: safeTitle,
-      status,
-      notes: safeNotes,
-      created_at: now,
-      updated_at: now,
-    });
-  }
-  writeLocal(userId, local);
+  persistLocally(() => {
+    const local = readLocal(userId);
+    const existing = local.find((a) => a.job_slug === jobSlug);
+    if (existing) {
+      existing.status = status;
+      existing.notes = safeNotes;
+      existing.updated_at = now;
+    } else {
+      local.push({
+        id: `local-ja-${Date.now()}`,
+        user_id: userId,
+        job_slug: jobSlug,
+        job_title: safeTitle,
+        status,
+        notes: safeNotes,
+        created_at: now,
+        updated_at: now,
+      });
+    }
+    writeLocal(userId, local);
+  });
 
   const supabase = getSupabase();
   if (!supabase) return { error: null };

@@ -108,7 +108,8 @@ create policy "Admins read all security events"
     exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
   );
 
--- Anonymize member data; auth.users deletion requires service role / dashboard.
+-- Anonymize member data in Postgres. Complete auth.users removal still requires
+-- Supabase service role or Dashboard (Auth API) — this RPC only scrubs public tables.
 create or replace function public.request_account_deletion()
 returns void
 language plpgsql

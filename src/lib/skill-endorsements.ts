@@ -1,5 +1,5 @@
 import { clampText, sanitizeText } from "@/lib/security";
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 
 export type SkillEndorsement = {
@@ -23,7 +23,7 @@ function writeLocal(profileId: string, items: SkillEndorsement[]) {
 
 export async function fetchEndorsementsForProfile(profileId: string): Promise<SkillEndorsement[]> {
   const supabase = getSupabase();
-  if (!supabase) return readLocal(profileId);
+  if (!supabase) return withLocalFallback([], () => readLocal(profileId));
 
   const { data, error } = await supabase
     .from("skill_endorsements")
@@ -33,7 +33,7 @@ export async function fetchEndorsementsForProfile(profileId: string): Promise<Sk
     .eq("profile_id", profileId)
     .order("created_at", { ascending: false });
 
-  if (error || !data) return readLocal(profileId);
+  if (error || !data) return withLocalFallback([], () => readLocal(profileId));
 
   return data.map((row) => {
     const profile = row.profiles as { full_name?: string } | null;
@@ -57,17 +57,19 @@ export async function endorseSkill(
   const safe = sanitizeText(skill, 60);
   if (!safe) return { error: "Skill is required." };
 
-  const local = readLocal(profileId);
-  if (!local.some((e) => e.endorser_id === endorserId && e.skill === safe)) {
-    local.push({
-      id: `local-se-${Date.now()}`,
-      endorser_id: endorserId,
-      profile_id: profileId,
-      skill: safe,
-      created_at: new Date().toISOString(),
-    });
-    writeLocal(profileId, local);
-  }
+  persistLocally(() => {
+    const local = readLocal(profileId);
+    if (!local.some((e) => e.endorser_id === endorserId && e.skill === safe)) {
+      local.push({
+        id: `local-se-${Date.now()}`,
+        endorser_id: endorserId,
+        profile_id: profileId,
+        skill: safe,
+        created_at: new Date().toISOString(),
+      });
+      writeLocal(profileId, local);
+    }
+  });
 
   const supabase = getSupabase();
   if (!supabase) return { error: null };
@@ -86,9 +88,11 @@ export async function removeEndorsement(
   endorsementId: string,
   profileId: string,
 ): Promise<{ error: string | null }> {
-  writeLocal(
-    profileId,
-    readLocal(profileId).filter((e) => e.id !== endorsementId),
+  persistLocally(() =>
+    writeLocal(
+      profileId,
+      readLocal(profileId).filter((e) => e.id !== endorsementId),
+    ),
   );
 
   const supabase = getSupabase();

@@ -1,4 +1,4 @@
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 
 export type ProjectFollow = {
@@ -20,7 +20,7 @@ function writeLocal(userId: string, items: ProjectFollow[]) {
 
 export async function fetchMyProjectFollows(userId: string): Promise<ProjectFollow[]> {
   const supabase = getSupabase();
-  if (!supabase) return readLocal(userId);
+  if (!supabase) return withLocalFallback([], () => readLocal(userId));
 
   const { data, error } = await supabase
     .from("project_follows")
@@ -28,7 +28,7 @@ export async function fetchMyProjectFollows(userId: string): Promise<ProjectFoll
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  if (error || !data) return readLocal(userId);
+  if (error || !data) return withLocalFallback([], () => readLocal(userId));
   return data as ProjectFollow[];
 }
 
@@ -37,60 +37,100 @@ export async function isFollowingProject(userId: string, projectId: string): Pro
   return follows.some((f) => f.project_id === projectId);
 }
 
+function syncLocalFollows(userId: string, follows: ProjectFollow[]) {
+  persistLocally(() => writeLocal(userId, follows));
+}
+
 export async function toggleProjectFollow(
   userId: string,
   projectId: string,
 ): Promise<{ following: boolean; error: string | null }> {
-  const local = readLocal(userId);
-  const existing = local.find((f) => f.project_id === projectId);
-
   const supabase = getSupabase();
   if (!supabase) {
+    const local = withLocalFallback([], () => readLocal(userId));
+    const existing = local.find((f) => f.project_id === projectId);
     if (existing) {
-      writeLocal(
+      syncLocalFollows(
         userId,
         local.filter((f) => f.project_id !== projectId),
       );
       return { following: false, error: null };
     }
-    local.push({
+    const next: ProjectFollow = {
       id: `local-pf-${Date.now()}`,
       project_id: projectId,
       notify_updates: true,
       created_at: new Date().toISOString(),
-    });
-    writeLocal(userId, local);
+    };
+    syncLocalFollows(userId, [...local, next]);
     return { following: true, error: null };
   }
 
-  if (existing) {
+  const { data: existingRow, error: readError } = await supabase
+    .from("project_follows")
+    .select("id, project_id, notify_updates, created_at")
+    .eq("user_id", userId)
+    .eq("project_id", projectId)
+    .maybeSingle();
+
+  if (readError) {
+    return { following: Boolean(existingRow), error: readError.message };
+  }
+
+  if (existingRow) {
     const { error } = await supabase
       .from("project_follows")
       .delete()
       .eq("user_id", userId)
       .eq("project_id", projectId);
-    writeLocal(
-      userId,
-      local.filter((f) => f.project_id !== projectId),
-    );
+    if (!error) {
+      syncLocalFollows(
+        userId,
+        withLocalFallback([], () => readLocal(userId)).filter((f) => f.project_id !== projectId),
+      );
+    }
     return { following: false, error: error?.message ?? null };
   }
 
-  const { error } = await supabase.from("project_follows").insert({
-    user_id: userId,
-    project_id: projectId,
-    notify_updates: true,
-  });
-  if (!error) {
-    local.push({
-      id: `local-pf-${Date.now()}`,
+  const { data: inserted, error } = await supabase
+    .from("project_follows")
+    .insert({
+      user_id: userId,
       project_id: projectId,
       notify_updates: true,
-      created_at: new Date().toISOString(),
-    });
-    writeLocal(userId, local);
+    })
+    .select("id, project_id, notify_updates, created_at")
+    .single();
+
+  if (!error && inserted) {
+    return { following: true, error: null };
   }
-  return { following: true, error: error?.message ?? null };
+
+  return { following: false, error: error?.message ?? null };
+}
+
+export async function setProjectFollowNotify(
+  userId: string,
+  projectId: string,
+  notify: boolean,
+): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) {
+    persistLocally(() => {
+      const local = readLocal(userId);
+      const row = local.find((f) => f.project_id === projectId);
+      if (row) row.notify_updates = notify;
+      writeLocal(userId, local);
+    });
+    return { error: null };
+  }
+
+  const { error } = await supabase
+    .from("project_follows")
+    .update({ notify_updates: notify })
+    .eq("user_id", userId)
+    .eq("project_id", projectId);
+  return { error: error?.message ?? null };
 }
 
 /** Users who want notifications for a project (followers + accepted members). */
@@ -98,21 +138,16 @@ export async function fetchProjectUpdateSubscribers(projectId: string): Promise<
   const supabase = getSupabase();
   if (!supabase) return [];
 
-  const userIds = new Set<string>();
+  const { data, error } = await supabase.rpc("get_project_update_subscribers", {
+    p_project_id: projectId,
+  });
 
-  const { data: follows } = await supabase
-    .from("project_follows")
-    .select("user_id")
-    .eq("project_id", projectId)
-    .eq("notify_updates", true);
-  follows?.forEach((f) => userIds.add(String(f.user_id)));
+  if (!error && Array.isArray(data)) {
+    return data.map((id) => String(id));
+  }
 
-  const { data: members } = await supabase
-    .from("project_applications")
-    .select("user_id")
-    .eq("project_id", projectId)
-    .eq("status", "accepted");
-  members?.forEach((m) => userIds.add(String(m.user_id)));
-
-  return [...userIds];
+  if (error) {
+    console.error("[project-follows:subscribers]", error.message);
+  }
+  return [];
 }

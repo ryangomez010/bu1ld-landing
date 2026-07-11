@@ -37,7 +37,7 @@ export function DashboardHero({
       <div className="relative z-[1] flex flex-wrap items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
           <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-accent-green">
-            {greeting} · member hub
+            {greeting} · dashboard
           </p>
           <h1 className="font-display text-4xl md:text-5xl text-bone mt-3 tracking-tight flex flex-wrap items-center gap-3">
             {displayName}

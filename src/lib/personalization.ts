@@ -3,6 +3,15 @@ import { matchingTags } from "@/lib/interest";
 import { fetchEvents, fetchNewsletters, fetchPapers } from "@/lib/content";
 import { nearestDeadline } from "@/lib/date";
 import { fetchJobs, fetchProjects } from "@/lib/projects";
+import type { Job, MlEvent, NewsletterIssue, Paper, Project } from "@/lib/types";
+
+export type ForYouFeedSources = {
+  events: MlEvent[];
+  papers: Paper[];
+  projects: Project[];
+  jobs: Job[];
+  newsletters: NewsletterIssue[];
+};
 
 export type ForYouItem = {
   type: string;
@@ -43,7 +52,7 @@ function buildReason(
     );
   }
   if (!parts.length) {
-    return type === "newsletter" ? "Community digest" : "Recommended for you";
+    return type === "newsletter" ? "Latest community digest" : "Suggested from open listings";
   }
   return parts.join(" · ");
 }
@@ -109,17 +118,27 @@ function scoreItem(
 
 export async function buildForYouFeed(
   interests: string[],
-  opts?: { excludeSlugs?: Set<string> },
+  opts?: { excludeSlugs?: Set<string>; sources?: ForYouFeedSources },
 ): Promise<ForYouItem[]> {
   if (!interests.length) return [];
 
-  const [events, papers, projects, jobs, newsletters] = await Promise.all([
-    fetchEvents(),
-    fetchPapers(),
-    fetchProjects("open"),
-    fetchJobs(),
-    fetchNewsletters(),
-  ]);
+  const sources =
+    opts?.sources ??
+    (await Promise.all([
+      fetchEvents(),
+      fetchPapers(),
+      fetchProjects("open"),
+      fetchJobs(),
+      fetchNewsletters(),
+    ]).then(([events, papers, projects, jobs, newsletters]) => ({
+      events,
+      papers,
+      projects,
+      jobs,
+      newsletters,
+    })));
+
+  const { events, papers, projects, jobs, newsletters } = sources;
   const guides = getAllGuides();
   const exclude = opts?.excludeSlugs ?? new Set<string>();
 

@@ -55,8 +55,8 @@ export function AdminJobsTab({ jobs, onSaved }: { jobs: Job[]; onSaved: () => vo
             onChange={(e) => setSource(e.target.value as Job["source"])}
             className="w-full rounded-sm border border-border/60 bg-background px-3 py-2 text-sm"
           >
-            <option value="internal">Internal (BUILD)</option>
-            <option value="external">External (curated)</option>
+            <option value="internal">Internal (The Bu1ld)</option>
+            <option value="external">External (vetted)</option>
           </select>
         </div>
         <div className="space-y-2">

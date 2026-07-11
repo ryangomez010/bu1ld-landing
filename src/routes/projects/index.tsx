@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState, TagList } from "@/components/member/ContentCard";
@@ -14,12 +14,15 @@ import {
 } from "@/components/member/ProjectBadges";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
-import { fetchMyApplicationStatusMap, fetchProjects } from "@/lib/projects";
+import { useProjectsQuery } from "@/lib/queries/use-projects";
 import { recommendProjects } from "@/lib/personalization";
-import type { ApplicationStatus, Project, ProjectStatus, ProjectType } from "@/lib/types";
+import type { ApplicationStatus, ProjectStatus, ProjectType } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
+  head: () => ({
+    meta: [{ title: "Projects — The Bu1ld" }],
+  }),
 });
 
 function ProjectsPage() {
@@ -32,23 +35,12 @@ function ProjectsPage() {
 
 function ProjectsContent() {
   const { user, profile } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [applied, setApplied] = useState<Map<string, ApplicationStatus>>(new Map());
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading: loading } = useProjectsQuery(undefined, user?.id);
+  const projects = data?.projects ?? [];
+  const applied = data?.statusMap ?? new Map<string, ApplicationStatus>();
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | "all">("all");
   const [typeFilter, setTypeFilter] = useState<ProjectType | "all">("all");
   const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    void Promise.all([
-      fetchProjects(),
-      user ? fetchMyApplicationStatusMap(user.id) : Promise.resolve(new Map()),
-    ]).then(([data, appMap]) => {
-      setProjects(data);
-      setApplied(appMap);
-      setLoading(false);
-    });
-  }, [user]);
 
   const open = projects.filter((p) => p.status === "open");
   const alumni = projects.filter((p) => p.status === "closed");
@@ -78,8 +70,9 @@ function ProjectsContent() {
   return (
     <MemberLayout title="Projects" eyebrow="join & build">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Research threads, startup builds, and program tracks. Apply with your profile — LinkedIn and
-        background attached automatically.
+        Open research threads, startup builds, and program cohorts. Each listing shows capacity,
+        required skills, and application status — your profile (bio, background, interests, links)
+        attaches automatically when you submit a pitch.
       </p>
 
       <div className="mb-6 grid gap-2 sm:grid-cols-3">
@@ -129,7 +122,7 @@ function ProjectsContent() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Filter by skill or tag…"
+            placeholder="Skill or tag — e.g. PyTorch, world models, CUDA"
             className="ml-auto max-w-xs font-mono text-xs"
           />
         </div>
@@ -137,9 +130,13 @@ function ProjectsContent() {
 
       {recommendations.length > 0 && statusFilter === "all" && !query ? (
         <section className="mb-8 rounded-sm border border-accent-green/20 bg-accent-green/5 px-5 py-5">
-          <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-4">
-            Recommended for you
+          <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-2">
+            Matches your interests
           </h2>
+          <p className="text-xs text-muted-foreground mb-4 max-w-2xl">
+            Open projects ranked by overlap between your profile interest tags and project
+            tags/skills — excludes projects you already applied to.
+          </p>
           <div className="grid gap-2 sm:grid-cols-3">
             {recommendations.map(({ project, matchTags, reason }) => (
               <Link
@@ -163,7 +160,10 @@ function ProjectsContent() {
       {loading ? (
         <ListSkeleton rows={5} />
       ) : list.length === 0 ? (
-        <EmptyState title="No projects match" body="Try another filter or clear the search." />
+        <EmptyState
+          title="No projects match these filters"
+          body="Clear the search box, set Status to Open, or remove the type filter. Alumni (closed) threads appear at the bottom when no search is active."
+        />
       ) : (
         <div className="grid gap-2">
           {list.map((project) => (
@@ -215,7 +215,8 @@ function ProjectsContent() {
             Alumni projects
           </h2>
           <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
-            Closed threads stay visible as portfolio proof — what BUILD has shipped.
+            Closed threads remain public — output repos, demo links, and team rosters stay visible
+            as a record of what shipped from The Bu1ld.
           </p>
           <div className="grid gap-2">
             {alumni.map((project) => (

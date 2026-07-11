@@ -69,13 +69,18 @@ function ApplicationsContent() {
   };
 
   return (
-    <MemberLayout title="My applications" eyebrow="project forum">
+    <MemberLayout title="My applications" eyebrow="project applications">
+      <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
+        Every pitch you submitted to an open project — with status, timeline, and the text the lead
+        reviewed. Pending applications can be edited or withdrawn; accepted applications open the
+        member workspace on the project page.
+      </p>
       {loading ? (
         <ListSkeleton rows={4} />
       ) : applications.length === 0 ? (
         <EmptyState
           title="No applications yet"
-          body="Browse open projects and apply with a short pitch — your profile attaches automatically."
+          body="Open projects accept short pitches — your bio, background, interests, GitHub, and LinkedIn attach automatically. Most leads respond within one to two weeks."
           action={
             <Link
               to="/projects"
@@ -110,7 +115,10 @@ function ApplicationsContent() {
           </div>
 
           {filtered.length === 0 ? (
-            <EmptyState title="Nothing in this filter" body="Try another status." />
+            <EmptyState
+              title="No applications in this status"
+              body="Switch to All to see your full history, or browse open projects if you have not applied yet."
+            />
           ) : (
             <div className="grid gap-px bg-border/40 border border-border/40">
               {filtered.map((app) => (

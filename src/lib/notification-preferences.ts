@@ -1,4 +1,4 @@
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 
 export type NotificationPrefKey =
@@ -21,11 +21,13 @@ export const NOTIFICATION_PREF_LABELS: Record<
 > = {
   application: {
     label: "Applications",
-    description: "Status changes on your project applications",
+    description:
+      "Accepted, declined, or withdrawn — emailed and shown in your notifications inbox.",
   },
   project_update: {
     label: "Project updates",
-    description: "New posts from projects you follow or joined",
+    description:
+      "New posts from projects you follow or are accepted onto — shown in-app and optionally by email.",
   },
   mention: {
     label: "Mentions",
@@ -33,15 +35,16 @@ export const NOTIFICATION_PREF_LABELS: Record<
   },
   announcement: {
     label: "Announcements",
-    description: "Hub announcements and welcome messages",
+    description: "Pinned announcements and onboarding messages from The Bu1ld team.",
   },
   event: {
     label: "Events",
-    description: "RSVP reminders and deadline nudges",
+    description:
+      "RSVP reminders and submission-deadline alerts for events you saved or registered for.",
   },
   digest: {
     label: "Weekly digest",
-    description: "Summary email of activity (when enabled)",
+    description: "Weekly summary email of paper reviews, project activity, and upcoming deadlines.",
   },
 };
 
@@ -71,14 +74,14 @@ export async function fetchNotificationPreferences(
   userId: string,
 ): Promise<NotificationPreference[]> {
   const supabase = getSupabase();
-  if (!supabase) return readLocal(userId);
+  if (!supabase) return withLocalFallback(defaults(), () => readLocal(userId));
 
   const { data, error } = await supabase
     .from("notification_preferences")
     .select("pref_key, email_enabled, in_app_enabled")
     .eq("user_id", userId);
 
-  if (error || !data?.length) return readLocal(userId);
+  if (error || !data?.length) return withLocalFallback(defaults(), () => readLocal(userId));
 
   const map = new Map(
     data.map((row) => [
@@ -100,7 +103,7 @@ export async function updateNotificationPreference(
 ): Promise<{ error: string | null }> {
   const current = await fetchNotificationPreferences(userId);
   const next = current.map((p) => (p.pref_key === prefKey ? { ...p, ...patch } : p));
-  writeLocal(userId, next);
+  persistLocally(() => writeLocal(userId, next));
 
   const supabase = getSupabase();
   if (!supabase) return { error: null };

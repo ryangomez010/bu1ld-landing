@@ -28,7 +28,7 @@ export function SiteFooter() {
           <span className="text-bone/30">·</span>
           <span>© 2026 the bu1ld</span>
           <span className="text-bone/30">·</span>
-          <span>alternative intelligence</span>
+          <span>machine learning institution</span>
         </div>
         <div className="flex items-center gap-4">
           <Link to="/privacy" className="hover:text-bone transition">

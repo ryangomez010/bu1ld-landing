@@ -7,9 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/lib/auth";
+import { initTheme } from "@/lib/theme";
 
 import appCss from "../styles.css?url";
 
@@ -38,7 +40,7 @@ function NotFoundComponent() {
             to="/dashboard"
             className="inline-flex items-center justify-center rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone hover:border-bone/50 transition"
           >
-            Member hub
+            Member area
           </Link>
         </div>
       </div>
@@ -95,13 +97,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "The Bu1ld is a machine learning institution — a hub for startups, research, and alternative intelligence. Join the membership pool.",
+          "The Bu1ld is a machine learning institution — open research threads, member paper reviews, project applications, events, and a builder directory. Free membership at launch.",
       },
       { property: "og:title", content: "The Bu1ld" },
       {
         property: "og:description",
         content:
-          "Where alternative intelligence becomes real systems. Join projects, learn ML, and build.",
+          "Research threads, prototypes, and systems that ship. Join open projects, read member paper reviews, and apply with your full profile attached.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -146,6 +148,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    initTheme();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

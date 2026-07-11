@@ -47,7 +47,10 @@ function ForgotPasswordForm() {
   };
 
   return (
-    <AuthLayout title="Reset password" subtitle="We'll email you a link to set a new password.">
+    <AuthLayout
+      title="Reset password"
+      subtitle="We'll send a password reset link to your email — the link expires after one use."
+    >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">
           Supabase is not configured yet.

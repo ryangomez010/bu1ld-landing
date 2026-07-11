@@ -167,6 +167,11 @@ function SearchContent() {
 
   return (
     <MemberLayout title="Search" eyebrow="find anything">
+      <p className="text-muted-foreground mb-4 max-w-2xl leading-relaxed -mt-4">
+        Full-text search across guides, paper reviews, open projects, events, jobs, and newsletter
+        issues. Filter by content type or tag, or browse trending deadlines and open project slots
+        when the query is empty.
+      </p>
       <div className="relative max-w-xl mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
         <Input
@@ -326,7 +331,7 @@ function SearchContent() {
       ) : results.length === 0 ? (
         <EmptyState
           title="No matches"
-          body={`No results for “${query}”. Try broader terms like “world models” or “PyTorch”.`}
+          body={`Nothing indexed for “${query}”. Try a tag from Popular tags below, or search papers and projects separately from the type chips.`}
         />
       ) : (
         <div className="grid gap-px bg-border/40 border border-border/40">

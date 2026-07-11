@@ -85,7 +85,7 @@ export async function completeOnboarding(userId: string, data: OnboardingData): 
 
   await createNotification(userId, {
     title: "Welcome to The Bu1ld",
-    body: "Your profile is live. Browse open projects, explore guides, and save content you want to revisit.",
+    body: "Your profile is live in the member directory. Browse open projects, start a reading path, or save a paper review to revisit later.",
     href: "/dashboard",
   });
 
@@ -128,13 +128,13 @@ export function profileCompleteness(profile: Profile | null): {
   const checks: CompletenessStep[] = [
     {
       label: "Name",
-      hint: "Your display name appears on your card and in project teams.",
+      hint: "Shown on your directory card and attached to every project application.",
       done: !!profile.full_name?.trim(),
       href: "/profile",
     },
     {
       label: "Bio",
-      hint: "A short intro helps leads and collaborators find you.",
+      hint: "Project leads read this in the application review queue — two to three sentences is enough.",
       done: !!profile.bio?.trim(),
       href: "/profile",
     },
@@ -152,13 +152,13 @@ export function profileCompleteness(profile: Profile | null): {
     },
     {
       label: "Interests",
-      hint: "Powers your For You feed and member recommendations.",
+      hint: "Ranked against project tags, paper topics, and event subjects in your For You feed and digest.",
       done: (profile.interests?.length ?? 0) > 0,
       href: "/profile",
     },
     {
       label: "Goals",
-      hint: "What you want to learn or ship this quarter.",
+      hint: "Displayed on your public profile — e.g. ship a world-model prototype, pass the research fellowship bar.",
       done: (profile.goals?.length ?? 0) > 0,
       href: "/profile",
     },

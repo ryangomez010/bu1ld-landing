@@ -1,7 +1,7 @@
 import { SEED_EVENTS, SEED_NEWSLETTERS, SEED_PAPERS } from "@/data/seed/content";
 import { logAdminAction } from "@/lib/audit-log";
 import { getSupabase } from "@/lib/supabase";
-import { withSeedFallback } from "@/lib/supabase-fallback";
+import { withSeedFallback, resolveSeedItem, isDemoMode } from "@/lib/supabase-fallback";
 import type { MlEvent, NewsletterIssue, Paper } from "@/lib/types";
 
 function parseJsonField<T>(value: unknown, fallback: T): T {
@@ -84,9 +84,9 @@ export async function fetchEvents(): Promise<MlEvent[]> {
         SEED_EVENTS,
       );
     }
-    return SEED_EVENTS;
+    return isDemoMode() ? SEED_EVENTS : [];
   }
-  return SEED_EVENTS;
+  return isDemoMode() ? SEED_EVENTS : [];
 }
 
 export async function fetchEventBySlug(slug: string): Promise<MlEvent | null> {
@@ -94,9 +94,9 @@ export async function fetchEventBySlug(slug: string): Promise<MlEvent | null> {
   if (supabase) {
     const { data } = await supabase.from("events").select("*").eq("slug", slug).maybeSingle();
     if (data) return normalizeEvent(data as Record<string, unknown>);
-    return SEED_EVENTS.find((e) => e.slug === slug) ?? null;
+    return resolveSeedItem(null, () => SEED_EVENTS.find((e) => e.slug === slug));
   }
-  return SEED_EVENTS.find((e) => e.slug === slug) ?? null;
+  return resolveSeedItem(null, () => SEED_EVENTS.find((e) => e.slug === slug));
 }
 
 export async function fetchPapers(): Promise<Paper[]> {
@@ -113,9 +113,9 @@ export async function fetchPapers(): Promise<Paper[]> {
         SEED_PAPERS,
       );
     }
-    return SEED_PAPERS;
+    return isDemoMode() ? SEED_PAPERS : [];
   }
-  return SEED_PAPERS;
+  return isDemoMode() ? SEED_PAPERS : [];
 }
 
 export async function fetchPaperBySlug(slug: string): Promise<Paper | null> {
@@ -123,9 +123,9 @@ export async function fetchPaperBySlug(slug: string): Promise<Paper | null> {
   if (supabase) {
     const { data } = await supabase.from("papers").select("*").eq("slug", slug).maybeSingle();
     if (data) return normalizePaper(data as Record<string, unknown>);
-    return SEED_PAPERS.find((p) => p.slug === slug) ?? null;
+    return resolveSeedItem(null, () => SEED_PAPERS.find((p) => p.slug === slug));
   }
-  return SEED_PAPERS.find((p) => p.slug === slug) ?? null;
+  return resolveSeedItem(null, () => SEED_PAPERS.find((p) => p.slug === slug));
 }
 
 export async function fetchNewsletters(): Promise<NewsletterIssue[]> {
@@ -142,9 +142,9 @@ export async function fetchNewsletters(): Promise<NewsletterIssue[]> {
         SEED_NEWSLETTERS,
       );
     }
-    return SEED_NEWSLETTERS;
+    return isDemoMode() ? SEED_NEWSLETTERS : [];
   }
-  return SEED_NEWSLETTERS;
+  return isDemoMode() ? SEED_NEWSLETTERS : [];
 }
 
 export async function fetchNewsletterBySlug(slug: string): Promise<NewsletterIssue | null> {
@@ -156,15 +156,15 @@ export async function fetchNewsletterBySlug(slug: string): Promise<NewsletterIss
       .eq("slug", slug)
       .maybeSingle();
     if (data) return normalizeNewsletter(data as Record<string, unknown>);
-    return SEED_NEWSLETTERS.find((n) => n.slug === slug) ?? null;
+    return resolveSeedItem(null, () => SEED_NEWSLETTERS.find((n) => n.slug === slug));
   }
-  return SEED_NEWSLETTERS.find((n) => n.slug === slug) ?? null;
+  return resolveSeedItem(null, () => SEED_NEWSLETTERS.find((n) => n.slug === slug));
 }
 
 // Admin: fetch all including unpublished
 export async function fetchAllEventsAdmin(): Promise<MlEvent[]> {
   const supabase = getSupabase();
-  if (!supabase) return SEED_EVENTS;
+  if (!supabase) return isDemoMode() ? SEED_EVENTS : [];
   const { data } = await supabase
     .from("events")
     .select("*")
@@ -174,7 +174,7 @@ export async function fetchAllEventsAdmin(): Promise<MlEvent[]> {
 
 export async function fetchAllPapersAdmin(): Promise<Paper[]> {
   const supabase = getSupabase();
-  if (!supabase) return SEED_PAPERS;
+  if (!supabase) return isDemoMode() ? SEED_PAPERS : [];
   const { data } = await supabase
     .from("papers")
     .select("*")
@@ -184,7 +184,7 @@ export async function fetchAllPapersAdmin(): Promise<Paper[]> {
 
 export async function fetchAllNewslettersAdmin(): Promise<NewsletterIssue[]> {
   const supabase = getSupabase();
-  if (!supabase) return SEED_NEWSLETTERS;
+  if (!supabase) return isDemoMode() ? SEED_NEWSLETTERS : [];
   const { data } = await supabase
     .from("newsletter_issues")
     .select("*")

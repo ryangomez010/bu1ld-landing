@@ -14,6 +14,7 @@ type AuthContextValue = {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  profileLoading: boolean;
   configured: boolean;
   emailVerified: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
@@ -33,17 +34,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   const refreshProfile = useCallback(async () => {
     if (!user) {
       setProfile(null);
+      setProfileLoading(false);
       return;
     }
+    setProfileLoading(true);
     try {
       const next = await fetchProfile(user.id);
       setProfile(next);
-    } catch {
+    } catch (error) {
+      console.error("[auth] profile fetch failed", error);
       setProfile(null);
+    } finally {
+      setProfileLoading(false);
     }
   }, [user]);
 
@@ -87,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user) {
       setProfile(null);
+      setProfileLoading(false);
       return;
     }
     migrateLegacyNotifications(user.id);
@@ -97,22 +105,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = useCallback(async (email: string, password: string, fullName: string) => {
     const supabase = getSupabase();
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
-
-    const trimmedEmail = email.trim();
-    if (!isValidEmail(trimmedEmail)) return { error: "Enter a valid email address." };
+    if (!isValidEmail(email)) return { error: "Enter a valid email address." };
     const pw = validatePassword(password);
-    if (!pw.ok) return { error: pw.reason };
-    const name = fullName.trim();
-    if (name.length < 2) return { error: "Full name must be at least 2 characters." };
+    if (!pw.ok) return { error: pw.error };
 
-    const redirectTo = `${window.location.origin}/auth/callback`;
     const { error } = await supabase.auth.signUp({
-      email: trimmedEmail,
+      email,
       password,
-      options: {
-        data: { full_name: name },
-        emailRedirectTo: redirectTo,
-      },
+      options: { data: { full_name: fullName.trim() } },
     });
     return { error: error?.message ?? null };
   }, []);
@@ -120,65 +120,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(async (email: string, password: string) => {
     const supabase = getSupabase();
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
-
-    const trimmedEmail = email.trim();
-    if (!isValidEmail(trimmedEmail)) return { error: "Enter a valid email address." };
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: trimmedEmail,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   }, []);
 
   const signInWithOAuth = useCallback(async (provider: "github" | "google") => {
     const supabase = getSupabase();
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
-
-    const redirectTo = `${window.location.origin}/auth/callback`;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo },
-    });
+    const redirectTo =
+      typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined;
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
     return { error: error?.message ?? null };
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
     const supabase = getSupabase();
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
-
-    const trimmedEmail = email.trim();
-    if (!isValidEmail(trimmedEmail)) return { error: "Enter a valid email address." };
-
-    const redirectTo = `${window.location.origin}/reset-password`;
-    const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, { redirectTo });
+    if (!isValidEmail(email)) return { error: "Enter a valid email address." };
+    const redirectTo =
+      typeof window !== "undefined" ? `${window.location.origin}/reset-password` : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     return { error: error?.message ?? null };
   }, []);
 
   const updatePassword = useCallback(async (password: string) => {
     const supabase = getSupabase();
-    if (!supabase) return { error: "Auth is not configured." };
-
+    if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
     const pw = validatePassword(password);
-    if (!pw.ok) return { error: pw.reason };
-
+    if (!pw.ok) return { error: pw.error };
     const { error } = await supabase.auth.updateUser({ password });
     return { error: error?.message ?? null };
   }, []);
 
   const resendVerificationEmail = useCallback(async () => {
     const supabase = getSupabase();
-    if (!supabase) return { error: "Auth is not configured." };
-    if (!user?.email) return { error: "No email on file." };
-
-    const redirectTo = `${window.location.origin}/auth/callback`;
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: user.email,
-      options: { emailRedirectTo: redirectTo },
-    });
+    if (!supabase || !user?.email) return { error: "No email on file." };
+    const { error } = await supabase.auth.resend({ type: "signup", email: user.email });
     return { error: error?.message ?? null };
-  }, [user?.email]);
+  }, [user]);
 
   const signOut = useCallback(async (scope: "local" | "global" = "local") => {
     const supabase = getSupabase();
@@ -195,6 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       profile,
       loading,
+      profileLoading,
       configured: isSupabaseConfigured,
       emailVerified,
       signUp,
@@ -211,6 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       profile,
       loading,
+      profileLoading,
       emailVerified,
       signUp,
       signIn,
@@ -226,7 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;

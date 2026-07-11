@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { INSTITUTION_TAKE } from "@/data/copy";
 import { safeHref } from "@/lib/urls";
 import type { ReviewSection } from "@/lib/paper-review";
 import { cn } from "@/lib/utils";
@@ -186,7 +187,7 @@ export function PaperReviewSection({ section }: { section: ReviewSection }) {
       {section.variant === "build" ? (
         <div className="border-l-2 border-accent-green/50 pl-5 md:pl-6">
           <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-green mb-4">
-            BUILD take
+            {INSTITUTION_TAKE}
           </p>
           <PaperReviewMarkdown body={section.content} />
         </div>

@@ -60,6 +60,7 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
             <button
               type="button"
               onClick={onMenu}
+              aria-label="Open navigation menu"
               className="flex w-full flex-col items-center gap-1 rounded-md py-2 font-mono text-[8px] tracking-[0.1em] uppercase text-muted-foreground hover:text-bone transition-colors duration-200"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-md">

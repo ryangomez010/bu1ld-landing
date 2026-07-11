@@ -4,8 +4,10 @@ import { ArrowRight, Check } from "lucide-react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { ResearchContinueCard } from "@/components/member/ResearchContinueCard";
+import { CtaLink } from "@/components/member/ContentCard";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
+import { SectionHeader } from "@/components/member/SectionHeader";
 import { getAllGuides } from "@/content/guides";
 import { useAuth } from "@/lib/auth";
 import { fetchPapers } from "@/lib/content";
@@ -63,61 +65,77 @@ function ResearchHub() {
   return (
     <MemberLayout title="Research library" eyebrow="academic resources">
       <p className="text-muted-foreground mb-8 max-w-2xl -mt-4 leading-relaxed">
-        Guides build intuition. Paper reviews go deep on claims, methods, and what BUILD would ship
-        next. Reading paths connect both — progress syncs to your account so you can resume on any
-        device.
+        Guides build intuition on attention, JEPA, PINNs, and how The Bu1ld reads papers. Member
+        reviews go deeper on claims, methods, and reproducibility gaps. Six reading paths connect
+        both — progress syncs to your account so you can resume on any device.
       </p>
 
       {user ? <ResearchContinueCard userId={user.id} /> : null}
 
+      <div className="mb-8 flex flex-wrap gap-4">
+        <Link
+          to="/research/highlights"
+          className="panel glass-subtle panel-interactive surface-card-interactive px-5 py-4 label-xs text-bone"
+        >
+          Highlight notebook →
+        </Link>
+        <Link
+          to="/papers"
+          className="panel glass-subtle panel-interactive surface-card-interactive px-5 py-4 label-xs text-muted-foreground hover:text-bone"
+        >
+          All paper reviews →
+        </Link>
+      </div>
+
       <div className="mb-12 panel glass rounded-2xl overflow-hidden grid gap-px sm:grid-cols-3">
         <div className="stat-cell relative z-[1]">
-          <p className="font-mono text-[9px] uppercase text-muted-foreground">Paper reviews</p>
+          <p className="label-xs text-muted-foreground">Paper reviews</p>
           <p className="mt-2 font-display text-2xl text-bone">
             {papersRead}/{papers.length}
           </p>
-          <Link
-            to="/papers"
-            className="mt-2 inline-block font-mono text-[9px] uppercase text-accent-blue hover:text-bone"
-          >
+          <CtaLink to="/papers" className="mt-2 inline-block">
             Browse →
-          </Link>
+          </CtaLink>
         </div>
         <div className="stat-cell relative z-[1]">
-          <p className="font-mono text-[9px] uppercase text-muted-foreground">Guides finished</p>
+          <p className="label-xs text-muted-foreground">Guides finished</p>
           <p className="mt-2 font-display text-2xl text-bone">
             {guidesDone}/{guides.length}
           </p>
-          <Link
-            to="/guides"
-            className="mt-2 inline-block font-mono text-[9px] uppercase text-accent-blue hover:text-bone"
-          >
+          <CtaLink to="/guides" className="mt-2 inline-block">
             Browse →
-          </Link>
+          </CtaLink>
         </div>
         <div className="stat-cell relative z-[1]">
-          <p className="font-mono text-[9px] uppercase text-muted-foreground">Active path</p>
+          <p className="label-xs text-muted-foreground">Active path</p>
           <p className="mt-2 font-display text-2xl text-bone">{progress.percent}%</p>
-          <p className="mt-2 font-mono text-[9px] uppercase text-muted-foreground">
+          <p className="mt-2 label-xs text-muted-foreground">
             {progress.done}/{progress.total} steps
           </p>
         </div>
       </div>
 
       <section className="mb-12">
-        <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
-          Reading paths
-        </h2>
-        <div className="flex flex-wrap gap-2 mb-6">
+        <SectionHeader
+          title="Reading paths"
+          description="Six ordered sequences mixing guides and paper reviews — progress marks a step done at 95% guide scroll or paper marked read."
+        />
+        <div
+          className="flex flex-wrap gap-2 mb-6"
+          role="tablist"
+          aria-label="Research reading paths"
+        >
           {RESEARCH_PATHS.map((p) => {
             const pp = pathProgress(p, readSlugs, guideProgress);
             return (
               <button
                 key={p.id}
                 type="button"
+                role="tab"
+                aria-selected={activePath === p.id}
                 onClick={() => setActivePath(p.id)}
                 className={cn(
-                  "font-mono text-[9px] tracking-[0.15em] uppercase px-3 py-2 rounded-xl border transition panel-interactive",
+                  "label-xs px-3 py-2 rounded-xl border transition panel-interactive",
                   activePath === p.id
                     ? "chip-active border-accent-blue/40"
                     : "border-border/40 text-muted-foreground hover:text-bone glass-subtle",
@@ -173,7 +191,7 @@ function ResearchHub() {
         <Link to="/papers" className="panel panel-interactive block p-6 rounded-2xl group">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Paper reviews</p>
           <h3 className="font-display text-xl text-bone mt-2 group-hover:text-accent-blue transition">
-            Editorial reviews with BUILD context
+            Editorial reviews with institution context
           </h3>
           <p className="mt-2 text-sm text-muted-foreground">
             Classics, scaling laws, alignment — with section notes and arXiv links.

@@ -22,7 +22,8 @@ export function AdminOverviewTab({
   return (
     <div>
       <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
-        Platform snapshot — members, content, applications, and pending lead requests.
+        Platform counts — members with completed profiles, published content, open applications, and
+        lead requests awaiting admin review.
       </p>
       <div className="grid gap-px bg-border/40 border border-border/40 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (

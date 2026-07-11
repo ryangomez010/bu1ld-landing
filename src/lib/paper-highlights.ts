@@ -1,5 +1,5 @@
 import { clampText, sanitizeText } from "@/lib/security";
-import { readUserJson, writeUserJson } from "@/lib/storage";
+import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 
 export type PaperHighlight = {
@@ -27,7 +27,7 @@ export async function fetchPaperHighlights(
   paperSlug: string,
 ): Promise<PaperHighlight[]> {
   const supabase = getSupabase();
-  if (!supabase) return readLocal(userId, paperSlug);
+  if (!supabase) return withLocalFallback([], () => readLocal(userId, paperSlug));
 
   const { data, error } = await supabase
     .from("paper_highlights")
@@ -36,8 +36,8 @@ export async function fetchPaperHighlights(
     .eq("paper_slug", paperSlug)
     .order("created_at", { ascending: false });
 
-  if (error || !data?.length) return readLocal(userId, paperSlug);
-  return data as PaperHighlight[];
+  if (error) return withLocalFallback([], () => readLocal(userId, paperSlug));
+  return (data ?? []) as PaperHighlight[];
 }
 
 export async function addPaperHighlight(
@@ -55,11 +55,12 @@ export async function addPaperHighlight(
     highlighted_text: safe,
     created_at: now,
   };
-  const items = [local, ...readLocal(userId, paperSlug)];
-  writeLocal(userId, paperSlug, items);
 
   const supabase = getSupabase();
-  if (!supabase) return { highlight: local, error: null };
+  if (!supabase) {
+    persistLocally(() => writeLocal(userId, paperSlug, [local, ...readLocal(userId, paperSlug)]));
+    return { highlight: local, error: null };
+  }
 
   const { data, error } = await supabase
     .from("paper_highlights")
@@ -67,7 +68,7 @@ export async function addPaperHighlight(
     .select("id, paper_slug, highlighted_text, created_at")
     .single();
 
-  if (error) return { highlight: local, error: error.message };
+  if (error) return { highlight: null, error: error.message };
   return { highlight: data as PaperHighlight, error: null };
 }
 
@@ -76,10 +77,12 @@ export async function deletePaperHighlight(
   paperSlug: string,
   highlightId: string,
 ): Promise<{ error: string | null }> {
-  writeLocal(
-    userId,
-    paperSlug,
-    readLocal(userId, paperSlug).filter((h) => h.id !== highlightId),
+  persistLocally(() =>
+    writeLocal(
+      userId,
+      paperSlug,
+      readLocal(userId, paperSlug).filter((h) => h.id !== highlightId),
+    ),
   );
 
   const supabase = getSupabase();
@@ -98,4 +101,38 @@ export function getSelectedHighlightText(): string {
   const sel = window.getSelection();
   if (!sel || sel.isCollapsed) return "";
   return clampText(sel.toString(), 500);
+}
+
+export async function fetchAllPaperHighlights(
+  userId: string,
+  limit = 80,
+): Promise<PaperHighlight[]> {
+  const supabase = getSupabase();
+  if (!supabase) {
+    return withLocalFallback([], () => {
+      const all = readUserJson<Record<string, PaperHighlight[]>>(STORAGE, userId, {});
+      return Object.values(all)
+        .flat()
+        .sort((a, b) => b.created_at.localeCompare(a.created_at))
+        .slice(0, limit);
+    });
+  }
+
+  const { data, error } = await supabase
+    .from("paper_highlights")
+    .select("id, paper_slug, highlighted_text, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    return withLocalFallback([], () => {
+      const all = readUserJson<Record<string, PaperHighlight[]>>(STORAGE, userId, {});
+      return Object.values(all)
+        .flat()
+        .sort((a, b) => b.created_at.localeCompare(a.created_at))
+        .slice(0, limit);
+    });
+  }
+  return data as PaperHighlight[];
 }
