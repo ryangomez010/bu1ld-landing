@@ -45,9 +45,21 @@ function loadWranglerVars() {
   return out;
 }
 
+function pickNonEmptyEnv(source) {
+  const out = {};
+  for (const [key, value] of Object.entries(source)) {
+    if (typeof value === "string" && value.length > 0) out[key] = value;
+  }
+  return out;
+}
+
 const fileEnv = loadEnvFile();
 const wranglerEnv = loadWranglerVars();
-const merged = { ...wranglerEnv, ...fileEnv, ...process.env };
+const merged = {
+  ...wranglerEnv,
+  ...pickNonEmptyEnv(fileEnv),
+  ...pickNonEmptyEnv(process.env),
+};
 
 const payload = {
   VITE_SUPABASE_URL: merged.VITE_SUPABASE_URL ?? merged.NEXT_PUBLIC_SUPABASE_URL ?? undefined,
