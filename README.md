@@ -72,11 +72,11 @@ Client: set `VITE_EMAIL_ENDPOINT` and matching `VITE_EMAIL_API_SECRET`.
 
 Deploy `api/digest.ts` and schedule a daily cron (e.g. `0 8 * * *` UTC via Vercel Cron).
 
-| Server secret               | Purpose                                              |
-| --------------------------- | ---------------------------------------------------- |
+| Server secret               | Purpose                                                           |
+| --------------------------- | ----------------------------------------------------------------- |
 | `DIGEST_API_SECRET`         | Bearer token for `POST /api/digest` (or reuse `EMAIL_API_SECRET`) |
-| `RESEND_API_KEY`            | Sends digest emails via Resend                       |
-| `SUPABASE_SERVICE_ROLE_KEY` | Loads member preferences and content for ranking     |
+| `RESEND_API_KEY`            | Sends digest emails via Resend                                    |
+| `SUPABASE_SERVICE_ROLE_KEY` | Loads member preferences and content for ranking                  |
 
 Apply `supabase/phase17.sql` to add `last_digest_sent_at` tracking on `member_preferences`.
 

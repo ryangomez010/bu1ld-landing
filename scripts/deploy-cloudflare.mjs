@@ -28,7 +28,9 @@ run("node", ["scripts/generate-runtime-env.mjs"]);
 
 const buildEnv = { ...process.env };
 if (!buildEnv.VITE_SUPABASE_URL || !buildEnv.VITE_SUPABASE_ANON_KEY) {
-  console.warn("VITE_* not in shell env; build will still use .env via Vite loadEnv + runtime-env.js fallback.");
+  console.warn(
+    "VITE_* not in shell env; build will still use .env via Vite loadEnv + runtime-env.js fallback.",
+  );
 }
 
 run("bun", ["run", "build"], buildEnv);

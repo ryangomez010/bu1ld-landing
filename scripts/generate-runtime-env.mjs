@@ -33,25 +33,24 @@ function loadEnvFile() {
   return out;
 }
 
+function loadWranglerVars() {
+  const path = resolve(root, "wrangler.jsonc");
+  if (!existsSync(path)) return {};
+  const raw = readFileSync(path, "utf8");
+  const out = {};
+  for (const key of ["ENVIRONMENT", "VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"]) {
+    const match = raw.match(new RegExp(`"${key}"\\s*:\\s*"([^"]+)"`));
+    if (match) out[key] = match[1];
+  }
+  return out;
+}
+
 const fileEnv = loadEnvFile();
 const wranglerEnv = loadWranglerVars();
 const merged = { ...wranglerEnv, ...fileEnv, ...process.env };
 
-function loadWranglerVars() {
-  const path = resolve(root, "wrangler.jsonc");
-  if (!existsSync(path)) return {};
-  const raw = readFileSync(path, "utf8").replace(/\/\/.*$/gm, "");
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed.vars && typeof parsed.vars === "object" ? parsed.vars : {};
-  } catch {
-    return {};
-  }
-}
-
 const payload = {
-  VITE_SUPABASE_URL:
-    merged.VITE_SUPABASE_URL ?? merged.NEXT_PUBLIC_SUPABASE_URL ?? undefined,
+  VITE_SUPABASE_URL: merged.VITE_SUPABASE_URL ?? merged.NEXT_PUBLIC_SUPABASE_URL ?? undefined,
   VITE_SUPABASE_ANON_KEY:
     merged.VITE_SUPABASE_ANON_KEY ??
     merged.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
@@ -61,8 +60,7 @@ const payload = {
   VITE_SUPABASE_PUBLISHABLE_KEY: merged.VITE_SUPABASE_PUBLISHABLE_KEY ?? undefined,
   NEXT_PUBLIC_SUPABASE_URL: merged.NEXT_PUBLIC_SUPABASE_URL ?? undefined,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: merged.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? undefined,
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
-    merged.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? undefined,
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: merged.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? undefined,
 };
 
 if (!payload.VITE_SUPABASE_URL || !payload.VITE_SUPABASE_ANON_KEY) {
