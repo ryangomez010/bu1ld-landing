@@ -6,7 +6,7 @@ import { logSecurityEvent, currentDeviceLabel } from "@/lib/account-security";
 import { migrateLegacyNotifications } from "@/lib/notifications";
 import { migrateLegacySaved } from "@/lib/saved";
 import { isValidEmail, validatePassword } from "@/lib/security";
-import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
+import { getSupabase, checkSupabaseConfigured } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
 
 type AuthContextValue = {
@@ -35,6 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(false);
+  const [configured, setConfigured] = useState(() => checkSupabaseConfigured());
+
+  useEffect(() => {
+    setConfigured(checkSupabaseConfigured());
+  }, []);
 
   const refreshProfile = useCallback(async () => {
     if (!user) {
@@ -175,7 +180,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profile,
       loading,
       profileLoading,
-      configured: isSupabaseConfigured,
+      configured,
       emailVerified,
       signUp,
       signIn,
@@ -192,6 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profile,
       loading,
       profileLoading,
+      configured,
       emailVerified,
       signUp,
       signIn,

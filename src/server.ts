@@ -18,7 +18,7 @@ type WorkerEnv = EmailEnv &
   };
 
 function withRateLimitKv(env: unknown): WorkerEnv {
-  const e = env as WorkerEnv & { RATE_LIMIT_KV?: RateLimitKv };
+  const e = (env ?? {}) as WorkerEnv & { RATE_LIMIT_KV?: RateLimitKv };
   return {
     ...e,
     RATE_LIMIT_KV: e.RATE_LIMIT_KV,

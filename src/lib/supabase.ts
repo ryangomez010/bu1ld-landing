@@ -493,29 +493,33 @@ export type Database = {
   };
 };
 
+import { readPublicRuntimeEnv } from "@/lib/public-env";
+
 function readEnv(key: string): string | undefined {
+  const runtime = readPublicRuntimeEnv(key as Parameters<typeof readPublicRuntimeEnv>[0]);
+  if (runtime) return runtime;
   const value = import.meta.env[key];
   return typeof value === "string" && value.length > 0 ? value : undefined;
 }
 
-const supabaseUrl = readEnv("VITE_SUPABASE_URL") ?? readEnv("NEXT_PUBLIC_SUPABASE_URL");
-
-/** Prefer JWT anon key; fall back to publishable key for newer Supabase projects. */
-const supabaseAnonKey =
-  readEnv("VITE_SUPABASE_ANON_KEY") ??
-  readEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") ??
-  readEnv("VITE_SUPABASE_PUBLISHABLE_KEY") ??
-  readEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
-
-/** Runtime check — reads current env (used by demo-mode helpers and tests). */
-export function checkSupabaseConfigured(): boolean {
+function resolveSupabaseConfig(): { url?: string; anonKey?: string } {
   const url = readEnv("VITE_SUPABASE_URL") ?? readEnv("NEXT_PUBLIC_SUPABASE_URL");
-  const key =
+  const anonKey =
     readEnv("VITE_SUPABASE_ANON_KEY") ??
     readEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") ??
     readEnv("VITE_SUPABASE_PUBLISHABLE_KEY") ??
     readEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
-  return Boolean(url && key);
+  return { url, anonKey };
+}
+
+const initialConfig = resolveSupabaseConfig();
+const supabaseUrl = initialConfig.url;
+const supabaseAnonKey = initialConfig.anonKey;
+
+/** Runtime check — reads build-time and /runtime-env.js injection. */
+export function checkSupabaseConfigured(): boolean {
+  const { url, anonKey } = resolveSupabaseConfig();
+  return Boolean(url && anonKey);
 }
 
 export const supabaseProjectUrl = supabaseUrl;
@@ -523,12 +527,14 @@ export const supabaseProjectUrl = supabaseUrl;
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 let browserClient: SupabaseClient<Database> | null = null;
+let browserClientKey: string | null = null;
 
 export function getSupabase(): SupabaseClient<Database> | null {
-  if (!isSupabaseConfigured) return null;
+  const { url, anonKey } = resolveSupabaseConfig();
+  if (!url || !anonKey) return null;
   if (typeof window === "undefined") return null;
-  if (!browserClient) {
-    browserClient = createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
+  if (!browserClient || browserClientKey !== `${url}|${anonKey}`) {
+    browserClient = createClient<Database>(url, anonKey, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -536,6 +542,7 @@ export function getSupabase(): SupabaseClient<Database> | null {
         flowType: "pkce",
       },
     });
+    browserClientKey = `${url}|${anonKey}`;
   }
   return browserClient;
 }

@@ -7,8 +7,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
-    "deploy:cf": "bun run build && wrangler deploy",
+    "build": "node scripts/generate-runtime-env.mjs && vite build",
+    "deploy:cf": "node scripts/deploy-cloudflare.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",

@@ -136,6 +136,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script src="/runtime-env.js" />
         <HeadContent />
       </head>
       <body>
