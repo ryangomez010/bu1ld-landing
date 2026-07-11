@@ -8,6 +8,7 @@ import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { newsletterLink } from "@/lib/app-paths";
 import { fetchNewsletters } from "@/lib/content";
 import { formatDate } from "@/lib/date";
 import { isNewsletterSubscribed, setNewsletterSubscribed } from "@/lib/newsletter-subscribe";
@@ -95,7 +96,7 @@ function NewsletterContent() {
           {issues.map((issue) => (
             <ContentCard
               key={issue.id}
-              to={`/newsletter/${issue.slug}`}
+              {...newsletterLink(issue.slug)}
               tag={issue.issue_number ? `issue / ${issue.issue_number}` : "digest"}
               title={issue.title}
               summary={issue.summary}

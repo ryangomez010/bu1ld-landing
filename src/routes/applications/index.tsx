@@ -12,6 +12,7 @@ import { MemberLayout } from "@/components/member/MemberLayout";
 import { ApplicationStatusBadge } from "@/components/member/ProjectBadges";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { projectLink } from "@/lib/app-paths";
 import { relativeTime } from "@/lib/date";
 import { fetchMyApplications, withdrawApplication } from "@/lib/projects";
 import type { ApplicationStatus, ProjectApplication } from "@/lib/types";
@@ -145,7 +146,7 @@ function ApplicationRow({
     <div className="bg-background/75 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
-          to={app.project_slug ? `/projects/${app.project_slug}` : "/projects"}
+          {...(app.project_slug ? projectLink(app.project_slug) : { to: "/projects" as const })}
           className="font-display text-xl text-bone hover:text-accent-blue transition"
         >
           {app.project_title ?? "Project"}
@@ -165,7 +166,7 @@ function ApplicationRow({
           </p>
           {app.project_slug ? (
             <Link
-              to={`/projects/${app.project_slug}`}
+              {...projectLink(app.project_slug)}
               className="inline-block font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"
             >
               View project & reapply when open →

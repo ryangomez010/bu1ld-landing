@@ -25,6 +25,7 @@ import { BACKGROUND_OPTIONS, INTEREST_OPTIONS } from "@/data/landing";
 import { removeAvatar, uploadAvatar } from "@/lib/avatar-upload";
 import { buildAccountExport, downloadAccountExport } from "@/lib/account-export";
 import { buildProfileShareUrl, ensureProfileSlug } from "@/lib/profile-share";
+import { memberLink } from "@/lib/app-paths";
 import { useAuth } from "@/lib/auth";
 import { buildForYouFeed } from "@/lib/personalization";
 import type { ForYouItem } from "@/lib/personalization";
@@ -297,7 +298,7 @@ function ProfileEditor() {
           {user && profile?.onboarding_completed ? (
             profile.directory_visible !== false ? (
               <Link
-                to={`/members/${user.id}`}
+                {...memberLink(profile.profile_slug || user.id)}
                 className="mt-2 inline-block font-mono text-[10px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
               >
                 View public profile →
@@ -593,8 +594,8 @@ function ProfileEditor() {
             Share profile
           </p>
           <p className="text-xs text-muted-foreground">
-            Copy your public /members/{slug} URL — project leads and collaborators can view your
-            identity card without signing in.
+            Copy your public /members/{shareSlug || user?.id || "…"} URL — project leads and
+            collaborators can view your identity card without signing in.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button

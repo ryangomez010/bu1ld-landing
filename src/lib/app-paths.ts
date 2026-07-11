@@ -36,8 +36,6 @@ export function guideLink(slug: string) {
   return { to: "/guides/$slug" as const, params: { slug } };
 }
 
-export function searchLink(query?: string) {
-  return query?.trim()
-    ? ({ to: "/search" as const, search: { q: query.trim() } } as const)
-    : ({ to: "/search" as const } as const);
+export function searchLink(query = "") {
+  return { to: "/search" as const, search: { q: query.trim() } };
 }

@@ -23,6 +23,7 @@ import {
   updateApplicationStatus,
 } from "@/lib/projects";
 import { relativeTime } from "@/lib/date";
+import { projectEditLink } from "@/lib/app-paths";
 import type { ApplicationStatus, Project, ProjectApplication } from "@/lib/types";
 
 const STATUS_HELP: Record<ApplicationStatus, string> = {
@@ -144,7 +145,7 @@ function ManageProject() {
     <MemberLayout title={project.title} eyebrow="review applications">
       <PageBackLink to="/projects/manage" label="My projects" />
       <Link
-        to={`/projects/edit/${project.slug}`}
+        {...projectEditLink(project.slug)}
         className="mb-6 inline-block font-mono text-[10px] tracking-[0.25em] uppercase text-accent-green hover:text-bone"
       >
         Edit project →

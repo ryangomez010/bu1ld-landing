@@ -8,6 +8,7 @@ import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { ProjectStatusBadge, ProjectTypeBadge } from "@/components/member/ProjectBadges";
 import { useAuth } from "@/lib/auth";
+import { projectEditLink, projectLink, projectManageLink } from "@/lib/app-paths";
 import { fetchLeadProjects } from "@/lib/projects";
 import type { Project } from "@/lib/types";
 
@@ -94,19 +95,19 @@ function ManageContent() {
               </p>
               <div className="mt-4 flex flex-wrap gap-4">
                 <Link
-                  to={`/projects/manage/${p.slug}`}
+                  {...projectManageLink(p.slug)}
                   className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent-green hover:text-bone"
                 >
                   Review applications →
                 </Link>
                 <Link
-                  to={`/projects/edit/${p.slug}`}
+                  {...projectEditLink(p.slug)}
                   className="font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone"
                 >
                   Edit project →
                 </Link>
                 <Link
-                  to={`/projects/${p.slug}`}
+                  {...projectLink(p.slug)}
                   className="font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground hover:text-bone"
                 >
                   Public page →

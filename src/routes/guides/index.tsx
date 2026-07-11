@@ -7,6 +7,7 @@ import { FilterBar } from "@/components/member/FilterBar";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { getAllGuides } from "@/content/guides";
 import { useAuth } from "@/lib/auth";
+import { guideLink, searchLink } from "@/lib/app-paths";
 import { getAllGuideProgress } from "@/lib/reading-progress";
 
 export const Route = createFileRoute("/guides/")({
@@ -146,7 +147,7 @@ function GuidesContent() {
             return (
               <ContentCard
                 key={guide.slug}
-                to={`/guides/${guide.slug}`}
+                {...guideLink(guide.slug)}
                 tag={`guide / ${String(i + 1).padStart(2, "0")}`}
                 title={guide.title}
                 summary={guide.description}
@@ -169,7 +170,7 @@ function GuidesContent() {
 
       <p className="mt-6 text-xs text-muted-foreground">
         Looking for something specific?{" "}
-        <Link to="/search" className="text-accent-blue hover:text-bone">
+        <Link {...searchLink("guides")} className="text-accent-blue hover:text-bone">
           Search guides →
         </Link>
       </p>

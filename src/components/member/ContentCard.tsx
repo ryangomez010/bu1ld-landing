@@ -1,6 +1,7 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { Inbox } from "lucide-react";
-import type { LucideIcon, ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { safeHref } from "@/lib/urls";
 import { cn } from "@/lib/utils";
@@ -57,13 +58,17 @@ export function TagList({
 
 export function ContentCard({
   to,
+  params,
+  search,
   tag,
   title,
   summary,
   meta,
   children,
 }: {
-  to: string;
+  to: LinkProps["to"];
+  params?: LinkProps["params"];
+  search?: LinkProps["search"];
   tag?: string;
   title: string;
   summary?: string | null;
@@ -71,7 +76,12 @@ export function ContentCard({
   children?: React.ReactNode;
 }) {
   return (
-    <Link to={to} className="panel panel-interactive group block p-6 rounded-xl">
+    <Link
+      to={to}
+      params={params}
+      search={search}
+      className="panel panel-interactive group block p-6 rounded-xl"
+    >
       {tag ? <span className="label-xs text-accent-blue/80">{tag}</span> : null}
       <h3 className="font-display text-xl text-bone mt-2 tracking-tight group-hover:text-accent-blue transition-colors">
         {title}

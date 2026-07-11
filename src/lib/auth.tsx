@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
     if (!isValidEmail(email)) return { error: "Enter a valid email address." };
     const pw = validatePassword(password);
-    if (!pw.ok) return { error: pw.error };
+    if (!pw.ok) return { error: pw.reason };
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -147,7 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = getSupabase();
     if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
     const pw = validatePassword(password);
-    if (!pw.ok) return { error: pw.error };
+    if (!pw.ok) return { error: pw.reason };
     const { error } = await supabase.auth.updateUser({ password });
     return { error: error?.message ?? null };
   }, []);

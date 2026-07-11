@@ -33,17 +33,23 @@ export async function fetchCollections(userId: string): Promise<SavedCollection[
 
   if (error || !data) return [];
 
-  return (data as Array<SavedCollection & { saved_collection_items: { count: number }[] }>).map(
-    (row) => ({
-      id: row.id,
-      user_id: row.user_id,
-      name: row.name,
-      description: row.description,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      item_count: row.saved_collection_items?.[0]?.count ?? 0,
-    }),
-  );
+  return (
+    data as Array<
+      SavedCollection & {
+        saved_collection_items: { count: number } | { count: number }[];
+      }
+    >
+  ).map((row) => ({
+    id: row.id,
+    user_id: row.user_id,
+    name: row.name,
+    description: row.description,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    item_count: Array.isArray(row.saved_collection_items)
+      ? (row.saved_collection_items[0]?.count ?? 0)
+      : (row.saved_collection_items?.count ?? 0),
+  }));
 }
 
 export async function createCollection(

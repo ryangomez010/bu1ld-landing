@@ -14,6 +14,7 @@ import { fetchPapers } from "@/lib/content";
 import { getAllPaperScrollProgress } from "@/lib/paper-reading-progress";
 import { getReadPaperSlugs } from "@/lib/paper-read";
 import { paperReadMinutes, pickFeaturedPaper, sortPapersForLibrary } from "@/lib/paper-review";
+import { paperLink } from "@/lib/app-paths";
 import type { Paper } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -100,7 +101,7 @@ function PapersContent() {
 
       {featured && !loading ? (
         <Link
-          to={`/papers/${featured.slug}`}
+          {...paperLink(featured.slug)}
           className="mb-8 block panel glass rounded-2xl p-6 md:p-8 panel-interactive group relative overflow-hidden border-l-2 border-l-bone/30"
         >
           <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground relative z-[1]">
@@ -200,7 +201,7 @@ function PaperLibraryCard({
   const mins = paperReadMinutes(paper);
   return (
     <Link
-      to={`/papers/${paper.slug}`}
+      {...paperLink(paper.slug)}
       className="panel panel-interactive group block rounded-sm p-5 h-full"
     >
       <div className="flex items-start justify-between gap-2">

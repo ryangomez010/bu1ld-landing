@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { getAllGuides } from "@/content/guides";
+import { guideLink } from "@/lib/app-paths";
 import { estimateReadMinutes } from "@/lib/read-time";
 
 export function AdminGuidesTab() {
@@ -23,7 +24,7 @@ export function AdminGuidesTab() {
               </p>
             </div>
             <Link
-              to={`/guides/${g.slug}`}
+              {...guideLink(g.slug)}
               className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"
             >
               Preview →

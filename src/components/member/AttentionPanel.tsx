@@ -1,3 +1,4 @@
+import { type LinkProps } from "@tanstack/react-router";
 import { CtaLink } from "@/components/member/ContentCard";
 import { SectionHeader } from "@/components/member/SectionHeader";
 import type { AttentionItem } from "@/lib/attention";
@@ -32,7 +33,7 @@ export function AttentionPanel({ items }: { items: AttentionItem[] }) {
               <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{item.body}</p>
             </div>
             <CtaLink
-              to={item.href}
+              to={item.href as LinkProps["to"]}
               className="self-start"
               aria-label={`${item.cta}: ${item.title}`}
             >

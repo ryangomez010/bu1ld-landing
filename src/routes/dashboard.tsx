@@ -34,6 +34,7 @@ import { RoleBadge } from "@/components/member/RoleBadge";
 import { SectionHeader } from "@/components/member/SectionHeader";
 import { getAllGuides } from "@/content/guides";
 import { useAuth } from "@/lib/auth";
+import { eventLink, memberLink } from "@/lib/app-paths";
 import {
   useDashboardCatalogQuery,
   useDashboardMemberQuery,
@@ -351,7 +352,7 @@ function DashboardHome() {
                     className="flex justify-between gap-4 items-center"
                   >
                     <Link
-                      to={`/events/${d.event.slug}`}
+                      {...eventLink(d.event.slug)}
                       className="text-bone hover:text-accent-blue transition flex items-center gap-2"
                     >
                       {d.event.title} — {d.label}
@@ -396,7 +397,7 @@ function DashboardHome() {
                 {myRsvps.map((e) => (
                   <li key={e.id}>
                     <Link
-                      to={`/events/${e.slug}`}
+                      {...eventLink(e.slug)}
                       className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 hover:bg-bone/5 transition block"
                     >
                       <span className="text-bone">{e.title}</span>
@@ -505,7 +506,7 @@ function DashboardHome() {
                 {similarMembers.map(({ member, overlap }) => (
                   <Link
                     key={member.id}
-                    to={`/members/${member.id}`}
+                    {...memberLink(member.id)}
                     className="panel panel-interactive p-4 rounded-sm block"
                   >
                     <h3 className="font-display text-base text-bone">

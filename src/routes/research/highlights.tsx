@@ -10,6 +10,7 @@ import { SectionHeader } from "@/components/member/SectionHeader";
 import { useAuth } from "@/lib/auth";
 import { relativeTime } from "@/lib/date";
 import { fetchAllPaperHighlights, type PaperHighlight } from "@/lib/paper-highlights";
+import { paperLink } from "@/lib/app-paths";
 
 export const Route = createFileRoute("/research/highlights")({
   component: HighlightsPage,
@@ -67,7 +68,7 @@ function HighlightsContent() {
               <li key={h.id} className="panel glass-subtle surface-card p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                   <Link
-                    to={`/papers/${h.paper_slug}`}
+                    {...paperLink(h.paper_slug)}
                     className="label-xs text-accent-blue hover:text-bone transition-colors"
                   >
                     {h.paper_slug.replace(/-/g, " ")}

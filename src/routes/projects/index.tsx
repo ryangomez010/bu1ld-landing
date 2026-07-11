@@ -14,6 +14,7 @@ import {
 } from "@/components/member/ProjectBadges";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
+import { projectLink } from "@/lib/app-paths";
 import { useProjectsQuery } from "@/lib/queries/use-projects";
 import { recommendProjects } from "@/lib/personalization";
 import type { ApplicationStatus, ProjectStatus, ProjectType } from "@/lib/types";
@@ -141,7 +142,7 @@ function ProjectsContent() {
             {recommendations.map(({ project, matchTags, reason }) => (
               <Link
                 key={project.id}
-                to={`/projects/${project.slug}`}
+                {...projectLink(project.slug)}
                 className="panel panel-interactive p-4 rounded-sm block"
               >
                 <h3 className="font-display text-base text-bone">{project.title}</h3>
@@ -169,7 +170,7 @@ function ProjectsContent() {
           {list.map((project) => (
             <Link
               key={project.id}
-              to={`/projects/${project.slug}`}
+              {...projectLink(project.slug)}
               className="panel panel-interactive group block p-6 rounded-sm"
             >
               <div className="flex flex-wrap items-center gap-2">
@@ -222,7 +223,7 @@ function ProjectsContent() {
             {alumni.map((project) => (
               <Link
                 key={project.id}
-                to={`/projects/${project.slug}`}
+                {...projectLink(project.slug)}
                 className="panel panel-interactive group block p-6 rounded-sm opacity-90 hover:-translate-y-px"
               >
                 <ProjectStatusBadge status={project.status} />

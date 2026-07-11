@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { Button } from "@/components/ui/button";
 import { getAllGuides } from "@/content/guides";
+import { guideLink } from "@/lib/app-paths";
 import { saveReadingProgress } from "@/lib/reading-progress";
 import type { Guide, GuideSection } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -188,7 +189,7 @@ export function GuideReader({
         <div className="mt-10 flex flex-wrap justify-between gap-4 border-t border-border/60 pt-6">
           {prev ? (
             <Link
-              to={`/guides/${prev.slug}`}
+              {...guideLink(prev.slug)}
               className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone max-w-[45%]"
             >
               ← {prev.title}
@@ -198,7 +199,7 @@ export function GuideReader({
           )}
           {next ? (
             <Link
-              to={`/guides/${next.slug}`}
+              {...guideLink(next.slug)}
               className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone max-w-[45%] text-right"
             >
               {next.title} →

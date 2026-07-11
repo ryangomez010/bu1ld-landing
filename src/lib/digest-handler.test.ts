@@ -33,21 +33,51 @@ function postDigest(
   });
 }
 
+function getDigest(auth = "Bearer digest-secret"): Request {
+  return new Request("https://app.example.com/api/digest", {
+    method: "GET",
+    headers: { authorization: auth },
+  });
+}
+
 describe("handleDigestRequest", () => {
-  test("rejects non-POST methods", async () => {
+  test("rejects unsupported methods", async () => {
     const res = await handleDigestRequest(
-      new Request("https://app.example.com/api/digest", { method: "GET" }),
+      new Request("https://app.example.com/api/digest", { method: "DELETE" }),
       DIGEST_ENV,
     );
     expect(res.status).toBe(405);
   });
 
-  test("rejects cross-origin requests in production", async () => {
+  test("allows GET cron with bearer auth and skips origin check", async () => {
+    globalThis.fetch = mock((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/member_preferences")) {
+        return Promise.resolve(new Response(JSON.stringify([]), { status: 200 }));
+      }
+      if (url.includes("/rest/v1/")) {
+        return Promise.resolve(new Response(JSON.stringify([]), { status: 200 }));
+      }
+      return Promise.resolve(new Response("{}", { status: 404 }));
+    }) as typeof fetch;
+
+    const res = await handleDigestRequest(getDigest(), DIGEST_ENV);
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as { ok?: boolean };
+    expect(json.ok).toBe(true);
+  });
+
+  test("rejects cross-origin POST in production", async () => {
     const res = await handleDigestRequest(
       postDigest({ dryRun: true }, "Bearer digest-secret", { origin: "https://evil.com" }),
       DIGEST_ENV,
     );
     expect(res.status).toBe(403);
+  });
+
+  test("rejects invalid digest payload", async () => {
+    const res = await handleDigestRequest(postDigest({ frequency: "monthly" }), DIGEST_ENV);
+    expect(res.status).toBe(400);
   });
 
   test("rejects oversized payloads", async () => {
@@ -122,5 +152,20 @@ describe("handleDigestRequest", () => {
     const json = (await res.json()) as { ok?: boolean; skipped?: number };
     expect(json.ok).toBe(true);
     expect(json.skipped).toBeGreaterThanOrEqual(0);
+  });
+
+  test("rate limits repeated requests", async () => {
+    globalThis.fetch = mock(() =>
+      Promise.resolve(new Response(JSON.stringify([]), { status: 200 })),
+    ) as typeof fetch;
+
+    const env = { ...DIGEST_ENV, RATE_LIMIT_MAX: undefined };
+    let lastStatus = 200;
+    for (let i = 0; i < 12; i++) {
+      const res = await handleDigestRequest(getDigest(), env);
+      lastStatus = res.status;
+      if (lastStatus === 429) break;
+    }
+    expect(lastStatus).toBe(429);
   });
 });

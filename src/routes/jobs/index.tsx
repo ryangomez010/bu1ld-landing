@@ -9,6 +9,7 @@ import { JobSourceBadge } from "@/components/member/ProjectBadges";
 import { useAuth } from "@/lib/auth";
 import { isWithinDays } from "@/lib/date";
 import { fetchMyJobApplications } from "@/lib/job-applications";
+import { jobLink } from "@/lib/app-paths";
 import { fetchJobs } from "@/lib/projects";
 import type { Job } from "@/lib/types";
 
@@ -122,7 +123,7 @@ function JobsContent() {
           {filtered.map((job) => (
             <Link
               key={job.id}
-              to={`/jobs/${job.slug}`}
+              {...jobLink(job.slug)}
               className="bg-background/75 p-6 hover:bg-bone/5 transition block"
             >
               <div className="flex flex-wrap items-center gap-2">

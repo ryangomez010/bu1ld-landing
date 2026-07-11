@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
+import { jobLink } from "@/lib/app-paths";
 import { relativeTime } from "@/lib/date";
 import {
   fetchMyJobApplications,
@@ -113,7 +114,7 @@ function JobTrackerContent() {
             <div key={app.id} className="bg-background/75 p-6 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Link
-                  to={`/jobs/${app.job_slug}`}
+                  {...jobLink(app.job_slug)}
                   className="font-display text-xl text-bone hover:text-accent-blue transition"
                 >
                   {app.job_title}

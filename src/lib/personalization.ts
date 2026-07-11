@@ -122,21 +122,21 @@ export async function buildForYouFeed(
 ): Promise<ForYouItem[]> {
   if (!interests.length) return [];
 
-  const sources =
-    opts?.sources ??
-    (await Promise.all([
-      fetchEvents(),
-      fetchPapers(),
-      fetchProjects("open"),
-      fetchJobs(),
-      fetchNewsletters(),
-    ]).then(([events, papers, projects, jobs, newsletters]) => ({
-      events,
-      papers,
-      projects,
-      jobs,
-      newsletters,
-    })));
+  const defaultSources = await Promise.all([
+    fetchEvents(),
+    fetchPapers(),
+    fetchProjects("open"),
+    fetchJobs(),
+    fetchNewsletters(),
+  ]).then(([events, papers, projects, jobs, newsletters]) => ({
+    events,
+    papers,
+    projects,
+    jobs,
+    newsletters,
+  }));
+
+  const sources = opts?.sources ?? defaultSources;
 
   const { events, papers, projects, jobs, newsletters } = sources;
   const guides = getAllGuides();

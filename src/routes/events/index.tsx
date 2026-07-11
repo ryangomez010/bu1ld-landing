@@ -9,6 +9,7 @@ import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { eventLink } from "@/lib/app-paths";
 import { fetchEvents } from "@/lib/content";
 import { fetchMyRsvpEventIds, toggleEventRsvp } from "@/lib/event-rsvp";
 import { daysUntil, formatDate, nearestDeadline } from "@/lib/date";
@@ -151,7 +152,7 @@ function EventsContent() {
                 className="panel flex flex-col sm:flex-row sm:items-stretch gap-0 rounded-sm overflow-hidden"
               >
                 <Link
-                  to={`/events/${event.slug}`}
+                  {...eventLink(event.slug)}
                   className="flex-1 block p-6 hover:bg-bone/5 transition group"
                 >
                   <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-accent-blue/80">

@@ -7,6 +7,7 @@ import { MemberLayout } from "@/components/member/MemberLayout";
 import { ReportContentButton } from "@/components/member/ReportContentButton";
 import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { fetchNewsletterBySlug, fetchNewsletters } from "@/lib/content";
+import { newsletterLink } from "@/lib/app-paths";
 import { formatDate } from "@/lib/date";
 import type { NewsletterIssue } from "@/lib/types";
 
@@ -94,7 +95,7 @@ function NewsletterDetail() {
         <div className="mt-12 flex flex-wrap justify-between gap-4 border-t border-border/60 pt-6">
           {prev ? (
             <Link
-              to={`/newsletter/${prev.slug}`}
+              {...newsletterLink(prev.slug)}
               className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone"
             >
               ← {prev.title}
@@ -104,7 +105,7 @@ function NewsletterDetail() {
           )}
           {next ? (
             <Link
-              to={`/newsletter/${next.slug}`}
+              {...newsletterLink(next.slug)}
               className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone"
             >
               {next.title} →

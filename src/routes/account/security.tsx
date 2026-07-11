@@ -131,8 +131,8 @@ function AccountSecurityContent() {
   return (
     <MemberLayout title="Account security" eyebrow="member settings">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Password, connected sign-in providers, active sessions, and account deletion. Security events
-        log here after password changes and global sign-outs.
+        Password, connected sign-in providers, active sessions, and account deletion. Security
+        events log here after password changes and global sign-outs.
       </p>
       {!isSupabaseConfigured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red mb-6">
@@ -295,8 +295,8 @@ function AccountSecurityContent() {
             </h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Removes your profile, saved items, applications, and notifications from The Bu1ld. Your auth
-            login may remain in Supabase until an admin purges it — contact{" "}
+            Removes your profile, saved items, applications, and notifications from The Bu1ld. Your
+            auth login may remain in Supabase until an admin purges it — contact{" "}
             <a href="mailto:hello@thebu1ld.com" className="text-accent-blue hover:text-bone">
               hello@thebu1ld.com
             </a>{" "}

@@ -40,10 +40,10 @@ function PrivacyPage() {
             <h2 className="font-display text-xl text-bone mb-2">How we use it</h2>
             <p>
               Profile data is shared with project leads when you apply to a project — they see your
-              application answers and public profile fields. We use your email for sign-in,
-              password reset, and optional notifications (applications, digests, event reminders).
-              Reading progress and highlights stay private unless you share a collection. We do not
-              sell your data or run third-party ad tracking.
+              application answers and public profile fields. We use your email for sign-in, password
+              reset, and optional notifications (applications, digests, event reminders). Reading
+              progress and highlights stay private unless you share a collection. We do not sell
+              your data or run third-party ad tracking.
             </p>
           </section>
           <section>
@@ -71,8 +71,8 @@ function PrivacyPage() {
           <section>
             <h2 className="font-display text-xl text-bone mb-2">Cookies</h2>
             <p>
-              We use session cookies for authentication only. No third-party advertising trackers
-              at launch. If we add analytics later, this page will be updated before they go live.
+              We use session cookies for authentication only. No third-party advertising trackers at
+              launch. If we add analytics later, this page will be updated before they go live.
             </p>
           </section>
         </div>

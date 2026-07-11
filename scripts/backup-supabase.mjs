@@ -38,7 +38,7 @@ try {
 
   const manifest = {
     createdAt: new Date().toISOString(),
-    tables: [] as { name: string; rowCount: number }[],
+    tables: [],
   };
 
   for (const { tablename } of tables) {
@@ -49,7 +49,9 @@ try {
   await writeFile(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 2));
 
   console.log(`Wrote ${manifest.tables.length} table counts to ${outDir}/manifest.json`);
-  console.log("For full data restore, use Supabase point-in-time recovery or pg_dump against your project.");
+  console.log(
+    "For full data restore, use Supabase point-in-time recovery or pg_dump against your project.",
+  );
 } catch (e) {
   console.error(e);
   process.exit(1);

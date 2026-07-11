@@ -7,6 +7,7 @@ import { CtaLink, InlineEmpty } from "@/components/member/ContentCard";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { SectionHeader } from "@/components/member/SectionHeader";
 import { Button } from "@/components/ui/button";
+import { projectLink } from "@/lib/app-paths";
 import { fetchMyProjectFollows, setProjectFollowNotify } from "@/lib/project-follows";
 import { fetchProjects } from "@/lib/projects";
 import type { Project } from "@/lib/types";
@@ -59,7 +60,7 @@ export function WatchedProjectsPanel({ userId }: { userId: string }) {
               key={p.id}
               className="panel glass-subtle surface-card p-4 flex items-start justify-between gap-3"
             >
-              <Link to={`/projects/${p.slug}`} className="min-w-0 flex-1 hover:opacity-90">
+              <Link {...projectLink(p.slug)} className="min-w-0 flex-1 hover:opacity-90">
                 <p className="font-display text-base text-bone line-clamp-2">{p.title}</p>
                 <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{p.description}</p>
               </Link>

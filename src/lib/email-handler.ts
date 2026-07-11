@@ -26,6 +26,7 @@ export type EmailEnv = {
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
   VITE_SUPABASE_URL?: string;
+  VITE_SUPABASE_ANON_KEY?: string;
   NODE_ENV?: string;
   ENVIRONMENT?: string;
   /** Set to "true" only for local dev when EMAIL_API_SECRET is unset. */
@@ -33,6 +34,8 @@ export type EmailEnv = {
   /** Cloudflare KV binding for distributed rate limits. */
   RATE_LIMIT_KV?: RateLimitKv;
 };
+
+type EmailAuth = { mode: "secret" } | { mode: "session"; userId: string; email: string };
 
 const MAX_BODY_BYTES = 64_000;
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -44,28 +47,67 @@ function isProduction(env: EmailEnv): boolean {
 
 function requireAuth(env: EmailEnv): Response | null {
   const secret = env.EMAIL_API_SECRET?.trim();
-  if (secret) {
-    return null;
-  }
-  if (isProduction(env)) {
-    return jsonResponse({ error: "Email API secret not configured" }, 503);
-  }
+  if (secret) return null;
+  if (isProduction(env)) return null;
   if (env.EMAIL_ALLOW_UNAUTH_DEV !== "true") {
     return jsonResponse({ error: "Unauthorized" }, 401);
   }
   return null;
 }
 
-function checkAuth(request: Request, env: EmailEnv): Response | null {
+async function resolveEmailAuth(request: Request, env: EmailEnv): Promise<EmailAuth | Response> {
+  const secret = env.EMAIL_API_SECRET?.trim();
+  const auth = request.headers.get("authorization");
+  const bearer = auth?.startsWith("Bearer ") ? auth.slice("Bearer ".length).trim() : "";
+
+  if (secret && bearer === secret) {
+    return { mode: "secret" };
+  }
+
+  if (bearer) {
+    const supabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
+    const apiKey = env.VITE_SUPABASE_ANON_KEY;
+    if (supabaseUrl && apiKey && isTrustedSupabaseUrl(supabaseUrl)) {
+      const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
+        headers: {
+          Authorization: `Bearer ${bearer}`,
+          apikey: apiKey,
+        },
+      });
+      if (userRes.ok) {
+        const user = (await userRes.json()) as { id?: string; email?: string };
+        if (user.id && user.email) {
+          return { mode: "session", userId: user.id, email: user.email.trim() };
+        }
+      }
+    }
+  }
+
   const authFailure = requireAuth(env);
   if (authFailure) return authFailure;
 
-  const secret = env.EMAIL_API_SECRET?.trim();
-  if (!secret) return null;
+  if (!isProduction(env) && env.EMAIL_ALLOW_UNAUTH_DEV === "true") {
+    return { mode: "secret" };
+  }
 
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${secret}`) {
+  if (secret) {
     return jsonResponse({ error: "Unauthorized" }, 401);
+  }
+
+  return jsonResponse({ error: "Unauthorized" }, 401);
+}
+
+function authorizeRecipient(
+  auth: EmailAuth,
+  body: { to?: string; userId?: string },
+): Response | null {
+  if (auth.mode === "secret") return null;
+
+  if (body.userId && body.userId !== auth.userId) {
+    return jsonResponse({ error: "Forbidden" }, 403);
+  }
+  if (body.to && body.to.trim().toLowerCase() !== auth.email.toLowerCase()) {
+    return jsonResponse({ error: "Forbidden" }, 403);
   }
   return null;
 }
@@ -112,8 +154,8 @@ export async function handleEmailRequest(request: Request, env: EmailEnv): Promi
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
-  const authError = checkAuth(request, env);
-  if (authError) return authError;
+  const authResult = await resolveEmailAuth(request, env);
+  if (authResult instanceof Response) return authResult;
 
   const originError = checkOrigin(request, env);
   if (originError) return originError;
@@ -148,6 +190,9 @@ export async function handleEmailRequest(request: Request, env: EmailEnv): Promi
   }
   const body = parsed.data;
 
+  const recipientError = authorizeRecipient(authResult, body);
+  if (recipientError) return recipientError;
+
   const subject = clampText(body.subject, LIMITS.emailSubject);
   const html = sanitizeEmailHtml(clampText(body.html, LIMITS.emailHtml));
 
@@ -157,25 +202,31 @@ export async function handleEmailRequest(request: Request, env: EmailEnv): Promi
   }
 
   if (!to && body.userId) {
-    const supabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
-    const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !serviceKey) {
-      return jsonResponse({ error: "Cannot resolve user email" }, 503);
+    if (authResult.mode === "session" && body.userId === authResult.userId) {
+      to = authResult.email;
+    } else if (authResult.mode !== "secret") {
+      return jsonResponse({ error: "Forbidden" }, 403);
+    } else {
+      const supabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
+      const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!supabaseUrl || !serviceKey) {
+        return jsonResponse({ error: "Cannot resolve user email" }, 503);
+      }
+      if (!isTrustedSupabaseUrl(supabaseUrl)) {
+        return jsonResponse({ error: "Invalid Supabase configuration" }, 503);
+      }
+      const userRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${body.userId}`, {
+        headers: {
+          Authorization: `Bearer ${serviceKey}`,
+          apikey: serviceKey,
+        },
+      });
+      if (!userRes.ok) {
+        return jsonResponse({ error: "User not found" }, 404);
+      }
+      const user = (await userRes.json()) as { email?: string };
+      to = user.email?.trim();
     }
-    if (!isTrustedSupabaseUrl(supabaseUrl)) {
-      return jsonResponse({ error: "Invalid Supabase configuration" }, 503);
-    }
-    const userRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${body.userId}`, {
-      headers: {
-        Authorization: `Bearer ${serviceKey}`,
-        apikey: serviceKey,
-      },
-    });
-    if (!userRes.ok) {
-      return jsonResponse({ error: "User not found" }, 404);
-    }
-    const user = (await userRes.json()) as { email?: string };
-    to = user.email?.trim();
   }
 
   if (!to || !isValidEmail(to)) {

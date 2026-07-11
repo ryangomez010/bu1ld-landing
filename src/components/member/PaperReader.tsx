@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { getAllGuides } from "@/content/guides";
+import { guideLink, paperLink } from "@/lib/app-paths";
 import {
   addPaperHighlight,
   deletePaperHighlight,
@@ -138,7 +139,7 @@ function ReaderSidebar({
             {relatedGuides.map((g) => (
               <li key={g.slug}>
                 <Link
-                  to={`/guides/${g.slug}`}
+                  {...guideLink(g.slug)}
                   className="text-sm text-muted-foreground hover:text-bone transition line-clamp-2"
                 >
                   {g.title}
@@ -343,7 +344,7 @@ export function PaperReader({
           <nav className="mt-14 grid gap-3 sm:grid-cols-2 border-t border-border/50 pt-8">
             {prev ? (
               <Link
-                to={`/papers/${prev.slug}`}
+                {...paperLink(prev.slug)}
                 className="rounded-sm border border-border/50 p-4 hover:border-bone/20 transition"
               >
                 <span className="font-mono text-[8px] uppercase text-muted-foreground">
@@ -356,7 +357,7 @@ export function PaperReader({
             )}
             {next ? (
               <Link
-                to={`/papers/${next.slug}`}
+                {...paperLink(next.slug)}
                 className="rounded-sm border border-border/50 p-4 hover:border-bone/20 transition sm:text-right"
               >
                 <span className="font-mono text-[8px] uppercase text-muted-foreground">Next</span>

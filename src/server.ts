@@ -1,7 +1,10 @@
 import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
-import { handleAccountDeletionRequest, type AccountDeletionEnv } from "./lib/account-deletion-handler";
+import {
+  handleAccountDeletionRequest,
+  type AccountDeletionEnv,
+} from "./lib/account-deletion-handler";
 import { handleDigestRequest, type DigestEnv } from "./lib/digest-handler";
 import { handleEmailRequest, type EmailEnv } from "./lib/email-handler";
 import { renderErrorPage } from "./lib/error-page";

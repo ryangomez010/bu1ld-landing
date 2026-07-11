@@ -35,7 +35,16 @@ export async function fetchEndorsementsForProfile(profileId: string): Promise<Sk
 
   if (error || !data) return withLocalFallback([], () => readLocal(profileId));
 
-  return data.map((row) => {
+  type EndorsementRow = {
+    id: string;
+    endorser_id: string;
+    profile_id: string;
+    skill: string;
+    created_at: string;
+    profiles: { full_name?: string } | null;
+  };
+
+  return (data as EndorsementRow[]).map((row) => {
     const profile = row.profiles as { full_name?: string } | null;
     return {
       id: String(row.id),

@@ -53,7 +53,7 @@ export async function searchPortalRemote(query: string): Promise<SearchResult[] 
   }
 
   return (data as RemoteHit[])
-    .map((row) => {
+    .map((row): SearchResult | null => {
       const type = TYPE_MAP[row.content_type];
       if (!type) return null;
       return {
@@ -63,7 +63,7 @@ export async function searchPortalRemote(query: string): Promise<SearchResult[] 
         summary: row.summary ?? "",
         href: hrefFor(type, row.slug),
         tags: [],
-      } satisfies SearchResult;
+      };
     })
     .filter((x): x is SearchResult => x !== null);
 }

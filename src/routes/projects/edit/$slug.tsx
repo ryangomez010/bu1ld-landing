@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { fetchProjectBySlug, updateProject } from "@/lib/projects";
+import { projectManageLink } from "@/lib/app-paths";
 import type { Project, ProjectStatus, ProjectType } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/edit/$slug")({
@@ -259,7 +260,7 @@ function EditProjectForm() {
             Unpublish
           </Button>
           <Link
-            to={`/projects/manage/${project.slug}`}
+            {...projectManageLink(project.slug)}
             className="inline-flex items-center font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone px-4"
           >
             Cancel

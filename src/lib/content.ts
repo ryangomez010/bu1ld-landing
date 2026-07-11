@@ -252,8 +252,7 @@ export async function bulkSetContentPublished(
   if (!err && actorId) {
     await logAdminAction(actorId, published ? "content.bulk_publish" : "content.bulk_unpublish", {
       targetType: table,
-      targetIds: ids,
-      count: ids.length,
+      detail: { targetIds: ids, count: ids.length },
     });
   }
   return { error: err?.message ?? null, count: err ? 0 : ids.length };
@@ -293,7 +292,7 @@ export async function updateEventAdmin(
   if (!supabase) return { error };
   const { error: err } = await supabase
     .from("events")
-    .update({ ...patch, updated_at: new Date().toISOString() })
+    .update({ ...patch, updated_at: new Date().toISOString() } as Partial<MlEvent>)
     .eq("id", id);
   return { error: err?.message ?? null };
 }

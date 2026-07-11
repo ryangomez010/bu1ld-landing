@@ -182,6 +182,7 @@ export function MemberLayout({
     <div className="space-y-0.5">
       <Link
         to="/search"
+        search={{ q: "" }}
         onClick={onNavigate}
         className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
       >
@@ -287,6 +288,7 @@ export function MemberLayout({
             <div className="hidden lg:flex flex-1 items-center max-w-md ml-2">
               <Link
                 to="/search"
+                search={{ q: "" }}
                 className="panel glass-subtle flex flex-1 items-center justify-between gap-2 rounded-xl px-3 py-2.5 font-mono text-[10px] tracking-[0.12em] uppercase text-muted-foreground hover:text-bone transition"
               >
                 <span className="flex items-center gap-2">

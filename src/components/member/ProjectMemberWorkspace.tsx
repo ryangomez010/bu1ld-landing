@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ExternalLink, Users } from "lucide-react";
 
+import { memberLink } from "@/lib/app-paths";
 import type { Project } from "@/lib/types";
 import type { ProjectApplication } from "@/lib/types";
 
@@ -52,7 +53,7 @@ export function ProjectMemberWorkspace({
               {teamMembers.map((m) => (
                 <Link
                   key={m.userId}
-                  to={`/members/${m.userId}`}
+                  {...memberLink(m.userId)}
                   className="rounded-sm border border-border/60 px-3 py-2 text-sm text-bone hover:border-bone/30 transition"
                 >
                   {m.name}

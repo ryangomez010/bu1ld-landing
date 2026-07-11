@@ -16,6 +16,7 @@ import {
   Users,
 } from "lucide-react";
 
+import { searchLink } from "@/lib/app-paths";
 import {
   CommandDialog,
   CommandEmpty,
@@ -71,7 +72,7 @@ export function MemberCommandPalette() {
               value={label}
               onSelect={() => {
                 setOpen(false);
-                void navigate({ to });
+                void navigate(to === "/search" ? searchLink() : { to });
               }}
             >
               <Icon className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -84,7 +85,7 @@ export function MemberCommandPalette() {
             value="search portal"
             onSelect={() => {
               setOpen(false);
-              void navigate({ to: "/search" });
+              void navigate(searchLink());
             }}
           >
             <Search className="mr-2 h-4 w-4 text-muted-foreground" />

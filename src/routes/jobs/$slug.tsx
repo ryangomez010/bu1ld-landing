@@ -11,6 +11,7 @@ import { ReportContentButton } from "@/components/member/ReportContentButton";
 import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { jobLink } from "@/lib/app-paths";
 import { getJobApplicationStatus, upsertJobApplication } from "@/lib/job-applications";
 import { fetchJobBySlug, fetchJobs } from "@/lib/projects";
 import type { Job } from "@/lib/types";
@@ -173,7 +174,7 @@ function JobDetail() {
               {related.map((r) => (
                 <Link
                   key={r.id}
-                  to={`/jobs/${r.slug}`}
+                  {...jobLink(r.slug)}
                   className="bg-background/75 p-5 hover:bg-bone/5 transition block"
                 >
                   <JobSourceBadge source={r.source} />

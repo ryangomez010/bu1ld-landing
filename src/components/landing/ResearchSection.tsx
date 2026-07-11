@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { SectionShell } from "@/components/landing/Section";
@@ -47,7 +47,7 @@ export function ResearchSection() {
 
           if (reduce) {
             return (
-              <Link key={r.id} to={r.href} className={className}>
+              <Link key={r.id} to={r.href as LinkProps["to"]} className={className}>
                 {inner}
                 <span className="mt-6 inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
                   Explore thread →
@@ -64,7 +64,7 @@ export function ResearchSection() {
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.7 }}
             >
-              <Link to={r.href} className={className}>
+              <Link to={r.href as LinkProps["to"]} className={className}>
                 {inner}
                 <span className="mt-6 inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
                   Explore thread →

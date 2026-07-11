@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
+import { memberLink, projectEditLink, projectLink, projectManageLink } from "@/lib/app-paths";
 import {
   applyToProject,
   fetchProjectBySlug,
@@ -202,7 +203,7 @@ function ProjectDetail() {
               {teamMembers.map((m) => (
                 <Link
                   key={m.userId}
-                  to={`/members/${m.userId}`}
+                  {...memberLink(m.userId)}
                   className="rounded-sm border border-border/60 px-3 py-2 text-sm text-bone hover:border-bone/30 transition"
                 >
                   {m.name}
@@ -370,13 +371,13 @@ function ProjectDetail() {
         {isLead ? (
           <div className="mt-6 flex flex-wrap gap-4">
             <Link
-              to={`/projects/manage/${project.slug}`}
+              {...projectManageLink(project.slug)}
               className="inline-flex font-mono text-[10px] tracking-[0.25em] uppercase text-accent-green hover:text-bone"
             >
               Manage applications →
             </Link>
             <Link
-              to={`/projects/edit/${project.slug}`}
+              {...projectEditLink(project.slug)}
               className="inline-flex font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone"
             >
               Edit project →
@@ -393,7 +394,7 @@ function ProjectDetail() {
               {related.map((r) => (
                 <Link
                   key={r.id}
-                  to={`/projects/${r.slug}`}
+                  {...projectLink(r.slug)}
                   className="bg-background/75 p-5 hover:bg-bone/5 transition block"
                 >
                   <div className="flex gap-2">

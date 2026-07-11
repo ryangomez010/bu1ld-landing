@@ -10,7 +10,8 @@ import { slugify } from "@/data/seed/content";
 import { generateEventPrep } from "@/lib/admin";
 import { deleteContentRow, setContentPublished, updateEventAdmin } from "@/lib/content";
 import { getSupabase } from "@/lib/supabase";
-import type { MlEvent } from "@/lib/types";
+import type { EventResource, MlEvent } from "@/lib/types";
+import { eventLink } from "@/lib/app-paths";
 
 export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved: () => void }) {
   const [title, setTitle] = useState("");
@@ -50,9 +51,11 @@ export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved
       .filter(Boolean)
       .map((line) => {
         const [label, resourceUrl, kind] = line.split("|").map((s) => s.trim());
-        return label && resourceUrl ? { label, url: resourceUrl, kind: kind || "other" } : null;
+        return label && resourceUrl
+          ? { label, url: resourceUrl, kind: (kind || "other") as EventResource["kind"] }
+          : null;
       })
-      .filter(Boolean) as { label: string; url: string; kind: string }[];
+      .filter(Boolean) as EventResource[];
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -246,7 +249,7 @@ export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved
                 </div>
               )}
               <div className="mt-2 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.15em]">
-                <Link to={`/events/${ev.slug}`} className="text-accent-blue">
+                <Link {...eventLink(ev.slug)} className="text-accent-blue">
                   view
                 </Link>
                 <button

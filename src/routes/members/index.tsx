@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
+import { memberLink } from "@/lib/app-paths";
 import { fetchMemberDirectory, sharedInterests } from "@/lib/members";
 import type { DirectoryMember } from "@/lib/members";
 import type { MemberBackground } from "@/lib/types";
@@ -169,7 +170,7 @@ function MemberCard({ member }: { member: DirectoryMember }) {
 
   return (
     <Link
-      to={`/members/${member.profile_slug || member.id}`}
+      {...memberLink(member.profile_slug || member.id)}
       className="panel glass-subtle panel-interactive surface-card-interactive p-5 block h-full"
     >
       <div className="flex items-start gap-3">

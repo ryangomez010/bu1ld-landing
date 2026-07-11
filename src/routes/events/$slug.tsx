@@ -14,6 +14,7 @@ import { ShareButton } from "@/components/member/ShareButton";
 import { Button } from "@/components/ui/button";
 import { buildIcsEvent, downloadIcs } from "@/lib/calendar";
 import { fetchEventBySlug, fetchEvents, relatedEvents } from "@/lib/content";
+import { eventLink } from "@/lib/app-paths";
 import { daysUntil, formatDate } from "@/lib/date";
 import { fetchRsvpCount, isRsvped, toggleEventRsvp } from "@/lib/event-rsvp";
 import { useAuth } from "@/lib/auth";
@@ -240,7 +241,7 @@ function EventDetail() {
               {related.map((r) => (
                 <Link
                   key={r.id}
-                  to={`/events/${r.slug}`}
+                  {...eventLink(r.slug)}
                   className="bg-background/75 p-5 hover:bg-bone/5 transition block"
                 >
                   <h3 className="font-display text-lg text-bone">{r.title}</h3>
