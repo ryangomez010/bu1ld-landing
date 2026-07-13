@@ -13,7 +13,7 @@ export function RequireProjectLead({ children }: { children: React.ReactNode }) 
     );
   }
 
-  if (!isProjectLead(profile?.role)) {
+  if (!isProjectLead(profile?.role, profile?.institutional_roles)) {
     return (
       <div className="rounded-sm border border-border/60 p-8 text-center">
         <h2 className="font-display text-xl text-bone">Project lead access required</h2>

@@ -1,8 +1,8 @@
 import { createNotification } from "@/lib/notifications";
-import { clampText, LIMITS, sanitizeAppPath } from "@/lib/security";
+import { clampText, LIMITS } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
 import { isSafeUrl } from "@/lib/urls";
-import type { OnboardingData, Profile } from "@/lib/types";
+import type { InstitutionalRole, OnboardingData, Profile } from "@/lib/types";
 
 export async function fetchProfile(userId: string): Promise<Profile | null> {
   const supabase = getSupabase();
@@ -15,7 +15,15 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
-  return { ...data, role: (data as Profile).role ?? "member" };
+  const { data: roleRows } = await supabase
+    .from("member_roles")
+    .select("role")
+    .eq("user_id", userId);
+  return {
+    ...data,
+    role: (data as Profile).role ?? "member",
+    institutional_roles: (roleRows ?? []).map((row) => row.role as InstitutionalRole),
+  } as Profile;
 }
 
 export async function upsertProfile(userId: string, patch: Partial<Profile>): Promise<Profile> {

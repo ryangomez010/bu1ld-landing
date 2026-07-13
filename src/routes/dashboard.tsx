@@ -53,6 +53,9 @@ export const Route = createFileRoute("/dashboard")({
   }),
 });
 
+const EMPTY_APPLICATIONS: import("@/lib/types").ProjectApplication[] = [];
+const EMPTY_RSVPS: import("@/lib/types").MlEvent[] = [];
+
 function DashboardPage() {
   return (
     <RequireMember>
@@ -73,13 +76,13 @@ function DashboardHome() {
   const announcements = catalogQuery.data?.announcements ?? [];
   const memberQuery = useDashboardMemberQuery(user?.id, profile, events);
   const guideProgress = memberQuery.data?.guideProgress ?? {};
-  const myApplications = memberQuery.data?.myApplications ?? [];
+  const myApplications = memberQuery.data?.myApplications ?? EMPTY_APPLICATIONS;
   const activity = memberQuery.data?.activity ?? [];
   const savedItems = memberQuery.data?.savedItems ?? [];
   const unreadNotifications = memberQuery.data?.unreadNotifications ?? 0;
   const recentViews = memberQuery.data?.recentViews ?? [];
   const similarMembers = memberQuery.data?.similarMembers ?? [];
-  const myRsvps = memberQuery.data?.myRsvps ?? [];
+  const myRsvps = memberQuery.data?.myRsvps ?? EMPTY_RSVPS;
   const engagement = memberQuery.data?.engagement ?? null;
   const attention = memberQuery.data?.attention ?? [];
   const papersThisWeek = memberQuery.data?.papersThisWeek ?? 0;

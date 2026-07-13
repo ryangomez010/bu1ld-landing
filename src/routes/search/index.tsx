@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { EmptyState } from "@/components/member/ContentCard";
-import { FilterBar } from "@/components/member/FilterBar";
 import { FilterChip } from "@/components/member/FilterChip";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
@@ -14,7 +13,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useAuth } from "@/lib/auth";
 import { clearRecentSearches, getRecentSearches, pushRecentSearch } from "@/lib/recent-search";
 import { getTrendingBrowse } from "@/lib/personalization";
-import { buildSearchIndex, searchIndex, searchPortal } from "@/lib/search";
+import { buildSearchIndex, searchPortal } from "@/lib/search";
 import type { SearchResult } from "@/lib/types";
 
 export const Route = createFileRoute("/search/")({

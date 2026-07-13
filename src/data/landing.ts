@@ -48,55 +48,57 @@ export const PROGRAMS = [
     tag: "P-01",
     name: "AI Builder Cohort",
     time: "12 weeks, rolling",
-    href: "/projects",
-    body: "A project-driven cohort where builders ship a production ML system end to end, from paper reading to deployed inference.",
+    href: "/programs",
+    body: "A project-driven cohort for turning a scoped technical question into a reproducible prototype, clear documentation, and a final demo.",
   },
   {
     tag: "P-02",
     name: "Research Fellowship",
     time: "6 months, selective",
-    href: "/jobs",
-    body: "Co-advised research with academic collaborators, targeting strong venue submissions and clean open-source reference code.",
+    href: "/programs",
+    body: "A structured research cycle for developing a question, testing it with disciplined experiments, and publishing an evidence-backed project record.",
   },
   {
     tag: "P-03",
     name: "Startup Incubation",
     time: "ongoing",
-    href: "/lead/apply",
-    body: "Translate a research thread into a venture with technical due diligence, founder matching, infra credits, and a runway to first users.",
+    href: "/projects",
+    body: "For active builders who want to test whether a technical thread deserves a real product prototype and early user conversations.",
   },
 ] as const;
 
 export const STARTUPS = [
   {
-    name: "NeuroCad",
-    stage: "scaling",
+    name: "Applied ML threads",
+    stage: "research",
     domain: "Text to CAD",
     href: "/projects",
-    thesis: "Natural language to manufacturable CAD assemblies, with a learned mechanical prior.",
+    thesis:
+      "Members turn a narrow technical hypothesis into an inspectable build, with evidence, limitations, and a next decision.",
   },
   {
-    name: "Colorworld",
-    stage: "seed",
+    name: "Prototype practice",
+    stage: "prototype",
     domain: "Generative color",
     href: "/newsletter",
     thesis:
-      "An AI color coding generator that produces brand-coherent palettes and full design tokens from intent.",
+      "Small, end-to-end systems that make a research claim tangible enough to test with users or evaluators.",
   },
   {
-    name: "Exovian Games",
-    stage: "prototype",
+    name: "Research-to-product review",
+    stage: "research",
     domain: "AI native games",
     href: "/newsletter",
     thesis:
-      "Game worlds where the simulator, NPCs, and narrative are driven by on-device learned models.",
+      "A place to decide whether a result is ready for further research, an open artifact, or a product experiment.",
   },
   {
-    name: "Eigen Δ",
+    name: "Documented outcomes",
     stage: "research",
     domain: "Foundation models",
     href: "/papers",
-    thesis: "Compact delta-trained foundation models that specialize in hours, not weeks.",
+    thesis:
+      "Milestones, contribution records, repositories, and postmortems make progress legible without inflating claims.",
   },
   {
     name: "Many more",
@@ -111,8 +113,8 @@ export const STARTUPS = [
 export const TEAM = [
   { name: "Ryan Gomez", role: "Founder, Research & Systems", initials: "RG", color: "blue" },
   {
-    name: "UC Physics PhD",
-    role: "Principal Researcher, Physics ML",
+    name: "Research contributors",
+    role: "Method, experiments, and review",
     initials: "ΦD",
     color: "green",
   },
@@ -128,7 +130,7 @@ export const BENEFITS = [
   "Research threads with weekly demos, not quarterly slide decks",
   "A distributed roster — researchers, systems engineers, founders, and students on the same threads",
   "Paper reviews that name failure modes, not just benchmark deltas",
-  "Open project listings with public output, application history, and lead review notes",
+  "Open project listings with explicit scope, private applications, and attributed collaboration records",
 ] as const;
 
 export const MEMBERSHIP_PERKS = [
@@ -165,7 +167,7 @@ export const FAQ = [
   },
   {
     q: "Do you prefer papers or products?",
-    a: "Both, depending on the thread. Research threads target venue submissions with reproducible code. Startup builds target working demos and first users. The application pitch should name which outcome you are optimizing for in the first 30 days.",
+    a: "Both, depending on the thread. Research work should leave behind a reproducible method or result; startup work should leave behind a working prototype and a grounded decision. The application pitch should name the outcome you can advance in the first 30 days.",
   },
   {
     q: "What happens after I join?",
@@ -182,10 +184,10 @@ export const FAQ = [
 ] as const;
 
 export const STATS = [
-  ["100+", "builders"],
-  ["6", "active research threads"],
-  ["3", "program tracks"],
-  ["Stanford · MIT · UC", "research collaborators"],
+  ["Papers", "reviews and explainers"],
+  ["Projects", "open research and builds"],
+  ["Programs", "cohorts and workshops"],
+  ["Records", "milestones and contributions"],
 ] as const;
 
 export const NAV_ITEMS = [
@@ -201,6 +203,7 @@ export const NAV_ITEMS = [
 
 export const DISCORD_URL = "https://discord.gg/NG4QYat4P";
 export const CONTACT_EMAIL = "ryan@thebu1ld.com";
+export const LINKEDIN_URL = "https://www.linkedin.com/in/ryan-gomez-03701b363/";
 
 export const stageColor: Record<string, string> = {
   research: "text-bone border-bone/40",

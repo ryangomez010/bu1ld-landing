@@ -41,6 +41,7 @@ function EventDetail() {
   const [rsvped, setRsvped] = useState(false);
   const [rsvpCount, setRsvpCount] = useState(0);
   const [rsvpBusy, setRsvpBusy] = useState(false);
+  const eventId = event?.id;
 
   useEffect(() => {
     void Promise.all([fetchEventBySlug(slug), fetchEvents()]).then(([e, all]) => {
@@ -51,10 +52,10 @@ function EventDetail() {
   }, [slug]);
 
   useEffect(() => {
-    if (!user || !event) return;
-    void isRsvped(user.id, event.id).then(setRsvped);
-    void fetchRsvpCount(event.id).then(setRsvpCount);
-  }, [user, event?.id]);
+    if (!user || !eventId) return;
+    void isRsvped(user.id, eventId).then(setRsvped);
+    void fetchRsvpCount(eventId).then(setRsvpCount);
+  }, [user, eventId]);
 
   const onToggleRsvp = async () => {
     if (!user || !event) return;

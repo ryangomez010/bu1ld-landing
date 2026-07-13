@@ -1,4 +1,10 @@
 export type MemberRole = "member" | "project_lead" | "admin";
+export type InstitutionalRole =
+  | "researcher"
+  | "project_lead"
+  | "reviewer"
+  | "mentor"
+  | "administrator";
 
 export type MemberBackground = "researcher" | "engineer" | "founder" | "student" | "other";
 
@@ -30,6 +36,7 @@ export type Profile = {
   profile_slug?: string | null;
   weekly_paper_goal?: number;
   role: MemberRole;
+  institutional_roles?: InstitutionalRole[];
   created_at: string;
   updated_at: string;
 };
@@ -91,6 +98,12 @@ export type Paper = {
   published_at: string;
   created_at: string;
   updated_at: string;
+  content_kind?: "review" | "explainer" | "research_note";
+  field?: string | null;
+  difficulty?: "introductory" | "intermediate" | "advanced" | null;
+  source_url?: string | null;
+  reviewer_id?: string | null;
+  review_status?: "draft" | "in_review" | "published";
 };
 
 export type NewsletterIssue = {
@@ -148,6 +161,10 @@ export type Project = {
   capacity: number;
   team_count: number;
   published: boolean;
+  publication_status?: "draft" | "submitted" | "changes_requested" | "published" | "archived";
+  publication_note?: string | null;
+  published_by?: string | null;
+  published_at?: string | null;
   discord_url?: string | null;
   workspace_links?: { label: string; url: string; kind?: string }[];
   created_at: string;
@@ -180,6 +197,123 @@ export type ProjectApplication = {
   applicant_linkedin?: string | null;
   applicant_github?: string | null;
   applicant_interests?: string[];
+  review_note?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+};
+
+export type ProjectMembership = {
+  project_id: string;
+  user_id: string;
+  member_role: "lead" | "contributor" | "mentor" | "reviewer";
+  status: "active" | "paused" | "alumni" | "removed";
+  joined_at: string;
+  left_at: string | null;
+  member_name?: string | null;
+  member_background?: MemberBackground | null;
+};
+
+export type MilestoneStatus = "planned" | "in_progress" | "blocked" | "completed";
+export type CollaborationVisibility = "team" | "public";
+
+export type ProjectMilestone = {
+  id: string;
+  project_id: string;
+  title: string;
+  description: string;
+  status: MilestoneStatus;
+  visibility: CollaborationVisibility;
+  due_date: string | null;
+  completed_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ContributionType =
+  | "research"
+  | "experiment"
+  | "code"
+  | "review"
+  | "design"
+  | "product"
+  | "operations";
+
+export type ProjectContribution = {
+  id: string;
+  project_id: string;
+  milestone_id: string | null;
+  contributor_id: string;
+  contribution_type: ContributionType;
+  title: string;
+  summary: string;
+  evidence_url: string | null;
+  visibility: CollaborationVisibility;
+  verification_status: "submitted" | "verified" | "needs_changes";
+  verification_note?: string | null;
+  verified_by: string | null;
+  verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProgramType = "cohort" | "fellowship" | "workshop";
+export type Program = {
+  id: string;
+  slug: string;
+  title: string;
+  program_type: ProgramType;
+  summary: string;
+  application_instructions: string | null;
+  starts_at: string | null;
+  ends_at: string | null;
+  capacity: number | null;
+  applications_open_at?: string | null;
+  applications_close_at?: string | null;
+  outcomes?: string | null;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type InstitutionalClaimType =
+  | "affiliation"
+  | "publication"
+  | "project_outcome"
+  | "member_stat"
+  | "program_outcome"
+  | "other";
+
+export type InstitutionalClaim = {
+  id: string;
+  claim_type: InstitutionalClaimType;
+  statement: string;
+  context: string | null;
+  evidence_url: string;
+  evidence_label: string;
+  status: "draft" | "verified" | "retired";
+  valid_until: string | null;
+  created_by: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProgramApplication = {
+  id: string;
+  program_id: string;
+  user_id: string;
+  statement: string;
+  status: ApplicationStatus;
+  created_at: string;
+  updated_at: string;
+  review_note?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+  applicant_name?: string | null;
+  applicant_background?: MemberBackground | null;
+  program_title?: string | null;
 };
 
 export type Job = {
@@ -248,4 +382,10 @@ export type AdminStats = {
   events: number;
   papers: number;
   jobs: number;
+  programs: number;
+  contributions: number;
+  verifiedContributions: number;
+  evidenceClaims: number;
+  pendingProjectReviews: number;
+  pendingProgramApplications: number;
 };

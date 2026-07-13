@@ -1611,3 +1611,6 @@ on conflict (phase) do nothing;
 grant execute on function public.notify_users(uuid[], text, text, text, uuid) to authenticated;
 grant execute on function public.get_project_update_subscribers(uuid) to authenticated;
 grant execute on function public.increment_reading_activity(uuid, date) to authenticated;
+
+-- Phase 19 is maintained separately so existing installations can migrate safely.
+-- For a fresh setup, run supabase/phase19.sql immediately after this file.

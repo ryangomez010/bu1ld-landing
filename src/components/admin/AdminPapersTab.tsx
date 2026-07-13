@@ -5,9 +5,15 @@ import { AdminContentRow } from "@/components/admin/AdminContentRow";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { slugify } from "@/data/seed/content";
-import { generatePaperDraft } from "@/lib/admin";
 import { useAuth } from "@/lib/auth";
 import { deleteContentRow, setContentPublished, updatePaperAdmin } from "@/lib/content";
 import { getSupabase } from "@/lib/supabase";
@@ -18,17 +24,20 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState("");
   const [review, setReview] = useState("");
-  const [draftNotes, setDraftNotes] = useState("");
+  const [summary, setSummary] = useState("");
   const [tags, setTags] = useState("");
+  const [field, setField] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
+  const [contentKind, setContentKind] = useState<NonNullable<Paper["content_kind"]>>("review");
+  const [difficulty, setDifficulty] = useState<NonNullable<Paper["difficulty"]>>("intermediate");
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editAuthors, setEditAuthors] = useState("");
   const [editReview, setEditReview] = useState("");
-
-  const onDraft = () => {
-    setReview(generatePaperDraft(title, authors, draftNotes));
-  };
+  const [editSummary, setEditSummary] = useState("");
+  const [editField, setEditField] = useState("");
+  const [editSourceUrl, setEditSourceUrl] = useState("");
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,12 +52,19 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
       slug,
       title,
       authors,
+      summary,
       review_body: review,
       tags: tags
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean),
       published: false,
+      content_kind: contentKind,
+      field: field || null,
+      difficulty,
+      source_url: sourceUrl || null,
+      reviewer_id: user?.id ?? null,
+      review_status: "draft",
     });
     setSaving(false);
     if (error) {
@@ -59,7 +75,10 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
     setTitle("");
     setAuthors("");
     setReview("");
+    setSummary("");
     setTags("");
+    setField("");
+    setSourceUrl("");
     onSaved();
   };
 
@@ -97,21 +116,66 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
           <Label>Tags (comma-separated)</Label>
           <Input value={tags} onChange={(e) => setTags(e.target.value)} />
         </div>
-        <div className="space-y-2">
-          <Label>Your notes (for draft assist)</Label>
-          <Textarea value={draftNotes} onChange={(e) => setDraftNotes(e.target.value)} rows={3} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Format</Label>
+            <Select
+              value={contentKind}
+              onValueChange={(value) => setContentKind(value as NonNullable<Paper["content_kind"]>)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="review">Paper review</SelectItem>
+                <SelectItem value="explainer">Explainer</SelectItem>
+                <SelectItem value="research_note">Research note</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Difficulty</Label>
+            <Select
+              value={difficulty}
+              onValueChange={(value) => setDifficulty(value as NonNullable<Paper["difficulty"]>)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="introductory">Introductory</SelectItem>
+                <SelectItem value="intermediate">Intermediate</SelectItem>
+                <SelectItem value="advanced">Advanced</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Field</Label>
+            <Input value={field} onChange={(event) => setField(event.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label>Primary source</Label>
+            <Input
+              type="url"
+              value={sourceUrl}
+              onChange={(event) => setSourceUrl(event.target.value)}
+            />
+          </div>
         </div>
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label>Review (markdown)</Label>
-            <button
-              type="button"
-              onClick={onDraft}
-              className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"
-            >
-              Generate draft
-            </button>
-          </div>
+          <Label>Editorial summary</Label>
+          <Textarea
+            value={summary}
+            onChange={(event) => setSummary(event.target.value)}
+            rows={3}
+            minLength={40}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Review (markdown)</Label>
           <Textarea value={review} onChange={(e) => setReview(e.target.value)} rows={8} required />
         </div>
         <Button
@@ -119,7 +183,7 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
           disabled={saving}
           className="font-mono text-[10px] tracking-[0.2em] uppercase"
         >
-          {saving ? "Saving…" : "Publish review"}
+          {saving ? "Saving…" : "Save private draft"}
         </Button>
       </form>
       <div>
@@ -147,6 +211,22 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
                     onChange={(e) => setEditReview(e.target.value)}
                     rows={4}
                   />
+                  <Textarea
+                    value={editSummary}
+                    onChange={(event) => setEditSummary(event.target.value)}
+                    rows={3}
+                  />
+                  <Input
+                    value={editField}
+                    onChange={(event) => setEditField(event.target.value)}
+                    placeholder="Field"
+                  />
+                  <Input
+                    type="url"
+                    value={editSourceUrl}
+                    onChange={(event) => setEditSourceUrl(event.target.value)}
+                    placeholder="Primary source URL"
+                  />
                 </>
               }
               onStartEdit={() => {
@@ -154,6 +234,9 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
                 setEditTitle(p.title);
                 setEditAuthors(p.authors ?? "");
                 setEditReview(p.review_body);
+                setEditSummary(p.summary ?? "");
+                setEditField(p.field ?? "");
+                setEditSourceUrl(p.source_url ?? p.arxiv_url ?? "");
               }}
               onCancelEdit={() => setEditingId(null)}
               onSaveEdit={() => {
@@ -161,6 +244,9 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
                   title: editTitle,
                   authors: editAuthors || null,
                   review_body: editReview,
+                  summary: editSummary || null,
+                  field: editField || null,
+                  source_url: editSourceUrl || null,
                 }).then(({ error }) => {
                   if (error) toast.error(error);
                   else {

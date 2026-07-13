@@ -81,8 +81,8 @@ function PapersContent() {
     <MemberLayout title="Paper reviews" eyebrow="research library">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 -mt-4">
         <p className="text-muted-foreground max-w-2xl leading-relaxed">
-          Member-written reviews on transformer classics and active research threads — each covers
-          the method, reproducibility gaps, and what we would prototype next at The Bu1ld.
+          Reviews, explainers, and research notes organized around the questions that matter in
+          practice: what the method does, where evidence is thin, and what to test next.
         </p>
         <Link
           to="/research"
@@ -213,7 +213,7 @@ function PaperLibraryCard({
               : "border-accent-blue/40 text-accent-blue",
           )}
         >
-          {paper.is_classic ? "classic" : "review"}
+          {paper.content_kind ?? (paper.is_classic ? "classic" : "review")}
         </span>
         {isRead ? (
           <span className="font-mono text-[8px] uppercase text-accent-green">Read ✓</span>
@@ -228,7 +228,8 @@ function PaperLibraryCard({
       </h3>
       <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{paper.summary}</p>
       <p className="mt-3 font-mono text-[9px] uppercase text-muted-foreground">
-        {[paper.authors, paper.year].filter(Boolean).join(" · ")} · {mins} min
+        {[paper.field, paper.difficulty, paper.authors, paper.year].filter(Boolean).join(" · ")} ·{" "}
+        {mins} min
       </p>
       {!isRead && progress > 0 ? (
         <div className="mt-3 h-1 rounded-full bg-border/60 overflow-hidden">

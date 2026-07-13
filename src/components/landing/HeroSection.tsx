@@ -14,9 +14,8 @@ export function HeroSection() {
     >
       <div className="relative mx-auto max-w-7xl px-6 w-full pb-24">
         <div className="absolute top-24 right-6 hidden md:flex flex-col items-end gap-1 font-mono text-[9px] tracking-[0.3em] uppercase text-bone/40">
-          <span>lat 37.4275° N</span>
-          <span>lng 122.1697° W</span>
-          <span>cycle 2026.Q2</span>
+          <span>independent / distributed</span>
+          <span>research + building</span>
         </div>
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 24 }}
@@ -24,7 +23,7 @@ export function HeroSection() {
           transition={{ duration: reduce ? 0 : 1.0, delay: reduce ? 0 : 0.15 }}
           className="max-w-5xl"
         >
-          <SectionLabel id="00">a machine learning institution</SectionLabel>
+          <SectionLabel id="00">independent machine-learning work</SectionLabel>
           <h1 className="font-display font-bold mt-8 text-[clamp(2.8rem,8.2vw,7.8rem)] leading-[0.9] tracking-[-0.035em]">
             <Wordmark />
             <span className="block text-foreground/90 mt-5">
@@ -32,20 +31,20 @@ export function HeroSection() {
               <br className="hidden md:block" />
               and{" "}
               <span className="italic text-bone relative">
-                systems that ship.
+                evidence you can inspect.
                 <span className="caret-blink" />
               </span>
             </span>
           </h1>
           <p className="mt-10 max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
-            The Bu1ld is a machine learning institution where researchers, engineers, and founders
-            work on the same threads — reading papers on Monday, prototyping by Friday, and
-            pressure-testing ideas before they become products.
+            The Bu1ld is an independent membership platform for people who want machine-learning
+            work to leave a trace: a careful reading, a reproducible experiment, a working
+            prototype, or a candid record of what did not hold up.
           </p>
           <p className="mt-4 max-w-xl text-sm text-muted-foreground/90">
-            One member account gives you paper reviews, internal guides, open project applications,
-            event deadlines with calendar export, job listings, and a searchable directory of
-            builders filtered by background and interests.
+            Members can study papers by field and difficulty, apply to scoped projects, record
+            contributions against milestones, follow confirmed events, and find collaborators by
+            relevant experience—not by a social feed.
           </p>
           <div className="mt-12 flex flex-wrap gap-4">
             <Link
@@ -59,7 +58,7 @@ export function HeroSection() {
               href="#research"
               className="inline-flex items-center gap-3 px-7 py-3.5 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:border-bone/50 hover:bg-bone/5 active:scale-[0.98] transition-all duration-200"
             >
-              See what we ship
+              See the working model
             </a>
           </div>
         </motion.div>

@@ -67,6 +67,13 @@ const TABLES = [
   "member_feedback",
   "content_reports",
   "member_preferences",
+  "member_roles",
+  "project_memberships",
+  "project_milestones",
+  "project_contributions",
+  "programs",
+  "program_applications",
+  "institutional_claims",
   "schema_migrations",
 ];
 

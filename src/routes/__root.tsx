@@ -93,17 +93,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "The Bu1ld — A Machine Learning Institution" },
+      { title: "The Bu1ld — Machine Learning Research and Building" },
       {
         name: "description",
         content:
-          "The Bu1ld is a machine learning institution — open research threads, member paper reviews, project applications, events, and a builder directory. Free membership at launch.",
+          "The Bu1ld is a machine-learning research and building platform for paper reviews, scoped projects, contribution records, confirmed events, and technical profiles.",
       },
       { property: "og:title", content: "The Bu1ld" },
       {
         property: "og:description",
         content:
-          "Research threads, prototypes, and systems that ship. Join open projects, read member paper reviews, and apply with your full profile attached.",
+          "Read closely, apply to scoped work, record what you contribute, and build an evidence-backed technical practice.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

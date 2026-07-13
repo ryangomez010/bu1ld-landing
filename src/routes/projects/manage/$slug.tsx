@@ -14,6 +14,13 @@ import { ApplicationStatusBadge } from "@/components/member/ProjectBadges";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   bulkUpdateApplicationStatus,
@@ -24,7 +31,13 @@ import {
 } from "@/lib/projects";
 import { relativeTime } from "@/lib/date";
 import { projectEditLink } from "@/lib/app-paths";
-import type { ApplicationStatus, Project, ProjectApplication } from "@/lib/types";
+import { fetchProjectMemberships, setProjectMembershipStatus } from "@/lib/project-collaboration";
+import type {
+  ApplicationStatus,
+  Project,
+  ProjectApplication,
+  ProjectMembership,
+} from "@/lib/types";
 
 const STATUS_HELP: Record<ApplicationStatus, string> = {
   pending: "Awaiting your review — accept, waitlist, or decline.",
@@ -51,6 +64,7 @@ function ManageProject() {
   const { slug } = Route.useParams();
   const [project, setProject] = useState<Project | null>(null);
   const [applications, setApplications] = useState<ProjectApplication[]>([]);
+  const [memberships, setMemberships] = useState<ProjectMembership[]>([]);
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [declineNote, setDeclineNote] = useState("");
@@ -59,13 +73,17 @@ function ManageProject() {
   const reload = useCallback(() => {
     if (!project) return;
     void fetchProjectApplications(project.id).then(setApplications);
+    void fetchProjectMemberships(project.id).then(setMemberships);
   }, [project]);
 
   useEffect(() => {
     void fetchProjectBySlug(slug).then((p) => {
       setProject(p);
       setLoading(false);
-      if (p) void fetchProjectApplications(p.id).then(setApplications);
+      if (p) {
+        void fetchProjectApplications(p.id).then(setApplications);
+        void fetchProjectMemberships(p.id).then(setMemberships);
+      }
     });
   }, [slug]);
 
@@ -171,6 +189,70 @@ function ManageProject() {
           <p className="mt-2 font-display text-2xl text-bone">{accepted}</p>
         </div>
       </div>
+
+      {memberships.some((membership) => membership.member_role !== "lead") ? (
+        <section className="mb-8 rounded-sm border border-border/60 bg-background/60 p-5">
+          <div>
+            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-accent-green">
+              Project roster
+            </p>
+            <h2 className="mt-2 font-display text-xl text-bone">Contributor lifecycle</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Pause someone without freeing their historical record, mark completed collaborators as
+              alumni, or remove access. Application decisions remain preserved separately.
+            </p>
+          </div>
+          <div className="mt-4 grid gap-2 md:grid-cols-2">
+            {memberships
+              .filter((membership) => membership.member_role !== "lead")
+              .map((membership) => (
+                <article
+                  key={membership.user_id}
+                  className="rounded-sm border border-border/50 p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm text-bone">{membership.member_name ?? "Member"}</p>
+                      <p className="mt-1 font-mono text-[8px] uppercase text-muted-foreground">
+                        {membership.member_role} · joined{" "}
+                        {new Date(membership.joined_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <span className="font-mono text-[8px] uppercase text-accent-blue">
+                      {membership.status}
+                    </span>
+                  </div>
+                  <Select
+                    value={membership.status}
+                    onValueChange={(status) =>
+                      void setProjectMembershipStatus(
+                        project.id,
+                        membership.user_id,
+                        status as ProjectMembership["status"],
+                      ).then(({ error }) => {
+                        if (error) toast.error(error);
+                        else {
+                          toast.success("Membership status updated.");
+                          reload();
+                        }
+                      })
+                    }
+                  >
+                    <SelectTrigger className="mt-3 h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="paused">Paused</SelectItem>
+                      <SelectItem value="alumni">Alumni</SelectItem>
+                      <SelectItem value="removed">Removed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </article>
+              ))}
+          </div>
+        </section>
+      ) : null}
 
       {selected.size > 0 ? (
         <div className="mb-6 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-4 space-y-3">

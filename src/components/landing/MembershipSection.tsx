@@ -10,7 +10,7 @@ export function MembershipSection() {
       eyebrow="02"
       label="membership"
       title="Become a member."
-      subtitle="Free at launch — no payment step. Set up your profile in four steps, apply to open research threads, and get notified when deadlines, applications, and project updates change."
+      subtitle="Create a profile, state the work you can do, and use the platform to move from reading to a concrete contribution. Membership access and any program requirements are stated where they apply."
     >
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border/40 border border-border/40">
         {MEMBERSHIP_PERKS.map((perk) => (

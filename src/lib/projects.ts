@@ -67,6 +67,13 @@ function normalizeProject(row: Record<string, unknown>): Project {
     capacity: Number(row.capacity ?? 5),
     team_count: Number(row.team_count ?? 0),
     published: Boolean(row.published ?? true),
+    publication_status:
+      row.publication_status != null
+        ? (row.publication_status as Project["publication_status"])
+        : undefined,
+    publication_note: row.publication_note != null ? String(row.publication_note) : null,
+    published_by: row.published_by != null ? String(row.published_by) : null,
+    published_at: row.published_at != null ? String(row.published_at) : null,
     discord_url: row.discord_url != null ? String(row.discord_url) : null,
     workspace_links: Array.isArray(row.workspace_links)
       ? (row.workspace_links as { label: string; url: string; kind?: string }[])
@@ -117,8 +124,11 @@ function normalizeJob(row: Record<string, unknown>): Job {
   };
 }
 
-export function isProjectLead(role: string | undefined): boolean {
-  return role === "project_lead" || role === "admin";
+export function isProjectLead(
+  role: string | undefined,
+  institutionalRoles: string[] | undefined = [],
+): boolean {
+  return role === "project_lead" || role === "admin" || institutionalRoles.includes("project_lead");
 }
 
 // ─── Projects ───────────────────────────────────────────────────────────────
@@ -213,7 +223,8 @@ export async function createProject(
         lead_name: leadName,
         capacity: valid.capacity,
         team_count: 0,
-        published: true,
+        published: false,
+        publication_status: "draft",
         discord_url: valid.discord_url ?? null,
       })
       .select("*")
@@ -239,7 +250,8 @@ export async function createProject(
     lead_name: leadName,
     capacity: valid.capacity,
     team_count: 0,
-    published: true,
+    published: false,
+    publication_status: "draft",
     discord_url: valid.discord_url ?? null,
     created_at: now,
     updated_at: now,
@@ -292,6 +304,66 @@ export async function updateProject(
   custom[idx] = { ...custom[idx], ...patch, updated_at: now };
   writeCustomProjects(custom);
   return { project: custom[idx], error: null };
+}
+
+export async function submitProjectForReview(
+  projectId: string,
+): Promise<{ project: Project | null; error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase)
+    return { project: null, error: "Project review requires a live database connection." };
+  const { data, error } = await supabase.rpc("submit_project_for_review", {
+    p_project_id: projectId,
+  });
+  return {
+    project: data ? normalizeProject(data as Record<string, unknown>) : null,
+    error: error?.message ?? null,
+  };
+}
+
+export async function fetchAllProjectsAdmin(): Promise<Project[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .order("updated_at", { ascending: false });
+  return error ? [] : (data ?? []).map((row) => normalizeProject(row as Record<string, unknown>));
+}
+
+export async function reviewProjectPublication(
+  projectId: string,
+  decision: "published" | "changes_requested" | "archived",
+  note?: string,
+): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "Project review requires a live database connection." };
+  const { data: project } = await supabase
+    .from("projects")
+    .select("lead_id, slug, title")
+    .eq("id", projectId)
+    .maybeSingle();
+  const { error } = await supabase.rpc("review_project_publication", {
+    p_project_id: projectId,
+    p_decision: decision,
+    p_note: note?.trim() || null,
+  });
+  if (!error && project?.lead_id) {
+    const label =
+      decision === "published"
+        ? "published"
+        : decision === "changes_requested"
+          ? "returned for revision"
+          : "archived";
+    await createNotification(project.lead_id, {
+      title: `Project ${label}`,
+      body: note?.trim()
+        ? `“${project.title}” was ${label}. Editorial note: ${note.trim()}`
+        : `“${project.title}” was ${label}.`,
+      href: `/projects/${project.slug}`,
+    });
+  }
+  return { error: error?.message ?? null };
 }
 
 export function relatedProjects(project: Project, all: Project[], limit = 3): Project[] {
@@ -459,10 +531,11 @@ export async function updateApplicationStatus(
       });
     }
 
-    const { error } = await supabase
-      .from("project_applications")
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq("id", applicationId);
+    const { error } = await supabase.rpc("review_project_application", {
+      p_application_id: applicationId,
+      p_status: status,
+      p_note: opts?.declineNote?.trim() || null,
+    });
     if (error) return { error: error.message };
   } else {
     const apps = readLocalApps();

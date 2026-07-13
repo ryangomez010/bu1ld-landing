@@ -6,9 +6,9 @@ export function TeamSection() {
     <SectionShell
       id="team"
       eyebrow="06"
-      label="collective"
-      title="Builders and researchers."
-      subtitle="A growing roster of engineers, physicists, and founders — distributed across time zones, working on the same research threads."
+      label="people and practice"
+      title="A small, accountable core."
+      subtitle="The Bu1ld names people only when their role is confirmed. Project teams and program contributors are represented through their own records, with members controlling directory visibility."
     >
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-border/40 border border-border/40">
         {TEAM.map((m) => (

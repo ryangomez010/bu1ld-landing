@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { INSTITUTION_TAKE } from "@/data/copy";
 import { safeHref } from "@/lib/urls";
 import type { ReviewSection } from "@/lib/paper-review";
-import { cn } from "@/lib/utils";
 
 function renderInline(text: string): ReactNode {
   const parts = text.split(/(\*\*[^*]+\*\*|\[([^\]]+)\]\(([^)]+)\))/g).filter(Boolean);

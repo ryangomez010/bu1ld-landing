@@ -1,4 +1,4 @@
-import { isSensitiveAction, LIMITS, sanitizeText } from "@/lib/security";
+import { isSensitiveAction, sanitizeText } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
 
 export type SecurityEvent = {

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { Wordmark } from "@/components/Wordmark";
+import { LINKEDIN_URL } from "@/data/landing";
 
 export function SiteFooter() {
   const [time, setTime] = useState("");
@@ -28,20 +29,27 @@ export function SiteFooter() {
           <span className="text-bone/30">·</span>
           <span>© 2026 the bu1ld</span>
           <span className="text-bone/30">·</span>
-          <span>machine learning institution</span>
+          <span>ml research + building</span>
         </div>
         <div className="flex items-center gap-4">
+          <a
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-bone transition"
+          >
+            LinkedIn
+          </a>
           <Link to="/privacy" className="hover:text-bone transition">
             Privacy
           </Link>
           <Link to="/terms" className="hover:text-bone transition">
             Terms
           </Link>
+          <Link to="/evidence" className="hover:text-bone transition">
+            Evidence
+          </Link>
           <span>{time}</span>
-          <span className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-green animate-pulse" />
-            live
-          </span>
         </div>
       </div>
     </footer>

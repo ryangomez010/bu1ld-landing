@@ -1,4 +1,4 @@
-import { clampText, sanitizeText } from "@/lib/security";
+import { sanitizeText } from "@/lib/security";
 import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 

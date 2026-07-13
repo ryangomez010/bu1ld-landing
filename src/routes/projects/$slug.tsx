@@ -19,6 +19,7 @@ import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { ProjectMemberWorkspace } from "@/components/member/ProjectMemberWorkspace";
 import { ProjectUpdatesSection } from "@/components/member/ProjectUpdatesSection";
+import { ProjectEvidenceSection } from "@/components/member/ProjectEvidenceSection";
 import { ShareButton } from "@/components/member/ShareButton";
 import {
   ApplicationStatusBadge,
@@ -42,6 +43,7 @@ import {
 } from "@/lib/projects";
 import { pushRecentView } from "@/lib/recent-views";
 import type { Project, ProjectApplication } from "@/lib/types";
+import { fetchProjectMembership } from "@/lib/project-collaboration";
 
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
@@ -62,6 +64,7 @@ function ProjectDetail() {
   const [application, setApplication] = useState<ProjectApplication | null>(null);
   const [related, setRelated] = useState<Project[]>([]);
   const [teamMembers, setTeamMembers] = useState<Array<{ name: string; userId: string }>>([]);
+  const [isCollaborator, setIsCollaborator] = useState(false);
   const [pitch, setPitch] = useState("");
   const [editingPitch, setEditingPitch] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -85,6 +88,13 @@ function ProjectDetail() {
       slug: project.slug,
       title: project.title,
       href: `/projects/${project.slug}`,
+    });
+  }, [user, project]);
+
+  useEffect(() => {
+    if (!user || !project) return;
+    void fetchProjectMembership(project.id, user.id).then((membership) => {
+      setIsCollaborator(membership?.status === "active" || membership?.status === "paused");
     });
   }, [user, project]);
 
@@ -138,7 +148,8 @@ function ProjectDetail() {
 
   const isFull = project.team_count >= project.capacity;
   const canApply = project.status === "open" && !application && !isFull;
-  const isLead = project.lead_id === user?.id || isProjectLead(profile?.role);
+  const isLead =
+    project.lead_id === user?.id || isProjectLead(profile?.role, profile?.institutional_roles);
 
   return (
     <MemberLayout>
@@ -155,6 +166,21 @@ function ProjectDetail() {
           ) : null}
         </div>
         <h1 className="font-display text-4xl text-bone mt-4 tracking-tight">{project.title}</h1>
+        {!project.published && project.lead_id === user?.id ? (
+          <div className="mt-4 max-w-3xl rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-4 text-sm leading-relaxed text-muted-foreground">
+            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-accent-blue">
+              {project.publication_status === "submitted"
+                ? "Editorial review in progress"
+                : project.publication_status === "changes_requested"
+                  ? "Revisions requested"
+                  : "Private draft"}
+            </p>
+            <p className="mt-2">
+              {project.publication_note ??
+                "Only you and administrators can see this brief until it is approved for the project directory."}
+            </p>
+          </div>
+        ) : null}
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <SaveToCollectionButton
             itemType="project"
@@ -244,6 +270,16 @@ function ProjectDetail() {
             </div>
             <ApplicationStatusTimeline status={application.status} />
             <ApplicationNextSteps status={application.status} />
+            {application.review_note ? (
+              <div className="mt-4 rounded-sm border border-border/50 bg-background/50 p-4">
+                <p className="font-mono text-[8px] tracking-[0.2em] uppercase text-muted-foreground">
+                  Note from the project lead
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/90">
+                  {application.review_note}
+                </p>
+              </div>
+            ) : null}
             {editingPitch && application.status === "pending" ? (
               <form
                 className="mt-4 space-y-3"
@@ -363,9 +399,16 @@ function ProjectDetail() {
           projectId={project.id}
           projectSlug={project.slug}
           projectTitle={project.title}
-          canPost={isLead}
+          canPost={isLead || isCollaborator}
           authorId={user?.id}
           authorName={profile?.full_name ?? undefined}
+        />
+
+        <ProjectEvidenceSection
+          projectId={project.id}
+          userId={user?.id}
+          canManage={isLead}
+          isCollaborator={isCollaborator}
         />
 
         {isLead ? (

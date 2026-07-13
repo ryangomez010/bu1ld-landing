@@ -1,6 +1,6 @@
 # The Bu1ld — Member Platform
 
-A machine learning institution membership hub: projects, guides, papers, events, jobs, and admin tooling.
+An independent machine-learning research and building platform: projects, guides, papers, events, programs, and administration.
 
 ## Stack
 
@@ -29,8 +29,8 @@ Open `http://localhost:3000`
 
 ## Supabase setup
 
-1. Paste `supabase/full-setup.sql` into the SQL editor (or `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`).
-   - Existing projects: run incremental `supabase/phase10.sql`, `phase11.sql`, then `phase12.sql` for RSVPs, paper sync, newsletter subscriptions, DB search, and admin audit log.
+1. Run `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`, or paste `supabase/full-setup.sql`, then `supabase/phase19.sql`, `phase20.sql`, `phase21.sql`, and `phase22.sql` into the SQL editor in that order.
+   - Existing projects: apply every missing incremental phase through `phase22.sql`. Phases 19–22 add programmes, project memberships, contribution evidence and review, governed project publication, institutional roles, application windows, and the public evidence register.
    - Seed/update content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_DB_PASSWORD`) or paste `supabase/seed-data.sql` in the SQL editor.
    - Apply a single phase: `bun run supabase:apply-phase -- phase12.sql`
 2. Seed demo content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or DB password), or paste `supabase/seed-data.sql`.
@@ -54,19 +54,21 @@ update public.profiles set role = 'admin' where id = '<your-user-uuid>';
 | `bun run supabase:verify` | Check tables + auth connectivity  |
 | `bun run supabase:apply`  | Apply full schema via Postgres    |
 | `bun run supabase:seed`   | Import seed content into Supabase |
+| `bun run release:check`   | Types, tests, lint, production build, and manual release actions |
 
 ## Email
 
 Deploy `api/email.ts` on Vercel (or use `/api/email` on Cloudflare via `src/server.ts`).
 
-| Server secret               | Purpose                                              |
-| --------------------------- | ---------------------------------------------------- |
-| `RESEND_API_KEY`            | Resend API key                                       |
-| `EMAIL_API_SECRET`          | Bearer token clients send as `VITE_EMAIL_API_SECRET` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Resolve recipient email by `userId`                  |
-| `EMAIL_FROM`                | Optional sender override                             |
+| Server secret               | Purpose                                            |
+| --------------------------- | -------------------------------------------------- |
+| `RESEND_API_KEY`            | Resend API key                                     |
+| `EMAIL_API_SECRET`          | Optional server-only secret for trusted automation |
+| `SUPABASE_SERVICE_ROLE_KEY` | Resolve recipient email by `userId`                |
+| `EMAIL_FROM`                | Optional sender override                           |
 
-Client: set `VITE_EMAIL_ENDPOINT` and matching `VITE_EMAIL_API_SECRET`.
+Client: set `VITE_EMAIL_ENDPOINT`. In production, the client sends the signed-in Supabase session;
+do not expose any email or automation secret through a `VITE_` variable.
 
 ## Digest emails
 
@@ -106,16 +108,27 @@ curl -X POST https://your-app.vercel.app/api/digest \
 
 ## Member routes
 
-| Route                                          | Purpose                    |
-| ---------------------------------------------- | -------------------------- |
-| `/`                                            | Public landing             |
-| `/signup`, `/login`                            | Auth                       |
-| `/onboarding`                                  | First-time profile         |
-| `/profile`                                     | Edit profile               |
-| `/dashboard`                                   | Member home                |
-| `/projects`                                    | Browse & apply             |
-| `/applications`                                | Your applications          |
-| `/jobs`                                        | Job board                  |
-| `/events`, `/guides`, `/papers`, `/newsletter` | Content                    |
-| `/search`, `/saved`, `/notifications`          | Discovery & updates        |
-| `/admin`                                       | Admin console (admin role) |
+| Route                                          | Purpose                         |
+| ---------------------------------------------- | ------------------------------- |
+| `/`                                            | Public landing                  |
+| `/signup`, `/login`                            | Auth                            |
+| `/onboarding`                                  | First-time profile              |
+| `/profile`                                     | Edit profile                    |
+| `/dashboard`                                   | Member home                     |
+| `/projects`                                    | Browse, apply, contribute       |
+| `/programs`                                    | Cohorts, fellowships, workshops |
+| `/applications`                                | Your applications               |
+| `/jobs`                                        | Job board                       |
+| `/events`, `/guides`, `/papers`, `/newsletter` | Content                         |
+| `/search`, `/saved`, `/notifications`          | Discovery & updates             |
+| `/admin`                                       | Admin console (admin role)      |
+| `/evidence`                                    | Public verified-claims register |
+
+## Final manual production actions
+
+1. Add `SUPABASE_DB_PASSWORD` locally and run `bun run supabase:apply`.
+2. Run `bun run supabase:verify` and `bun run supabase:rls` against the production database.
+3. Set server-only `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, and `DIGEST_API_SECRET` in the deployment provider.
+4. Set `VITE_EMAIL_ENDPOINT`, configure the daily digest cron, and verify the sender domain.
+5. Configure Supabase site URL, redirect URLs, email templates, GitHub/Google providers if used, and storage limits.
+6. Run `bun run release:check`, then test signup, onboarding, project admission, contribution review, programme admission, and administration with separate accounts.

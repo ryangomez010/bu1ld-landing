@@ -20,6 +20,7 @@
     "test": "bun test src/lib/*.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "audit:ci": "bun audit --audit-level=high"
+    ,"release:check": "node scripts/release-readiness.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.44.0",

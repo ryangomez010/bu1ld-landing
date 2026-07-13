@@ -57,10 +57,10 @@ function NewsletterContent() {
   };
 
   return (
-    <MemberLayout title="Newsletter" eyebrow="institution digest">
+    <MemberLayout title="Newsletter" eyebrow="member digest">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Archived issues of The Bu1ld digest — new member welcomes, paper picks, open project
-        announcements, event deadlines, and startup spotlights from active research threads.
+        Archived editorial notices about published papers, confirmed programs, project openings, and
+        event deadlines. Issues are an archive, not a substitute for the live source record.
       </p>
       {user ? (
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-sm border border-border/50 px-5 py-4">

@@ -52,6 +52,23 @@ function normalizePaper(row: Record<string, unknown>): Paper {
     published_at: String(row.published_at),
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
+    content_kind:
+      row.content_kind === "explainer" || row.content_kind === "research_note"
+        ? row.content_kind
+        : "review",
+    field: row.field != null ? String(row.field) : null,
+    difficulty:
+      row.difficulty === "introductory" ||
+      row.difficulty === "intermediate" ||
+      row.difficulty === "advanced"
+        ? row.difficulty
+        : null,
+    source_url: row.source_url != null ? String(row.source_url) : null,
+    reviewer_id: row.reviewer_id != null ? String(row.reviewer_id) : null,
+    review_status:
+      row.review_status === "draft" || row.review_status === "in_review"
+        ? row.review_status
+        : "published",
   };
 }
 
@@ -221,10 +238,18 @@ export async function setContentPublished(
 ): Promise<{ error: string | null }> {
   const { supabase, error } = await requireSupabase();
   if (!supabase) return { error };
-  const { error: err } = await supabase
-    .from(table)
-    .update({ published, updated_at: new Date().toISOString() })
-    .eq("id", id);
+  const updatedAt = new Date().toISOString();
+  const { error: err } =
+    table === "papers"
+      ? await supabase
+          .from("papers")
+          .update({
+            published,
+            review_status: published ? "published" : "draft",
+            updated_at: updatedAt,
+          })
+          .eq("id", id)
+      : await supabase.from(table).update({ published, updated_at: updatedAt }).eq("id", id);
   if (!err && actorId) {
     await logAdminAction(actorId, published ? "content.publish" : "content.unpublish", {
       targetType: table,
@@ -244,10 +269,18 @@ export async function bulkSetContentPublished(
   if (!supabase) return { error, count: 0 };
   if (!ids.length) return { error: null, count: 0 };
 
-  const { error: err } = await supabase
-    .from(table)
-    .update({ published, updated_at: new Date().toISOString() })
-    .in("id", ids);
+  const updatedAt = new Date().toISOString();
+  const { error: err } =
+    table === "papers"
+      ? await supabase
+          .from("papers")
+          .update({
+            published,
+            review_status: published ? "published" : "draft",
+            updated_at: updatedAt,
+          })
+          .in("id", ids)
+      : await supabase.from(table).update({ published, updated_at: updatedAt }).in("id", ids);
 
   if (!err && actorId) {
     await logAdminAction(actorId, published ? "content.bulk_publish" : "content.bulk_unpublish", {
@@ -307,6 +340,11 @@ export async function updatePaperAdmin(
     tags: string[];
     is_classic: boolean;
     arxiv_url: string | null;
+    content_kind: Paper["content_kind"];
+    field: string | null;
+    difficulty: Paper["difficulty"];
+    source_url: string | null;
+    review_status: Paper["review_status"];
     published: boolean;
   }>,
 ): Promise<{ error: string | null }> {

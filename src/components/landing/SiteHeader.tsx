@@ -33,7 +33,9 @@ export function SiteHeader() {
         <a href="#top" className="text-xl tracking-tight shrink-0 flex items-center gap-3">
           <Wordmark />
           <span className="hidden sm:inline-block h-4 w-px bg-bone/20" />
-          <span className="hidden sm:inline label-xs text-muted-foreground">ml institution</span>
+          <span className="hidden sm:inline label-xs text-muted-foreground">
+            ml research + building
+          </span>
         </a>
 
         <nav className="hidden lg:flex items-center gap-7 label-sm text-muted-foreground">

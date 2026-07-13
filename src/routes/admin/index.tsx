@@ -14,18 +14,23 @@ import { AdminMembersTab } from "@/components/admin/AdminMembersTab";
 import { AdminNewslettersTab } from "@/components/admin/AdminNewslettersTab";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminPapersTab } from "@/components/admin/AdminPapersTab";
+import { AdminProjectsTab } from "@/components/admin/AdminProjectsTab";
+import { AdminClaimsTab } from "@/components/admin/AdminClaimsTab";
+import { AdminProgramsTab } from "@/components/admin/AdminProgramsTab";
 import { RequireAdmin } from "@/components/auth/RequireAdmin";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import type { Announcement } from "@/data/seed/announcements";
 import { fetchAllAnnouncementsAdmin } from "@/lib/announcements";
-import { fetchAdminStats, fetchAllMembers } from "@/lib/admin";
+import { fetchAdminStats, fetchAllMembers, fetchInstitutionalRolesByMember } from "@/lib/admin";
 import { fetchAdminAuditLog } from "@/lib/audit-log";
 import { fetchAdminSecurityEvents } from "@/lib/account-security";
 import type { AuditEntry } from "@/lib/audit-log";
 import type { SecurityEvent } from "@/lib/account-security";
 import { fetchAllEventsAdmin, fetchAllNewslettersAdmin, fetchAllPapersAdmin } from "@/lib/content";
-import { fetchAllJobsAdmin, fetchPendingLeadRequests } from "@/lib/projects";
+import { fetchAllJobsAdmin, fetchAllProjectsAdmin, fetchPendingLeadRequests } from "@/lib/projects";
+import { fetchAllProgramsAdmin, fetchProgramApplicationsAdmin } from "@/lib/programs";
+import { fetchAllInstitutionalClaimsAdmin } from "@/lib/institutional-claims";
 import { useAuth } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import type {
@@ -36,6 +41,10 @@ import type {
   NewsletterIssue,
   Paper,
   Profile,
+  Program,
+  ProgramApplication,
+  Project,
+  InstitutionalClaim,
 } from "@/lib/types";
 
 export const Route = createFileRoute("/admin/")({
@@ -60,6 +69,9 @@ type AdminTab =
   | "announcements"
   | "events"
   | "papers"
+  | "programs"
+  | "projects"
+  | "claims"
   | "newsletter"
   | "jobs"
   | "guides"
@@ -76,9 +88,16 @@ function AdminContent() {
   const [loadedTabs, setLoadedTabs] = useState<Set<AdminTab>>(new Set(["overview"]));
   const [events, setEvents] = useState<MlEvent[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [programApplications, setProgramApplications] = useState<ProgramApplication[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [claims, setClaims] = useState<InstitutionalClaim[]>([]);
   const [newsletters, setNewsletters] = useState<NewsletterIssue[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [members, setMembers] = useState<Profile[]>([]);
+  const [institutionalRoles, setInstitutionalRoles] = useState(
+    new Map<string, import("@/lib/types").InstitutionalRole[]>(),
+  );
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [leadRequests, setLeadRequests] = useState<LeadVerificationRequest[]>([]);
@@ -105,6 +124,16 @@ function AdminContent() {
         case "papers":
           void fetchAllPapersAdmin().then(setPapers);
           break;
+        case "programs":
+          void fetchAllProgramsAdmin().then(setPrograms);
+          void fetchProgramApplicationsAdmin().then(setProgramApplications);
+          break;
+        case "projects":
+          void fetchAllProjectsAdmin().then(setProjects);
+          break;
+        case "claims":
+          void fetchAllInstitutionalClaimsAdmin().then(setClaims);
+          break;
         case "newsletter":
           void fetchAllNewslettersAdmin().then(setNewsletters);
           break;
@@ -113,6 +142,7 @@ function AdminContent() {
           break;
         case "members":
           void fetchAllMembers().then(setMembers);
+          void fetchInstitutionalRolesByMember().then(setInstitutionalRoles);
           break;
         case "leads":
           void fetchPendingLeadRequests().then(setLeadRequests);
@@ -165,6 +195,9 @@ function AdminContent() {
             "announcements",
             "events",
             "papers",
+            "programs",
+            "projects",
+            "claims",
             "newsletter",
             "jobs",
             "guides",
@@ -196,6 +229,16 @@ function AdminContent() {
         <AdminEventsTab events={events} onSaved={onSaved} />
       ) : tab === "papers" ? (
         <AdminPapersTab papers={papers} onSaved={onSaved} />
+      ) : tab === "programs" ? (
+        <AdminProgramsTab
+          programs={programs}
+          applications={programApplications}
+          onSaved={onSaved}
+        />
+      ) : tab === "projects" ? (
+        <AdminProjectsTab projects={projects} onSaved={onSaved} />
+      ) : tab === "claims" ? (
+        <AdminClaimsTab claims={claims} actorId={user?.id ?? ""} onSaved={onSaved} />
       ) : tab === "newsletter" ? (
         <AdminNewslettersTab issues={newsletters} onSaved={onSaved} />
       ) : tab === "jobs" ? (
@@ -203,7 +246,12 @@ function AdminContent() {
       ) : tab === "guides" ? (
         <AdminGuidesTab />
       ) : tab === "members" ? (
-        <AdminMembersTab members={members} actorId={user?.id ?? ""} onSaved={onSaved} />
+        <AdminMembersTab
+          members={members}
+          actorId={user?.id ?? ""}
+          institutionalRoles={institutionalRoles}
+          onSaved={onSaved}
+        />
       ) : tab === "audit" ? (
         <AdminAuditTab entries={auditLog} />
       ) : tab === "security" ? (

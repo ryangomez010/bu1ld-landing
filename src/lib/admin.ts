@@ -1,7 +1,7 @@
 import { INSTITUTION_TAKE } from "@/data/copy";
 import { logAdminAction } from "@/lib/audit-log";
 import { getSupabase } from "@/lib/supabase";
-import type { AdminStats, MemberRole, Profile } from "@/lib/types";
+import type { AdminStats, InstitutionalRole, MemberRole, Profile } from "@/lib/types";
 
 export async function fetchAdminStats(): Promise<AdminStats> {
   const supabase = getSupabase();
@@ -14,10 +14,30 @@ export async function fetchAdminStats(): Promise<AdminStats> {
       events: 0,
       papers: 0,
       jobs: 0,
+      programs: 0,
+      contributions: 0,
+      verifiedContributions: 0,
+      evidenceClaims: 0,
+      pendingProjectReviews: 0,
+      pendingProgramApplications: 0,
     };
   }
 
-  const [members, projects, applications, leads, events, papers, jobs] = await Promise.all([
+  const [
+    members,
+    projects,
+    applications,
+    leads,
+    events,
+    papers,
+    jobs,
+    programs,
+    contributions,
+    verifiedContributions,
+    evidenceClaims,
+    pendingProjectReviews,
+    pendingProgramApplications,
+  ] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }),
     supabase.from("projects").select("id", { count: "exact", head: true }),
     supabase.from("project_applications").select("id", { count: "exact", head: true }),
@@ -28,6 +48,24 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     supabase.from("events").select("id", { count: "exact", head: true }),
     supabase.from("papers").select("id", { count: "exact", head: true }),
     supabase.from("jobs").select("id", { count: "exact", head: true }),
+    supabase.from("programs").select("id", { count: "exact", head: true }),
+    supabase.from("project_contributions").select("id", { count: "exact", head: true }),
+    supabase
+      .from("project_contributions")
+      .select("id", { count: "exact", head: true })
+      .eq("verification_status", "verified"),
+    supabase
+      .from("institutional_claims")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "verified"),
+    supabase
+      .from("projects")
+      .select("id", { count: "exact", head: true })
+      .eq("publication_status", "submitted"),
+    supabase
+      .from("program_applications")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending"),
   ]);
 
   return {
@@ -38,6 +76,12 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     events: events.count ?? 0,
     papers: papers.count ?? 0,
     jobs: jobs.count ?? 0,
+    programs: programs.count ?? 0,
+    contributions: contributions.count ?? 0,
+    verifiedContributions: verifiedContributions.count ?? 0,
+    evidenceClaims: evidenceClaims.count ?? 0,
+    pendingProjectReviews: pendingProjectReviews.count ?? 0,
+    pendingProgramApplications: pendingProgramApplications.count ?? 0,
   };
 }
 
@@ -50,6 +94,44 @@ export async function fetchAllMembers(): Promise<Profile[]> {
     .order("created_at", { ascending: false })
     .limit(100);
   return (data ?? []).map((p) => ({ ...p, role: p.role ?? "member" })) as Profile[];
+}
+
+export async function fetchInstitutionalRolesByMember(): Promise<Map<string, InstitutionalRole[]>> {
+  const supabase = getSupabase();
+  if (!supabase) return new Map();
+  const { data, error } = await supabase.from("member_roles").select("user_id, role");
+  if (error) return new Map();
+  return (data ?? []).reduce((roles, row) => {
+    const current = roles.get(row.user_id) ?? [];
+    current.push(row.role as InstitutionalRole);
+    roles.set(row.user_id, current);
+    return roles;
+  }, new Map<string, InstitutionalRole[]>());
+}
+
+export async function setInstitutionalRole(
+  actorId: string,
+  userId: string,
+  role: InstitutionalRole,
+  enabled: boolean,
+): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "Supabase required." };
+  const result = enabled
+    ? await supabase.from("member_roles").upsert({ user_id: userId, role, granted_by: actorId })
+    : await supabase.from("member_roles").delete().eq("user_id", userId).eq("role", role);
+  if (!result.error) {
+    await logAdminAction(
+      actorId,
+      enabled ? "member.institutional_role_granted" : "member.institutional_role_revoked",
+      {
+        targetType: "profile",
+        targetId: userId,
+        detail: { role },
+      },
+    );
+  }
+  return { error: result.error?.message ?? null };
 }
 
 export async function updateMemberRole(

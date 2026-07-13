@@ -11,9 +11,9 @@ export function ResearchSection() {
     <SectionShell
       id="research"
       eyebrow="03"
-      label="research threads"
-      title="Threads we are pulling on."
-      subtitle="These are the ideas we keep coming back to: uncomfortable questions, weird edge cases, and the failure modes that matter once models leave the benchmark."
+      label="research themes"
+      title="Questions worth doing carefully."
+      subtitle="These are areas the platform is designed to support. A theme is not a claim that a staffed project is currently open; use the project directory for confirmed opportunities."
     >
       <div className="grid md:grid-cols-2 gap-px bg-border/40 border border-border/40">
         {RESEARCH.map((r) => {
@@ -32,7 +32,7 @@ export function ResearchSection() {
                   thread / {r.id}
                 </span>
                 <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground">
-                  open
+                  theme
                 </span>
               </div>
               <h3 className="font-display text-2xl md:text-[1.85rem] mt-8 text-bone leading-[1.1] tracking-tight relative">
@@ -50,7 +50,7 @@ export function ResearchSection() {
               <Link key={r.id} to={r.href as LinkProps["to"]} className={className}>
                 {inner}
                 <span className="mt-6 inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
-                  Explore thread →
+                  Find related work →
                 </span>
               </Link>
             );
@@ -67,7 +67,7 @@ export function ResearchSection() {
               <Link to={r.href as LinkProps["to"]} className={className}>
                 {inner}
                 <span className="mt-6 inline-block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
-                  Explore thread →
+                  Find related work →
                 </span>
               </Link>
             </motion.div>

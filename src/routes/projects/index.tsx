@@ -26,6 +26,9 @@ export const Route = createFileRoute("/projects/")({
   }),
 });
 
+const EMPTY_PROJECTS: import("@/lib/types").Project[] = [];
+const EMPTY_APPLICATION_STATUSES = new Map<string, ApplicationStatus>();
+
 function ProjectsPage() {
   return (
     <RequireMember>
@@ -37,8 +40,8 @@ function ProjectsPage() {
 function ProjectsContent() {
   const { user, profile } = useAuth();
   const { data, isLoading: loading } = useProjectsQuery(undefined, user?.id);
-  const projects = data?.projects ?? [];
-  const applied = data?.statusMap ?? new Map<string, ApplicationStatus>();
+  const projects = data?.projects ?? EMPTY_PROJECTS;
+  const applied = data?.statusMap ?? EMPTY_APPLICATION_STATUSES;
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | "all">("all");
   const [typeFilter, setTypeFilter] = useState<ProjectType | "all">("all");
   const [query, setQuery] = useState("");

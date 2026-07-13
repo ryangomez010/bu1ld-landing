@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -31,14 +31,14 @@ export function ProjectUpdatesSection({
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const reload = () => {
+  const reload = useCallback(() => {
     void fetchProjectUpdates(projectId).then(setUpdates);
-  };
+  }, [projectId]);
 
   useEffect(() => {
     reload();
     return subscribeProjectUpdates(projectId, setUpdates);
-  }, [projectId]);
+  }, [projectId, reload]);
 
   const onPost = async (e: React.FormEvent) => {
     e.preventDefault();

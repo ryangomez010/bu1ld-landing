@@ -13,21 +13,21 @@ export function WhatWeDoSection() {
         <SectionLabel id="01">what we do</SectionLabel>
         <div className="mt-10 grid md:grid-cols-12 gap-12">
           <h2 className="md:col-span-5 font-display text-4xl md:text-6xl leading-[1.0] tracking-[-0.025em] text-bone">
-            Research that leaves{" "}
-            <span className="text-accent-blue text-glow-blue">the benchmark.</span>
+            Work that leaves{" "}
+            <span className="text-accent-blue text-glow-blue">an accountable record.</span>
           </h2>
           <div className="md:col-span-7 space-y-6 text-muted-foreground text-lg leading-relaxed">
             <p>
-              Most labs optimize for publication. Most startups optimize for retention. The Bu1ld
-              runs both cycles in parallel — the same people read a paper, build a prototype, and
-              decide whether the idea survives contact with real data and real users.
+              The Bu1ld is built for the handoff between understanding and making. Members read a
+              paper closely, frame a narrow question, build the smallest useful test, and keep the
+              result legible to the next person who touches the work.
             </p>
             <p>
-              Work is organized around <span className="text-bone">research threads</span>, not
-              departments. A thread might start as a member paper review, become an open project
-              with a capacity limit and application queue, and graduate into a startup with its own
-              repo and demo day. Every thread is reviewed against two criteria: is the science
-              honest, and does the engineering hold up under load.
+              Work is organized around{" "}
+              <span className="text-bone">scoped research and building threads</span>, not vague
+              networking. A useful thread has a question, a named owner, an explicit contribution
+              need, and a next decision. Projects can hold private applications and internal
+              evidence; public material is published only when it is ready to stand on its own.
             </p>
             <ul className="grid sm:grid-cols-2 gap-3 pt-4">
               {BENEFITS.map((item, i) => (

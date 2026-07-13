@@ -32,6 +32,13 @@ const CORE_TABLES = [
   "papers",
   "events",
   "jobs",
+  "member_roles",
+  "project_memberships",
+  "project_milestones",
+  "project_contributions",
+  "programs",
+  "program_applications",
+  "institutional_claims",
 ];
 
 const sql = postgres(connection, { ssl: "require", max: 1 });

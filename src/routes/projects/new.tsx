@@ -70,16 +70,16 @@ function NewProjectForm() {
       toast.error(error ?? "Failed to create project.");
       return;
     }
-    toast.success("Project created.");
-    void navigate({ to: `/projects/${project.slug}` });
+    toast.success("Draft created. Submit it for editorial review when the brief is complete.");
+    void navigate({ to: "/projects/manage" });
   };
 
   return (
     <MemberLayout title="Create project" eyebrow="project lead">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Published projects appear on the open listings page. Set skills, tags, and capacity so
-        applicants know what you need. You can add workspace links and Discord after creation from
-        the project page.
+        Start with a clear, private draft. After you specify the question or product goal, skills,
+        capacity, and working context, submit it for editorial review. Only approved briefs appear
+        in the open project directory.
       </p>
       <form onSubmit={onSubmit} className="max-w-xl space-y-5">
         <div className="space-y-2">
@@ -153,7 +153,7 @@ function NewProjectForm() {
             disabled={submitting}
             className="font-mono text-[10px] tracking-[0.2em] uppercase"
           >
-            {submitting ? "Creating…" : "Create project"}
+            {submitting ? "Creating…" : "Create draft"}
           </Button>
           <Link
             to="/projects/manage"

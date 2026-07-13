@@ -23,6 +23,7 @@ import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as SavedIndexRouteImport } from './routes/saved/index'
 import { Route as ResearchIndexRouteImport } from './routes/research/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
+import { Route as ProgramsIndexRouteImport } from './routes/programs/index'
 import { Route as PapersIndexRouteImport } from './routes/papers/index'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
 import { Route as NewsletterIndexRouteImport } from './routes/newsletter/index'
@@ -33,9 +34,11 @@ import { Route as EventsIndexRouteImport } from './routes/events/index'
 import { Route as ApplicationsIndexRouteImport } from './routes/applications/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as SavedCollectionsRouteImport } from './routes/saved/collections'
+import { Route as ResearchSubmitRouteImport } from './routes/research/submit'
 import { Route as ResearchHighlightsRouteImport } from './routes/research/highlights'
 import { Route as ProjectsNewRouteImport } from './routes/projects/new'
 import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
+import { Route as ProgramsSlugRouteImport } from './routes/programs/$slug'
 import { Route as PapersSlugRouteImport } from './routes/papers/$slug'
 import { Route as NewsletterSlugRouteImport } from './routes/newsletter/$slug'
 import { Route as MembersIdRouteImport } from './routes/members/$id'
@@ -123,6 +126,11 @@ const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
   path: '/projects/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProgramsIndexRoute = ProgramsIndexRouteImport.update({
+  id: '/programs/',
+  path: '/programs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PapersIndexRoute = PapersIndexRouteImport.update({
   id: '/papers/',
   path: '/papers/',
@@ -173,6 +181,11 @@ const SavedCollectionsRoute = SavedCollectionsRouteImport.update({
   path: '/saved/collections',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResearchSubmitRoute = ResearchSubmitRouteImport.update({
+  id: '/research/submit',
+  path: '/research/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResearchHighlightsRoute = ResearchHighlightsRouteImport.update({
   id: '/research/highlights',
   path: '/research/highlights',
@@ -186,6 +199,11 @@ const ProjectsNewRoute = ProjectsNewRouteImport.update({
 const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   id: '/projects/$slug',
   path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsSlugRoute = ProgramsSlugRouteImport.update({
+  id: '/programs/$slug',
+  path: '/programs/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PapersSlugRoute = PapersSlugRouteImport.update({
@@ -293,9 +311,11 @@ export interface FileRoutesByFullPath {
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
+  '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
   '/research/highlights': typeof ResearchHighlightsRoute
+  '/research/submit': typeof ResearchSubmitRoute
   '/saved/collections': typeof SavedCollectionsRoute
   '/admin/': typeof AdminIndexRoute
   '/applications/': typeof ApplicationsIndexRoute
@@ -306,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/newsletter/': typeof NewsletterIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/papers/': typeof PapersIndexRoute
+  '/programs/': typeof ProgramsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/research/': typeof ResearchIndexRoute
   '/saved/': typeof SavedIndexRoute
@@ -338,9 +359,11 @@ export interface FileRoutesByTo {
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
+  '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
   '/research/highlights': typeof ResearchHighlightsRoute
+  '/research/submit': typeof ResearchSubmitRoute
   '/saved/collections': typeof SavedCollectionsRoute
   '/admin': typeof AdminIndexRoute
   '/applications': typeof ApplicationsIndexRoute
@@ -351,6 +374,7 @@ export interface FileRoutesByTo {
   '/newsletter': typeof NewsletterIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/papers': typeof PapersIndexRoute
+  '/programs': typeof ProgramsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/research': typeof ResearchIndexRoute
   '/saved': typeof SavedIndexRoute
@@ -384,9 +408,11 @@ export interface FileRoutesById {
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
+  '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
   '/research/highlights': typeof ResearchHighlightsRoute
+  '/research/submit': typeof ResearchSubmitRoute
   '/saved/collections': typeof SavedCollectionsRoute
   '/admin/': typeof AdminIndexRoute
   '/applications/': typeof ApplicationsIndexRoute
@@ -397,6 +423,7 @@ export interface FileRoutesById {
   '/newsletter/': typeof NewsletterIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/papers/': typeof PapersIndexRoute
+  '/programs/': typeof ProgramsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/research/': typeof ResearchIndexRoute
   '/saved/': typeof SavedIndexRoute
@@ -431,9 +458,11 @@ export interface FileRouteTypes {
     | '/members/$id'
     | '/newsletter/$slug'
     | '/papers/$slug'
+    | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
     | '/research/highlights'
+    | '/research/submit'
     | '/saved/collections'
     | '/admin/'
     | '/applications/'
@@ -444,6 +473,7 @@ export interface FileRouteTypes {
     | '/newsletter/'
     | '/notifications/'
     | '/papers/'
+    | '/programs/'
     | '/projects/'
     | '/research/'
     | '/saved/'
@@ -476,9 +506,11 @@ export interface FileRouteTypes {
     | '/members/$id'
     | '/newsletter/$slug'
     | '/papers/$slug'
+    | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
     | '/research/highlights'
+    | '/research/submit'
     | '/saved/collections'
     | '/admin'
     | '/applications'
@@ -489,6 +521,7 @@ export interface FileRouteTypes {
     | '/newsletter'
     | '/notifications'
     | '/papers'
+    | '/programs'
     | '/projects'
     | '/research'
     | '/saved'
@@ -521,9 +554,11 @@ export interface FileRouteTypes {
     | '/members/$id'
     | '/newsletter/$slug'
     | '/papers/$slug'
+    | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
     | '/research/highlights'
+    | '/research/submit'
     | '/saved/collections'
     | '/admin/'
     | '/applications/'
@@ -534,6 +569,7 @@ export interface FileRouteTypes {
     | '/newsletter/'
     | '/notifications/'
     | '/papers/'
+    | '/programs/'
     | '/projects/'
     | '/research/'
     | '/saved/'
@@ -567,9 +603,11 @@ export interface RootRouteChildren {
   MembersIdRoute: typeof MembersIdRoute
   NewsletterSlugRoute: typeof NewsletterSlugRoute
   PapersSlugRoute: typeof PapersSlugRoute
+  ProgramsSlugRoute: typeof ProgramsSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ProjectsNewRoute: typeof ProjectsNewRoute
   ResearchHighlightsRoute: typeof ResearchHighlightsRoute
+  ResearchSubmitRoute: typeof ResearchSubmitRoute
   SavedCollectionsRoute: typeof SavedCollectionsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ApplicationsIndexRoute: typeof ApplicationsIndexRoute
@@ -580,6 +618,7 @@ export interface RootRouteChildren {
   NewsletterIndexRoute: typeof NewsletterIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   PapersIndexRoute: typeof PapersIndexRoute
+  ProgramsIndexRoute: typeof ProgramsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   ResearchIndexRoute: typeof ResearchIndexRoute
   SavedIndexRoute: typeof SavedIndexRoute
@@ -689,6 +728,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/programs/': {
+      id: '/programs/'
+      path: '/programs'
+      fullPath: '/programs/'
+      preLoaderRoute: typeof ProgramsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/papers/': {
       id: '/papers/'
       path: '/papers'
@@ -759,6 +805,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SavedCollectionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/research/submit': {
+      id: '/research/submit'
+      path: '/research/submit'
+      fullPath: '/research/submit'
+      preLoaderRoute: typeof ResearchSubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/research/highlights': {
       id: '/research/highlights'
       path: '/research/highlights'
@@ -778,6 +831,13 @@ declare module '@tanstack/react-router' {
       path: '/projects/$slug'
       fullPath: '/projects/$slug'
       preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs/$slug': {
+      id: '/programs/$slug'
+      path: '/programs/$slug'
+      fullPath: '/programs/$slug'
+      preLoaderRoute: typeof ProgramsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/papers/$slug': {
@@ -919,9 +979,11 @@ const rootRouteChildren: RootRouteChildren = {
   MembersIdRoute: MembersIdRoute,
   NewsletterSlugRoute: NewsletterSlugRoute,
   PapersSlugRoute: PapersSlugRoute,
+  ProgramsSlugRoute: ProgramsSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   ProjectsNewRoute: ProjectsNewRoute,
   ResearchHighlightsRoute: ResearchHighlightsRoute,
+  ResearchSubmitRoute: ResearchSubmitRoute,
   SavedCollectionsRoute: SavedCollectionsRoute,
   AdminIndexRoute: AdminIndexRoute,
   ApplicationsIndexRoute: ApplicationsIndexRoute,
@@ -932,6 +994,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewsletterIndexRoute: NewsletterIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
   PapersIndexRoute: PapersIndexRoute,
+  ProgramsIndexRoute: ProgramsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
   ResearchIndexRoute: ResearchIndexRoute,
   SavedIndexRoute: SavedIndexRoute,

@@ -42,8 +42,14 @@ if (!password) {
   process.exit(1);
 }
 
-const sqlPath = resolve(root, "supabase/full-setup.sql");
-const sql = readFileSync(sqlPath, "utf8");
+const sqlFiles = [
+  "supabase/full-setup.sql",
+  "supabase/phase19.sql",
+  "supabase/phase20.sql",
+  "supabase/phase21.sql",
+  "supabase/phase22.sql",
+];
+const sql = sqlFiles.map((file) => readFileSync(resolve(root, file), "utf8")).join("\n\n");
 
 const connectionString =
   env.SUPABASE_DB_URL ??
@@ -55,7 +61,7 @@ const db = postgres(connectionString, { ssl: "require", max: 1 });
 
 try {
   await db.unsafe(sql);
-  console.log("Schema applied successfully.");
+  console.log(`Schema applied successfully (${sqlFiles.join(", ")}).`);
   console.log("\nNext: sign up in the app, then promote your user in SQL editor:");
   console.log(`  update public.profiles set role = 'admin' where id = '<your-user-uuid>';`);
 } catch (err) {

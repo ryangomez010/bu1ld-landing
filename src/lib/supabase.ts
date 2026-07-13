@@ -454,6 +454,93 @@ export type Database = {
         },
         Record<string, never>
       >;
+      project_memberships: DbTable<
+        import("@/lib/types").ProjectMembership,
+        { project_id: string; user_id: string; member_role?: string; status?: string },
+        Partial<import("@/lib/types").ProjectMembership>
+      >;
+      project_milestones: DbTable<
+        import("@/lib/types").ProjectMilestone,
+        {
+          project_id: string;
+          title: string;
+          description?: string;
+          status?: string;
+          visibility?: string;
+          due_date?: string | null;
+          created_by: string;
+        },
+        Partial<import("@/lib/types").ProjectMilestone>
+      >;
+      project_contributions: DbTable<
+        import("@/lib/types").ProjectContribution,
+        {
+          project_id: string;
+          contributor_id: string;
+          contribution_type: string;
+          title: string;
+          summary: string;
+          milestone_id?: string | null;
+          evidence_url?: string | null;
+          visibility?: string;
+        },
+        Partial<import("@/lib/types").ProjectContribution>
+      >;
+      programs: DbTable<
+        import("@/lib/types").Program,
+        {
+          slug: string;
+          title: string;
+          program_type: string;
+          summary: string;
+          application_instructions?: string | null;
+          starts_at?: string | null;
+          ends_at?: string | null;
+          applications_open_at?: string | null;
+          applications_close_at?: string | null;
+          outcomes?: string | null;
+          capacity?: number | null;
+          published?: boolean;
+        },
+        Partial<import("@/lib/types").Program>
+      >;
+      program_applications: DbTable<
+        {
+          id: string;
+          program_id: string;
+          user_id: string;
+          statement: string;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        },
+        { program_id: string; user_id: string; statement: string; status?: string },
+        Partial<{ statement: string; status: string; updated_at: string }>
+      >;
+      member_roles: DbTable<
+        {
+          user_id: string;
+          role: import("@/lib/types").InstitutionalRole;
+          granted_by: string | null;
+          granted_at: string;
+        },
+        { user_id: string; role: string; granted_by?: string | null },
+        Partial<{ role: string; granted_by: string | null }>
+      >;
+      institutional_claims: DbTable<
+        import("@/lib/types").InstitutionalClaim,
+        {
+          claim_type: string;
+          statement: string;
+          evidence_url: string;
+          evidence_label: string;
+          context?: string | null;
+          valid_until?: string | null;
+          created_by?: string | null;
+          status?: string;
+        },
+        Partial<import("@/lib/types").InstitutionalClaim>
+      >;
     };
     Views: Record<string, never>;
     Functions: {
@@ -488,6 +575,38 @@ export type Database = {
           p_project_id?: string | null;
         };
         Returns: number;
+      };
+      review_project_application: {
+        Args: { p_application_id: string; p_status: string; p_note?: string | null };
+        Returns: ProjectApplication;
+      };
+      submit_project_for_review: {
+        Args: { p_project_id: string };
+        Returns: Project;
+      };
+      review_project_publication: {
+        Args: { p_project_id: string; p_decision: string; p_note?: string | null };
+        Returns: Project;
+      };
+      review_program_application: {
+        Args: { p_application_id: string; p_status: string; p_note?: string | null };
+        Returns: import("@/lib/types").ProgramApplication;
+      };
+      review_project_contribution: {
+        Args: { p_contribution_id: string; p_status: string; p_note?: string | null };
+        Returns: import("@/lib/types").ProjectContribution;
+      };
+      resubmit_project_contribution: {
+        Args: { p_contribution_id: string };
+        Returns: import("@/lib/types").ProjectContribution;
+      };
+      set_project_membership_status: {
+        Args: { p_project_id: string; p_user_id: string; p_status: string };
+        Returns: import("@/lib/types").ProjectMembership;
+      };
+      review_institutional_claim: {
+        Args: { p_claim_id: string; p_status: string };
+        Returns: import("@/lib/types").InstitutionalClaim;
       };
     };
   };

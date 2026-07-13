@@ -25,9 +25,9 @@ function TermsPage() {
           <section>
             <h2 className="font-display text-xl text-bone mb-2">Membership</h2>
             <p>
-              The Bu1ld is a machine learning institution. Member accounts are free at launch. You
-              are responsible for accurate profile information — project leads rely on it during
-              application review.
+              The Bu1ld is an independent machine-learning research and building platform. Member
+              accounts are free at launch. You are responsible for accurate profile information —
+              project leads rely on it during application review.
             </p>
           </section>
           <section>

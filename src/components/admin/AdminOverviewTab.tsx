@@ -16,6 +16,12 @@ export function AdminOverviewTab({
         { label: "Events", value: stats.events },
         { label: "Papers", value: stats.papers },
         { label: "Jobs", value: stats.jobs },
+        { label: "Programs", value: stats.programs },
+        { label: "Contributions", value: stats.contributions },
+        { label: "Verified work", value: stats.verifiedContributions },
+        { label: "Evidence claims", value: stats.evidenceClaims },
+        { label: "Project reviews", value: stats.pendingProjectReviews },
+        { label: "Program decisions", value: stats.pendingProgramApplications },
       ]
     : [];
 

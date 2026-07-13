@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
 import { ExternalLink, Github, Globe, Linkedin } from "lucide-react";
 

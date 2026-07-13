@@ -2,17 +2,19 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
-import { updateMemberRole } from "@/lib/admin";
+import { setInstitutionalRole, updateMemberRole } from "@/lib/admin";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import type { MemberRole, Profile } from "@/lib/types";
+import type { InstitutionalRole, MemberRole, Profile } from "@/lib/types";
 
 export function AdminMembersTab({
   members,
   actorId,
+  institutionalRoles,
   onSaved,
 }: {
   members: Profile[];
   actorId: string;
+  institutionalRoles: Map<string, InstitutionalRole[]>;
   onSaved: () => void;
 }) {
   const [query, setQuery] = useState("");
@@ -43,6 +45,16 @@ export function AdminMembersTab({
     }
   };
 
+  const onInstitutionalRole = async (id: string, role: InstitutionalRole, enabled: boolean) => {
+    if (!actorId) return toast.error("Not signed in.");
+    const { error } = await setInstitutionalRole(actorId, id, role, enabled);
+    if (error) toast.error(error);
+    else {
+      toast.success(`${enabled ? "Granted" : "Revoked"} ${role.replace("_", " ")} access.`);
+      onSaved();
+    }
+  };
+
   const filtered = members.filter((m) => {
     const q = query.trim().toLowerCase();
     if (!q) return true;
@@ -64,6 +76,7 @@ export function AdminMembersTab({
             <tr className="border-b border-border/60 text-left font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
               <th className="p-3">Name</th>
               <th className="p-3">Role</th>
+              <th className="p-3">Institutional access</th>
               <th className="p-3">Interests</th>
               <th className="p-3">Joined</th>
               <th className="p-3">Actions</th>
@@ -74,6 +87,31 @@ export function AdminMembersTab({
               <tr key={m.id} className="border-b border-border/40 last:border-0 admin-row-hover">
                 <td className="p-3 text-bone">{m.full_name || "—"}</td>
                 <td className="p-3 font-mono text-[10px] uppercase">{m.role}</td>
+                <td className="p-3">
+                  <div className="flex max-w-xs flex-wrap gap-x-3 gap-y-2">
+                    {(
+                      ["researcher", "project_lead", "reviewer", "mentor"] as InstitutionalRole[]
+                    ).map((role) => {
+                      const enabled = institutionalRoles.get(m.id)?.includes(role) ?? false;
+                      return (
+                        <label
+                          key={role}
+                          className="flex cursor-pointer items-center gap-1.5 font-mono text-[8px] uppercase text-muted-foreground"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={enabled}
+                            onChange={(event) =>
+                              void onInstitutionalRole(m.id, role, event.target.checked)
+                            }
+                            className="accent-accent-green"
+                          />
+                          {role.replace("_", " ")}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </td>
                 <td className="p-3 text-muted-foreground">
                   {m.interests?.slice(0, 3).join(", ") || "—"}
                 </td>

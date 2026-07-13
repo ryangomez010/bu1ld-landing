@@ -59,7 +59,6 @@ describe("security utilities", () => {
   });
 
   test("checkFormRateLimit throttles repeated submits", () => {
-    const buckets = new Map<string, number[]>();
     expect(checkFormRateLimit("user1", "profile", 60_000, 3).allowed).toBe(true);
     expect(checkFormRateLimit("user1", "profile", 60_000, 3).allowed).toBe(true);
     expect(checkFormRateLimit("user1", "profile", 60_000, 3).allowed).toBe(true);

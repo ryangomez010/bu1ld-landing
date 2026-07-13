@@ -8,6 +8,7 @@ import {
   FileText,
   Bell,
   FolderKanban,
+  GraduationCap,
   Highlighter,
   Home,
   Layers,
@@ -54,6 +55,7 @@ const NAV_MAIN = [
   { to: "/saved", label: "Saved", icon: Bookmark },
   { to: "/saved/collections", label: "Collections", icon: Layers },
   { to: "/members", label: "Members", icon: Users },
+  { to: "/programs", label: "Programs", icon: GraduationCap },
 ] as const;
 
 const NAV_CONTENT = [
@@ -81,7 +83,11 @@ export function MemberLayout({
   const [contentDensity, setContentDensity] = useState<ContentDensity>("comfortable");
   const [theme, setTheme] = useState<ThemePreference>(() => getStoredTheme());
   const isAdmin = profile?.role === "admin";
-  const isLead = profile?.role === "project_lead" || isAdmin;
+  const isLead =
+    profile?.role === "project_lead" ||
+    isAdmin ||
+    profile?.institutional_roles?.includes("project_lead");
+  const isReviewer = isAdmin || profile?.institutional_roles?.includes("reviewer");
 
   useEffect(() => {
     if (!user) return;
@@ -158,6 +164,14 @@ export function MemberLayout({
           to="/projects/manage"
           label="My projects"
           icon={FolderKanban}
+          onNavigate={onNavigate}
+        />
+      ) : null}
+      {isReviewer ? (
+        <NavItem
+          to="/research/submit"
+          label="Submit analysis"
+          icon={FileText}
           onNavigate={onNavigate}
         />
       ) : null}

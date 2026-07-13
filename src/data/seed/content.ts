@@ -1,11 +1,4 @@
-import type {
-  EventDeadline,
-  EventResource,
-  Guide,
-  MlEvent,
-  NewsletterIssue,
-  Paper,
-} from "@/lib/types";
+import type { Guide, MlEvent, NewsletterIssue, Paper } from "@/lib/types";
 
 export const SEED_EVENTS: MlEvent[] = [
   {
@@ -88,7 +81,7 @@ export const SEED_EVENTS: MlEvent[] = [
     title: "The Bu1ld Summit — Q3 2026",
     summary:
       "Internal showcase: research thread demos, startup pitches, and member networking — open to all members with RSVP.",
-    location: "Distributed / Stanford",
+    location: "Distributed",
     start_date: "2026-09-20",
     end_date: "2026-09-21",
     topics: ["Member community", "Startups", "Research threads"],
@@ -412,12 +405,10 @@ export const SEED_NEWSLETTERS: NewsletterIssue[] = [
     title: "The Bu1ld Digest #12 — March 2026",
     issue_number: 12,
     summary:
-      "NeurIPS deadlines on the horizon, new startup spinout, and three papers worth your weekend.",
+      "An example editorial digest showing how research activity, reading, and program notices are documented.",
     body: `## This month at The Bu1ld
 
-**Eigen Δ** closed a research milestone: delta-trained specialization in under 4 hours on a single A100 for a 7B base. Demo at the Q3 summit.
-
-**Counterfactual Defect Worlds** thread added two new builders from MIT. They are building a synthetic defect injection suite for video world models.
+This sample issue demonstrates the expected standard: name the question, link the evidence, and state what remains uncertain before calling a result complete.
 
 ## Paper picks
 
@@ -427,13 +418,9 @@ export const SEED_NEWSLETTERS: NewsletterIssue[] = [
 
 ## Events radar
 
-- ICML 2026 full paper deadline: **Feb 4** (passed — workshop track still open)
-- NeurIPS 2026 abstract: **May 15** — start internal reads now
-- The Bu1ld Summit Q3: demo submissions due **Sep 1**
-
-## Startup spotlight
-
-**Colorworld** shipped brand-token export to Figma. First paying design teams onboarding this month.
+- Add official conference deadlines only after linking the primary source.
+- Add internal workshops only after dates, capacity, and hosts are confirmed.
+- Add project milestones only when the project lead has published the underlying record.
 
 ---
 
@@ -448,22 +435,22 @@ export const SEED_NEWSLETTERS: NewsletterIssue[] = [
     slug: "issue-11-february-2026",
     title: "The Bu1ld Digest #11 — February 2026",
     issue_number: 11,
-    summary: "Fellowship applications open, physics ML reading group, and ICML deadline week.",
+    summary: "An example program and reading-group digest template.",
     body: `## Fellowship
 
-Research Fellowship (6-month track) is accepting applications through March 15. Co-advised placements with UC and Stanford collaborators.
+Program applications open only when the cycle, mentor capacity, and evaluation process are confirmed. Check Programs for current availability.
 
 ## Reading group
 
-Physics-informed neural networks — Thursdays 18:00 UTC on Discord. First session covers when PINNs beat classical solvers (and when they silently fail).
+Reading groups are listed in Events only after a host, schedule, and source material have been confirmed.
 
 ## Deadlines
 
-ICML full paper deadline this week. Good luck to everyone submitting.
+Use official conference pages for current deadlines; dates in demo content are not operational notices.
 
 ## New members
 
-Welcome to 14 new members who joined in January.`,
+New member notices are published only when a member chooses to be named in the directory.`,
     published: true,
     published_at: "2026-02-01T00:00:00Z",
     created_at: "2026-02-01T00:00:00Z",

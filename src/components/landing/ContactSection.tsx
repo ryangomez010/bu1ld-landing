@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 import { Wordmark } from "@/components/Wordmark";
 import { SectionLabel } from "@/components/landing/Section";
-import { CONTACT_EMAIL, DISCORD_URL } from "@/data/landing";
+import { CONTACT_EMAIL, DISCORD_URL, LINKEDIN_URL } from "@/data/landing";
 
 export function ContactSection() {
   return (
@@ -19,9 +19,9 @@ export function ContactSection() {
           Build with <Wordmark />.
         </h2>
         <p className="mt-10 max-w-xl mx-auto text-muted-foreground text-lg leading-relaxed">
-          Researchers, engineers, and founders at any stage. If you want to read deeply, ship
-          prototypes, and work on threads where the bar is reproducibility and working code — start
-          with a member account or reach out directly.
+          Researchers, engineers, founders, and serious students are welcome. Start with a member
+          account if you want to study, contribute to a confirmed project, or build a record of
+          technical work. Use direct contact for partnerships or an operational question.
         </p>
         <div className="mt-14 flex flex-wrap justify-center gap-4">
           <Link
@@ -41,7 +41,7 @@ export function ContactSection() {
           </a>
         </div>
 
-        <div className="mt-24 grid sm:grid-cols-3 gap-px bg-border/40 border border-border/40 text-left backdrop-blur-sm">
+        <div className="mt-24 grid gap-px bg-border/40 border border-border/40 text-left backdrop-blur-sm sm:grid-cols-2 xl:grid-cols-4">
           <div className="bg-background/80 p-7">
             <div className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
               Discord
@@ -69,6 +69,19 @@ export function ContactSection() {
               className="mt-3 block font-display text-bone hover:text-accent-blue transition"
             >
               {CONTACT_EMAIL}
+            </a>
+          </div>
+          <div className="bg-background/80 p-7">
+            <div className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
+              LinkedIn
+            </div>
+            <a
+              href={LINKEDIN_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 block font-display text-bone hover:text-accent-blue transition break-all"
+            >
+              linkedin.com/in/ryan-gomez-03701b363
             </a>
           </div>
         </div>

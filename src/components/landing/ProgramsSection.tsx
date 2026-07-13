@@ -10,8 +10,8 @@ export function ProgramsSection() {
       id="programs"
       eyebrow="04"
       label="entry tracks"
-      title="Three ways in."
-      subtitle="Three entry points: ship a production ML system in 12 weeks, pursue a six-month research fellowship, or spin a thread into a venture with technical due diligence."
+      title="Structured ways to work."
+      subtitle="Programs are published only when their scope, dates, capacity, and review process are ready. Each one is designed around a concrete technical output."
     >
       <div className="grid md:grid-cols-3 gap-px bg-border/40 border border-border/40">
         {PROGRAMS.map((p, i) => (
@@ -37,7 +37,7 @@ export function ProgramsSection() {
               to={p.href}
               className="mt-6 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] uppercase text-bone hover:text-accent-blue transition"
             >
-              Apply to track{" "}
+              View programs{" "}
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
           </div>
