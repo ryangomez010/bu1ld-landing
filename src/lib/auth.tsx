@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Auth context intentionally exports provider and hook together. */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 
@@ -109,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = useCallback(async (email: string, password: string, fullName: string) => {
     const supabase = getSupabase();
-    if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
+    if (!supabase) return { error: "Account access is temporarily unavailable." };
     if (!isValidEmail(email)) return { error: "Enter a valid email address." };
     const pw = validatePassword(password);
     if (!pw.ok) return { error: pw.reason };
@@ -124,14 +125,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     const supabase = getSupabase();
-    if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
+    if (!supabase) return { error: "Account access is temporarily unavailable." };
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   }, []);
 
   const signInWithOAuth = useCallback(async (provider: "github" | "google") => {
     const supabase = getSupabase();
-    if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
+    if (!supabase) return { error: "Account access is temporarily unavailable." };
     const redirectTo =
       typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined;
     const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
@@ -140,7 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const resetPassword = useCallback(async (email: string) => {
     const supabase = getSupabase();
-    if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
+    if (!supabase) return { error: "Account access is temporarily unavailable." };
     if (!isValidEmail(email)) return { error: "Enter a valid email address." };
     const redirectTo =
       typeof window !== "undefined" ? `${window.location.origin}/reset-password` : undefined;
@@ -150,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updatePassword = useCallback(async (password: string) => {
     const supabase = getSupabase();
-    if (!supabase) return { error: "Auth is not configured. Add Supabase env vars." };
+    if (!supabase) return { error: "Account access is temporarily unavailable." };
     const pw = validatePassword(password);
     if (!pw.ok) return { error: pw.reason };
     const { error } = await supabase.auth.updateUser({ password });

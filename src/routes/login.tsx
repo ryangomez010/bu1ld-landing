@@ -59,9 +59,7 @@ function LoginForm() {
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">
-          Supabase is not configured yet. Copy{" "}
-          <code className="font-mono text-xs">.env.example</code> to{" "}
-          <code className="font-mono text-xs">.env</code> and add your project keys.
+          Account access is temporarily unavailable. Please try again later.
         </p>
       ) : null}
       <form onSubmit={onSubmit} className="space-y-5">
@@ -93,7 +91,7 @@ function LoginForm() {
             className="bg-background/50"
           />
         </div>
-        <Button type="submit" className="w-full label-sm" disabled={submitting}>
+        <Button type="submit" className="w-full label-sm" disabled={submitting || !configured}>
           {submitting ? "Signing in…" : "Log in"}
         </Button>
       </form>

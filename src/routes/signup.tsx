@@ -59,9 +59,7 @@ function SignupForm() {
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">
-          Supabase is not configured yet. Copy{" "}
-          <code className="font-mono text-xs">.env.example</code> to{" "}
-          <code className="font-mono text-xs">.env</code> and add your project keys.
+          Account creation is temporarily unavailable. Please try again later.
         </p>
       ) : null}
       <form onSubmit={onSubmit} className="space-y-5">
@@ -106,7 +104,7 @@ function SignupForm() {
         <Button
           type="submit"
           className="w-full font-mono text-[11px] tracking-[0.2em] uppercase"
-          disabled={submitting}
+          disabled={submitting || !configured}
         >
           {submitting ? "Creating account…" : "Create account"}
         </Button>

@@ -22,7 +22,7 @@ export async function ensureProfileSlug(
   fullName: string,
 ): Promise<{ slug: string | null; error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { slug: null, error: "Supabase is not configured." };
+  if (!supabase) return { slug: null, error: "Profile links are temporarily unavailable." };
 
   const { data: existing } = await supabase
     .from("profiles")
@@ -76,7 +76,7 @@ export async function updateProfileSlug(
     return { error: "Slug must be at least 3 characters (letters, numbers, hyphens)." };
 
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Profile links are temporarily unavailable." };
 
   const { error } = await supabase
     .from("profiles")

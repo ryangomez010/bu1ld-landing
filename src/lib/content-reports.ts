@@ -33,7 +33,7 @@ export async function submitContentReport(
   if (safeReason.length < 5) return { error: "Please describe the issue (min 5 characters)." };
 
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Content reporting is temporarily unavailable." };
 
   const { error } = await supabase.from("content_reports").insert({
     reporter_id: reporterId,
@@ -116,7 +116,7 @@ export async function updateReportStatus(
   adminNotes?: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Content moderation is temporarily unavailable." };
 
   const { error } = await supabase
     .from("content_reports")

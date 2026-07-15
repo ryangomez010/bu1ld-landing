@@ -182,9 +182,7 @@ function AdminContent() {
     <MemberLayout title="Admin" eyebrow="content management">
       {!isSupabaseConfigured ? (
         <div className="rounded-sm border border-accent-red/30 bg-accent-red/5 p-5 mb-8 text-sm text-accent-red -mt-4">
-          Connect Supabase to publish new content. Seed data is shown read-only until{" "}
-          <code className="font-mono text-xs">supabase/phase2.sql</code> is applied and env vars are
-          set.
+          Administration is temporarily unavailable because the live data service is unreachable.
         </div>
       ) : null}
 

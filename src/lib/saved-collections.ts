@@ -58,7 +58,8 @@ export async function createCollection(
   description?: string,
 ): Promise<{ collection: SavedCollection | null; error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { collection: null, error: "Supabase is not configured." };
+  if (!supabase)
+    return { collection: null, error: "Saved collections are temporarily unavailable." };
 
   const safeName = sanitizeText(name, LIMITS.collectionName);
   if (!safeName) return { collection: null, error: "Collection name is required." };
@@ -82,7 +83,7 @@ export async function deleteCollection(
   collectionId: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Saved collections are temporarily unavailable." };
 
   const { error } = await supabase
     .from("saved_collections")
@@ -112,7 +113,7 @@ export async function addToCollection(
   item: { item_type: SavedItemType; item_slug: string; item_title: string },
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Saved collections are temporarily unavailable." };
 
   const { error } = await supabase.from("saved_collection_items").upsert(
     {
@@ -136,7 +137,7 @@ export async function addToCollection(
 
 export async function removeFromCollection(itemId: string): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Saved collections are temporarily unavailable." };
 
   const { error } = await supabase.from("saved_collection_items").delete().eq("id", itemId);
   return { error: error?.message ?? null };

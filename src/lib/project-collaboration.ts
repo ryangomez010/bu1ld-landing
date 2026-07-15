@@ -54,11 +54,34 @@ export async function setProjectMembershipStatus(
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
   if (!supabase) return { error: "Membership changes require a live database connection." };
+  const { data: project } = await supabase
+    .from("projects")
+    .select("slug, title")
+    .eq("id", projectId)
+    .maybeSingle();
   const { error } = await supabase.rpc("set_project_membership_status", {
     p_project_id: projectId,
     p_user_id: userId,
     p_status: status,
   });
+  if (!error) {
+    const record = project as Record<string, unknown> | null;
+    const title = record?.title != null ? String(record.title) : "a project";
+    const slug = record?.slug != null ? String(record.slug) : null;
+    const body =
+      status === "active"
+        ? `Your contributor access on ${title} is active.`
+        : status === "paused"
+          ? `Your contributor access on ${title} is paused.`
+          : status === "alumni"
+            ? `You have been marked as alumni on ${title}.`
+            : `Your contributor access on ${title} has been removed.`;
+    await createNotification(userId, {
+      title: "Project membership updated",
+      body,
+      href: slug ? `/projects/${slug}` : "/projects",
+    });
+  }
   return { error: error?.message ?? null };
 }
 

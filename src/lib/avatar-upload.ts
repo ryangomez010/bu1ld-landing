@@ -22,7 +22,7 @@ export async function uploadAvatar(
   }
 
   const supabase = getSupabase();
-  if (!supabase) return { url: null, error: "Supabase is not configured." };
+  if (!supabase) return { url: null, error: "Avatar uploads are temporarily unavailable." };
 
   const ext = file.type.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
   const path = `${userId}/avatar.${ext}`;
@@ -45,7 +45,7 @@ export async function uploadAvatar(
 
 export async function removeAvatar(userId: string): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Avatar uploads are temporarily unavailable." };
 
   const { data: files } = await supabase.storage.from("avatars").list(userId);
   if (files?.length) {

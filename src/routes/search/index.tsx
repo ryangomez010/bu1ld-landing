@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/member/ContentCard";
 import { FilterChip } from "@/components/member/FilterChip";
 import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
-import { highlightMatch } from "@/components/member/ResourceNotFound";
+import { highlightMatch } from "@/lib/highlight-match";
 import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useAuth } from "@/lib/auth";

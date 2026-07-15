@@ -20,7 +20,7 @@ export async function submitFeedback(
   if (safe.length < 10) return { error: "Please provide at least 10 characters of feedback." };
 
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Feedback is temporarily unavailable." };
 
   const { error } = await supabase.from("member_feedback").insert({
     user_id: userId,

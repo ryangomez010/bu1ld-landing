@@ -1,5 +1,5 @@
 export function formatDate(dateStr: string | null): string {
-  if (!dateStr) return "TBD";
+  if (!dateStr) return "Date to be confirmed";
   return new Date(dateStr + (dateStr.includes("T") ? "" : "T00:00:00")).toLocaleDateString(
     "en-US",
     {

@@ -79,7 +79,7 @@ export async function fetchAdminSecurityEvents(limit = 100): Promise<SecurityEve
 
 export async function requestAccountDeletion(userId: string): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Account security is temporarily unavailable." };
 
   const { error } = await supabase.rpc("request_account_deletion");
   if (error) return { error: error.message };

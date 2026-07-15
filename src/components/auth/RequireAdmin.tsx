@@ -16,8 +16,8 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
       <div className="rounded-sm border border-accent-red/30 bg-accent-red/5 p-8 text-center">
         <h2 className="font-display text-xl text-bone">Admin access required</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Set <code className="font-mono text-xs">role = 'admin'</code> on your profile in Supabase
-          to manage content.
+          Your current account is not authorized to manage institutional content, member records, or
+          publication decisions.
         </p>
       </div>
     );

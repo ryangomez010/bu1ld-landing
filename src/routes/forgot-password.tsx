@@ -53,7 +53,7 @@ function ForgotPasswordForm() {
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">
-          Supabase is not configured yet.
+          Password recovery is temporarily unavailable. Please try again later.
         </p>
       ) : null}
       {sent ? (
@@ -78,7 +78,7 @@ function ForgotPasswordForm() {
           <Button
             type="submit"
             className="w-full font-mono text-[11px] tracking-[0.2em] uppercase"
-            disabled={submitting}
+            disabled={submitting || !configured}
           >
             {submitting ? "Sending…" : "Send reset link"}
           </Button>

@@ -1,6 +1,6 @@
 import { checkSupabaseConfigured } from "@/lib/supabase";
 
-/** True when Supabase is not configured and the app runs in local development. */
+/** True when the live data client is absent and the app runs in local development. */
 export function isDemoMode(): boolean {
   return !checkSupabaseConfigured() && !import.meta.env.PROD;
 }

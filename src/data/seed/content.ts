@@ -405,10 +405,10 @@ export const SEED_NEWSLETTERS: NewsletterIssue[] = [
     title: "The Bu1ld Digest #12 — March 2026",
     issue_number: 12,
     summary:
-      "An example editorial digest showing how research activity, reading, and program notices are documented.",
+      "An editorial digest showing how research activity, reading, and programme notices are documented.",
     body: `## This month at The Bu1ld
 
-This sample issue demonstrates the expected standard: name the question, link the evidence, and state what remains uncertain before calling a result complete.
+This digest demonstrates the expected standard: name the question, link the evidence, and state what remains uncertain before calling a result complete.
 
 ## Paper picks
 

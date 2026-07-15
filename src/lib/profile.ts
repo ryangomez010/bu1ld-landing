@@ -28,7 +28,7 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
 
 export async function upsertProfile(userId: string, patch: Partial<Profile>): Promise<Profile> {
   const supabase = getSupabase();
-  if (!supabase) throw new Error("Supabase is not configured");
+  if (!supabase) throw new Error("Profile updates are temporarily unavailable.");
 
   // Never allow client-side role changes — RLS trigger also enforces this.
   const { role: _role, id: _id, created_at: _ca, updated_at: _ua, ...raw } = patch;

@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { slugify } from "@/data/seed/content";
-import { generateEventPrep } from "@/lib/admin";
 import { deleteContentRow, setContentPublished, updateEventAdmin } from "@/lib/content";
 import { getSupabase } from "@/lib/supabase";
 import type { EventResource, MlEvent } from "@/lib/types";
@@ -28,10 +27,6 @@ export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editSummary, setEditSummary] = useState("");
-
-  const onDraft = () => {
-    setPrepNotes(generateEventPrep(title, topics, prepNotes));
-  };
 
   const parseDeadlines = () =>
     deadlinesText
@@ -130,7 +125,13 @@ export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved
         </div>
         <div className="space-y-2">
           <Label>Summary</Label>
-          <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} rows={3} />
+          <Textarea
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            minLength={20}
+            rows={3}
+            required
+          />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -175,17 +176,13 @@ export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved
           />
         </div>
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label>Prep notes (markdown)</Label>
-            <button
-              type="button"
-              onClick={onDraft}
-              className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"
-            >
-              Generate draft
-            </button>
-          </div>
-          <Textarea value={prepNotes} onChange={(e) => setPrepNotes(e.target.value)} rows={6} />
+          <Label>Preparation notes, acceptance criteria, or reading list</Label>
+          <Textarea
+            value={prepNotes}
+            onChange={(e) => setPrepNotes(e.target.value)}
+            rows={6}
+            placeholder="Name the technical theme, accepted paper or project targets, review expectations, and exact source links members should use before attending."
+          />
         </div>
         <Button
           type="submit"

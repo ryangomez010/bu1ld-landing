@@ -74,7 +74,12 @@ function EvidencePage() {
         </div>
 
         {loading ? (
-          <div className="mt-12 h-32 animate-pulse rounded-2xl border border-border/50 bg-bone/[0.03]" />
+          <section className="mt-12 rounded-2xl border border-border/50 bg-bone/[0.03] p-7">
+            <div className="h-3 w-40 animate-pulse rounded-full bg-bone/10" />
+            <div className="mt-5 h-4 w-full max-w-xl animate-pulse rounded-full bg-bone/10" />
+            <div className="mt-3 h-4 w-3/4 max-w-lg animate-pulse rounded-full bg-bone/10" />
+            <p className="sr-only">Loading verified institutional claims.</p>
+          </section>
         ) : claims.length === 0 ? (
           <section className="mt-12 rounded-2xl border border-border/60 bg-background/60 p-7">
             <h2 className="font-display text-xl text-bone">No verified claims are published.</h2>

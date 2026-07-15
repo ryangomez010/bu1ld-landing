@@ -89,7 +89,7 @@ function ResetPasswordPage() {
     }
     const supabase = getSupabase();
     if (!supabase) {
-      toast.error("Auth is not configured.");
+      toast.error("Account access is temporarily unavailable.");
       return;
     }
     setSubmitting(true);

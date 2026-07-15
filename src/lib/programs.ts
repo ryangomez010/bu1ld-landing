@@ -6,6 +6,13 @@ import type { ApplicationStatus, Program, ProgramApplication, ProgramType } from
 
 const statementMinLength = 40;
 
+function toSupabaseTimestamp(value?: string): string | null {
+  if (!value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
 function normalizeProgram(row: Record<string, unknown>): Program {
   return {
     id: String(row.id),
@@ -202,10 +209,10 @@ export async function createProgram(input: {
     program_type: input.programType,
     summary,
     application_instructions: clampText(input.applicationInstructions ?? "", 4000) || null,
-    starts_at: input.startsAt || null,
-    ends_at: input.endsAt || null,
-    applications_open_at: input.applicationsOpenAt || null,
-    applications_close_at: input.applicationsCloseAt || null,
+    starts_at: toSupabaseTimestamp(input.startsAt),
+    ends_at: toSupabaseTimestamp(input.endsAt),
+    applications_open_at: toSupabaseTimestamp(input.applicationsOpenAt),
+    applications_close_at: toSupabaseTimestamp(input.applicationsCloseAt),
     outcomes: clampText(input.outcomes ?? "", 4000) || null,
     capacity: input.capacity ?? null,
     published: false,
@@ -234,12 +241,12 @@ export async function updateProgramAdmin(
   if (input.summary !== undefined) patch.summary = clampText(input.summary, 2000);
   if (input.applicationInstructions !== undefined)
     patch.application_instructions = clampText(input.applicationInstructions, 4000) || null;
-  if (input.startsAt !== undefined) patch.starts_at = input.startsAt || null;
-  if (input.endsAt !== undefined) patch.ends_at = input.endsAt || null;
+  if (input.startsAt !== undefined) patch.starts_at = toSupabaseTimestamp(input.startsAt);
+  if (input.endsAt !== undefined) patch.ends_at = toSupabaseTimestamp(input.endsAt);
   if (input.applicationsOpenAt !== undefined)
-    patch.applications_open_at = input.applicationsOpenAt || null;
+    patch.applications_open_at = toSupabaseTimestamp(input.applicationsOpenAt);
   if (input.applicationsCloseAt !== undefined)
-    patch.applications_close_at = input.applicationsCloseAt || null;
+    patch.applications_close_at = toSupabaseTimestamp(input.applicationsCloseAt);
   if (input.outcomes !== undefined) patch.outcomes = clampText(input.outcomes, 4000) || null;
   if (input.capacity !== undefined) patch.capacity = input.capacity;
   const { error } = await supabase.from("programs").update(patch).eq("id", programId);

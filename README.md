@@ -43,18 +43,19 @@ update public.profiles set role = 'admin' where id = '<your-user-uuid>';
 
 ## Scripts
 
-| Command                   | Description                       |
-| ------------------------- | --------------------------------- |
-| `bun run dev`             | Development server                |
-| `bun run build`           | Production build                  |
-| `bun run preview`         | Preview production build          |
-| `bun run format`          | Prettier format                   |
-| `bun run lint`            | ESLint                            |
-| `bun run test`            | Security utility unit tests       |
-| `bun run supabase:verify` | Check tables + auth connectivity  |
-| `bun run supabase:apply`  | Apply full schema via Postgres    |
-| `bun run supabase:seed`   | Import seed content into Supabase |
-| `bun run release:check`   | Types, tests, lint, production build, and manual release actions |
+| Command                   | Description                                                   |
+| ------------------------- | ------------------------------------------------------------- |
+| `bun run dev`             | Development server                                            |
+| `bun run build`           | Production build                                              |
+| `bun run preview`         | Preview production build                                      |
+| `bun run format`          | Prettier format                                               |
+| `bun run lint`            | ESLint                                                        |
+| `bun run test`            | Security utility unit tests                                   |
+| `bun run supabase:verify` | Check tables + auth connectivity                              |
+| `bun run supabase:apply`  | Apply full schema via Postgres                                |
+| `bun run supabase:seed`   | Import seed content into Supabase                             |
+| `bun run release:check`   | Types, tests, lint, production build, and copy/security gates |
+| `bun run release:prod`    | Strict production gate with live Supabase schema/RLS checks   |
 
 ## Email
 
@@ -124,11 +125,17 @@ curl -X POST https://your-app.vercel.app/api/digest \
 | `/admin`                                       | Admin console (admin role)      |
 | `/evidence`                                    | Public verified-claims register |
 
-## Final manual production actions
+## Production Release Gate
 
-1. Add `SUPABASE_DB_PASSWORD` locally and run `bun run supabase:apply`.
-2. Run `bun run supabase:verify` and `bun run supabase:rls` against the production database.
-3. Set server-only `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, and `DIGEST_API_SECRET` in the deployment provider.
-4. Set `VITE_EMAIL_ENDPOINT`, configure the daily digest cron, and verify the sender domain.
-5. Configure Supabase site URL, redirect URLs, email templates, GitHub/Google providers if used, and storage limits.
-6. Run `bun run release:check`, then test signup, onboarding, project admission, contribution review, programme admission, and administration with separate accounts.
+Before release, the deployment environment must contain the live database connection and server-only
+secrets. Run:
+
+```bash
+bun run release:prod
+```
+
+That strict gate runs type checks, tests, lint, the production build, live table verification, and
+RLS verification. It must pass after applying all schema phases through `phase22.sql`, configuring
+Supabase site URL and redirect URLs, setting provider secrets, configuring the daily digest cron, and
+verifying the email sender domain. Then run final smoke tests with separate visitor, member,
+project lead, reviewer, and administrator accounts.
