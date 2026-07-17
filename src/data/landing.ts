@@ -194,6 +194,7 @@ export const NAV_ITEMS = [
   ["Labs", "/labs"],
   ["Programs", "/programs-public"],
   ["Competitions", "/competitions"],
+  ["Publications", "/publications"],
   ["People", "/people"],
   ["Apply", "/apply"],
 ] as const;

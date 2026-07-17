@@ -4,12 +4,12 @@ The Bu1ld is a TanStack Start (Vite + React) application deployed as a Cloudflar
 
 ## Surfaces
 
-| Surface | Audience | Entry |
-|---------|----------|-------|
-| Public institution site | Visitors | `/`, `/labs`, `/programs-public`, `/competitions`, `/people`, `/partnerships`, `/publications`, `/apply`, `/evidence` |
-| Auth | Applicants | `/signup`, `/login`, `/auth/callback` |
-| Member portal | Authenticated members | `/dashboard`, projects, research, programs, invitations |
-| Admin console | Admins / institutional administrators | `/admin` |
+| Surface                 | Audience                              | Entry                                                                                                                 |
+| ----------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Public institution site | Visitors                              | `/`, `/labs`, `/programs-public`, `/competitions`, `/people`, `/partnerships`, `/publications`, `/apply`, `/evidence` |
+| Auth                    | Applicants                            | `/signup`, `/login`, `/auth/callback`                                                                                 |
+| Member portal           | Authenticated members                 | `/dashboard`, projects, research, programs, invitations                                                               |
+| Admin console           | Admins / institutional administrators | `/admin`                                                                                                              |
 
 ## Stack
 
@@ -23,20 +23,21 @@ The Bu1ld is a TanStack Start (Vite + React) application deployed as a Cloudflar
 1. **Legacy `profiles.role`:** `member` | `project_lead` | `admin` — used by most RLS policies.
 2. **Institutional `member_roles`:** additive grants (`researcher`, `reviewer`, `mentor`, `lab_lead`, `startup_founder`, `administrator`, …).
 3. **UI helpers:** `src/lib/roles.ts` — `isAdministrator` accepts legacy admin **or** institutional administrator.
-4. **Authorization truth:** Supabase RLS + security-definer RPCs (e.g. `review_project_application`). Frontend gates are UX only.
+4. **Authorization truth:** Supabase RLS + security-definer RPCs (e.g. `review_project_application`, `accept_invitation`) and `is_platform_admin()`. Frontend gates are UX only.
 
 ## Key modules
 
-| Module | Path |
-|--------|------|
-| Supabase client + typed schema | `src/lib/supabase.ts` |
-| Auth context | `src/lib/auth.tsx` |
-| Role helpers | `src/lib/roles.ts` |
-| Projects / applications | `src/lib/projects.ts` |
-| Programs | `src/lib/programs.ts` |
-| Invitations | `src/lib/invitations.ts` |
-| Institution copy (public) | `src/data/institution.ts` |
-| Worker entry | `src/server.ts` |
+| Module                         | Path                      |
+| ------------------------------ | ------------------------- |
+| Supabase client + typed schema | `src/lib/supabase.ts`     |
+| Auth context                   | `src/lib/auth.tsx`        |
+| Role helpers                   | `src/lib/roles.ts`        |
+| Projects / applications        | `src/lib/projects.ts`     |
+| Programs                       | `src/lib/programs.ts`     |
+| Invitations                    | `src/lib/invitations.ts`  |
+| Competitions                   | `src/lib/competitions.ts` |
+| Institution copy (public)      | `src/data/institution.ts` |
+| Worker entry                   | `src/server.ts`           |
 
 ## Data flow (happy path)
 

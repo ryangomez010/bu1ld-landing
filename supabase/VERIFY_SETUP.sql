@@ -41,6 +41,14 @@ with required_tables(table_name) as (
     ('programs'),
     ('program_applications'),
     ('institutional_claims'),
+    ('labs'),
+    ('lab_memberships'),
+    ('competitions'),
+    ('competition_submissions'),
+    ('partnerships'),
+    ('invitations'),
+    ('project_experiments'),
+    ('project_deliverables'),
     ('schema_migrations')
 ),
 table_status as (
@@ -72,7 +80,15 @@ required_rls(table_name) as (
     ('project_contributions'),
     ('programs'),
     ('program_applications'),
-    ('institutional_claims')
+    ('institutional_claims'),
+    ('labs'),
+    ('lab_memberships'),
+    ('competitions'),
+    ('competition_submissions'),
+    ('partnerships'),
+    ('invitations'),
+    ('project_experiments'),
+    ('project_deliverables')
 ),
 rls_status as (
   select
@@ -94,6 +110,7 @@ required_functions(function_name) as (
     ('resubmit_project_contribution'),
     ('set_project_membership_status'),
     ('review_institutional_claim'),
+    ('accept_invitation'),
     ('assert_private_collaboration_tables')
 ),
 function_status as (
@@ -113,7 +130,7 @@ migration_status as (
       then 'ok'
       else 'missing'
     end as status
-  from (values (19), (20), (21), (22), (23)) as phases(phase_id)
+  from (values (19), (20), (21), (22), (23), (24), (25)) as phases(phase_id)
 )
 select * from table_status
 union all select * from rls_status

@@ -40,6 +40,14 @@ const CORE_TABLES = [
   "programs",
   "program_applications",
   "institutional_claims",
+  "labs",
+  "lab_memberships",
+  "competitions",
+  "competition_submissions",
+  "partnerships",
+  "invitations",
+  "project_experiments",
+  "project_deliverables",
 ];
 
 const sql = postgres(connection, { ssl: "require", max: 1 });

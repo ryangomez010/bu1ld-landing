@@ -662,6 +662,73 @@ export type Database = {
         },
         Partial<import("@/lib/types").Invitation>
       >;
+      project_experiments: DbTable<
+        {
+          id: string;
+          project_id: string;
+          created_by: string;
+          title: string;
+          hypothesis: string;
+          method: string;
+          result_summary: string;
+          status: string;
+          evidence_url: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          project_id: string;
+          created_by: string;
+          title: string;
+          hypothesis: string;
+          method?: string;
+          result_summary?: string;
+          status?: string;
+          evidence_url?: string | null;
+        },
+        Partial<{
+          title: string;
+          hypothesis: string;
+          method: string;
+          result_summary: string;
+          status: string;
+          evidence_url: string | null;
+        }>
+      >;
+      project_deliverables: DbTable<
+        {
+          id: string;
+          project_id: string;
+          milestone_id: string | null;
+          submitted_by: string;
+          title: string;
+          description: string;
+          artifact_url: string | null;
+          status: string;
+          review_note: string | null;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          project_id: string;
+          submitted_by: string;
+          title: string;
+          description?: string;
+          milestone_id?: string | null;
+          artifact_url?: string | null;
+          status?: string;
+        },
+        Partial<{
+          title: string;
+          description: string;
+          status: string;
+          review_note: string | null;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+        }>
+      >;
     };
     Views: Record<string, never>;
     Functions: {

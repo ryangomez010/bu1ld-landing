@@ -75,6 +75,14 @@ const TABLES = [
   "programs",
   "program_applications",
   "institutional_claims",
+  "labs",
+  "lab_memberships",
+  "competitions",
+  "competition_submissions",
+  "partnerships",
+  "invitations",
+  "project_experiments",
+  "project_deliverables",
   "schema_migrations",
 ];
 
@@ -104,7 +112,7 @@ if (authError) {
 
 if (missing > 0) {
   console.log(`\n${missing} table(s) missing. Run: bun run supabase:apply`);
-  console.log("Or paste supabase/full-setup.sql into the Supabase SQL editor.");
+  console.log("Or paste supabase/FINAL_SETUP.sql into the Supabase SQL editor.");
   process.exit(1);
 }
 

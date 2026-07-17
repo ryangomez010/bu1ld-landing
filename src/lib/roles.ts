@@ -15,8 +15,8 @@ export function isAdministrator(profile: Profile | null | undefined): boolean {
 export function isProjectLead(profile: Profile | null | undefined): boolean {
   if (!profile) return false;
   if (profile.role === "project_lead" || profile.role === "admin") return true;
-  return (profile.institutional_roles ?? []).some((role) =>
-    role === "project_lead" || role === "lab_lead",
+  return (profile.institutional_roles ?? []).some(
+    (role) => role === "project_lead" || role === "lab_lead",
   );
 }
 
@@ -37,9 +37,7 @@ export function isMentor(profile: Profile | null | undefined): boolean {
 
 export function isLabLead(profile: Profile | null | undefined): boolean {
   if (!profile) return false;
-  return (
-    profile.role === "admin" || (profile.institutional_roles ?? []).includes("lab_lead")
-  );
+  return profile.role === "admin" || (profile.institutional_roles ?? []).includes("lab_lead");
 }
 
 export function isStartupFounder(profile: Profile | null | undefined): boolean {

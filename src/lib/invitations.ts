@@ -2,13 +2,18 @@ import { getSupabase } from "@/lib/supabase";
 import type { Invitation } from "@/lib/types";
 import { clampText, isValidEmail } from "@/lib/security";
 
-export async function fetchMyInvitations(userId: string): Promise<Invitation[]> {
+export async function fetchMyInvitations(
+  userId: string,
+  email?: string | null,
+): Promise<Invitation[]> {
   const supabase = getSupabase();
   if (!supabase) return [];
+  const filters = [`invitee_id.eq.${userId}`];
+  if (email) filters.push(`email.eq.${email}`);
   const { data, error } = await supabase
     .from("invitations")
     .select("*")
-    .or(`invitee_id.eq.${userId}`)
+    .or(filters.join(","))
     .order("created_at", { ascending: false })
     .limit(50);
   if (error || !data) return [];
@@ -25,7 +30,8 @@ export async function createInvitation(input: {
   message?: string;
 }): Promise<{ invitation: Invitation | null; error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { invitation: null, error: "Supabase is not configured." };
+  if (!supabase)
+    return { invitation: null, error: "Invitation service is temporarily unavailable." };
   if (!input.email && !input.inviteeId) {
     return { invitation: null, error: "Provide an email or member id." };
   }
@@ -56,11 +62,14 @@ export async function respondToInvitation(
   status: "accepted" | "declined",
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase is not configured." };
+  if (!supabase) return { error: "Invitation service is temporarily unavailable." };
   if (status === "accepted") {
     const { error } = await supabase.rpc("accept_invitation", { p_invitation_id: invitationId });
     return { error: error?.message ?? null };
   }
-  const { error } = await supabase.from("invitations").update({ status: "declined" }).eq("id", invitationId);
+  const { error } = await supabase
+    .from("invitations")
+    .update({ status: "declined" })
+    .eq("id", invitationId);
   return { error: error?.message ?? null };
 }

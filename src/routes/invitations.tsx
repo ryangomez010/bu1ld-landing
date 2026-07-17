@@ -32,7 +32,7 @@ function InvitationsPanel() {
   const reload = async () => {
     if (!user) return;
     setLoading(true);
-    setItems(await fetchMyInvitations(user.id));
+    setItems(await fetchMyInvitations(user.id, user.email));
     setLoading(false);
   };
 
@@ -68,10 +68,7 @@ function InvitationsPanel() {
       ) : (
         <ul className="mt-8 space-y-4">
           {items.map((invite) => (
-            <li
-              key={invite.id}
-              className="rounded-sm border border-border/50 bg-bone/[0.02] p-5"
-            >
+            <li key={invite.id} className="rounded-sm border border-border/50 bg-bone/[0.02] p-5">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-accent-blue">
                   {invite.invitation_type}

@@ -2,7 +2,7 @@
 
 ## Priority 1: The Bu1ld production release
 
-1. Apply Supabase schema phases through `phase23.sql`.
+1. Apply Supabase schema phases through `phase24.sql`.
 2. Run `bun run release:prod` in the deployment environment.
 3. Smoke test visitor, member, project lead, reviewer, and administrator journeys.
 4. Publish only evidence-backed institutional claims.

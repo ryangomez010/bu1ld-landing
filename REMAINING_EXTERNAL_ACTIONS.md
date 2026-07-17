@@ -7,7 +7,8 @@ Only credentialed or external-approval steps remain.
 Action:
 
 ```text
-Paste supabase/FINAL_SETUP.sql into Supabase SQL editor and run it.
+Paste supabase/FINAL_SETUP.sql into Supabase SQL editor and run it
+(or apply supabase/phase25.sql if phases 1–24 already exist).
 Paste supabase/VERIFY_SETUP.sql and run it.
 ```
 
@@ -15,6 +16,13 @@ Expected result:
 
 ```text
 Every row returned by VERIFY_SETUP.sql has status = 'ok'.
+Labs/competitions seed rows exist (SELECT slug FROM labs).
+```
+
+Optional: open a challenge for submissions:
+
+```sql
+update public.competitions set status = 'open' where slug = 'defect-worlds-challenge';
 ```
 
 ## 2. Configure Supabase Auth

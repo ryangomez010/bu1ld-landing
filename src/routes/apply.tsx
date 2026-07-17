@@ -2,12 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
-import {
-  APPLICATION_STEPS,
-  getProgram,
-  INSTITUTION_PROGRAMS,
-  LABS,
-} from "@/data/institution";
+import { APPLICATION_STEPS, getProgram, INSTITUTION_PROGRAMS, LABS } from "@/data/institution";
 
 const applySearchSchema = z.object({
   program: z.string().optional(),
@@ -50,10 +45,7 @@ function ApplyPage() {
 
       <ol className="grid gap-4 md:grid-cols-2">
         {APPLICATION_STEPS.map((step) => (
-          <li
-            key={step.step}
-            className="rounded-sm border border-border/50 bg-bone/[0.02] p-5"
-          >
+          <li key={step.step} className="rounded-sm border border-border/50 bg-bone/[0.02] p-5">
             <p className="font-mono text-[10px] tracking-[0.28em] text-bone/40">{step.step}</p>
             <h3 className="mt-3 font-display text-xl text-bone">{step.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>

@@ -29,6 +29,8 @@ import {
   subscribeProjectApplications,
   updateApplicationStatus,
 } from "@/lib/projects";
+import { useAuth } from "@/lib/auth";
+import { createInvitation } from "@/lib/invitations";
 import { relativeTime } from "@/lib/date";
 import { projectEditLink } from "@/lib/app-paths";
 import { fetchProjectMemberships, setProjectMembershipStatus } from "@/lib/project-collaboration";
@@ -38,6 +40,7 @@ import type {
   ProjectApplication,
   ProjectMembership,
 } from "@/lib/types";
+import { Input } from "@/components/ui/input";
 
 const STATUS_HELP: Record<ApplicationStatus, string> = {
   pending: "Awaiting your review — accept, waitlist, or decline.",
@@ -62,6 +65,7 @@ function ManageProjectPage() {
 
 function ManageProject() {
   const { slug } = Route.useParams();
+  const { user } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [applications, setApplications] = useState<ProjectApplication[]>([]);
   const [memberships, setMemberships] = useState<ProjectMembership[]>([]);
@@ -69,6 +73,9 @@ function ManageProject() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [declineNote, setDeclineNote] = useState("");
   const [loading, setLoading] = useState(true);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("contributor");
+  const [inviteBusy, setInviteBusy] = useState(false);
 
   const reload = useCallback(() => {
     if (!project) return;
@@ -253,6 +260,71 @@ function ManageProject() {
           </div>
         </section>
       ) : null}
+
+      <section className="mb-8 rounded-sm border border-border/50 bg-bone/[0.02] p-5">
+        <h2 className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          Invite by email
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Send a project invitation. Accepting joins the roster via{" "}
+          <code className="font-mono text-[10px]">accept_invitation</code> and creates an active
+          membership.
+        </p>
+        <form
+          className="mt-4 flex flex-wrap items-end gap-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!user || !project) return;
+            setInviteBusy(true);
+            void createInvitation({
+              invitedBy: user.id,
+              invitationType: "project",
+              targetId: project.id,
+              email: inviteEmail.trim(),
+              roleOffered: inviteRole,
+              message: `You are invited to join ${project.title}.`,
+            }).then(({ error }) => {
+              setInviteBusy(false);
+              if (error) return toast.error(error);
+              toast.success("Invitation sent.");
+              setInviteEmail("");
+            });
+          }}
+        >
+          <div className="min-w-[200px] flex-1 space-y-1">
+            <Label htmlFor="invite-email">Email</Label>
+            <Input
+              id="invite-email"
+              type="email"
+              required
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              placeholder="builder@example.com"
+              className="bg-background/50"
+            />
+          </div>
+          <div className="w-40 space-y-1">
+            <Label>Role</Label>
+            <Select value={inviteRole} onValueChange={setInviteRole}>
+              <SelectTrigger className="h-10">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="contributor">Contributor</SelectItem>
+                <SelectItem value="mentor">Mentor</SelectItem>
+                <SelectItem value="reviewer">Reviewer</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            type="submit"
+            disabled={inviteBusy}
+            className="font-mono text-[10px] uppercase tracking-[0.16em]"
+          >
+            {inviteBusy ? "Sending…" : "Send invite"}
+          </Button>
+        </form>
+      </section>
 
       {selected.size > 0 ? (
         <div className="mb-6 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-4 space-y-3">

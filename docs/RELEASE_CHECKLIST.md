@@ -13,7 +13,7 @@
 
 ## Deployment gate
 
-- [ ] Apply Supabase migrations through `phase23.sql`.
+- [ ] Apply Supabase migrations through `phase24.sql`.
 - [ ] Configure Supabase site URL and redirect URLs.
 - [ ] Configure production OAuth providers if enabled.
 - [ ] Configure server-only `SUPABASE_SERVICE_ROLE_KEY`.

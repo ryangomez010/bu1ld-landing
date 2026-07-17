@@ -17,6 +17,7 @@ import { AdminPapersTab } from "@/components/admin/AdminPapersTab";
 import { AdminProjectsTab } from "@/components/admin/AdminProjectsTab";
 import { AdminClaimsTab } from "@/components/admin/AdminClaimsTab";
 import { AdminProgramsTab } from "@/components/admin/AdminProgramsTab";
+import { AdminInstitutionsTab } from "@/components/admin/AdminInstitutionsTab";
 import { RequireAdmin } from "@/components/auth/RequireAdmin";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { MemberLayout } from "@/components/member/MemberLayout";
@@ -31,6 +32,7 @@ import { fetchAllEventsAdmin, fetchAllNewslettersAdmin, fetchAllPapersAdmin } fr
 import { fetchAllJobsAdmin, fetchAllProjectsAdmin, fetchPendingLeadRequests } from "@/lib/projects";
 import { fetchAllProgramsAdmin, fetchProgramApplicationsAdmin } from "@/lib/programs";
 import { fetchAllInstitutionalClaimsAdmin } from "@/lib/institutional-claims";
+import { fetchCompetitionSubmissionsAdmin } from "@/lib/competitions";
 import { useAuth } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import type {
@@ -46,6 +48,7 @@ import type {
   Project,
   InstitutionalClaim,
 } from "@/lib/types";
+import type { CompetitionSubmission } from "@/lib/competitions";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
@@ -72,6 +75,7 @@ type AdminTab =
   | "programs"
   | "projects"
   | "claims"
+  | "institutions"
   | "newsletter"
   | "jobs"
   | "guides"
@@ -92,6 +96,9 @@ function AdminContent() {
   const [programApplications, setProgramApplications] = useState<ProgramApplication[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [claims, setClaims] = useState<InstitutionalClaim[]>([]);
+  const [competitionSubmissions, setCompetitionSubmissions] = useState<
+    (CompetitionSubmission & { competition_title?: string })[]
+  >([]);
   const [newsletters, setNewsletters] = useState<NewsletterIssue[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [members, setMembers] = useState<Profile[]>([]);
@@ -133,6 +140,9 @@ function AdminContent() {
           break;
         case "claims":
           void fetchAllInstitutionalClaimsAdmin().then(setClaims);
+          break;
+        case "institutions":
+          void fetchCompetitionSubmissionsAdmin().then(setCompetitionSubmissions);
           break;
         case "newsletter":
           void fetchAllNewslettersAdmin().then(setNewsletters);
@@ -196,6 +206,7 @@ function AdminContent() {
             "programs",
             "projects",
             "claims",
+            "institutions",
             "newsletter",
             "jobs",
             "guides",
@@ -215,6 +226,9 @@ function AdminContent() {
           >
             {t}
             {t === "leads" && leadRequests.length > 0 ? ` (${leadRequests.length})` : ""}
+            {t === "institutions" && competitionSubmissions.length > 0
+              ? ` (${competitionSubmissions.length})`
+              : ""}
           </button>
         ))}
       </div>
@@ -237,6 +251,11 @@ function AdminContent() {
         <AdminProjectsTab projects={projects} onSaved={onSaved} />
       ) : tab === "claims" ? (
         <AdminClaimsTab claims={claims} actorId={user?.id ?? ""} onSaved={onSaved} />
+      ) : tab === "institutions" ? (
+        <AdminInstitutionsTab
+          submissions={competitionSubmissions}
+          onReload={() => reloadTab("institutions")}
+        />
       ) : tab === "newsletter" ? (
         <AdminNewslettersTab issues={newsletters} onSaved={onSaved} />
       ) : tab === "jobs" ? (

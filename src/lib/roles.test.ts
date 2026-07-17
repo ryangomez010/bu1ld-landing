@@ -58,9 +58,7 @@ describe("roles", () => {
   test("reviewer and lab_lead helpers", () => {
     expect(isReviewer(profile({ institutional_roles: ["reviewer"] }))).toBe(true);
     expect(isLabLead(profile({ institutional_roles: ["lab_lead"] }))).toBe(true);
-    expect(hasInstitutionalRole(profile({ institutional_roles: ["mentor"] }), "mentor")).toBe(
-      true,
-    );
+    expect(hasInstitutionalRole(profile({ institutional_roles: ["mentor"] }), "mentor")).toBe(true);
   });
 });
 

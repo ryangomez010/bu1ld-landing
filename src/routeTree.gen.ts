@@ -58,6 +58,7 @@ import { Route as JobsTrackerRouteImport } from './routes/jobs/tracker'
 import { Route as JobsSlugRouteImport } from './routes/jobs/$slug'
 import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
 import { Route as EventsSlugRouteImport } from './routes/events/$slug'
+import { Route as CompetitionsSlugRouteImport } from './routes/competitions/$slug'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AccountSecurityRouteImport } from './routes/account/security'
 import { Route as AccountPreferencesRouteImport } from './routes/account/preferences'
@@ -312,6 +313,11 @@ const EventsSlugRoute = EventsSlugRouteImport.update({
   path: '/events/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompetitionsSlugRoute = CompetitionsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CompetitionsRoute,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -356,7 +362,7 @@ const ProjectsEditSlugRoute = ProjectsEditSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
-  '/competitions': typeof CompetitionsRoute
+  '/competitions': typeof CompetitionsRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -377,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/account/preferences': typeof AccountPreferencesRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/competitions/$slug': typeof CompetitionsSlugRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
@@ -415,7 +422,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
-  '/competitions': typeof CompetitionsRoute
+  '/competitions': typeof CompetitionsRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -436,6 +443,7 @@ export interface FileRoutesByTo {
   '/account/preferences': typeof AccountPreferencesRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/competitions/$slug': typeof CompetitionsSlugRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
@@ -475,7 +483,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
-  '/competitions': typeof CompetitionsRoute
+  '/competitions': typeof CompetitionsRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -496,6 +504,7 @@ export interface FileRoutesById {
   '/account/preferences': typeof AccountPreferencesRoute
   '/account/security': typeof AccountSecurityRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/competitions/$slug': typeof CompetitionsSlugRoute
   '/events/$slug': typeof EventsSlugRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
@@ -557,6 +566,7 @@ export interface FileRouteTypes {
     | '/account/preferences'
     | '/account/security'
     | '/auth/callback'
+    | '/competitions/$slug'
     | '/events/$slug'
     | '/guides/$slug'
     | '/jobs/$slug'
@@ -616,6 +626,7 @@ export interface FileRouteTypes {
     | '/account/preferences'
     | '/account/security'
     | '/auth/callback'
+    | '/competitions/$slug'
     | '/events/$slug'
     | '/guides/$slug'
     | '/jobs/$slug'
@@ -675,6 +686,7 @@ export interface FileRouteTypes {
     | '/account/preferences'
     | '/account/security'
     | '/auth/callback'
+    | '/competitions/$slug'
     | '/events/$slug'
     | '/guides/$slug'
     | '/jobs/$slug'
@@ -714,7 +726,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApplyRoute: typeof ApplyRoute
-  CompetitionsRoute: typeof CompetitionsRoute
+  CompetitionsRoute: typeof CompetitionsRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   EvidenceRoute: typeof EvidenceRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -1116,6 +1128,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/competitions/$slug': {
+      id: '/competitions/$slug'
+      path: '/$slug'
+      fullPath: '/competitions/$slug'
+      preLoaderRoute: typeof CompetitionsSlugRouteImport
+      parentRoute: typeof CompetitionsRoute
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -1175,10 +1194,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CompetitionsRouteChildren {
+  CompetitionsSlugRoute: typeof CompetitionsSlugRoute
+}
+
+const CompetitionsRouteChildren: CompetitionsRouteChildren = {
+  CompetitionsSlugRoute: CompetitionsSlugRoute,
+}
+
+const CompetitionsRouteWithChildren = CompetitionsRoute._addFileChildren(
+  CompetitionsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplyRoute: ApplyRoute,
-  CompetitionsRoute: CompetitionsRoute,
+  CompetitionsRoute: CompetitionsRouteWithChildren,
   DashboardRoute: DashboardRoute,
   EvidenceRoute: EvidenceRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,

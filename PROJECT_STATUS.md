@@ -1,37 +1,35 @@
 # Project status
 
-**Date:** 2026-07-16  
-**Branch:** `main` (local WIP may include uncommitted institution expansion)
+**Date:** 2026-07-17  
+**Branch:** `main`
 
 ## What works
 
-- Public institution IA: labs (6), programs, competitions, people, partnerships, publications, apply flow
-- Member portal: projects, applications, programs, research, events, jobs, directory, invitations UI
-- Admin console: members (expanded institutional roles), content, moderation, evidence
-- Schema through phase23 (+ phase24 SQL ready for labs/competitions/partnerships/invitations)
+- Public institution IA: 6 labs, programs, competitions (detail + submit), people, partnerships, publications, apply flow
+- Member portal: projects, applications, programs, research, events, jobs, directory, invitations (accept → membership via RPC)
+- Project lead invite-by-email on manage page
+- Admin console: members, content, moderation, evidence, **institutions** (competition review)
+- Schema through **phase25** (`is_platform_admin`, lab/competition seeds, experiments, deliverables)
 - Cloudflare deploy pipeline + runtime-env injection for Supabase keys
-- Role helpers unify legacy admin and institutional administrator in UI
+- Role helpers unify legacy admin and institutional administrator in UI; DB helper `is_platform_admin()` for RLS
 
 ## Journey coverage
 
-| Step | Status |
-|------|--------|
-| Discover institution | Public pages live |
-| Apply | `/apply` → signup → onboarding |
-| Accepted to project/program | RPC + manage queues |
-| Join team | Memberships + `/invitations` |
-| Submit work | Contributions / milestones |
-| Receive feedback | Lead verification + notifications |
+| Step                        | Status                                              |
+| --------------------------- | --------------------------------------------------- |
+| Discover institution        | Public pages live                                   |
+| Apply                       | `/apply` → signup → onboarding                      |
+| Accepted to project/program | RPC + manage queues                                 |
+| Join team                   | Memberships + `/invitations` + `accept_invitation`  |
+| Submit work                 | Contributions / milestones / competition submissions |
+| Receive feedback            | Lead verification + admin competition review        |
 
-## Remaining gaps
+## Remaining external blockers
 
-1. **Apply `phase24.sql` on live Supabase** and seed published labs/competitions.
-2. **CLOUDFLARE_API_TOKEN** in GitHub for automated deploys.
-3. **RLS**: most admin policies still require `profiles.role = 'admin'`; institutional `administrator` alone is not enough for DB writes — promote legacy admin for operators.
-4. **Invitation accept** does not yet auto-insert `project_memberships` (status update only) — follow-up RPC recommended.
-5. **Competition submission UI** for members (table + RLS exist; portal form thin).
-6. **Guides CMS** still file-based.
-7. **E2E role smoke tests** against live project not automated in CI.
+1. **Apply `phase25.sql` (or re-run FINAL_SETUP / VERIFY_SETUP) on live Supabase** so labs/competitions seed and `is_platform_admin` exist.
+2. **CLOUDFLARE_API_TOKEN** (+ account id) in GitHub for automated deploys.
+3. Set competition `status = 'open'` in SQL when a challenge is ready for entries.
+4. Optional: promote operators with `profiles.role = 'admin'` **or** `member_roles.role = 'administrator'`.
 
 ## Quality gates
 
@@ -39,4 +37,4 @@
 bun run typecheck && bun run lint && bun test && bun run build
 ```
 
-Credential blockers are documented in `DEPLOYMENT.md` and `REMAINING_EXTERNAL_ACTIONS.md` when present.
+Credential blockers: `DEPLOYMENT.md`, `REMAINING_EXTERNAL_ACTIONS.md`.

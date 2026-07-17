@@ -30,8 +30,8 @@ function PublicationsPage() {
           </p>
           <h2 className="mt-3 font-display text-xl text-bone">Paper reviews & explainers</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Classics and active threads — methods, reproducibility gaps, and what we would
-            prototype next. Full reading paths live in the member portal.
+            Classics and active threads — methods, reproducibility gaps, and what we would prototype
+            next. Full reading paths live in the member portal.
           </p>
           <Link
             to="/papers"

@@ -18,13 +18,13 @@
 
 ## Incidents
 
-| Symptom | Check |
-|---------|-------|
-| “Supabase not configured” | `runtime-env.js`, build env, wrangler vars |
-| Signup works, profile empty | Trigger / RLS on `profiles` insert |
-| Lead cannot accept | Capacity RPC, lead_id match, admin override |
-| Deploy 403 | Cloudflare token scopes |
-| Email 401 | `EMAIL_API_SECRET` or session bearer |
+| Symptom                     | Check                                       |
+| --------------------------- | ------------------------------------------- |
+| “Supabase not configured”   | `runtime-env.js`, build env, wrangler vars  |
+| Signup works, profile empty | Trigger / RLS on `profiles` insert          |
+| Lead cannot accept          | Capacity RPC, lead_id match, admin override |
+| Deploy 403                  | Cloudflare token scopes                     |
+| Email 401                   | `EMAIL_API_SECRET` or session bearer        |
 
 ## Migrations
 

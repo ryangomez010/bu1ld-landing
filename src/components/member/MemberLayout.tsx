@@ -24,7 +24,6 @@ import {
   Sun,
   UserPlus,
   Users,
-  UserPlus,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 

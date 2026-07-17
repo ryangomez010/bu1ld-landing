@@ -101,9 +101,14 @@ export function InstitutionLayout({
         </nav>
       </header>
 
-      <main id="main" className={cn("relative z-10 mx-auto max-w-6xl px-6 py-14 md:py-20", className)}>
+      <main
+        id="main"
+        className={cn("relative z-10 mx-auto max-w-6xl px-6 py-14 md:py-20", className)}
+      >
         {eyebrow ? (
-          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-accent-blue">{eyebrow}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-accent-blue">
+            {eyebrow}
+          </p>
         ) : null}
         <h1 className="mt-3 max-w-3xl font-display text-4xl tracking-tight text-bone md:text-5xl">
           {title}

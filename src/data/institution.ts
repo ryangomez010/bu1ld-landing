@@ -229,12 +229,9 @@ export const INSTITUTION_PROGRAMS: InstitutionProgram[] = [
     selectivity: "Open with capacity limits per wave",
     summary:
       "A project-driven cohort that turns a scoped technical question into a reproducible prototype, clear documentation, and a final demo.",
-    outcomes: [
-      "Weekly shipping cadence",
-      "Peer review of demos",
-      "Final demo day artifact",
-    ],
-    whoFor: "Engineers, researchers, and students who want structured practice shipping ML systems.",
+    outcomes: ["Weekly shipping cadence", "Peer review of demos", "Final demo day artifact"],
+    whoFor:
+      "Engineers, researchers, and students who want structured practice shipping ML systems.",
     applyHref: "/apply?program=ai-builder-cohort",
   },
   {

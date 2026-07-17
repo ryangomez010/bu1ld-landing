@@ -49,6 +49,8 @@ const sqlFiles = [
   "supabase/phase21.sql",
   "supabase/phase22.sql",
   "supabase/phase23.sql",
+  "supabase/phase24.sql",
+  "supabase/phase25.sql",
 ];
 const sql = sqlFiles.map((file) => readFileSync(resolve(root, file), "utf8")).join("\n\n");
 

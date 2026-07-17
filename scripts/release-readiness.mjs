@@ -120,7 +120,15 @@ for (const unsafe of [
   if (env[unsafe]) failures.push(`Remove ${unsafe}; server secrets must never use a VITE_ prefix.`);
 }
 
-for (const phase of ["phase19.sql", "phase20.sql", "phase21.sql", "phase22.sql", "phase23.sql"]) {
+for (const phase of [
+  "phase19.sql",
+  "phase20.sql",
+  "phase21.sql",
+  "phase22.sql",
+  "phase23.sql",
+  "phase24.sql",
+  "phase25.sql",
+]) {
   if (!existsSync(resolve(root, "supabase", phase)))
     failures.push(`Missing required migration supabase/${phase}.`);
 }

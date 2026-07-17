@@ -23,15 +23,20 @@ create table if not exists public.labs (
 
 create index if not exists labs_published_idx on public.labs (published, slug);
 alter table public.labs enable row level security;
+revoke all on table public.labs from anon;
+grant select on table public.labs to anon, authenticated;
+grant insert, update, delete on table public.labs to authenticated;
 
 drop policy if exists "Public reads published labs" on public.labs;
 create policy "Public reads published labs" on public.labs for select
-  using (published = true or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+  to anon, authenticated
+  using (published = true or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'));
 
 drop policy if exists "Admins manage labs" on public.labs;
 create policy "Admins manage labs" on public.labs for all
-  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'))
-  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+  to authenticated
+  using (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'))
+  with check (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'));
 
 -- Optional project → lab linkage
 do $$ begin
@@ -51,24 +56,28 @@ create table if not exists public.lab_memberships (
 );
 
 alter table public.lab_memberships enable row level security;
+revoke all on table public.lab_memberships from anon;
+grant select, insert, update, delete on table public.lab_memberships to authenticated;
 
 drop policy if exists "Members read own lab memberships" on public.lab_memberships;
 create policy "Members read own lab memberships" on public.lab_memberships for select
+  to authenticated
   using (
-    user_id = auth.uid()
-    or exists (select 1 from public.labs l where l.id = lab_id and l.lead_id = auth.uid())
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+    user_id = (select auth.uid())
+    or exists (select 1 from public.labs l where l.id = lab_id and l.lead_id = (select auth.uid()))
+    or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin')
   );
 
 drop policy if exists "Admins and lab leads manage lab memberships" on public.lab_memberships;
 create policy "Admins and lab leads manage lab memberships" on public.lab_memberships for all
+  to authenticated
   using (
-    exists (select 1 from public.labs l where l.id = lab_id and l.lead_id = auth.uid())
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+    exists (select 1 from public.labs l where l.id = lab_id and l.lead_id = (select auth.uid()))
+    or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin')
   )
   with check (
-    exists (select 1 from public.labs l where l.id = lab_id and l.lead_id = auth.uid())
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+    exists (select 1 from public.labs l where l.id = lab_id and l.lead_id = (select auth.uid()))
+    or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin')
   );
 
 -- Competitions
@@ -89,15 +98,20 @@ create table if not exists public.competitions (
 
 create index if not exists competitions_status_idx on public.competitions (published, status, deadline);
 alter table public.competitions enable row level security;
+revoke all on table public.competitions from anon;
+grant select on table public.competitions to anon, authenticated;
+grant insert, update, delete on table public.competitions to authenticated;
 
 drop policy if exists "Public reads published competitions" on public.competitions;
 create policy "Public reads published competitions" on public.competitions for select
-  using (published = true or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+  to anon, authenticated
+  using (published = true or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'));
 
 drop policy if exists "Admins manage competitions" on public.competitions;
 create policy "Admins manage competitions" on public.competitions for all
-  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'))
-  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+  to authenticated
+  using (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'))
+  with check (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'));
 
 create table if not exists public.competition_submissions (
   id uuid primary key default gen_random_uuid(),
@@ -115,19 +129,23 @@ create table if not exists public.competition_submissions (
 );
 
 alter table public.competition_submissions enable row level security;
+revoke all on table public.competition_submissions from anon;
+grant select, insert, update, delete on table public.competition_submissions to authenticated;
 
 drop policy if exists "Members manage own competition submissions" on public.competition_submissions;
 create policy "Members manage own competition submissions" on public.competition_submissions for all
+  to authenticated
   using (
-    submitter_id = auth.uid()
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+    submitter_id = (select auth.uid())
+    or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin')
   )
-  with check (submitter_id = auth.uid());
+  with check (submitter_id = (select auth.uid()));
 
 drop policy if exists "Admins review competition submissions" on public.competition_submissions;
 create policy "Admins review competition submissions" on public.competition_submissions for update
-  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'))
-  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+  to authenticated
+  using (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'))
+  with check (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'));
 
 -- Partnerships (public disclosure ledger)
 create table if not exists public.partnerships (
@@ -143,15 +161,20 @@ create table if not exists public.partnerships (
 );
 
 alter table public.partnerships enable row level security;
+revoke all on table public.partnerships from anon;
+grant select on table public.partnerships to anon, authenticated;
+grant insert, update, delete on table public.partnerships to authenticated;
 
 drop policy if exists "Public reads published partnerships" on public.partnerships;
 create policy "Public reads published partnerships" on public.partnerships for select
-  using (published = true or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+  to anon, authenticated
+  using (published = true or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'));
 
 drop policy if exists "Admins manage partnerships" on public.partnerships;
 create policy "Admins manage partnerships" on public.partnerships for all
-  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'))
-  with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+  to authenticated
+  using (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'))
+  with check (exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'));
 
 -- Team invitations (email or member id)
 create table if not exists public.invitations (
@@ -174,36 +197,44 @@ create table if not exists public.invitations (
 create index if not exists invitations_invitee_idx on public.invitations (invitee_id, status);
 create index if not exists invitations_token_idx on public.invitations (invite_token) where status = 'pending';
 alter table public.invitations enable row level security;
+revoke all on table public.invitations from anon;
+grant select, insert, update on table public.invitations to authenticated;
 
 drop policy if exists "Invitees and inviters read invitations" on public.invitations;
 create policy "Invitees and inviters read invitations" on public.invitations for select
+  to authenticated
   using (
-    invitee_id = auth.uid()
-    or invited_by = auth.uid()
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+    invitee_id = (select auth.uid())
+    or lower(email) = lower((auth.jwt() ->> 'email'))
+    or invited_by = (select auth.uid())
+    or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin')
   );
 
 drop policy if exists "Leads and admins create invitations" on public.invitations;
 create policy "Leads and admins create invitations" on public.invitations for insert
+  to authenticated
   with check (
-    invited_by = auth.uid()
+    invited_by = (select auth.uid())
     and (
-      exists (select 1 from public.profiles p where p.id = auth.uid() and p.role in ('admin', 'project_lead'))
-      or exists (select 1 from public.member_roles mr where mr.user_id = auth.uid() and mr.role in ('project_lead', 'administrator', 'mentor'))
+      exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role in ('admin', 'project_lead'))
+      or exists (select 1 from public.member_roles mr where mr.user_id = (select auth.uid()) and mr.role in ('project_lead', 'administrator', 'mentor'))
     )
   );
 
 drop policy if exists "Invitees update own invitation status" on public.invitations;
 create policy "Invitees update own invitation status" on public.invitations for update
+  to authenticated
   using (
-    invitee_id = auth.uid()
-    or invited_by = auth.uid()
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+    invitee_id = (select auth.uid())
+    or lower(email) = lower((auth.jwt() ->> 'email'))
+    or invited_by = (select auth.uid())
+    or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin')
   )
   with check (
-    invitee_id = auth.uid()
-    or invited_by = auth.uid()
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+    invitee_id = (select auth.uid())
+    or lower(email) = lower((auth.jwt() ->> 'email'))
+    or invited_by = (select auth.uid())
+    or exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin')
   );
 
 -- Expand institutional roles for founders / lab leads / super-admin mapping
@@ -232,9 +263,7 @@ do $$ begin
 exception when others then null;
 end $$;
 
-insert into public.schema_migrations (version, applied_at)
-values ('phase24', now())
-on conflict (version) do nothing;
+insert into public.schema_migrations (phase) values ('phase24') on conflict (phase) do nothing;
 
 -- Accepting a project invitation creates / reactivates membership when still pending.
 create or replace function public.accept_invitation(p_invitation_id uuid)
@@ -246,11 +275,13 @@ as $$
 declare
   inv public.invitations;
 begin
-  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+  if (select auth.uid()) is null then raise exception 'Not authenticated'; end if;
   select * into inv from public.invitations where id = p_invitation_id for update;
   if not found then raise exception 'Invitation not found'; end if;
-  if inv.invitee_id is distinct from auth.uid() and not exists (
-    select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'
+  if inv.invitee_id is distinct from (select auth.uid())
+     and lower(coalesce(inv.email, '')) <> lower(coalesce(auth.jwt() ->> 'email', ''))
+     and not exists (
+    select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'
   ) then
     raise exception 'Not authorized';
   end if;
@@ -262,18 +293,18 @@ begin
 
   if inv.invitation_type = 'project' then
     insert into public.project_memberships (project_id, user_id, member_role, status)
-    values (inv.target_id, coalesce(inv.invitee_id, auth.uid()), inv.role_offered, 'active')
+    values (inv.target_id, coalesce(inv.invitee_id, (select auth.uid())), inv.role_offered, 'active')
     on conflict (project_id, user_id) do update
       set status = 'active', member_role = excluded.member_role, left_at = null;
   elsif inv.invitation_type = 'lab' then
     insert into public.lab_memberships (lab_id, user_id, member_role, status)
-    values (inv.target_id, coalesce(inv.invitee_id, auth.uid()), inv.role_offered, 'active')
+    values (inv.target_id, coalesce(inv.invitee_id, (select auth.uid())), inv.role_offered, 'active')
     on conflict (lab_id, user_id) do update
       set status = 'active', member_role = excluded.member_role;
   end if;
 
   update public.invitations
-    set status = 'accepted', accepted_at = now(), invitee_id = coalesce(invitee_id, auth.uid())
+    set status = 'accepted', accepted_at = now(), invitee_id = coalesce(invitee_id, (select auth.uid()))
     where id = inv.id
     returning * into inv;
   return inv;

@@ -40,11 +40,7 @@ export function SiteHeader() {
 
         <nav className="hidden lg:flex items-center gap-6 label-sm text-muted-foreground">
           {NAV_ITEMS.map(([label, href]) => (
-            <Link
-              key={href}
-              to={href}
-              className="group relative hover:text-bone transition"
-            >
+            <Link key={href} to={href} className="group relative hover:text-bone transition">
               <span className="text-bone/40 mr-1">·</span>
               {label}
               <span className="absolute -bottom-1 left-0 right-0 h-px bg-bone scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" />

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
-import { getLab, INSTITUTION_PROGRAMS } from "@/data/institution";
+import { COMPETITIONS, getLab, INSTITUTION_PROGRAMS } from "@/data/institution";
 import { textAccent } from "@/data/landing";
 
 export const Route = createFileRoute("/labs/$slug")({
@@ -36,14 +36,13 @@ function LabDetailPage() {
   }
 
   const related = INSTITUTION_PROGRAMS.filter((p) => lab.relatedProgramSlugs.includes(p.slug));
+  const relatedCompetitions = COMPETITIONS.filter((c) => c.labSlug === lab.slug);
 
   return (
-    <InstitutionLayout
-      eyebrow="Research lab"
-      title={lab.name}
-      description={lab.summary}
-    >
-      <p className={`-mt-6 font-mono text-[11px] uppercase tracking-[0.2em] ${textAccent[lab.color] ?? "text-bone"}`}>
+    <InstitutionLayout eyebrow="Research lab" title={lab.name} description={lab.summary}>
+      <p
+        className={`-mt-6 font-mono text-[11px] uppercase tracking-[0.2em] ${textAccent[lab.color] ?? "text-bone"}`}
+      >
         {lab.tagline}
       </p>
 
@@ -54,7 +53,10 @@ function LabDetailPage() {
           </h2>
           <ul className="mt-4 space-y-3">
             {lab.focus.map((item) => (
-              <li key={item} className="border-l border-bone/20 pl-4 text-sm leading-relaxed text-bone">
+              <li
+                key={item}
+                className="border-l border-bone/20 pl-4 text-sm leading-relaxed text-bone"
+              >
                 {item}
               </li>
             ))}
@@ -119,10 +121,53 @@ function LabDetailPage() {
         </section>
       ) : null}
 
+      {relatedCompetitions.length > 0 ? (
+        <section className="mt-12">
+          <h2 className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+            Related competitions
+          </h2>
+          <div className="mt-4 space-y-3">
+            {relatedCompetitions.map((competition) => (
+              <Link
+                key={competition.slug}
+                to="/competitions/$slug"
+                params={{ slug: competition.slug }}
+                className="block rounded-sm border border-border/40 p-4 transition hover:border-accent-blue/40"
+              >
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent-blue">
+                  {competition.status}
+                </p>
+                <p className="mt-2 font-display text-lg text-bone">{competition.name}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{competition.summary}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="mt-12 rounded-sm border border-border/50 p-6">
+        <h2 className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+          Projects & publications
+        </h2>
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          Live project threads and paper reviews appear in the member portal once published. Browse{" "}
+          <Link to="/projects" className="text-accent-blue hover:text-bone">
+            open projects
+          </Link>{" "}
+          and{" "}
+          <Link to="/publications" className="text-accent-blue hover:text-bone">
+            publications
+          </Link>{" "}
+          for evidence-backed work tied to this lab’s methods.
+        </p>
+      </section>
+
       <div className="mt-12 flex flex-wrap gap-3">
         <Link
           to="/apply"
-          search={{ program: lab.relatedProgramSlugs[0] ?? "ai-builder-cohort" } as { program?: string }}
+          search={
+            { program: lab.relatedProgramSlugs[0] ?? "ai-builder-cohort" } as { program?: string }
+          }
           className="rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-background transition hover:bg-accent-blue"
         >
           Apply to contribute

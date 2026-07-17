@@ -92,7 +92,7 @@ Strict production gate:
 
 ## Database migration status
 
-- Ordered migration files exist through `supabase/phase23.sql`.
+- Ordered migration files exist through `supabase/phase24.sql`.
 - Consolidated SQL exists at `supabase/FINAL_SETUP.sql`.
 - SQL-editor verification exists at `supabase/VERIFY_SETUP.sql`.
 - Runtime verification scripts exist:
