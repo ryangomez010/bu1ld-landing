@@ -40,6 +40,12 @@ export function SiteFooter() {
           >
             LinkedIn
           </a>
+          <Link to="/labs" className="hover:text-bone transition">
+            Labs
+          </Link>
+          <Link to="/apply" className="hover:text-bone transition">
+            Apply
+          </Link>
           <Link to="/privacy" className="hover:text-bone transition">
             Privacy
           </Link>

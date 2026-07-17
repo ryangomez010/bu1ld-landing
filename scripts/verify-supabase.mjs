@@ -41,6 +41,7 @@ const TABLES = [
   "profiles",
   "events",
   "papers",
+  "paper_analyses",
   "newsletter_issues",
   "reading_progress",
   "projects",

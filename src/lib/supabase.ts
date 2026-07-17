@@ -8,6 +8,7 @@ import type {
   NewsletterIssue,
   Notification,
   Paper,
+  PaperAnalysis,
   Profile,
   Project,
   ProjectApplication,
@@ -44,6 +45,27 @@ export type Database = {
         Paper,
         Partial<Paper> & { slug: string; title: string; review_body: string },
         Partial<Paper>
+      >;
+      paper_analyses: DbTable<
+        PaperAnalysis,
+        {
+          user_id: string;
+          title: string;
+          source_url?: string | null;
+          input_kind?: "text";
+          input_excerpt: string;
+          input_sha256: string;
+          status?: "completed" | "failed";
+          provider?: "local_structured_v1";
+          prompt_version?: "paper-analysis-v1";
+          structured_result: PaperAnalysis["structured_result"];
+        },
+        Partial<
+          Pick<
+            PaperAnalysis,
+            "title" | "source_url" | "input_excerpt" | "status" | "structured_result" | "updated_at"
+          >
+        >
       >;
       newsletter_issues: DbTable<
         NewsletterIssue,
@@ -541,6 +563,105 @@ export type Database = {
         },
         Partial<import("@/lib/types").InstitutionalClaim>
       >;
+      labs: DbTable<
+        import("@/lib/types").Lab,
+        {
+          slug: string;
+          name: string;
+          short_name: string;
+          summary: string;
+          tagline?: string;
+          focus?: string[];
+          methods?: string[];
+          open_roles?: string[];
+          color?: string;
+          published?: boolean;
+          lead_id?: string | null;
+        },
+        Partial<import("@/lib/types").Lab>
+      >;
+      lab_memberships: DbTable<
+        {
+          lab_id: string;
+          user_id: string;
+          member_role: string;
+          status: string;
+          joined_at: string;
+        },
+        { lab_id: string; user_id: string; member_role?: string; status?: string },
+        Partial<{ member_role: string; status: string }>
+      >;
+      competitions: DbTable<
+        import("@/lib/types").Competition,
+        {
+          slug: string;
+          title: string;
+          summary: string;
+          status?: string;
+          prize?: string;
+          deadline?: string | null;
+          lab_id?: string | null;
+          evaluation_protocol?: string;
+          published?: boolean;
+        },
+        Partial<import("@/lib/types").Competition>
+      >;
+      competition_submissions: DbTable<
+        {
+          id: string;
+          competition_id: string;
+          submitter_id: string;
+          title: string;
+          summary: string;
+          evidence_url: string | null;
+          status: string;
+          score: number | null;
+          review_note: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          competition_id: string;
+          submitter_id: string;
+          title: string;
+          summary: string;
+          evidence_url?: string | null;
+          status?: string;
+        },
+        Partial<{
+          title: string;
+          summary: string;
+          status: string;
+          score: number | null;
+          review_note: string | null;
+        }>
+      >;
+      partnerships: DbTable<
+        import("@/lib/types").Partnership,
+        {
+          name: string;
+          kind: string;
+          summary: string;
+          status?: string;
+          published?: boolean;
+          evidence_url?: string | null;
+        },
+        Partial<import("@/lib/types").Partnership>
+      >;
+      invitations: DbTable<
+        import("@/lib/types").Invitation,
+        {
+          invitation_type: string;
+          target_id: string;
+          invited_by: string;
+          email?: string | null;
+          invitee_id?: string | null;
+          role_offered?: string;
+          message?: string | null;
+          status?: string;
+        },
+        Partial<import("@/lib/types").Invitation>
+      >;
     };
     Views: Record<string, never>;
     Functions: {
@@ -579,6 +700,10 @@ export type Database = {
       review_project_application: {
         Args: { p_application_id: string; p_status: string; p_note?: string | null };
         Returns: ProjectApplication;
+      };
+      accept_invitation: {
+        Args: { p_invitation_id: string };
+        Returns: import("@/lib/types").Invitation;
       };
       submit_project_for_review: {
         Args: { p_project_id: string };

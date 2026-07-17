@@ -24,7 +24,7 @@ model, Supabase project, content policy, and release process.
 
 - Routes and components cover visitor, applicant, new member, active member,
   project lead, reviewer/mentor, moderator, administrator, and operator duties.
-- Supabase schema phases through `phase22.sql` address roles, project
+- Supabase schema phases through `phase23.sql` address roles, project
   memberships, application windows, contribution evidence, publication review,
   content governance, and public evidence.
 - Auth surfaces use production-safe unavailable messaging instead of raw setup

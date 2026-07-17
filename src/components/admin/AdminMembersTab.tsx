@@ -90,7 +90,16 @@ export function AdminMembersTab({
                 <td className="p-3">
                   <div className="flex max-w-xs flex-wrap gap-x-3 gap-y-2">
                     {(
-                      ["researcher", "project_lead", "reviewer", "mentor"] as InstitutionalRole[]
+                      [
+                        "researcher",
+                        "project_lead",
+                        "reviewer",
+                        "mentor",
+                        "lab_lead",
+                        "startup_founder",
+                        "administrator",
+                        "applicant",
+                      ] as InstitutionalRole[]
                     ).map((role) => {
                       const enabled = institutionalRoles.get(m.id)?.includes(role) ?? false;
                       return (

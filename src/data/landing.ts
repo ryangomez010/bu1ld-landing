@@ -3,42 +3,42 @@ export const RESEARCH = [
     id: "01",
     name: "Counterfactual Defect Worlds",
     color: "red",
-    href: "/projects",
+    href: "/labs/scientific-discovery",
     desc: "Probing how generative world models reason about broken, perturbed, and out-of-distribution environments by injecting controlled defects and studying recovery.",
   },
   {
     id: "02",
     name: "Sapir, Whorf & the Latent Tongue",
     color: "blue",
-    href: "/guides/what-is-attention",
+    href: "/labs/mathematical-intelligence",
     desc: "Studying how language priors shape internal representations, and what monolingual vs. multilingual models actually carve up differently.",
   },
   {
     id: "03",
     name: "Adaptive Theory Geometry in World Models",
     color: "green",
-    href: "/papers",
+    href: "/labs/mathematical-intelligence",
     desc: "Mapping curvature, intrinsic dimension, and theory-laden structure inside latent manifolds as models adapt to new physical regimes.",
   },
   {
     id: "04",
     name: "Residual Event Tokenization",
     color: "bone",
-    href: "/projects",
+    href: "/labs/robotics",
     desc: "A tokenization scheme that encodes only residual, surprise-bearing events from continuous streams, compressing video, sensor, and agent trajectories without losing causal signal.",
   },
   {
     id: "05",
     name: "Dynamical Representation Phase Transitions for PDE Surrogates",
     color: "blue",
-    href: "/projects",
+    href: "/labs/scientific-discovery",
     desc: "Tracking phase transitions in learned representations as neural PDE surrogates scale, and using them to predict where a surrogate will silently break.",
   },
   {
     id: "06",
     name: "Latent Safety and Recovery",
     color: "green",
-    href: "/projects",
+    href: "/labs/robotics",
     desc: "Studying whether a model can detect when it has become confidently wrong, then recover through self-consistency, retrieval, or replanning.",
   },
 ] as const;
@@ -48,21 +48,21 @@ export const PROGRAMS = [
     tag: "P-01",
     name: "AI Builder Cohort",
     time: "12 weeks, rolling",
-    href: "/programs",
+    href: "/programs-public#ai-builder-cohort",
     body: "A project-driven cohort for turning a scoped technical question into a reproducible prototype, clear documentation, and a final demo.",
   },
   {
     tag: "P-02",
     name: "Research Fellowship",
     time: "6 months, selective",
-    href: "/programs",
+    href: "/programs-public#research-fellowship",
     body: "A structured research cycle for developing a question, testing it with disciplined experiments, and publishing an evidence-backed project record.",
   },
   {
     tag: "P-03",
     name: "Startup Incubation",
     time: "ongoing",
-    href: "/projects",
+    href: "/programs-public#startup-incubation",
     body: "For active builders who want to test whether a technical thread deserves a real product prototype and early user conversations.",
   },
 ] as const;
@@ -191,6 +191,15 @@ export const STATS = [
 ] as const;
 
 export const NAV_ITEMS = [
+  ["Labs", "/labs"],
+  ["Programs", "/programs-public"],
+  ["Competitions", "/competitions"],
+  ["People", "/people"],
+  ["Apply", "/apply"],
+] as const;
+
+/** In-page anchors still used on the landing scroll experience. */
+export const LANDING_ANCHORS = [
   ["What we do", "what"],
   ["Membership", "membership"],
   ["Research", "research"],
@@ -224,6 +233,8 @@ export const textAccent: Record<string, string> = {
   red: "text-accent-red",
   green: "text-accent-green",
   bone: "text-bone",
+  violet: "text-accent-violet",
+  orange: "text-accent-orange",
 };
 
 export const dotColor = (color: string) =>

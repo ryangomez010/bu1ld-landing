@@ -12,13 +12,20 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PublicationsRouteImport } from './routes/publications'
+import { Route as ProgramsPublicRouteImport } from './routes/programs-public'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PeopleRouteImport } from './routes/people'
+import { Route as PartnershipsRouteImport } from './routes/partnerships'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as InvitationsRouteImport } from './routes/invitations'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as EvidenceRouteImport } from './routes/evidence'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CompetitionsRouteImport } from './routes/competitions'
+import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as SavedIndexRouteImport } from './routes/saved/index'
@@ -29,6 +36,7 @@ import { Route as PapersIndexRouteImport } from './routes/papers/index'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
 import { Route as NewsletterIndexRouteImport } from './routes/newsletter/index'
 import { Route as MembersIndexRouteImport } from './routes/members/index'
+import { Route as LabsIndexRouteImport } from './routes/labs/index'
 import { Route as JobsIndexRouteImport } from './routes/jobs/index'
 import { Route as GuidesIndexRouteImport } from './routes/guides/index'
 import { Route as EventsIndexRouteImport } from './routes/events/index'
@@ -37,6 +45,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as SavedCollectionsRouteImport } from './routes/saved/collections'
 import { Route as ResearchSubmitRouteImport } from './routes/research/submit'
 import { Route as ResearchHighlightsRouteImport } from './routes/research/highlights'
+import { Route as ResearchAnalyzeRouteImport } from './routes/research/analyze'
 import { Route as ProjectsNewRouteImport } from './routes/projects/new'
 import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
 import { Route as ProgramsSlugRouteImport } from './routes/programs/$slug'
@@ -44,6 +53,7 @@ import { Route as PapersSlugRouteImport } from './routes/papers/$slug'
 import { Route as NewsletterSlugRouteImport } from './routes/newsletter/$slug'
 import { Route as MembersIdRouteImport } from './routes/members/$id'
 import { Route as LeadApplyRouteImport } from './routes/lead/apply'
+import { Route as LabsSlugRouteImport } from './routes/labs/$slug'
 import { Route as JobsTrackerRouteImport } from './routes/jobs/tracker'
 import { Route as JobsSlugRouteImport } from './routes/jobs/$slug'
 import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
@@ -72,6 +82,16 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicationsRoute = PublicationsRouteImport.update({
+  id: '/publications',
+  path: '/publications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsPublicRoute = ProgramsPublicRouteImport.update({
+  id: '/programs-public',
+  path: '/programs-public',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -82,6 +102,16 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PeopleRoute = PeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnershipsRoute = PartnershipsRouteImport.update({
+  id: '/partnerships',
+  path: '/partnerships',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -90,6 +120,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvitationsRoute = InvitationsRouteImport.update({
+  id: '/invitations',
+  path: '/invitations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -105,6 +140,16 @@ const EvidenceRoute = EvidenceRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplyRoute = ApplyRouteImport.update({
+  id: '/apply',
+  path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -157,6 +202,11 @@ const MembersIndexRoute = MembersIndexRouteImport.update({
   path: '/members/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabsIndexRoute = LabsIndexRouteImport.update({
+  id: '/labs/',
+  path: '/labs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JobsIndexRoute = JobsIndexRouteImport.update({
   id: '/jobs/',
   path: '/jobs/',
@@ -197,6 +247,11 @@ const ResearchHighlightsRoute = ResearchHighlightsRouteImport.update({
   path: '/research/highlights',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResearchAnalyzeRoute = ResearchAnalyzeRouteImport.update({
+  id: '/research/analyze',
+  path: '/research/analyze',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsNewRoute = ProjectsNewRouteImport.update({
   id: '/projects/new',
   path: '/projects/new',
@@ -230,6 +285,11 @@ const MembersIdRoute = MembersIdRouteImport.update({
 const LeadApplyRoute = LeadApplyRouteImport.update({
   id: '/lead/apply',
   path: '/lead/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabsSlugRoute = LabsSlugRouteImport.update({
+  id: '/labs/$slug',
+  path: '/labs/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JobsTrackerRoute = JobsTrackerRouteImport.update({
@@ -295,13 +355,20 @@ const ProjectsEditSlugRoute = ProjectsEditSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
+  '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/invitations': typeof InvitationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/partnerships': typeof PartnershipsRoute
+  '/people': typeof PeopleRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
+  '/programs-public': typeof ProgramsPublicRoute
+  '/publications': typeof PublicationsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
@@ -314,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/jobs/tracker': typeof JobsTrackerRoute
+  '/labs/$slug': typeof LabsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
@@ -321,6 +389,7 @@ export interface FileRoutesByFullPath {
   '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/research/analyze': typeof ResearchAnalyzeRoute
   '/research/highlights': typeof ResearchHighlightsRoute
   '/research/submit': typeof ResearchSubmitRoute
   '/saved/collections': typeof SavedCollectionsRoute
@@ -329,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/events/': typeof EventsIndexRoute
   '/guides/': typeof GuidesIndexRoute
   '/jobs/': typeof JobsIndexRoute
+  '/labs/': typeof LabsIndexRoute
   '/members/': typeof MembersIndexRoute
   '/newsletter/': typeof NewsletterIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
@@ -344,13 +414,20 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
+  '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/invitations': typeof InvitationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/partnerships': typeof PartnershipsRoute
+  '/people': typeof PeopleRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
+  '/programs-public': typeof ProgramsPublicRoute
+  '/publications': typeof PublicationsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
@@ -363,6 +440,7 @@ export interface FileRoutesByTo {
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/jobs/tracker': typeof JobsTrackerRoute
+  '/labs/$slug': typeof LabsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
@@ -370,6 +448,7 @@ export interface FileRoutesByTo {
   '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/research/analyze': typeof ResearchAnalyzeRoute
   '/research/highlights': typeof ResearchHighlightsRoute
   '/research/submit': typeof ResearchSubmitRoute
   '/saved/collections': typeof SavedCollectionsRoute
@@ -378,6 +457,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsIndexRoute
   '/guides': typeof GuidesIndexRoute
   '/jobs': typeof JobsIndexRoute
+  '/labs': typeof LabsIndexRoute
   '/members': typeof MembersIndexRoute
   '/newsletter': typeof NewsletterIndexRoute
   '/notifications': typeof NotificationsIndexRoute
@@ -394,13 +474,20 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
+  '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/invitations': typeof InvitationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/partnerships': typeof PartnershipsRoute
+  '/people': typeof PeopleRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
+  '/programs-public': typeof ProgramsPublicRoute
+  '/publications': typeof PublicationsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
@@ -413,6 +500,7 @@ export interface FileRoutesById {
   '/guides/$slug': typeof GuidesSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/jobs/tracker': typeof JobsTrackerRoute
+  '/labs/$slug': typeof LabsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
@@ -420,6 +508,7 @@ export interface FileRoutesById {
   '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/research/analyze': typeof ResearchAnalyzeRoute
   '/research/highlights': typeof ResearchHighlightsRoute
   '/research/submit': typeof ResearchSubmitRoute
   '/saved/collections': typeof SavedCollectionsRoute
@@ -428,6 +517,7 @@ export interface FileRoutesById {
   '/events/': typeof EventsIndexRoute
   '/guides/': typeof GuidesIndexRoute
   '/jobs/': typeof JobsIndexRoute
+  '/labs/': typeof LabsIndexRoute
   '/members/': typeof MembersIndexRoute
   '/newsletter/': typeof NewsletterIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
@@ -445,13 +535,20 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/apply'
+    | '/competitions'
     | '/dashboard'
     | '/evidence'
     | '/forgot-password'
+    | '/invitations'
     | '/login'
     | '/onboarding'
+    | '/partnerships'
+    | '/people'
     | '/privacy'
     | '/profile'
+    | '/programs-public'
+    | '/publications'
     | '/reset-password'
     | '/signup'
     | '/terms'
@@ -464,6 +561,7 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/jobs/$slug'
     | '/jobs/tracker'
+    | '/labs/$slug'
     | '/lead/apply'
     | '/members/$id'
     | '/newsletter/$slug'
@@ -471,6 +569,7 @@ export interface FileRouteTypes {
     | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/research/analyze'
     | '/research/highlights'
     | '/research/submit'
     | '/saved/collections'
@@ -479,6 +578,7 @@ export interface FileRouteTypes {
     | '/events/'
     | '/guides/'
     | '/jobs/'
+    | '/labs/'
     | '/members/'
     | '/newsletter/'
     | '/notifications/'
@@ -494,13 +594,20 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/apply'
+    | '/competitions'
     | '/dashboard'
     | '/evidence'
     | '/forgot-password'
+    | '/invitations'
     | '/login'
     | '/onboarding'
+    | '/partnerships'
+    | '/people'
     | '/privacy'
     | '/profile'
+    | '/programs-public'
+    | '/publications'
     | '/reset-password'
     | '/signup'
     | '/terms'
@@ -513,6 +620,7 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/jobs/$slug'
     | '/jobs/tracker'
+    | '/labs/$slug'
     | '/lead/apply'
     | '/members/$id'
     | '/newsletter/$slug'
@@ -520,6 +628,7 @@ export interface FileRouteTypes {
     | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/research/analyze'
     | '/research/highlights'
     | '/research/submit'
     | '/saved/collections'
@@ -528,6 +637,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/guides'
     | '/jobs'
+    | '/labs'
     | '/members'
     | '/newsletter'
     | '/notifications'
@@ -543,13 +653,20 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/apply'
+    | '/competitions'
     | '/dashboard'
     | '/evidence'
     | '/forgot-password'
+    | '/invitations'
     | '/login'
     | '/onboarding'
+    | '/partnerships'
+    | '/people'
     | '/privacy'
     | '/profile'
+    | '/programs-public'
+    | '/publications'
     | '/reset-password'
     | '/signup'
     | '/terms'
@@ -562,6 +679,7 @@ export interface FileRouteTypes {
     | '/guides/$slug'
     | '/jobs/$slug'
     | '/jobs/tracker'
+    | '/labs/$slug'
     | '/lead/apply'
     | '/members/$id'
     | '/newsletter/$slug'
@@ -569,6 +687,7 @@ export interface FileRouteTypes {
     | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/research/analyze'
     | '/research/highlights'
     | '/research/submit'
     | '/saved/collections'
@@ -577,6 +696,7 @@ export interface FileRouteTypes {
     | '/events/'
     | '/guides/'
     | '/jobs/'
+    | '/labs/'
     | '/members/'
     | '/newsletter/'
     | '/notifications/'
@@ -593,13 +713,20 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApplyRoute: typeof ApplyRoute
+  CompetitionsRoute: typeof CompetitionsRoute
   DashboardRoute: typeof DashboardRoute
   EvidenceRoute: typeof EvidenceRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  InvitationsRoute: typeof InvitationsRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
+  PartnershipsRoute: typeof PartnershipsRoute
+  PeopleRoute: typeof PeopleRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
+  ProgramsPublicRoute: typeof ProgramsPublicRoute
+  PublicationsRoute: typeof PublicationsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
@@ -612,6 +739,7 @@ export interface RootRouteChildren {
   GuidesSlugRoute: typeof GuidesSlugRoute
   JobsSlugRoute: typeof JobsSlugRoute
   JobsTrackerRoute: typeof JobsTrackerRoute
+  LabsSlugRoute: typeof LabsSlugRoute
   LeadApplyRoute: typeof LeadApplyRoute
   MembersIdRoute: typeof MembersIdRoute
   NewsletterSlugRoute: typeof NewsletterSlugRoute
@@ -619,6 +747,7 @@ export interface RootRouteChildren {
   ProgramsSlugRoute: typeof ProgramsSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ProjectsNewRoute: typeof ProjectsNewRoute
+  ResearchAnalyzeRoute: typeof ResearchAnalyzeRoute
   ResearchHighlightsRoute: typeof ResearchHighlightsRoute
   ResearchSubmitRoute: typeof ResearchSubmitRoute
   SavedCollectionsRoute: typeof SavedCollectionsRoute
@@ -627,6 +756,7 @@ export interface RootRouteChildren {
   EventsIndexRoute: typeof EventsIndexRoute
   GuidesIndexRoute: typeof GuidesIndexRoute
   JobsIndexRoute: typeof JobsIndexRoute
+  LabsIndexRoute: typeof LabsIndexRoute
   MembersIndexRoute: typeof MembersIndexRoute
   NewsletterIndexRoute: typeof NewsletterIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
@@ -664,6 +794,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/publications': {
+      id: '/publications'
+      path: '/publications'
+      fullPath: '/publications'
+      preLoaderRoute: typeof PublicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs-public': {
+      id: '/programs-public'
+      path: '/programs-public'
+      fullPath: '/programs-public'
+      preLoaderRoute: typeof ProgramsPublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -678,6 +822,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/people': {
+      id: '/people'
+      path: '/people'
+      fullPath: '/people'
+      preLoaderRoute: typeof PeopleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partnerships': {
+      id: '/partnerships'
+      path: '/partnerships'
+      fullPath: '/partnerships'
+      preLoaderRoute: typeof PartnershipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -690,6 +848,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invitations': {
+      id: '/invitations'
+      path: '/invitations'
+      fullPath: '/invitations'
+      preLoaderRoute: typeof InvitationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -711,6 +876,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions': {
+      id: '/competitions'
+      path: '/competitions'
+      fullPath: '/competitions'
+      preLoaderRoute: typeof CompetitionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apply': {
+      id: '/apply'
+      path: '/apply'
+      fullPath: '/apply'
+      preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -783,6 +962,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MembersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/labs/': {
+      id: '/labs/'
+      path: '/labs'
+      fullPath: '/labs/'
+      preLoaderRoute: typeof LabsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/jobs/': {
       id: '/jobs/'
       path: '/jobs'
@@ -839,6 +1025,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResearchHighlightsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/research/analyze': {
+      id: '/research/analyze'
+      path: '/research/analyze'
+      fullPath: '/research/analyze'
+      preLoaderRoute: typeof ResearchAnalyzeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/new': {
       id: '/projects/new'
       path: '/projects/new'
@@ -886,6 +1079,13 @@ declare module '@tanstack/react-router' {
       path: '/lead/apply'
       fullPath: '/lead/apply'
       preLoaderRoute: typeof LeadApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/labs/$slug': {
+      id: '/labs/$slug'
+      path: '/labs/$slug'
+      fullPath: '/labs/$slug'
+      preLoaderRoute: typeof LabsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jobs/tracker': {
@@ -977,13 +1177,20 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApplyRoute: ApplyRoute,
+  CompetitionsRoute: CompetitionsRoute,
   DashboardRoute: DashboardRoute,
   EvidenceRoute: EvidenceRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  InvitationsRoute: InvitationsRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
+  PartnershipsRoute: PartnershipsRoute,
+  PeopleRoute: PeopleRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
+  ProgramsPublicRoute: ProgramsPublicRoute,
+  PublicationsRoute: PublicationsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
@@ -996,6 +1203,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuidesSlugRoute: GuidesSlugRoute,
   JobsSlugRoute: JobsSlugRoute,
   JobsTrackerRoute: JobsTrackerRoute,
+  LabsSlugRoute: LabsSlugRoute,
   LeadApplyRoute: LeadApplyRoute,
   MembersIdRoute: MembersIdRoute,
   NewsletterSlugRoute: NewsletterSlugRoute,
@@ -1003,6 +1211,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProgramsSlugRoute: ProgramsSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   ProjectsNewRoute: ProjectsNewRoute,
+  ResearchAnalyzeRoute: ResearchAnalyzeRoute,
   ResearchHighlightsRoute: ResearchHighlightsRoute,
   ResearchSubmitRoute: ResearchSubmitRoute,
   SavedCollectionsRoute: SavedCollectionsRoute,
@@ -1011,6 +1220,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsIndexRoute: EventsIndexRoute,
   GuidesIndexRoute: GuidesIndexRoute,
   JobsIndexRoute: JobsIndexRoute,
+  LabsIndexRoute: LabsIndexRoute,
   MembersIndexRoute: MembersIndexRoute,
   NewsletterIndexRoute: NewsletterIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,

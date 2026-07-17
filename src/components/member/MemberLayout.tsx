@@ -22,7 +22,9 @@ import {
   Shield,
   SlidersHorizontal,
   Sun,
+  UserPlus,
   Users,
+  UserPlus,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -52,6 +54,7 @@ const NAV_MAIN = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/applications", label: "Applications", icon: ClipboardList },
+  { to: "/invitations", label: "Invitations", icon: UserPlus },
   { to: "/saved", label: "Saved", icon: Bookmark },
   { to: "/saved/collections", label: "Collections", icon: Layers },
   { to: "/members", label: "Members", icon: Users },
@@ -60,6 +63,7 @@ const NAV_MAIN = [
 
 const NAV_CONTENT = [
   { to: "/research", label: "Research", icon: Library },
+  { to: "/research/analyze", label: "Analyzer", icon: Search },
   { to: "/research/highlights", label: "Highlights", icon: Highlighter },
   { to: "/events", label: "Events", icon: Calendar },
   { to: "/guides", label: "Guides", icon: BookOpen },

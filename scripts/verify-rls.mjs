@@ -30,6 +30,7 @@ const CORE_TABLES = [
   "security_events",
   "admin_audit_log",
   "papers",
+  "paper_analyses",
   "events",
   "jobs",
   "member_roles",

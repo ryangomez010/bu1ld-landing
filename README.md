@@ -29,8 +29,8 @@ Open `http://localhost:3000`
 
 ## Supabase setup
 
-1. Run `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`, or paste `supabase/full-setup.sql`, then `supabase/phase19.sql`, `phase20.sql`, `phase21.sql`, and `phase22.sql` into the SQL editor in that order.
-   - Existing projects: apply every missing incremental phase through `phase22.sql`. Phases 19–22 add programmes, project memberships, contribution evidence and review, governed project publication, institutional roles, application windows, and the public evidence register.
+1. Run `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`, or paste `supabase/full-setup.sql`, then `supabase/phase19.sql`, `phase20.sql`, `phase21.sql`, `phase22.sql`, and `phase23.sql` into the SQL editor in that order.
+   - Existing projects: apply every missing incremental phase through `phase23.sql`. Phases 19–23 add programmes, project memberships, contribution evidence and review, governed project publication, institutional roles, application windows, the public evidence register, and private saved paper analyses.
    - Seed/update content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_DB_PASSWORD`) or paste `supabase/seed-data.sql` in the SQL editor.
    - Apply a single phase: `bun run supabase:apply-phase -- phase12.sql`
 2. Seed demo content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or DB password), or paste `supabase/seed-data.sql`.
@@ -135,7 +135,7 @@ bun run release:prod
 ```
 
 That strict gate runs type checks, tests, lint, the production build, live table verification, and
-RLS verification. It must pass after applying all schema phases through `phase22.sql`, configuring
+RLS verification. It must pass after applying all schema phases through `phase23.sql`, configuring
 Supabase site URL and redirect URLs, setting provider secrets, configuring the daily digest cron, and
 verifying the email sender domain. Then run final smoke tests with separate visitor, member,
 project lead, reviewer, and administrator accounts.

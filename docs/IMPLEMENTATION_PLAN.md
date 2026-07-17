@@ -28,7 +28,7 @@ matches the verified code exactly.
 
 ## External sequence
 
-1. Apply migrations through `phase22.sql`.
+1. Apply migrations through `phase23.sql`.
 2. Configure production secrets, email, OAuth, redirects, cron, and sender domain.
 3. Run `bun run release:prod`.
 4. Run manual role smoke tests with separate accounts.

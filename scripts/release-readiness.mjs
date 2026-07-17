@@ -120,14 +120,34 @@ for (const unsafe of [
   if (env[unsafe]) failures.push(`Remove ${unsafe}; server secrets must never use a VITE_ prefix.`);
 }
 
-for (const phase of ["phase19.sql", "phase20.sql", "phase21.sql", "phase22.sql"]) {
+for (const phase of ["phase19.sql", "phase20.sql", "phase21.sql", "phase22.sql", "phase23.sql"]) {
   if (!existsSync(resolve(root, "supabase", phase)))
     failures.push(`Missing required migration supabase/${phase}.`);
 }
 
+for (const artifact of [
+  "supabase/FINAL_SETUP.sql",
+  "supabase/VERIFY_SETUP.sql",
+  "FINAL_COMPLETION_REPORT.md",
+  "SECURITY_AUDIT.md",
+  "DATABASE_SETUP.md",
+  "DEPLOYMENT.md",
+  "REMAINING_EXTERNAL_ACTIONS.md",
+  "TEST_REPORT.md",
+]) {
+  if (!existsSync(resolve(root, artifact)))
+    failures.push(`Missing required release artifact ${artifact}.`);
+}
+
 assertNoMatches(
   "Release copy blockers",
-  [resolve(root, "src"), resolve(root, "README.md"), resolve(root, "supabase/phase22.sql")],
+  [
+    resolve(root, "src"),
+    resolve(root, "README.md"),
+    resolve(root, "supabase/phase22.sql"),
+    resolve(root, "supabase/seed-data.sql"),
+    resolve(root, "supabase/FINAL_SETUP.sql"),
+  ],
   [
     /Generate draft/i,
     /coming soon/i,
@@ -136,6 +156,24 @@ assertNoMatches(
     /\bTBD\b/i,
     /sample issue/i,
     /not implemented/i,
+  ],
+);
+
+assertNoMatches(
+  "Unsupported public claim blockers",
+  [
+    resolve(root, "src/data/seed"),
+    resolve(root, "supabase/seed-data.sql"),
+    resolve(root, "supabase/FINAL_SETUP.sql"),
+  ],
+  [
+    /\bMIT\b/,
+    /\bStanford\b/,
+    /\bUC Physics\b/i,
+    /\bpaying (customers|teams|users)\b/i,
+    /\bspun out\b/i,
+    /\bA100\b/,
+    /\bunder \d+ hours?\b/i,
   ],
 );
 

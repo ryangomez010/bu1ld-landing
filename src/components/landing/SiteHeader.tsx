@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Wordmark } from "@/components/Wordmark";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { DISCORD_URL, NAV_ITEMS } from "@/data/landing";
+import { DISCORD_URL, LANDING_ANCHORS, NAV_ITEMS } from "@/data/landing";
 import { useAuth } from "@/lib/auth";
 
 export function SiteHeader() {
@@ -30,21 +30,25 @@ export function SiteHeader() {
   return (
     <header className="fixed top-[2px] left-0 right-0 z-50 backdrop-blur-xl bg-background/30 border-b border-border/60">
       <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-4">
-        <a href="#top" className="text-xl tracking-tight shrink-0 flex items-center gap-3">
+        <Link to="/" className="text-xl tracking-tight shrink-0 flex items-center gap-3">
           <Wordmark />
           <span className="hidden sm:inline-block h-4 w-px bg-bone/20" />
           <span className="hidden sm:inline label-xs text-muted-foreground">
             ml research + building
           </span>
-        </a>
+        </Link>
 
-        <nav className="hidden lg:flex items-center gap-7 label-sm text-muted-foreground">
+        <nav className="hidden lg:flex items-center gap-6 label-sm text-muted-foreground">
           {NAV_ITEMS.map(([label, href]) => (
-            <a key={href} href={`#${href}`} className="group relative hover:text-bone transition">
+            <Link
+              key={href}
+              to={href}
+              className="group relative hover:text-bone transition"
+            >
               <span className="text-bone/40 mr-1">·</span>
               {label}
               <span className="absolute -bottom-1 left-0 right-0 h-px bg-bone scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" />
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -100,11 +104,22 @@ export function SiteHeader() {
               </SheetHeader>
               <nav className="mt-8 flex flex-col gap-4 label-sm">
                 {NAV_ITEMS.map(([label, href]) => (
+                  <Link
+                    key={href}
+                    to={href}
+                    onClick={() => setOpen(false)}
+                    className="text-muted-foreground hover:text-bone transition py-1"
+                  >
+                    {label}
+                  </Link>
+                ))}
+                <div className="h-px bg-border/60 my-2" />
+                {LANDING_ANCHORS.map(([label, href]) => (
                   <a
                     key={href}
                     href={`#${href}`}
                     onClick={() => setOpen(false)}
-                    className="text-muted-foreground hover:text-bone transition py-1"
+                    className="text-muted-foreground/70 hover:text-bone transition py-1"
                   >
                     {label}
                   </a>

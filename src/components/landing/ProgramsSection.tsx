@@ -1,5 +1,3 @@
-import { Link } from "@tanstack/react-router";
-
 import { SectionShell } from "@/components/landing/Section";
 
 import { PROGRAMS } from "@/data/landing";
@@ -33,13 +31,13 @@ export function ProgramsSection() {
             </p>
             <p className="mt-6 text-muted-foreground leading-relaxed text-[15px]">{p.body}</p>
             <div className="mt-10 h-px bg-gradient-to-r from-accent-blue/50 via-accent-violet/30 to-transparent" />
-            <Link
-              to={p.href}
+            <a
+              href={p.href}
               className="mt-6 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] uppercase text-bone hover:text-accent-blue transition"
             >
               View programs{" "}
               <span className="transition-transform group-hover:translate-x-1">→</span>
-            </Link>
+            </a>
           </div>
         ))}
       </div>

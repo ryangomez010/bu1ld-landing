@@ -80,6 +80,12 @@ function ResearchHub() {
           Highlight notebook →
         </Link>
         <Link
+          to="/research/analyze"
+          className="panel glass-subtle panel-interactive surface-card-interactive px-5 py-4 label-xs text-muted-foreground hover:text-bone"
+        >
+          Analyze a paper →
+        </Link>
+        <Link
           to="/papers"
           className="panel glass-subtle panel-interactive surface-card-interactive px-5 py-4 label-xs text-muted-foreground hover:text-bone"
         >
@@ -187,7 +193,7 @@ function ResearchHub() {
         )}
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2">
+      <section className="grid gap-6 md:grid-cols-3">
         <Link to="/papers" className="panel panel-interactive block p-6 rounded-2xl group">
           <p className="font-mono text-[9px] uppercase text-muted-foreground">Paper reviews</p>
           <h3 className="font-display text-xl text-bone mt-2 group-hover:text-accent-blue transition">
@@ -198,6 +204,21 @@ function ResearchHub() {
           </p>
           <span className="mt-4 inline-flex items-center gap-1 font-mono text-[9px] uppercase text-accent-blue">
             Open library <ArrowRight className="h-3 w-3" />
+          </span>
+        </Link>
+        <Link
+          to="/research/analyze"
+          className="panel panel-interactive block p-6 rounded-2xl group"
+        >
+          <p className="font-mono text-[9px] uppercase text-muted-foreground">Paper analyzer</p>
+          <h3 className="font-display text-xl text-bone mt-2 group-hover:text-accent-blue transition">
+            Convert raw reading into a review brief
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Paste paper text and extract problem, method, evidence, limits, and reviewer questions.
+          </p>
+          <span className="mt-4 inline-flex items-center gap-1 font-mono text-[9px] uppercase text-accent-blue">
+            Analyze paper <ArrowRight className="h-3 w-3" />
           </span>
         </Link>
         <Link to="/guides" className="panel panel-interactive block p-6 rounded-2xl group">

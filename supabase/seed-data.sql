@@ -1,4 +1,4 @@
--- BUILD platform seed data (idempotent — safe to re-run)
+-- The Bu1ld platform seed data (idempotent — safe to re-run)
 BEGIN;
 
 INSERT INTO public.events (slug, title, summary, location, start_date, end_date, topics, prep_notes, resources, deadlines, url, published)
@@ -38,12 +38,12 @@ VALUES (
   'build-summit-2026-q3',
   'The Bu1ld Summit — Q3 2026',
   'Internal showcase: research threads, startup demos, and builder networking across the membership pool.',
-  'Distributed / Stanford hub',
+  'Distributed',
   '2026-09-20',
   '2026-09-21',
-  ARRAY['BUILD community', 'Startups', 'Research threads']::text[],
+  ARRAY['The Bu1ld community', 'Startups', 'Research threads']::text[],
   'Members presenting prototypes should prepare a 5-minute demo and one slide on what broke. This is a shipping checkpoint, not a poster session.',
-  '[{"label":"BUILD Discord","url":"https://discord.gg/NG4QYat4P","kind":"other"}]'::jsonb,
+  '[{"label":"The Bu1ld Discord","url":"https://discord.gg/NG4QYat4P","kind":"other"}]'::jsonb,
   '[{"label":"Demo submission","date":"2026-09-01"}]'::jsonb,
   NULL,
   true
@@ -83,7 +83,7 @@ The √d scaling is easy to skip over. Without it, dot products blow up in high 
 2. Compare parameter count vs a tiny LSTM on the same synthetic copy task.
 3. Read Section 3.2 on multi-head — map each head''s weights on a real sentence using a small pretrained model.
 
-## BUILD take
+## The Bu1ld take
 
 Every modern LLM is a descendant of this architecture choice. When you read MoE, RoPE, or sliding-window papers, you are reading patches on this foundation — not replacements. Our threads on long-context world models usually fail or succeed based on whether the patch preserves the **relational** inductive bias attention gives you.',
   true,
@@ -124,7 +124,7 @@ If your latent must reconstruct every blade of grass, it will memorize texture. 
 | Generative (VAE, diffusion) | Raw observations | Spends capacity on texture |
 | JEPA | Abstract embeddings | Must design good abstraction |
 
-## Why BUILD cares
+## Why The Bu1ld cares
 
 Several of our research threads — world models, latent safety, PDE surrogates — hinge on whether your latent space encodes **causal** structure or just compresses appearance. JEPA is the clearest public articulation of "predict in the right space."
 
@@ -134,7 +134,7 @@ When a surrogate model looks great on MSE but fails off-distribution, we usually
 
 Do not treat this as a single architecture paper. Read it as a research agenda: hierarchical planning, self-supervised pretraining, and energy-based models as components of one stack. Follow-ups (I-JEPA, V-JEPA) are worth skimming after the position paper lands.
 
-## BUILD take
+## The Bu1ld take
 
 Ask on every world-model prototype: *what is the embedding trained to ignore?* If the answer is "nothing," you are back in pixel reconstruction land.',
   true,
@@ -155,11 +155,11 @@ Ask on every world-model prototype: *what is the embedding trained to ignore?* I
 INSERT INTO public.papers (slug, title, authors, year, arxiv_url, tags, is_classic, summary, review_body, published, published_at)
 VALUES (
   'residual-event-tokenization',
-  'Residual Event Tokenization (BUILD thread)',
+  'Residual Event Tokenization (The Bu1ld thread)',
   'The Bu1ld research collective',
   2026,
   NULL,
-  ARRAY['Tokenization', 'World models', 'BUILD original']::text[],
+  ARRAY['Tokenization', 'World models', 'The Bu1ld original']::text[],
   false,
   'Internal research direction: encode surprise, not every frame.',
   '## The intuition
@@ -184,9 +184,9 @@ As world models scale, sequence length becomes the bottleneck — not parameter 
 
 ## Status
 
-Active BUILD research — not a published paper. Members on the Residual Event Tokenization thread ship weekly demos or written postmortems. Reach out via the open project if you want in.
+Active Bu1ld research — not a published paper. Members on the Residual Event Tokenization thread ship weekly demos or written postmortems. Reach out via the open project if you want in.
 
-## BUILD take
+## The Bu1ld take
 
 If you cannot explain what your tokenizer throws away, you do not have a tokenizer — you have a compressor.',
   true,
@@ -230,7 +230,7 @@ Loss improves predictably with model size (N) and dataset size (D). The mistake 
 - Chinchilla vs Gopher at matched compute — the win is not magic architecture, it is budget allocation.
 - Appendix discussions of inference cost: training-optimal ≠ deployment-optimal. That tension still drives product decisions.
 
-## Reproduce at BUILD scale
+## Reproduce at Bu1ld scale
 
 You will not rerun Chinchilla. You *can*:
 
@@ -238,7 +238,7 @@ You will not rerun Chinchilla. You *can*:
 2. Train three budgets: overweight params, overweight tokens, Chinchilla-balanced.
 3. Plot val loss vs FLOPs. The middle configuration should dominate.
 
-## BUILD take
+## The Bu1ld take
 
 When a startup says "we need a bigger model," ask for their token budget and data repeat count. Under-training is still the silent killer in fine-tunes — not just pretraining.',
   true,
@@ -290,7 +290,7 @@ Practically: increase log-prob gap on chosen vs rejected completions, with a β 
 | DPO | No | No | β tuning, distribution shift |
 | ORPO / IPO variants | No | No | Different implicit constraints |
 
-## BUILD take
+## The Bu1ld take
 
 Most member projects should start with SFT + light DPO on **small, curated** preference sets — not full RL stacks. If alignment fails, fix the pairs before touching the optimizer.',
   true,
@@ -336,13 +336,13 @@ Only A and B get gradients. Memory drops sharply; you can stack multiple LoRA mo
 - Where adapters attach: attention projections (q,v) dominate quality per parameter in many reproductions.
 - Merging adapters into base weights for inference — deployment story matters as much as training.
 
-## BUILD reproduction sketch
+## Bu1ld reproduction sketch
 
 1. Pick a small instruction dataset (500–2k examples).
 2. Compare full FT vs LoRA r=8 on the same GPU budget.
 3. Measure perplexity **and** task accuracy — cheap LoRA can overfit tone without improving facts.
 
-## BUILD take
+## The Bu1ld take
 
 LoRA is not "free fine-tuning." It is a **controlled subspace** for steering. If your eval does not move, you need data or rank — not another epoch.',
   true,
@@ -390,7 +390,7 @@ Classic SSM: same linear dynamics for every token. Mamba: dynamics change per to
 - Multimodal and tool-use stacks still transformer-centric in production.
 - Scaling laws at 10B+ less settled than dense decoder-only transformers.
 
-## BUILD take
+## The Bu1ld take
 
 Mamba is a bet on **long context + throughput**, not a universal transformer replacement. Prototype on your actual sequence length distribution — not LM perplexity alone.',
   true,
@@ -411,14 +411,14 @@ Mamba is a bet on **long context + throughput**, not a universal transformer rep
 INSERT INTO public.newsletter_issues (slug, title, issue_number, summary, body, published, published_at)
 VALUES (
   'issue-12-march-2026',
-  'BUILD Digest #12 — March 2026',
+  'The Bu1ld Digest #12 — March 2026',
   12,
-  'NeurIPS deadlines on the horizon, new startup spinout, and three papers worth your weekend.',
-  '## This month at BUILD
+  'Research deadlines on the horizon, project review standards, and three papers worth your weekend.',
+  '## This month at The Bu1ld
 
-**Eigen Δ** closed a research milestone: delta-trained specialization in under 4 hours on a single A100 for a 7B base. Demo at the Q3 summit.
+**Project evidence standard:** milestones should name the claim being tested, link code or notes, and state the failure mode before a result is treated as complete.
 
-**Counterfactual Defect Worlds** thread added two new builders from MIT. They are building a synthetic defect injection suite for video world models.
+**Counterfactual Defect Worlds** is recruiting builders for a synthetic defect-injection suite for video world models. Applications should include one concrete experiment proposal and a relevant repo, paper note, or systems artifact.
 
 ## Paper picks
 
@@ -430,11 +430,11 @@ VALUES (
 
 - ICML 2026 full paper deadline: **Feb 4** (passed — workshop track still open)
 - NeurIPS 2026 abstract: **May 15** — start internal reads now
-- BUILD Summit Q3: demo submissions due **Sep 1**
+- The Bu1ld internal demo window: publish only after dates, reviewer capacity, and evidence requirements are confirmed.
 
 ## Startup spotlight
 
-**Colorworld** shipped brand-token export to Figma. First paying design teams onboarding this month.
+Startup records should separate prototypes, interviews, pilots, customers, revenue, and funding. Do not turn self-reported traction into a public claim without evidence.
 
 ---
 
@@ -446,12 +446,12 @@ VALUES (
 INSERT INTO public.newsletter_issues (slug, title, issue_number, summary, body, published, published_at)
 VALUES (
   'issue-11-february-2026',
-  'BUILD Digest #11 — February 2026',
+  'The Bu1ld Digest #11 — February 2026',
   11,
-  'Fellowship applications open, physics ML reading group, and ICML deadline week.',
+  'Fellowship planning, physics ML reading, and ICML deadline week.',
   '## Fellowship
 
-Research Fellowship (6-month track) is accepting applications through March 15. Co-advised placements with UC and Stanford collaborators.
+The research fellowship track is planned as a structured six-month cycle. Applications should open only after reviewer capacity, dates, and source materials are confirmed.
 
 ## Reading group
 
@@ -463,7 +463,7 @@ ICML full paper deadline this week. Good luck to everyone submitting.
 
 ## New members
 
-Welcome to 14 new builders who joined the membership pool in January.',
+Welcome new builders only after the membership count has been verified in the admin evidence register.',
   true,
   '2026-02-01T00:00:00Z'
 ) ON CONFLICT (slug) DO NOTHING;
@@ -493,7 +493,7 @@ VALUES (
   'open',
   ARRAY['Sequence modeling', 'PyTorch', 'Signal processing']::text[],
   ARRAY['Tokenization', 'World models', 'Compression']::text[],
-  'BUILD Research',
+  'The Bu1ld Research',
   4,
   1,
   true,
@@ -525,7 +525,7 @@ VALUES (
   'open',
   ARRAY['Python', 'ML fundamentals', 'Shipping mindset']::text[],
   ARRAY['Cohort', 'Programs', 'Production ML']::text[],
-  'BUILD Programs',
+  'The Bu1ld Programs',
   20,
   8,
   true,
@@ -536,12 +536,12 @@ INSERT INTO public.projects (slug, title, description, type, status, skills_need
 VALUES (
   'pde-surrogate-phase-transitions',
   'PDE Surrogate Phase Transitions',
-  'Track representation phase transitions in neural PDE surrogates as they scale. Goal: predict where a surrogate will silently break before it fails on held-out physics. Collaboration with UC Physics ML group.',
+  'Track representation phase transitions in neural PDE surrogates as they scale. Goal: predict where a surrogate will silently break before it fails on held-out physics. External affiliations should be added only after source evidence is approved.',
   'research',
   'active',
   ARRAY['Physics ML', 'PDEs', 'PyTorch', 'Scientific computing']::text[],
   ARRAY['Physics ML', 'PINNs', 'Scaling']::text[],
-  'UC Physics PhD',
+  'Research lead',
   5,
   3,
   true,
@@ -557,7 +557,7 @@ VALUES (
   'closed',
   ARRAY['Evaluation', 'World models', 'Safety']::text[],
   ARRAY['Safety', 'Alumni', 'World models']::text[],
-  'BUILD Research',
+  'The Bu1ld Research',
   4,
   4,
   true,
@@ -572,9 +572,9 @@ VALUES (
   'Distributed',
   'internal',
   'Fellowship · 6 months',
-  'Co-advised research with academic collaborators, targeting strong venue submissions and clean open-source reference code. Selective — apply through the fellowship project track or email ryan@thebu1ld.com.',
+  'Structured research cycle for developing a focused question, testing it with disciplined experiments, and leaving behind an evidence-backed project record. Availability is published only when dates and reviewer capacity are confirmed.',
   NULL,
-  ARRAY['Research', 'Fellowship', 'BUILD']::text[],
+  ARRAY['Research', 'Fellowship', 'The Bu1ld']::text[],
   true
 ) ON CONFLICT (slug) DO NOTHING;
 
@@ -586,7 +586,7 @@ VALUES (
   'SF / Remote',
   'internal',
   'Full-time',
-  'Founding ML engineer for text-to-CAD startup spun out of BUILD. Own the inference stack, model evaluation, and geometry validation pipeline.',
+  'Founding ML engineer for a text-to-CAD startup record tracked through The Bu1ld. Own the inference stack, model evaluation, and geometry validation pipeline.',
   'mailto:ryan@thebu1ld.com',
   ARRAY['Startup', 'ML Engineer', '3D']::text[],
   true
@@ -600,7 +600,7 @@ VALUES (
   'London',
   'external',
   'Full-time',
-  'Curated external role — research engineering on large-scale training infrastructure. Strong BUILD fit for members with systems + ML depth.',
+  'Curated external role — research engineering on large-scale training infrastructure. Strong fit for members with systems and ML depth.',
   'https://deepmind.google/careers/',
   ARRAY['External', 'Research engineer', 'Systems']::text[],
   true
@@ -614,7 +614,7 @@ VALUES (
   'SF / NYC / Remote',
   'external',
   'Full-time',
-  'External listing relevant to BUILD members interested in latent safety, alignment, and evaluation of capable models.',
+  'External listing relevant to members interested in latent safety, alignment, and evaluation of capable models.',
   'https://www.anthropic.com/careers',
   ARRAY['External', 'Safety', 'Research']::text[],
   true
@@ -623,7 +623,7 @@ VALUES (
 INSERT INTO public.announcements (title, body, href, pinned, published, created_at)
 SELECT
   'This week in ML',
-  'World models are having a moment — ICLR deadlines are stacking, and several BUILD threads are probing defect injection and latent recovery. Worth reading the JEPA guide if you''re joining a world-model project.',
+  'World models are having a moment — ICLR deadlines are stacking, and several Bu1ld threads are probing defect injection and latent recovery. Worth reading the JEPA guide if you''re joining a world-model project.',
   '/guides/what-is-jepa',
   true,
   true,

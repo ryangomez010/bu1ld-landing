@@ -148,7 +148,7 @@ export const SEED_JOBS: Job[] = [
     source: "internal",
     employment_type: "Full-time",
     description:
-      "Founding ML engineer for text-to-CAD startup spun out of The Bu1ld. Own the inference stack, model evaluation, and geometry validation pipeline.",
+      "Founding ML engineer for a text-to-CAD startup tracked through The Bu1ld. Own the inference stack, model evaluation, and geometry validation pipeline.",
     url: "mailto:ryan@thebu1ld.com",
     tags: ["Startup", "ML Engineer", "3D"],
     published: true,

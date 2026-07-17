@@ -4,7 +4,70 @@ export type InstitutionalRole =
   | "project_lead"
   | "reviewer"
   | "mentor"
-  | "administrator";
+  | "administrator"
+  | "lab_lead"
+  | "startup_founder"
+  | "applicant";
+
+export type Lab = {
+  id: string;
+  slug: string;
+  name: string;
+  short_name: string;
+  tagline: string;
+  summary: string;
+  focus: string[];
+  methods: string[];
+  open_roles: string[];
+  color: string;
+  published: boolean;
+  lead_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Competition = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  status: "upcoming" | "open" | "judging" | "closed";
+  prize: string;
+  deadline: string | null;
+  lab_id: string | null;
+  evaluation_protocol: string;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Partnership = {
+  id: string;
+  name: string;
+  kind: "academic" | "industry" | "community" | "infrastructure";
+  summary: string;
+  status: "active" | "exploring" | "ended";
+  published: boolean;
+  evidence_url: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Invitation = {
+  id: string;
+  invite_token: string;
+  invitation_type: "project" | "lab" | "program";
+  target_id: string;
+  email: string | null;
+  invitee_id: string | null;
+  invited_by: string;
+  role_offered: string;
+  status: "pending" | "accepted" | "declined" | "revoked" | "expired";
+  message: string | null;
+  expires_at: string;
+  accepted_at: string | null;
+  created_at: string;
+};
 
 export type MemberBackground = "researcher" | "engineer" | "founder" | "student" | "other";
 
@@ -104,6 +167,37 @@ export type Paper = {
   source_url?: string | null;
   reviewer_id?: string | null;
   review_status?: "draft" | "in_review" | "published";
+};
+
+export type PaperAnalysisResult = {
+  abstract?: string;
+  problem: string[];
+  contribution: string[];
+  method: string[];
+  datasets: string[];
+  experiments: string[];
+  findings: string[];
+  limitations: string[];
+  reproducibility: string[];
+  weaknesses: string[];
+  questions: string[];
+  safety_note: string;
+};
+
+export type PaperAnalysis = {
+  id: string;
+  user_id: string;
+  title: string;
+  source_url: string | null;
+  input_kind: "text";
+  input_excerpt: string;
+  input_sha256: string;
+  status: "completed" | "failed";
+  provider: "local_structured_v1";
+  prompt_version: "paper-analysis-v1";
+  structured_result: PaperAnalysisResult;
+  created_at: string;
+  updated_at: string;
 };
 
 export type NewsletterIssue = {
@@ -257,7 +351,7 @@ export type ProjectContribution = {
   updated_at: string;
 };
 
-export type ProgramType = "cohort" | "fellowship" | "workshop";
+export type ProgramType = "cohort" | "fellowship" | "workshop" | "incubation" | "competition";
 export type Program = {
   id: string;
   slug: string;

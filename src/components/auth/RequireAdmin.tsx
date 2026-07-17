@@ -1,4 +1,5 @@
 import { useAuth } from "@/lib/auth";
+import { isAdministrator } from "@/lib/roles";
 
 export function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth();
@@ -11,13 +12,13 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (profile?.role !== "admin") {
+  if (!isAdministrator(profile)) {
     return (
       <div className="rounded-sm border border-accent-red/30 bg-accent-red/5 p-8 text-center">
         <h2 className="font-display text-xl text-bone">Admin access required</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Your current account is not authorized to manage institutional content, member records, or
-          publication decisions.
+          publication decisions. Legacy admin or institutional administrator role required.
         </p>
       </div>
     );
