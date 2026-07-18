@@ -45,7 +45,7 @@ function LeadApplyForm() {
     return () => window.clearTimeout(t);
   }, [message, user]);
 
-  if (isProjectLead(profile?.role)) {
+  if (isProjectLead(profile?.role, profile?.institutional_roles)) {
     return (
       <MemberLayout title="Project lead" eyebrow="verified">
         <p className="text-muted-foreground -mt-4">

@@ -18,6 +18,7 @@ import {
   deleteInstitutionalClaim,
   reviewInstitutionalClaim,
 } from "@/lib/institutional-claims";
+import { isSafeUrl } from "@/lib/urls";
 import type { InstitutionalClaim, InstitutionalClaimType } from "@/lib/types";
 
 const CLAIM_TYPES: InstitutionalClaimType[] = [
@@ -187,14 +188,20 @@ export function AdminClaimsTab({
                 {claim.status !== "verified" ? (
                   <Button
                     size="sm"
+                    disabled={!claim.evidence_url || !isSafeUrl(claim.evidence_url)}
+                    title={
+                      !claim.evidence_url ? "Add a primary source URL before verifying" : undefined
+                    }
                     onClick={() =>
-                      void reviewInstitutionalClaim(claim.id, "verified").then(({ error }) => {
-                        if (error) toast.error(error);
-                        else {
-                          toast.success("Claim verified and published.");
-                          onSaved();
-                        }
-                      })
+                      void reviewInstitutionalClaim(claim.id, "verified", claim).then(
+                        ({ error }) => {
+                          if (error) toast.error(error);
+                          else {
+                            toast.success("Claim verified and published.");
+                            onSaved();
+                          }
+                        },
+                      )
                     }
                   >
                     Verify and publish

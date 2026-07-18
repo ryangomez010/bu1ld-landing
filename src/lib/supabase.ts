@@ -693,6 +693,7 @@ export type Database = {
           result_summary: string;
           status: string;
           evidence_url: string | null;
+          updated_at: string;
         }>
       >;
       project_deliverables: DbTable<
@@ -727,6 +728,131 @@ export type Database = {
           review_note: string | null;
           reviewed_by: string | null;
           reviewed_at: string | null;
+        }>
+      >;
+      project_datasets: DbTable<
+        {
+          id: string;
+          project_id: string;
+          created_by: string;
+          name: string;
+          version_label: string;
+          description: string;
+          source_url: string | null;
+          license: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          project_id: string;
+          created_by: string;
+          name: string;
+          version_label?: string;
+          description?: string;
+          source_url?: string | null;
+          license?: string | null;
+        },
+        Partial<{
+          name: string;
+          version_label: string;
+          description: string;
+          source_url: string | null;
+          license: string | null;
+          updated_at: string;
+        }>
+      >;
+      project_application_questions: DbTable<
+        {
+          id: string;
+          project_id: string;
+          prompt: string;
+          required: boolean;
+          sort_order: number;
+          created_at: string;
+        },
+        {
+          project_id: string;
+          prompt: string;
+          required?: boolean;
+          sort_order?: number;
+        },
+        Partial<{ prompt: string; required: boolean; sort_order: number }>
+      >;
+      project_application_answers: DbTable<
+        {
+          id: string;
+          application_id: string;
+          question_id: string;
+          answer: string;
+          created_at: string;
+        },
+        {
+          application_id: string;
+          question_id: string;
+          answer: string;
+        },
+        Partial<{ answer: string }>
+      >;
+      research_paths: DbTable<
+        {
+          id: string;
+          title: string;
+          description: string;
+          published: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id: string;
+          title: string;
+          description?: string;
+          published?: boolean;
+          sort_order?: number;
+        },
+        Partial<{
+          title: string;
+          description: string;
+          published: boolean;
+          sort_order: number;
+          updated_at: string;
+        }>
+      >;
+      research_path_steps: DbTable<
+        {
+          id: string;
+          path_id: string;
+          step_kind: string;
+          step_slug: string;
+          sort_order: number;
+        },
+        {
+          path_id: string;
+          step_kind: string;
+          step_slug: string;
+          sort_order?: number;
+        },
+        Partial<{ step_kind: string; step_slug: string; sort_order: number }>
+      >;
+      research_path_progress: DbTable<
+        {
+          user_id: string;
+          path_id: string;
+          completed_steps: number;
+          last_step_slug: string | null;
+          updated_at: string;
+        },
+        {
+          user_id: string;
+          path_id: string;
+          completed_steps?: number;
+          last_step_slug?: string | null;
+          updated_at?: string;
+        },
+        Partial<{
+          completed_steps: number;
+          last_step_slug: string | null;
+          updated_at: string;
         }>
       >;
     };
@@ -787,6 +913,26 @@ export type Database = {
       review_project_contribution: {
         Args: { p_contribution_id: string; p_status: string; p_note?: string | null };
         Returns: import("@/lib/types").ProjectContribution;
+      };
+      assign_contribution_reviewer: {
+        Args: { p_contribution_id: string; p_reviewer_id: string | null };
+        Returns: import("@/lib/types").ProjectContribution;
+      };
+      review_competition_submission: {
+        Args: {
+          p_submission_id: string;
+          p_status: string;
+          p_note?: string | null;
+        };
+        Returns: import("@/lib/competitions").CompetitionSubmission;
+      };
+      review_project_deliverable: {
+        Args: {
+          p_deliverable_id: string;
+          p_status: string;
+          p_note?: string | null;
+        };
+        Returns: import("@/lib/project-experiments").ProjectDeliverable;
       };
       resubmit_project_contribution: {
         Args: { p_contribution_id: string };

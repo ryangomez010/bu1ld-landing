@@ -9,13 +9,22 @@ const blocked = [
   /Add Supabase env vars/i,
   /Copy\s+.*\.env\.example/i,
   /role\s*=\s*['"]admin['"]/i,
-  /phase2\.sql/i,
+  /phase\d+\.sql/i,
   /Generate draft/i,
   /coming soon/i,
   /lorem ipsum/i,
   /\bTBD\b/i,
   /sample issue/i,
   /not implemented/i,
+  /local-only mode/i,
+  /live database/i,
+  /seed-only until/i,
+  /FINAL_SETUP/i,
+  /OWNER_ACTIONS/i,
+  /DEMO_GUIDE/i,
+  /Supabase is required/i,
+  /Supabase required/i,
+  /Connect Supabase/i,
 ];
 
 function collectFiles(path: string): string[] {
@@ -33,7 +42,13 @@ function collectFiles(path: string): string[] {
 describe("production copy", () => {
   test("does not expose setup instructions or placeholder language in the app", () => {
     const offenders = collectFiles(sourceRoot)
-      .filter((file) => /\.(ts|tsx)$/.test(file) && !file.endsWith("production-copy.test.ts"))
+      .filter(
+        (file) =>
+          /\.(ts|tsx)$/.test(file) &&
+          !file.endsWith(".test.ts") &&
+          !file.endsWith(".test.tsx") &&
+          !file.endsWith("production-copy.test.ts"),
+      )
       .flatMap((file) => {
         const text = readFileSync(file, "utf8");
         return blocked

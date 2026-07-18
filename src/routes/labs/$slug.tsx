@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { COMPETITIONS, getLab, INSTITUTION_PROGRAMS } from "@/data/institution";
 import { textAccent } from "@/data/landing";
+import { fetchLabBySlug } from "@/lib/labs";
+import { fetchProjects } from "@/lib/projects";
+import type { Lab, Project } from "@/lib/types";
 
 export const Route = createFileRoute("/labs/$slug")({
   component: LabDetailPage,
@@ -22,7 +26,35 @@ export const Route = createFileRoute("/labs/$slug")({
 
 function LabDetailPage() {
   const { slug } = Route.useParams();
-  const lab = getLab(slug);
+  const [lab, setLab] = useState<Lab | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const [labRow, allProjects] = await Promise.all([fetchLabBySlug(slug), fetchProjects()]);
+      if (cancelled) return;
+      setLab(labRow);
+      if (labRow) {
+        setProjects(allProjects.filter((p) => p.lab_id === labRow.id));
+      }
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <InstitutionLayout eyebrow="Research lab" title="Loading…">
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground animate-pulse">
+          Loading lab…
+        </p>
+      </InstitutionLayout>
+    );
+  }
 
   if (!lab) {
     return (
@@ -35,8 +67,11 @@ function LabDetailPage() {
     );
   }
 
-  const related = INSTITUTION_PROGRAMS.filter((p) => lab.relatedProgramSlugs.includes(p.slug));
-  const relatedCompetitions = COMPETITIONS.filter((c) => c.labSlug === lab.slug);
+  const seedLab = getLab(slug);
+  const related = seedLab
+    ? INSTITUTION_PROGRAMS.filter((p) => seedLab.relatedProgramSlugs.includes(p.slug))
+    : [];
+  const relatedCompetitions = COMPETITIONS.filter((c) => c.labSlug === slug);
 
   return (
     <InstitutionLayout eyebrow="Research lab" title={lab.name} description={lab.summary}>
@@ -84,20 +119,50 @@ function LabDetailPage() {
           Open role types
         </h2>
         <div className="mt-4 flex flex-wrap gap-2">
-          {lab.openRoles.map((role) => (
-            <span
+          {lab.open_roles.map((role) => (
+            <Link
               key={role}
-              className="rounded-sm border border-bone/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone"
+              to="/projects"
+              className="rounded-sm border border-bone/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:border-accent-blue/50 hover:text-accent-blue"
             >
               {role}
-            </span>
+            </Link>
           ))}
         </div>
         <p className="mt-5 text-sm text-muted-foreground">
-          Roles are filled through project applications and program acceptance — not through a
-          separate hiring CRM.
+          Role types are filled through project applications — open a project listing, read required
+          skills, and submit a pitch.{" "}
+          <Link to="/apply" className="text-accent-blue hover:text-bone">
+            Start the apply path →
+          </Link>
         </p>
       </section>
+
+      {projects.length > 0 ? (
+        <section className="mt-12">
+          <h2 className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+            Open projects
+          </h2>
+          <div className="mt-4 space-y-3">
+            {projects.map((project) => (
+              <Link
+                key={project.id}
+                to="/projects/$slug"
+                params={{ slug: project.slug }}
+                className="block rounded-sm border border-border/40 p-4 transition hover:border-accent-blue/40"
+              >
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent-blue">
+                  {project.type} · {project.status}
+                </p>
+                <p className="mt-2 font-display text-lg text-bone">{project.title}</p>
+                <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                  {project.description}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {related.length > 0 ? (
         <section className="mt-12">
@@ -109,6 +174,7 @@ function LabDetailPage() {
               <Link
                 key={program.slug}
                 to="/programs-public"
+                hash={program.slug}
                 className="rounded-sm border border-border/40 p-4 transition hover:border-accent-blue/40"
               >
                 <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent-blue">
@@ -166,7 +232,9 @@ function LabDetailPage() {
         <Link
           to="/apply"
           search={
-            { program: lab.relatedProgramSlugs[0] ?? "ai-builder-cohort" } as { program?: string }
+            {
+              program: seedLab?.relatedProgramSlugs[0] ?? "ai-builder-cohort",
+            } as { program?: string }
           }
           className="rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-background transition hover:bg-accent-blue"
         >

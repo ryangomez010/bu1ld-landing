@@ -26,9 +26,8 @@ export function AdminInstitutionsTab({ submissions, onReload }: Props) {
       <div>
         <h2 className="font-display text-2xl text-bone">Institution operations</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Review competition entries. Labs and partnerships are seeded via{" "}
-          <code className="font-mono text-[10px]">phase25.sql</code>; publish status is controlled
-          in SQL or future CMS tabs.
+          Review competition entries. Lab publish state and partnership inquiries are managed from
+          Labs and the public partnerships page.
         </p>
       </div>
 

@@ -69,61 +69,48 @@ export const PROGRAMS = [
 
 export const STARTUPS = [
   {
-    name: "Applied ML threads",
+    name: "Open projects",
     stage: "research",
-    domain: "Text to CAD",
+    domain: "Member portal",
     href: "/projects",
     thesis:
-      "Members turn a narrow technical hypothesis into an inspectable build, with evidence, limitations, and a next decision.",
+      "Browse open research and product threads, see required skills and commitment, and apply with a concrete pitch.",
   },
   {
-    name: "Prototype practice",
+    name: "Startup incubation",
     stage: "prototype",
-    domain: "Generative color",
-    href: "/newsletter",
+    domain: "Programs",
+    href: "/programs-public",
     thesis:
-      "Small, end-to-end systems that make a research claim tangible enough to test with users or evaluators.",
+      "Stage-gated builds with kill criteria — prototypes and evaluator sessions before any growth story.",
   },
   {
-    name: "Research-to-product review",
+    name: "Evidence register",
     stage: "research",
-    domain: "AI native games",
-    href: "/newsletter",
+    domain: "Credibility",
+    href: "/evidence",
     thesis:
-      "A place to decide whether a result is ready for further research, an open artifact, or a product experiment.",
+      "Public claims require sources. Unsupported affiliation, customer, and benchmark language is not published.",
   },
   {
-    name: "Documented outcomes",
+    name: "Contribution records",
     stage: "research",
-    domain: "Foundation models",
-    href: "/papers",
-    thesis:
-      "Milestones, contribution records, repositories, and postmortems make progress legible without inflating claims.",
-  },
-  {
-    name: "Many more",
-    stage: "research",
-    domain: "Open thread",
+    domain: "Projects",
     href: "/projects",
     thesis:
-      "New threads start when a member proposes a falsifiable claim and finds two others willing to ship weekly. Some become startups; most get cut after a documented postmortem.",
+      "Milestones, assigned review, and evidence URLs make progress legible without inflating outcomes.",
   },
 ] as const;
 
 export const TEAM = [
   { name: "Ryan Gomez", role: "Founder, Research & Systems", initials: "RG", color: "blue" },
-  {
-    name: "Research contributors",
-    role: "Method, experiments, and review",
-    initials: "ΦD",
-    color: "green",
-  },
-  {
-    name: "Distributed Builders",
-    role: "Engineers, researchers, founders",
-    initials: "∴",
-    color: "red",
-  },
+] as const;
+
+export const STATS = [
+  ["Six labs", "published research divisions"],
+  ["Four tracks", "fellowship · incubation · cohort · competitions"],
+  ["Evidence-first", "claims require sources"],
+  ["Member portal", "apply, contribute, record work"],
 ] as const;
 
 export const BENEFITS = [
@@ -183,13 +170,6 @@ export const FAQ = [
   },
 ] as const;
 
-export const STATS = [
-  ["Papers", "reviews and explainers"],
-  ["Projects", "open research and builds"],
-  ["Programs", "cohorts and workshops"],
-  ["Records", "milestones and contributions"],
-] as const;
-
 export const NAV_ITEMS = [
   ["Labs", "/labs"],
   ["Programs", "/programs-public"],
@@ -205,8 +185,8 @@ export const LANDING_ANCHORS = [
   ["Membership", "membership"],
   ["Research", "research"],
   ["Programs", "programs"],
-  ["Startups", "startups"],
-  ["Team", "team"],
+  ["Applied work", "startups"],
+  ["People", "team"],
   ["FAQ", "faq"],
   ["Contact", "contact"],
 ] as const;

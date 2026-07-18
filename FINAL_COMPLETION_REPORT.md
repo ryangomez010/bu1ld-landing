@@ -82,7 +82,7 @@ Latest local release gate:
 
 - `bun run release:check` passed.
 - TypeScript passed.
-- 78 tests passed.
+- 95 tests passed.
 - ESLint passed.
 - Production client and SSR builds passed.
 
@@ -92,7 +92,7 @@ Strict production gate:
 
 ## Database migration status
 
-- Ordered migration files exist through `supabase/phase24.sql`.
+- Ordered migration files exist through `supabase/phase25.sql`.
 - Consolidated SQL exists at `supabase/FINAL_SETUP.sql`.
 - SQL-editor verification exists at `supabase/VERIFY_SETUP.sql`.
 - Runtime verification scripts exist:

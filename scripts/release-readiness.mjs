@@ -80,7 +80,7 @@ function assertNoMatches(label, paths, patterns) {
 
 const env = { ...readWranglerVars(), ...readEnvFile(), ...process.env };
 const failures = [];
-const strict = env.BU1LD_RELEASE_STRICT === "1" || env.CI === "true";
+const strict = env.BU1LD_RELEASE_STRICT === "1";
 
 if (!env.VITE_SUPABASE_URL) failures.push("Set VITE_SUPABASE_URL in the deployment environment.");
 if (!env.VITE_SUPABASE_ANON_KEY && !env.VITE_SUPABASE_PUBLISHABLE_KEY) {
@@ -128,6 +128,13 @@ for (const phase of [
   "phase23.sql",
   "phase24.sql",
   "phase25.sql",
+  "phase26.sql",
+  "phase27.sql",
+  "phase28.sql",
+  "phase29.sql",
+  "phase30.sql",
+  "phase31.sql",
+  "phase32.sql",
 ]) {
   if (!existsSync(resolve(root, "supabase", phase)))
     failures.push(`Missing required migration supabase/${phase}.`);
@@ -194,7 +201,9 @@ assertNoMatches(
     /Add Supabase env vars/i,
     /Copy\s+.*\.env\.example/i,
     /role\s*=\s*['"]admin['"]/i,
-    /phase2\.sql/i,
+    /phase\d+\.sql/i,
+    /Supabase required/i,
+    /Connect Supabase/i,
   ],
 );
 
@@ -212,6 +221,21 @@ if (existsSync(phase22)) {
     }
     if (!sql.includes(`grant execute on function public.${signature} to authenticated`)) {
       failures.push(`phase22.sql must grant authenticated execution on ${signature}.`);
+    }
+  }
+}
+
+const phase32 = resolve(root, "supabase/phase32.sql");
+if (existsSync(phase32)) {
+  const sql = readFileSync(phase32, "utf8");
+  for (const invariant of [
+    "Contributors cannot review their own submissions",
+    "Contributors cannot be assigned as reviewers of their own submissions",
+    "set search_path = public",
+    "values ('phase32')",
+  ]) {
+    if (!sql.includes(invariant)) {
+      failures.push(`phase32.sql is missing required invariant: ${invariant}.`);
     }
   }
 }

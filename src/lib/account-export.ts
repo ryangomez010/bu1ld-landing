@@ -8,6 +8,7 @@ import { getAllPaperScrollProgressLocal } from "@/lib/paper-notes";
 import { getAllGuideProgress } from "@/lib/reading-progress";
 import { getRecentViews } from "@/lib/recent-views";
 import { isNewsletterSubscribed } from "@/lib/newsletter-subscribe";
+import { fetchMyContributionsForExport } from "@/lib/contribution-export";
 
 export type AccountExport = {
   exported_at: string;
@@ -15,6 +16,7 @@ export type AccountExport = {
   applications: Awaited<ReturnType<typeof fetchMyApplications>>;
   saved_items: Awaited<ReturnType<typeof fetchSavedItems>>;
   notifications: Awaited<ReturnType<typeof fetchNotifications>>;
+  contributions: Awaited<ReturnType<typeof fetchMyContributionsForExport>>["rows"];
   papers_read: string[];
   paper_scroll_progress: Record<string, number>;
   paper_notes: Record<string, string>;
@@ -33,6 +35,7 @@ export async function buildAccountExport(userId: string): Promise<AccountExport>
     guide_progress,
     paper_notes,
     newsletter_subscribed,
+    contributionExport,
   ] = await Promise.all([
     fetchProfile(userId),
     fetchMyApplications(userId),
@@ -42,6 +45,7 @@ export async function buildAccountExport(userId: string): Promise<AccountExport>
     getAllGuideProgress(userId),
     getAllPaperNotesForExport(userId),
     isNewsletterSubscribed(userId),
+    fetchMyContributionsForExport(userId),
   ]);
 
   return {
@@ -50,6 +54,7 @@ export async function buildAccountExport(userId: string): Promise<AccountExport>
     applications,
     saved_items,
     notifications,
+    contributions: contributionExport.rows,
     papers_read: [...papersRead],
     paper_scroll_progress: getAllPaperScrollProgressLocal(userId),
     paper_notes,

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { RequireMember } from "@/components/auth/RequireAuth";
+import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { clearPitchDraft, loadPitchDraft, savePitchDraft } from "@/lib/application-draft";
 import { InterestMatchTags } from "@/components/member/InterestMatchTags";
 import { ApplicationNextSteps } from "@/components/member/ApplicationNextSteps";
@@ -20,6 +20,7 @@ import { PageBackLink } from "@/components/member/PageBackLink";
 import { ProjectMemberWorkspace } from "@/components/member/ProjectMemberWorkspace";
 import { ProjectUpdatesSection } from "@/components/member/ProjectUpdatesSection";
 import { ProjectEvidenceSection } from "@/components/member/ProjectEvidenceSection";
+import { ProjectWorkspaceExtras } from "@/components/member/ProjectWorkspaceExtras";
 import { ShareButton } from "@/components/member/ShareButton";
 import {
   ApplicationStatusBadge,
@@ -37,23 +38,39 @@ import {
   fetchProjectTeamMembers,
   fetchProjects,
   getApplicationForProject,
-  isProjectLead,
   relatedProjects,
   updateApplicationPitch,
 } from "@/lib/projects";
+import {
+  fetchProjectQuestions,
+  type ProjectApplicationQuestion,
+} from "@/lib/project-application-questions";
+import { Input } from "@/components/ui/input";
 import { pushRecentView } from "@/lib/recent-views";
 import type { Project, ProjectApplication } from "@/lib/types";
 import { fetchProjectMembership } from "@/lib/project-collaboration";
+import { isAdministrator } from "@/lib/roles";
 
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
 });
 
 function ProjectDetailPage() {
-  return (
-    <RequireMember>
-      <ProjectDetail />
-    </RequireMember>
+  return <ProjectDetail />;
+}
+
+function ProjectPageLayout({ title, children }: { title: string; children: React.ReactNode }) {
+  const { user } = useAuth();
+  return user ? (
+    <MemberLayout>{children}</MemberLayout>
+  ) : (
+    <InstitutionLayout
+      eyebrow="Published opportunity"
+      title={title}
+      description="Review the brief, skills, capacity, commitment, status, and verified public output before deciding whether to apply."
+    >
+      {children}
+    </InstitutionLayout>
   );
 }
 
@@ -69,6 +86,8 @@ function ProjectDetail() {
   const [editingPitch, setEditingPitch] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [questions, setQuestions] = useState<ProjectApplicationQuestion[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
 
   useEffect(() => {
     void Promise.all([fetchProjectBySlug(slug), fetchProjects()]).then(([p, all]) => {
@@ -76,6 +95,7 @@ function ProjectDetail() {
       if (p) {
         setRelated(relatedProjects(p, all));
         void fetchProjectTeamMembers(p.id).then(setTeamMembers);
+        void fetchProjectQuestions(p.id).then(setQuestions);
       }
       setLoading(false);
     });
@@ -112,8 +132,20 @@ function ProjectDetail() {
   const onApply = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !project || !profile) return;
+    for (const q of questions) {
+      if (q.required && !answers[q.id]?.trim().length) {
+        toast.error("Answer all required application questions.");
+        return;
+      }
+    }
     setSubmitting(true);
-    const { error } = await applyToProject(user.id, project, pitch, profile);
+    const { error } = await applyToProject(
+      user.id,
+      project,
+      pitch,
+      profile,
+      questions.map((q) => ({ questionId: q.id, answer: answers[q.id] ?? "" })),
+    );
     setSubmitting(false);
     if (error) {
       toast.error(error);
@@ -123,36 +155,36 @@ function ProjectDetail() {
     clearPitchDraft(user.id, project.id);
     void getApplicationForProject(user.id, project.id).then(setApplication);
     setPitch("");
+    setAnswers({});
   };
 
   if (loading) {
     return (
-      <MemberLayout>
+      <ProjectPageLayout title="Loading project">
         <LoadingState />
-      </MemberLayout>
+      </ProjectPageLayout>
     );
   }
 
   if (!project) {
     return (
-      <MemberLayout>
+      <ProjectPageLayout title="Project not found">
         <ResourceNotFound
           title="Project not found"
           body="This project may have been removed or the link is outdated."
           backTo="/projects"
           backLabel="← Back to projects"
         />
-      </MemberLayout>
+      </ProjectPageLayout>
     );
   }
 
   const isFull = project.team_count >= project.capacity;
-  const canApply = project.status === "open" && !application && !isFull;
-  const isLead =
-    project.lead_id === user?.id || isProjectLead(profile?.role, profile?.institutional_roles);
+  const canApply = Boolean(user) && project.status === "open" && !application && !isFull;
+  const isLead = project.lead_id === user?.id || isAdministrator(profile);
 
   return (
-    <MemberLayout>
+    <ProjectPageLayout title={project.title}>
       <PageBackLink to="/projects" label="Projects" />
 
       <div className="mt-2">
@@ -165,7 +197,11 @@ function ProjectDetail() {
             </span>
           ) : null}
         </div>
-        <h1 className="font-display text-4xl text-bone mt-4 tracking-tight">{project.title}</h1>
+        {user ? (
+          <h1 className="mt-4 font-display text-4xl tracking-tight text-bone">{project.title}</h1>
+        ) : (
+          <h2 className="mt-4 font-display text-4xl tracking-tight text-bone">{project.title}</h2>
+        )}
         {!project.published && project.lead_id === user?.id ? (
           <div className="mt-4 max-w-3xl rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-4 text-sm leading-relaxed text-muted-foreground">
             <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-accent-blue">
@@ -182,14 +218,18 @@ function ProjectDetail() {
           </div>
         ) : null}
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <SaveToCollectionButton
-            itemType="project"
-            itemSlug={project.slug}
-            itemTitle={project.title}
-          />
-          <FollowProjectButton projectId={project.id} />
+          {user ? (
+            <>
+              <SaveToCollectionButton
+                itemType="project"
+                itemSlug={project.slug}
+                itemTitle={project.title}
+              />
+              <FollowProjectButton projectId={project.id} />
+              <ReportContentButton contentType="project" contentSlug={project.slug} />
+            </>
+          ) : null}
           <ShareButton title={project.title} />
-          <ReportContentButton contentType="project" contentSlug={project.slug} />
         </div>
         {profile?.interests?.length ? (
           <InterestMatchTags
@@ -201,6 +241,7 @@ function ProjectDetail() {
         <p className="mt-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
           {project.lead_name ? `Lead: ${project.lead_name}` : "The Bu1ld collective"} ·{" "}
           {project.team_count}/{project.capacity} builders
+          {project.weekly_commitment_hours ? ` · ~${project.weekly_commitment_hours} hrs/week` : ""}
         </p>
         <CapacityBar
           teamCount={project.team_count}
@@ -239,7 +280,7 @@ function ProjectDetail() {
           </section>
         ) : null}
 
-        {project.discord_url ? (
+        {user && project.discord_url ? (
           <a
             href={project.discord_url}
             target="_blank"
@@ -269,7 +310,7 @@ function ProjectDetail() {
               ) : null}
             </div>
             <ApplicationStatusTimeline status={application.status} />
-            <ApplicationNextSteps status={application.status} />
+            <ApplicationNextSteps status={application.status} projectSlug={project.slug} />
             {application.review_note ? (
               <div className="mt-4 rounded-sm border border-border/50 bg-background/50 p-4">
                 <p className="font-mono text-[8px] tracking-[0.2em] uppercase text-muted-foreground">
@@ -325,6 +366,31 @@ function ProjectDetail() {
               View all applications →
             </Link>
           </div>
+        ) : !user && project.status === "open" && !isFull ? (
+          <section className="mt-10 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-6">
+            <h2 className="font-display text-xl text-bone">Apply through a member profile</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Create an account, complete your skills and availability, then return here to submit a
+              project-specific pitch. The lead reviews applications inside the private project
+              workspace.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-4">
+              <Link
+                to="/signup"
+                search={{ redirect: `/projects/${project.slug}` }}
+                className="rounded-sm bg-bone px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-background"
+              >
+                Create account
+              </Link>
+              <Link
+                to="/login"
+                search={{ redirect: `/projects/${project.slug}` }}
+                className="px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-accent-blue"
+              >
+                Log in to apply
+              </Link>
+            </div>
+          </section>
         ) : canApply ? (
           <form
             onSubmit={onApply}
@@ -348,6 +414,20 @@ function ProjectDetail() {
                 placeholder="Name the thread, cite one relevant repo or paper, and list a concrete 30-day deliverable — not a generic interest statement."
               />
             </div>
+            {questions.map((q) => (
+              <div key={q.id} className="space-y-2">
+                <Label htmlFor={`q-${q.id}`}>
+                  {q.prompt}
+                  {q.required ? " *" : ""}
+                </Label>
+                <Input
+                  id={`q-${q.id}`}
+                  required={q.required}
+                  value={answers[q.id] ?? ""}
+                  onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
+                />
+              </div>
+            ))}
             {profile?.linkedin_url ? (
               <p className="text-xs text-muted-foreground">
                 LinkedIn attached:{" "}
@@ -411,6 +491,15 @@ function ProjectDetail() {
           isCollaborator={isCollaborator}
         />
 
+        {isLead || isCollaborator ? (
+          <ProjectWorkspaceExtras
+            projectId={project.id}
+            userId={user?.id}
+            canEdit={isLead || isCollaborator}
+            canManage={isLead}
+          />
+        ) : null}
+
         {isLead ? (
           <div className="mt-6 flex flex-wrap gap-4">
             <Link
@@ -452,6 +541,6 @@ function ProjectDetail() {
           </section>
         ) : null}
       </div>
-    </MemberLayout>
+    </ProjectPageLayout>
   );
 }

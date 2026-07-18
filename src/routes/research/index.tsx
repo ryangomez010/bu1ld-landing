@@ -12,15 +12,20 @@ import { getAllGuides } from "@/content/guides";
 import { useAuth } from "@/lib/auth";
 import { fetchPapers } from "@/lib/content";
 import { getReadPaperSlugs } from "@/lib/paper-read";
+import { projectLink } from "@/lib/app-paths";
+import { fetchProjects } from "@/lib/projects";
 import { getAllGuideProgress } from "@/lib/reading-progress";
 import {
+  fetchResearchPathsFromDb,
   pathProgress,
   RESEARCH_PATHS,
   stepHref,
   stepLabel,
+  upsertPathProgress,
   type PathStep,
+  type ResearchPath,
 } from "@/lib/research-paths";
-import type { Paper } from "@/lib/types";
+import type { Paper, Project } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/research/")({
@@ -42,25 +47,46 @@ function ResearchHub() {
   const { user } = useAuth();
   const guides = getAllGuides();
   const [papers, setPapers] = useState<Paper[]>([]);
+  const [paths, setPaths] = useState<ResearchPath[]>(RESEARCH_PATHS);
+  const [openResearch, setOpenResearch] = useState<Project[]>([]);
   const [readSlugs, setReadSlugs] = useState<Set<string>>(new Set());
   const [guideProgress, setGuideProgress] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [activePath, setActivePath] = useState(RESEARCH_PATHS[0]!.id);
 
   useEffect(() => {
-    void fetchPapers().then((p) => {
-      setPapers(p);
-      setLoading(false);
-    });
+    void Promise.all([fetchPapers(), fetchResearchPathsFromDb(), fetchProjects("open")]).then(
+      ([p, pathList, projects]) => {
+        setPapers(p);
+        setOpenResearch(projects.filter((project) => project.type === "research").slice(0, 6));
+        if (pathList.length) {
+          setPaths(pathList);
+          setActivePath((prev) =>
+            pathList.some((path) => path.id === prev) ? prev : pathList[0]!.id,
+          );
+        }
+        setLoading(false);
+      },
+    );
     if (!user) return;
     void getReadPaperSlugs(user.id).then(setReadSlugs);
     void getAllGuideProgress(user.id).then(setGuideProgress);
   }, [user]);
 
-  const path = RESEARCH_PATHS.find((p) => p.id === activePath) ?? RESEARCH_PATHS[0]!;
+  const path = paths.find((p) => p.id === activePath) ?? paths[0] ?? RESEARCH_PATHS[0]!;
   const progress = pathProgress(path, readSlugs, guideProgress);
   const papersRead = papers.filter((p) => readSlugs.has(p.slug)).length;
   const guidesDone = guides.filter((g) => (guideProgress[g.slug] ?? 0) >= 95).length;
+
+  useEffect(() => {
+    if (!user || !path) return;
+    void upsertPathProgress({
+      userId: user.id,
+      pathId: path.id,
+      completedSteps: progress.done,
+      lastStepSlug: path.steps[progress.done]?.slug ?? path.steps.at(-1)?.slug ?? null,
+    });
+  }, [user, path, progress.done]);
 
   return (
     <MemberLayout title="Research library" eyebrow="academic resources">
@@ -131,7 +157,7 @@ function ResearchHub() {
           role="tablist"
           aria-label="Research reading paths"
         >
-          {RESEARCH_PATHS.map((p) => {
+          {paths.map((p) => {
             const pp = pathProgress(p, readSlugs, guideProgress);
             return (
               <button
@@ -192,6 +218,48 @@ function ResearchHub() {
           </div>
         )}
       </section>
+
+      {!loading ? (
+        <section className="mt-10">
+          <SectionHeader
+            title="Research projects accepting applications"
+            description="Scoped threads with skills, capacity, and a pitch path — the bridge from reading to contribution."
+            accent="blue"
+          />
+          {openResearch.length > 0 ? (
+            <div className="mt-4 grid gap-2">
+              {openResearch.map((project) => (
+                <Link
+                  key={project.id}
+                  {...projectLink(project.slug)}
+                  className="panel panel-interactive block rounded-sm p-5"
+                >
+                  <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-accent-blue">
+                    {project.status} · {project.team_count}/{project.capacity} slots
+                  </p>
+                  <h3 className="mt-2 font-display text-lg text-bone">{project.title}</h3>
+                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                    {project.description}
+                  </p>
+                  {project.skills_needed.length > 0 ? (
+                    <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                      Skills · {project.skills_needed.join(" · ")}
+                    </p>
+                  ) : null}
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-4 rounded-sm border border-border/40 px-4 py-4 text-sm text-muted-foreground">
+              No open research projects are accepting applications right now. Browse the full
+              catalog or follow a paper review until a matching thread opens.
+            </p>
+          )}
+          <CtaLink to="/projects" className="mt-4 inline-flex">
+            Browse all projects →
+          </CtaLink>
+        </section>
+      ) : null}
 
       <section className="grid gap-6 md:grid-cols-3">
         <Link to="/papers" className="panel panel-interactive block p-6 rounded-2xl group">

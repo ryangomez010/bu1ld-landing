@@ -3,7 +3,11 @@ import { SEED_JOBS, SEED_PROJECTS } from "@/data/seed/projects";
 import { notifyApplicationUpdate, notifyLeadApproved } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
 import { clampText, LIMITS } from "@/lib/security";
-import { parseCreateProjectInput, parseLeadRequestInput } from "@/lib/validation";
+import {
+  parseCreateProjectInput,
+  parseLeadRequestInput,
+  parseUpdateProjectInput,
+} from "@/lib/validation";
 import { isLocalPersistenceEnabled } from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 import { withSeedFallback, resolveSeedItem, isDemoMode } from "@/lib/supabase-fallback";
@@ -23,6 +27,8 @@ const appsKey = (userId: string) => `build:applications:${userId}`;
 const allAppsKey = "build:applications:all";
 const leadReqKey = (userId: string) => `build:lead-request:${userId}`;
 const customProjectsKey = "build:projects:custom";
+const PUBLIC_PROJECT_COLUMNS =
+  "id, slug, title, description, type, status, skills_needed, tags, lead_name, capacity, team_count, published, publication_status, lab_id, weekly_commitment_hours, created_at, updated_at";
 
 function readLocalApps(): ProjectApplication[] {
   if (typeof window === "undefined") return [];
@@ -78,6 +84,9 @@ function normalizeProject(row: Record<string, unknown>): Project {
     workspace_links: Array.isArray(row.workspace_links)
       ? (row.workspace_links as { label: string; url: string; kind?: string }[])
       : [],
+    lab_id: row.lab_id != null ? String(row.lab_id) : null,
+    weekly_commitment_hours:
+      row.weekly_commitment_hours != null ? Number(row.weekly_commitment_hours) : null,
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
   };
@@ -128,7 +137,12 @@ export function isProjectLead(
   role: string | undefined,
   institutionalRoles: string[] | undefined = [],
 ): boolean {
-  return role === "project_lead" || role === "admin" || institutionalRoles.includes("project_lead");
+  return (
+    role === "project_lead" ||
+    role === "admin" ||
+    institutionalRoles.includes("project_lead") ||
+    institutionalRoles.includes("lab_lead")
+  );
 }
 
 // ─── Projects ───────────────────────────────────────────────────────────────
@@ -144,7 +158,7 @@ export async function fetchProjects(status?: ProjectStatus): Promise<Project[]> 
   if (supabase) {
     let q = supabase
       .from("projects")
-      .select("*")
+      .select(PUBLIC_PROJECT_COLUMNS)
       .eq("published", true)
       .order("created_at", { ascending: false });
     if (status) q = q.eq("status", status);
@@ -165,6 +179,13 @@ export async function fetchProjectBySlug(slug: string): Promise<Project | null> 
   if (supabase) {
     const { data } = await supabase.from("projects").select("*").eq("slug", slug).maybeSingle();
     if (data) return normalizeProject(data as Record<string, unknown>);
+    const { data: publicProject } = await supabase
+      .from("projects")
+      .select(PUBLIC_PROJECT_COLUMNS)
+      .eq("slug", slug)
+      .eq("published", true)
+      .maybeSingle();
+    if (publicProject) return normalizeProject(publicProject as Record<string, unknown>);
     return resolveSeedItem(null, () => localProjects().find((p) => p.slug === slug));
   }
   return resolveSeedItem(null, () => localProjects().find((p) => p.slug === slug));
@@ -194,13 +215,20 @@ export async function createProject(
     skills_needed: string[];
     tags: string[];
     capacity: number;
+    weekly_commitment_hours?: number | null;
     discord_url?: string | null;
+    lab_id?: string | null;
   },
 ): Promise<{ project: Project | null; error: string | null }> {
   const parsed = parseCreateProjectInput(input);
   if (!parsed.data) return { project: null, error: parsed.error };
 
   const valid = parsed.data;
+  const labId = input.lab_id && !input.lab_id.startsWith("seed-") ? input.lab_id : null;
+  const hours =
+    valid.weekly_commitment_hours != null && Number.isFinite(valid.weekly_commitment_hours)
+      ? valid.weekly_commitment_hours
+      : null;
   const slug = valid.title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -226,6 +254,8 @@ export async function createProject(
         published: false,
         publication_status: "draft",
         discord_url: valid.discord_url ?? null,
+        lab_id: labId,
+        weekly_commitment_hours: hours,
       })
       .select("*")
       .single();
@@ -234,7 +264,7 @@ export async function createProject(
   }
 
   if (!isLocalPersistenceEnabled()) {
-    return { project: null, error: "Projects require a live database connection." };
+    return { project: null, error: "Projects are temporarily unavailable." };
   }
 
   const project: Project = {
@@ -253,6 +283,8 @@ export async function createProject(
     published: false,
     publication_status: "draft",
     discord_url: valid.discord_url ?? null,
+    lab_id: labId,
+    weekly_commitment_hours: hours,
     created_at: now,
     updated_at: now,
   };
@@ -274,16 +306,20 @@ export async function updateProject(
     capacity: number;
     discord_url: string | null;
     workspace_links: { label: string; url: string; kind?: string }[];
-    published: boolean;
+    lab_id: string | null;
+    weekly_commitment_hours: number | null;
   }>,
 ): Promise<{ project: Project | null; error: string | null }> {
+  const parsed = parseUpdateProjectInput(patch);
+  if (!parsed.data) return { project: null, error: parsed.error };
+
   const now = new Date().toISOString();
   const supabase = getSupabase();
 
   if (supabase) {
     const { data, error } = await supabase
       .from("projects")
-      .update({ ...patch, updated_at: now })
+      .update({ ...parsed.data, updated_at: now })
       .eq("id", projectId)
       .select("*")
       .single();
@@ -297,11 +333,11 @@ export async function updateProject(
     // Allow editing seed projects locally by cloning into custom list
     const seed = SEED_PROJECTS.find((p) => p.id === projectId);
     if (!seed) return { project: null, error: "Project not found." };
-    const updated: Project = { ...seed, ...patch, updated_at: now };
+    const updated: Project = { ...seed, ...parsed.data, updated_at: now };
     writeCustomProjects([updated, ...custom]);
     return { project: updated, error: null };
   }
-  custom[idx] = { ...custom[idx], ...patch, updated_at: now };
+  custom[idx] = { ...custom[idx], ...parsed.data, updated_at: now };
   writeCustomProjects(custom);
   return { project: custom[idx], error: null };
 }
@@ -310,8 +346,7 @@ export async function submitProjectForReview(
   projectId: string,
 ): Promise<{ project: Project | null; error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase)
-    return { project: null, error: "Project review requires a live database connection." };
+  if (!supabase) return { project: null, error: "Project review is temporarily unavailable." };
   const { data, error } = await supabase.rpc("submit_project_for_review", {
     p_project_id: projectId,
   });
@@ -337,7 +372,7 @@ export async function reviewProjectPublication(
   note?: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Project review requires a live database connection." };
+  if (!supabase) return { error: "Project review is temporarily unavailable." };
   const { data: project } = await supabase
     .from("projects")
     .select("lead_id, slug, title")
@@ -380,6 +415,30 @@ export function relatedProjects(project: Project, all: Project[], limit = 3): Pr
     .map((x) => x.project);
 }
 
+/** Open projects that share tags with a paper review — reading → contribution bridge. */
+export function relatedOpenProjectsForPaper(
+  paperTags: string[],
+  projects: Project[],
+  limit = 3,
+): Project[] {
+  const tags = new Set(paperTags.map((t) => t.toLowerCase()).filter(Boolean));
+  if (tags.size === 0) {
+    return projects.filter((p) => p.status === "open" && p.published).slice(0, limit);
+  }
+  return projects
+    .filter((p) => p.status === "open" && p.published)
+    .map((p) => ({
+      project: p,
+      score:
+        p.tags.filter((t) => tags.has(t.toLowerCase())).length +
+        p.skills_needed.filter((t) => tags.has(t.toLowerCase())).length,
+    }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((x) => x.project);
+}
+
 // ─── Applications ───────────────────────────────────────────────────────────
 
 export async function applyToProject(
@@ -394,6 +453,7 @@ export async function applyToProject(
     github_url?: string | null;
     interests?: string[];
   },
+  questionAnswers?: { questionId: string; answer: string }[],
 ): Promise<{ error: string | null }> {
   const safePitch = clampText(pitch, LIMITS.applicationPitch);
   if (!safePitch) return { error: "Pitch is required." };
@@ -402,17 +462,30 @@ export async function applyToProject(
   const supabase = getSupabase();
 
   if (supabase) {
-    const { error } = await supabase.from("project_applications").insert({
-      project_id: project.id,
-      user_id: userId,
-      pitch: safePitch,
-      status: "pending",
-    });
-    return { error: error?.message ?? null };
+    const { data, error } = await supabase
+      .from("project_applications")
+      .insert({
+        project_id: project.id,
+        user_id: userId,
+        pitch: safePitch,
+        status: "pending",
+      })
+      .select("id")
+      .maybeSingle();
+    if (error) return { error: error.message };
+    if (data?.id && questionAnswers?.length) {
+      const { saveApplicationAnswers } = await import("@/lib/project-application-questions");
+      const answerResult = await saveApplicationAnswers({
+        applicationId: String(data.id),
+        answers: questionAnswers,
+      });
+      if (answerResult.error) return { error: answerResult.error };
+    }
+    return { error: null };
   }
 
   if (!isLocalPersistenceEnabled()) {
-    return { error: "Applications require a live database connection." };
+    return { error: "Applications are temporarily unavailable." };
   }
 
   const apps = readLocalApps();
@@ -743,7 +816,7 @@ export async function createJob(payload: {
   tags?: string[];
 }): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required to publish jobs." };
+  if (!supabase) return { error: "Job publishing is temporarily unavailable." };
 
   const slug = slugify(`${payload.company}-${payload.title}`);
   const { error } = await supabase.from("jobs").insert({
@@ -765,7 +838,7 @@ export async function setJobPublished(
   published: boolean,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required." };
+  if (!supabase) return { error: "Job publishing is temporarily unavailable." };
   const { error } = await supabase
     .from("jobs")
     .update({ published, updated_at: new Date().toISOString() })
@@ -786,7 +859,7 @@ export async function updateJobAdmin(
   }>,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required." };
+  if (!supabase) return { error: "Job updates are temporarily unavailable." };
   const { error } = await supabase
     .from("jobs")
     .update({ ...patch, updated_at: new Date().toISOString() })
@@ -796,7 +869,7 @@ export async function updateJobAdmin(
 
 export async function deleteJob(id: string): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required." };
+  if (!supabase) return { error: "Job deletion is temporarily unavailable." };
   const { error } = await supabase.from("jobs").delete().eq("id", id);
   return { error: error?.message ?? null };
 }
@@ -827,7 +900,7 @@ export async function submitLeadRequest(
   }
 
   if (!isLocalPersistenceEnabled()) {
-    return { error: "Lead verification requires a live database connection." };
+    return { error: "Lead verification is temporarily unavailable." };
   }
 
   if (localStorage.getItem(leadReqKey(userId))) {
@@ -875,7 +948,7 @@ export async function approveLeadRequest(
   adminId: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required to approve leads." };
+  if (!supabase) return { error: "Lead approval is temporarily unavailable." };
 
   const { error: reqError } = await supabase
     .from("lead_verification_requests")
@@ -906,7 +979,7 @@ export async function rejectLeadRequest(
   adminId: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required." };
+  if (!supabase) return { error: "Lead review is temporarily unavailable." };
 
   const { error } = await supabase
     .from("lead_verification_requests")

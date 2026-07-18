@@ -51,17 +51,17 @@ function PrivacyPage() {
             <p>
               You can view and edit your profile anytime. Project leads see applicants on their
               threads only. Admins can moderate content reports and manage published listings.
-              Row-level security in Supabase limits database access to your own rows unless a role
-              explicitly requires broader read access (e.g. public project listings).
+              Access controls limit each member to their own private data unless a feature
+              explicitly requires broader read access (for example, public project listings).
             </p>
           </section>
           <section>
             <h2 className="font-display text-xl text-bone mb-2">Storage & retention</h2>
             <p>
-              Data is stored in Supabase (PostgreSQL) with row-level security. Security events and
-              sign-in sessions are retained for account safety. You can delete your account from
-              Account security — that removes profile, saves, and applications from the member area.
-              Contact{" "}
+              Data is stored on our managed database with access controls enforced on every request.
+              Security events and sign-in sessions are retained for account safety. You can delete
+              your account from Account security — that removes profile, saves, and applications
+              from the member area. Contact{" "}
               <a href="mailto:ryan@thebu1ld.com" className="text-accent-blue hover:text-bone">
                 ryan@thebu1ld.com
               </a>{" "}

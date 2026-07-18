@@ -12,6 +12,7 @@ import { useAuth } from "@/lib/auth";
 import {
   fetchCompetitionBySlug,
   fetchMyCompetitionSubmission,
+  isCatalogPreviewCompetition,
   submitCompetitionEntry,
   type CompetitionSubmission,
 } from "@/lib/competitions";
@@ -135,7 +136,16 @@ function CompetitionDetailPage() {
         <h2 className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
           Submit entry
         </h2>
-        {!configured ? (
+        {isCatalogPreviewCompetition(competition) ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            This challenge is listed for planning. Entries are accepted only when status is{" "}
+            <span className="text-bone">open</span>.{" "}
+            <Link to="/signup" className="text-accent-blue">
+              Create an account
+            </Link>{" "}
+            to receive announcements when a wave opens.
+          </p>
+        ) : !configured ? (
           <p className="mt-4 text-sm text-accent-red">
             Competition submissions are temporarily unavailable.
           </p>

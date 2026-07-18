@@ -13,7 +13,7 @@ export function StartupsSection() {
       eyebrow="05"
       label="applied work"
       title="Research earns its next step."
-      subtitle="Some threads remain exploratory. Others become prototypes or product experiments after the evidence supports a practical decision."
+      subtitle="Open projects, incubation, and evidence — not a fake portfolio of unnamed startups."
     >
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border/40 border border-border/40">
         {STARTUPS.map((s, i) => {

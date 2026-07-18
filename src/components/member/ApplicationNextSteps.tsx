@@ -1,15 +1,12 @@
 import { Link } from "@tanstack/react-router";
 
+import { projectLink } from "@/lib/app-paths";
 import type { ApplicationStatus } from "@/lib/types";
 
-const COPY: Record<
-  ApplicationStatus,
-  { title: string; body: string; cta?: { label: string; href: string } }
-> = {
+const COPY: Record<ApplicationStatus, { title: string; body: string }> = {
   pending: {
     title: "Review in progress",
     body: "The project lead sees your pitch plus your full profile — bio, background, interest tags, GitHub, and LinkedIn. While status is pending you can edit the pitch from this page. You will get an in-app notification and email (if enabled) when the lead accepts, waitlists, or declines.",
-    cta: { label: "All applications", href: "/applications" },
   },
   waitlist: {
     title: "On the waitlist",
@@ -17,17 +14,21 @@ const COPY: Record<
   },
   accepted: {
     title: "Accepted onto the team",
-    body: "You now have access to the member workspace on this project page — team roster, pinned repo links, and project updates. Join the Discord channel if one is linked, read the lead's latest update, and introduce yourself to other accepted members in the directory.",
-    cta: { label: "All applications", href: "/applications" },
+    body: "Open the project workspace to submit evidence, track milestones, and use pinned resources. Join Discord if linked, read the lead's latest update, and introduce yourself to other accepted members.",
   },
   declined: {
     title: "Not selected this round",
     body: "Leads choose for skill fit, timezone overlap, and current capacity — a decline does not affect your standing in the directory or other applications. Browse other open projects or follow this thread to re-apply if slots reopen.",
-    cta: { label: "Open projects", href: "/projects" },
   },
 };
 
-export function ApplicationNextSteps({ status }: { status: ApplicationStatus }) {
+export function ApplicationNextSteps({
+  status,
+  projectSlug,
+}: {
+  status: ApplicationStatus;
+  projectSlug?: string;
+}) {
   const info = COPY[status];
 
   return (
@@ -35,14 +36,30 @@ export function ApplicationNextSteps({ status }: { status: ApplicationStatus }) 
       <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
         {info.title}
       </p>
-      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{info.body}</p>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{info.body}</p>
       <div className="mt-3 flex flex-wrap gap-4">
-        {info.cta ? (
-          <Link
-            to={info.cta.href}
-            className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-blue hover:text-bone"
+        {status === "accepted" && projectSlug ? (
+          <a
+            href={`/projects/${projectSlug}#project-evidence`}
+            className="font-mono text-[9px] uppercase tracking-[0.15em] text-accent-blue hover:text-bone"
           >
-            {info.cta.label} →
+            Open contribution workspace →
+          </a>
+        ) : null}
+        {status === "waitlist" && projectSlug ? (
+          <Link
+            {...projectLink(projectSlug)}
+            className="font-mono text-[9px] uppercase tracking-[0.15em] text-accent-blue hover:text-bone"
+          >
+            View project →
+          </Link>
+        ) : null}
+        {status === "declined" || status === "pending" ? (
+          <Link
+            to={status === "declined" ? "/projects" : "/applications"}
+            className="font-mono text-[9px] uppercase tracking-[0.15em] text-accent-blue hover:text-bone"
+          >
+            {status === "declined" ? "Open projects" : "All applications"} →
           </Link>
         ) : null}
       </div>

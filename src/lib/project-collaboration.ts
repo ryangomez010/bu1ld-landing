@@ -5,12 +5,93 @@ import { createNotification } from "@/lib/notifications";
 import type {
   CollaborationVisibility,
   ContributionType,
+  Project,
   ProjectContribution,
   ProjectMembership,
   ProjectMilestone,
 } from "@/lib/types";
 
 const toRows = <T>(data: T[] | null): T[] => data ?? [];
+
+export type PublicProjectOutput =
+  | {
+      kind: "milestone";
+      project: Pick<Project, "id" | "slug" | "title" | "type">;
+      milestone: ProjectMilestone;
+    }
+  | {
+      kind: "contribution";
+      project: Pick<Project, "id" | "slug" | "title" | "type">;
+      contribution: ProjectContribution;
+    };
+
+/**
+ * Public, evidence-safe output archive. Queries remain explicitly filtered even
+ * though RLS also limits anonymous readers, preventing authenticated visitors
+ * from seeing team-only or unverified rows through this public surface.
+ */
+export async function fetchPublicProjectOutputs(limit = 24): Promise<PublicProjectOutput[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+
+  const [milestoneResult, contributionResult] = await Promise.all([
+    supabase
+      .from("project_milestones")
+      .select("*")
+      .eq("visibility", "public")
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("project_contributions")
+      .select("*")
+      .eq("visibility", "public")
+      .eq("verification_status", "verified")
+      .order("verified_at", { ascending: false })
+      .limit(limit),
+  ]);
+
+  const milestones = milestoneResult.error ? [] : toRows(milestoneResult.data);
+  const contributions = contributionResult.error ? [] : toRows(contributionResult.data);
+  const projectIds = [...new Set([...milestones, ...contributions].map((row) => row.project_id))];
+  if (!projectIds.length) return [];
+
+  const { data: projects, error: projectsError } = await supabase
+    .from("projects")
+    .select("id, slug, title, type")
+    .in("id", projectIds)
+    .eq("published", true);
+  if (projectsError || !projects) return [];
+
+  const projectMap = new Map(
+    projects.map((project) => [
+      project.id,
+      project as Pick<Project, "id" | "slug" | "title" | "type">,
+    ]),
+  );
+  return [
+    ...milestones.flatMap((milestone) => {
+      const project = projectMap.get(milestone.project_id);
+      return project ? [{ kind: "milestone" as const, project, milestone }] : [];
+    }),
+    ...contributions.flatMap((contribution) => {
+      const project = projectMap.get(contribution.project_id);
+      return project ? [{ kind: "contribution" as const, project, contribution }] : [];
+    }),
+  ]
+    .sort((a, b) => {
+      const aDate =
+        a.kind === "milestone"
+          ? (a.milestone.completed_at ?? a.milestone.updated_at)
+          : (a.contribution.verified_at ?? a.contribution.updated_at);
+      const bDate =
+        b.kind === "milestone"
+          ? (b.milestone.completed_at ?? b.milestone.updated_at)
+          : (b.contribution.verified_at ?? b.contribution.updated_at);
+      return bDate.localeCompare(aDate);
+    })
+    .slice(0, limit);
+}
 
 export async function fetchProjectMembership(
   projectId: string,
@@ -53,7 +134,7 @@ export async function setProjectMembershipStatus(
   status: ProjectMembership["status"],
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Membership changes require a live database connection." };
+  if (!supabase) return { error: "Membership changes are temporarily unavailable." };
   const { data: project } = await supabase
     .from("projects")
     .select("slug, title")
@@ -112,7 +193,7 @@ export async function createMilestone(
     return { error: "Give the milestone a clear title and a short success condition." };
   }
   const supabase = getSupabase();
-  if (!supabase) return { error: "Milestones require a live database connection." };
+  if (!supabase) return { error: "Milestones are temporarily unavailable." };
   const { error } = await supabase.from("project_milestones").insert({
     project_id: input.projectId,
     title,
@@ -129,7 +210,7 @@ export async function updateMilestoneStatus(
   status: ProjectMilestone["status"],
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Milestones require a live database connection." };
+  if (!supabase) return { error: "Milestones are temporarily unavailable." };
   const { error } = await supabase
     .from("project_milestones")
     .update({
@@ -150,6 +231,31 @@ export async function fetchProjectContributions(projectId: string): Promise<Proj
     .eq("project_id", projectId)
     .order("created_at", { ascending: false });
   return error ? [] : toRows(data);
+}
+
+export function canReviewContribution(
+  contribution: ProjectContribution,
+  userId: string | undefined,
+  isLeadOrAdmin: boolean,
+): boolean {
+  if (!userId) return false;
+  // Contributors never verify their own submissions — including leads/admins.
+  if (contribution.contributor_id === userId) return false;
+  if (isLeadOrAdmin) return true;
+  return contribution.assigned_reviewer_id === userId;
+}
+
+export async function assignContributionReviewer(
+  contributionId: string,
+  reviewerId: string | null,
+): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "Reviewer assignment is temporarily unavailable." };
+  const { error } = await supabase.rpc("assign_contribution_reviewer", {
+    p_contribution_id: contributionId,
+    p_reviewer_id: reviewerId,
+  });
+  return { error: error?.message ?? null };
 }
 
 export async function submitContribution(
@@ -173,7 +279,7 @@ export async function submitContribution(
   if (evidence && !isSafeUrl(evidence))
     return { error: "Evidence links must use http:// or https://." };
   const supabase = getSupabase();
-  if (!supabase) return { error: "Contributions require a live database connection." };
+  if (!supabase) return { error: "Contributions are temporarily unavailable." };
   const { error } = await supabase.from("project_contributions").insert({
     project_id: input.projectId,
     milestone_id: input.milestoneId ?? null,
@@ -193,7 +299,7 @@ export async function verifyContribution(
   note?: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Contributions require a live database connection." };
+  if (!supabase) return { error: "Contributions are temporarily unavailable." };
   const { data: contribution } = await supabase
     .from("project_contributions")
     .select("contributor_id, project_id, title, projects(slug, title)")
@@ -236,7 +342,7 @@ export async function updateContribution(
   if (evidenceUrl && !isSafeUrl(evidenceUrl))
     return { error: "Evidence links must use http:// or https://." };
   const supabase = getSupabase();
-  if (!supabase) return { error: "Contributions require a live database connection." };
+  if (!supabase) return { error: "Contributions are temporarily unavailable." };
   const { error } = await supabase
     .from("project_contributions")
     .update({
@@ -253,7 +359,7 @@ export async function resubmitContribution(
   contributionId: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Contributions require a live database connection." };
+  if (!supabase) return { error: "Contributions are temporarily unavailable." };
   const { error } = await supabase.rpc("resubmit_project_contribution", {
     p_contribution_id: contributionId,
   });

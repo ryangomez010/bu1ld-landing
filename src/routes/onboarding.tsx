@@ -19,6 +19,7 @@ import { BACKGROUND_OPTIONS, INTEREST_OPTIONS } from "@/data/landing";
 import { useAuth } from "@/lib/auth";
 import { completeOnboarding } from "@/lib/profile";
 import { sendEmail, welcomeEmail } from "@/lib/email";
+import { consumePostAuthRedirect, postAuthNavigateTarget } from "@/lib/post-auth-redirect";
 import { isSafeUrl } from "@/lib/urls";
 import type { MemberBackground } from "@/lib/types";
 
@@ -81,11 +82,14 @@ function OnboardingForm() {
   const [githubUrl, setGithubUrl] = useState(draft.githubUrl ?? "");
   const [linkedinUrl, setLinkedinUrl] = useState(draft.linkedinUrl ?? "");
   const [timezone, setTimezone] = useState(draft.timezone ?? "");
+  const [availabilityHours, setAvailabilityHours] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState("");
+  const [desiredRoles, setDesiredRoles] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (profile?.onboarding_completed) {
-      void navigate({ to: "/dashboard" });
+      void navigate(postAuthNavigateTarget(consumePostAuthRedirect()));
     }
   }, [profile, navigate]);
 
@@ -144,6 +148,12 @@ function OnboardingForm() {
         github_url: githubUrl,
         linkedin_url: linkedinUrl,
         timezone,
+        availability_hours_per_week: availabilityHours ? Number(availabilityHours) : null,
+        experience_level: experienceLevel || null,
+        desired_roles: desiredRoles
+          .split(",")
+          .map((r) => r.trim())
+          .filter(Boolean),
       });
       if (user.email) {
         const mail = welcomeEmail(fullName);
@@ -156,7 +166,7 @@ function OnboardingForm() {
         /* ignore */
       }
       toast.success("You're in. Welcome to The Bu1ld.");
-      void navigate({ to: "/dashboard" });
+      void navigate(postAuthNavigateTarget(consumePostAuthRedirect()));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not save profile.");
     } finally {
@@ -312,9 +322,52 @@ function OnboardingForm() {
         ) : null}
 
         {step === 3 ? (
-          <div className="space-y-2">
-            <Label htmlFor="timezone">Timezone</Label>
-            <Input id="timezone" value={timezone} onChange={(e) => setTimezone(e.target.value)} />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="timezone">Timezone</Label>
+              <Input id="timezone" value={timezone} onChange={(e) => setTimezone(e.target.value)} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="availability">Hours / week (optional)</Label>
+                <Input
+                  id="availability"
+                  type="number"
+                  min={0}
+                  max={80}
+                  value={availabilityHours}
+                  onChange={(e) => setAvailabilityHours(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Experience level</Label>
+                <Select
+                  value={experienceLevel || "unset"}
+                  onValueChange={(v) => setExperienceLevel(v === "unset" ? "" : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Optional" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unset">Not set</SelectItem>
+                    <SelectItem value="student">Student</SelectItem>
+                    <SelectItem value="early_career">Early career</SelectItem>
+                    <SelectItem value="mid_career">Mid career</SelectItem>
+                    <SelectItem value="senior">Senior</SelectItem>
+                    <SelectItem value="researcher">Researcher</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="desired-roles">Desired roles (comma-separated)</Label>
+              <Input
+                id="desired-roles"
+                placeholder="Research contributor, Systems engineer"
+                value={desiredRoles}
+                onChange={(e) => setDesiredRoles(e.target.value)}
+              />
+            </div>
           </div>
         ) : null}
 

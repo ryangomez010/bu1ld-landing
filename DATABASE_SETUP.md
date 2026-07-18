@@ -28,6 +28,7 @@ supabase/phase21.sql
 supabase/phase22.sql
 supabase/phase23.sql
 supabase/phase24.sql
+supabase/phase25.sql
 ```
 
 Then run `supabase/VERIFY_SETUP.sql`.

@@ -2,25 +2,36 @@ import { logAdminAction } from "@/lib/audit-log";
 import { getSupabase } from "@/lib/supabase";
 import type { AdminStats, InstitutionalRole, MemberRole, Profile } from "@/lib/types";
 
+const EMPTY_STATS: AdminStats = {
+  members: 0,
+  projects: 0,
+  applications: 0,
+  pendingLeads: 0,
+  events: 0,
+  papers: 0,
+  jobs: 0,
+  programs: 0,
+  contributions: 0,
+  verifiedContributions: 0,
+  evidenceClaims: 0,
+  pendingProjectReviews: 0,
+  pendingProgramApplications: 0,
+  pendingContributionReviews: 0,
+  overdueMilestones: 0,
+  projectsWithoutLead: 0,
+  stalledProjects: 0,
+};
+
+function numberOrZero(n?: number | null): number {
+  return n ?? 0;
+}
+
 export async function fetchAdminStats(): Promise<AdminStats> {
   const supabase = getSupabase();
-  if (!supabase) {
-    return {
-      members: 0,
-      projects: 0,
-      applications: 0,
-      pendingLeads: 0,
-      events: 0,
-      papers: 0,
-      jobs: 0,
-      programs: 0,
-      contributions: 0,
-      verifiedContributions: 0,
-      evidenceClaims: 0,
-      pendingProjectReviews: 0,
-      pendingProgramApplications: 0,
-    };
-  }
+  if (!supabase) return { ...EMPTY_STATS };
+
+  const stalledBefore = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const nowIso = new Date().toISOString().slice(0, 10);
 
   const [
     members,
@@ -36,6 +47,10 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     evidenceClaims,
     pendingProjectReviews,
     pendingProgramApplications,
+    pendingContributionReviews,
+    overdueMilestones,
+    projectsWithoutLead,
+    stalledProjects,
   ] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }),
     supabase.from("projects").select("id", { count: "exact", head: true }),
@@ -65,22 +80,47 @@ export async function fetchAdminStats(): Promise<AdminStats> {
       .from("program_applications")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
+    supabase
+      .from("project_contributions")
+      .select("id", { count: "exact", head: true })
+      .eq("verification_status", "submitted"),
+    supabase
+      .from("project_milestones")
+      .select("id", { count: "exact", head: true })
+      .neq("status", "completed")
+      .lt("due_date", nowIso)
+      .not("due_date", "is", null),
+    supabase
+      .from("projects")
+      .select("id", { count: "exact", head: true })
+      .eq("published", true)
+      .is("lead_id", null),
+    supabase
+      .from("projects")
+      .select("id", { count: "exact", head: true })
+      .eq("published", true)
+      .in("status", ["open", "active"])
+      .lt("updated_at", stalledBefore),
   ]);
 
   return {
-    members: members.count ?? 0,
-    projects: projects.count ?? 0,
-    applications: applications.count ?? 0,
-    pendingLeads: leads.count ?? 0,
-    events: events.count ?? 0,
-    papers: papers.count ?? 0,
-    jobs: jobs.count ?? 0,
-    programs: programs.count ?? 0,
-    contributions: contributions.count ?? 0,
-    verifiedContributions: verifiedContributions.count ?? 0,
-    evidenceClaims: evidenceClaims.count ?? 0,
-    pendingProjectReviews: pendingProjectReviews.count ?? 0,
-    pendingProgramApplications: pendingProgramApplications.count ?? 0,
+    members: numberOrZero(members.count),
+    projects: numberOrZero(projects.count),
+    applications: numberOrZero(applications.count),
+    pendingLeads: numberOrZero(leads.count),
+    events: numberOrZero(events.count),
+    papers: numberOrZero(papers.count),
+    jobs: numberOrZero(jobs.count),
+    programs: numberOrZero(programs.count),
+    contributions: numberOrZero(contributions.count),
+    verifiedContributions: numberOrZero(verifiedContributions.count),
+    evidenceClaims: numberOrZero(evidenceClaims.count),
+    pendingProjectReviews: numberOrZero(pendingProjectReviews.count),
+    pendingProgramApplications: numberOrZero(pendingProgramApplications.count),
+    pendingContributionReviews: numberOrZero(pendingContributionReviews.count),
+    overdueMilestones: numberOrZero(overdueMilestones.count),
+    projectsWithoutLead: numberOrZero(projectsWithoutLead.count),
+    stalledProjects: numberOrZero(stalledProjects.count),
   };
 }
 
@@ -115,7 +155,7 @@ export async function setInstitutionalRole(
   enabled: boolean,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required." };
+  if (!supabase) return { error: "Member role updates are temporarily unavailable." };
   const result = enabled
     ? await supabase.from("member_roles").upsert({ user_id: userId, role, granted_by: actorId })
     : await supabase.from("member_roles").delete().eq("user_id", userId).eq("role", role);
@@ -139,7 +179,7 @@ export async function updateMemberRole(
   role: MemberRole,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required." };
+  if (!supabase) return { error: "Member role updates are temporarily unavailable." };
   const { error } = await supabase
     .from("profiles")
     .update({ role, updated_at: new Date().toISOString() })

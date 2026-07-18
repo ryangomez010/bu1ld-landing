@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AdminContentRow } from "@/components/admin/AdminContentRow";
+import { AdminPaginationControls } from "@/components/admin/AdminPaginationControls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,18 +16,21 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { slugify } from "@/data/seed/content";
 import { useAuth } from "@/lib/auth";
+import { paginateItems } from "@/lib/admin-pagination";
 import { deleteContentRow, setContentPublished, updatePaperAdmin } from "@/lib/content";
 import { getSupabase } from "@/lib/supabase";
 import type { Paper } from "@/lib/types";
 
 export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: () => void }) {
   const { user } = useAuth();
+  const [page, setPage] = useState(1);
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState("");
   const [review, setReview] = useState("");
   const [summary, setSummary] = useState("");
   const [tags, setTags] = useState("");
   const [field, setField] = useState("");
+  const [venue, setVenue] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [contentKind, setContentKind] = useState<NonNullable<Paper["content_kind"]>>("review");
   const [difficulty, setDifficulty] = useState<NonNullable<Paper["difficulty"]>>("intermediate");
@@ -37,13 +41,16 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
   const [editReview, setEditReview] = useState("");
   const [editSummary, setEditSummary] = useState("");
   const [editField, setEditField] = useState("");
+  const [editVenue, setEditVenue] = useState("");
   const [editSourceUrl, setEditSourceUrl] = useState("");
+
+  const slice = useMemo(() => paginateItems(papers, page, 25), [papers, page]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = getSupabase();
     if (!supabase) {
-      toast.error("Supabase required to publish.");
+      toast.error("Paper publishing is temporarily unavailable.");
       return;
     }
     setSaving(true);
@@ -53,6 +60,8 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
       title,
       authors,
       summary,
+      editorial_summary: summary || null,
+      venue: venue || null,
       review_body: review,
       tags: tags
         .split(",")
@@ -78,6 +87,7 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
     setSummary("");
     setTags("");
     setField("");
+    setVenue("");
     setSourceUrl("");
     onSaved();
   };
@@ -156,13 +166,21 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
             <Input value={field} onChange={(event) => setField(event.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>Primary source</Label>
+            <Label>Venue</Label>
             <Input
-              type="url"
-              value={sourceUrl}
-              onChange={(event) => setSourceUrl(event.target.value)}
+              value={venue}
+              onChange={(event) => setVenue(event.target.value)}
+              placeholder="NeurIPS, arXiv preprint…"
             />
           </div>
+        </div>
+        <div className="space-y-2">
+          <Label>Primary source</Label>
+          <Input
+            type="url"
+            value={sourceUrl}
+            onChange={(event) => setSourceUrl(event.target.value)}
+          />
         </div>
         <div className="space-y-2">
           <Label>Editorial summary</Label>
@@ -191,7 +209,7 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
           Existing ({papers.length})
         </h2>
         <ul className="space-y-3 text-sm">
-          {papers.map((p) => (
+          {slice.items.map((p) => (
             <AdminContentRow
               key={p.id}
               title={p.title}
@@ -222,6 +240,11 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
                     placeholder="Field"
                   />
                   <Input
+                    value={editVenue}
+                    onChange={(event) => setEditVenue(event.target.value)}
+                    placeholder="Venue"
+                  />
+                  <Input
                     type="url"
                     value={editSourceUrl}
                     onChange={(event) => setEditSourceUrl(event.target.value)}
@@ -234,8 +257,9 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
                 setEditTitle(p.title);
                 setEditAuthors(p.authors ?? "");
                 setEditReview(p.review_body);
-                setEditSummary(p.summary ?? "");
+                setEditSummary(p.editorial_summary ?? p.summary ?? "");
                 setEditField(p.field ?? "");
+                setEditVenue(p.venue ?? "");
                 setEditSourceUrl(p.source_url ?? p.arxiv_url ?? "");
               }}
               onCancelEdit={() => setEditingId(null)}
@@ -245,7 +269,9 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
                   authors: editAuthors || null,
                   review_body: editReview,
                   summary: editSummary || null,
+                  editorial_summary: editSummary || null,
                   field: editField || null,
+                  venue: editVenue || null,
                   source_url: editSourceUrl || null,
                 }).then(({ error }) => {
                   if (error) toast.error(error);
@@ -261,6 +287,12 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
             />
           ))}
         </ul>
+        <AdminPaginationControls
+          page={slice.page}
+          totalPages={slice.totalPages}
+          total={slice.total}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

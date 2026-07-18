@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
@@ -17,8 +17,9 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
+import { fetchPublishedLabs } from "@/lib/labs";
 import { createProject } from "@/lib/projects";
-import type { ProjectType } from "@/lib/types";
+import type { Lab, ProjectType } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/new")({
   component: NewProjectPage,
@@ -43,13 +44,23 @@ function NewProjectForm() {
   const [skills, setSkills] = useState("");
   const [tags, setTags] = useState("");
   const [capacity, setCapacity] = useState("5");
+  const [weeklyHours, setWeeklyHours] = useState("");
   const [discordUrl, setDiscordUrl] = useState("");
+  const [labId, setLabId] = useState("none");
+  const [labs, setLabs] = useState<Lab[]>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    void fetchPublishedLabs().then((rows) =>
+      setLabs(rows.filter((l) => !l.id.startsWith("seed-"))),
+    );
+  }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
     setSubmitting(true);
+    const hoursParsed = weeklyHours.trim() ? Number(weeklyHours) : null;
     const { project, error } = await createProject(user.id, profile?.full_name ?? "Lead", {
       title,
       description,
@@ -63,7 +74,10 @@ function NewProjectForm() {
         .map((s) => s.trim())
         .filter(Boolean),
       capacity: Number(capacity) || 5,
+      weekly_commitment_hours:
+        hoursParsed != null && Number.isFinite(hoursParsed) ? hoursParsed : null,
       discord_url: discordUrl || null,
+      lab_id: labId === "none" ? null : labId,
     });
     setSubmitting(false);
     if (error || !project) {
@@ -99,6 +113,24 @@ function NewProjectForm() {
             </SelectContent>
           </Select>
         </div>
+        {labs.length > 0 ? (
+          <div className="space-y-2">
+            <Label>Lab (optional)</Label>
+            <Select value={labId} onValueChange={setLabId}>
+              <SelectTrigger>
+                <SelectValue placeholder="No lab" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No lab</SelectItem>
+                {labs.map((lab) => (
+                  <SelectItem key={lab.id} value={lab.id}>
+                    {lab.short_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
           <Textarea
@@ -137,6 +169,21 @@ function NewProjectForm() {
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="weeklyHours">Expected hours / week (optional)</Label>
+          <Input
+            id="weeklyHours"
+            type="number"
+            min={1}
+            max={60}
+            value={weeklyHours}
+            onChange={(e) => setWeeklyHours(e.target.value)}
+            placeholder="e.g. 8"
+          />
+          <p className="text-xs text-muted-foreground">
+            Shown on the listing so builders can match commitment before applying.
+          </p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="discord">Discord URL (optional)</Label>

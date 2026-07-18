@@ -19,6 +19,7 @@
     "supabase:apply-phase": "node scripts/apply-phase.mjs",
     "supabase:seed": "bun scripts/seed-supabase.ts",
     "test": "bun test src/lib/*.test.ts",
+    "smoke": "node scripts/smoke-routes.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "audit:ci": "bun audit --audit-level=high",
     "release:check": "node scripts/release-readiness.mjs",

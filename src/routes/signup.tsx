@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
@@ -10,8 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
 import { guardAuthAttempt } from "@/lib/auth-rate-limit";
+import { postAuthDestination, rememberPostAuthRedirect } from "@/lib/post-auth-redirect";
+import { sanitizeAppPath } from "@/lib/security";
+
+const signupSearchSchema = z.object({
+  redirect: z.string().optional(),
+});
 
 export const Route = createFileRoute("/signup")({
+  validateSearch: (search) => signupSearchSchema.parse(search),
   component: SignupPage,
   head: () => ({
     meta: [{ title: "Become a member — The Bu1ld" }],
@@ -19,20 +27,27 @@ export const Route = createFileRoute("/signup")({
 });
 
 function SignupPage() {
+  const { redirect } = Route.useSearch();
+  const destination = postAuthDestination(redirect);
   return (
-    <RedirectIfAuthed to="/dashboard">
+    <RedirectIfAuthed to={destination}>
       <SignupForm />
     </RedirectIfAuthed>
   );
 }
 
 function SignupForm() {
+  const { redirect } = Route.useSearch();
   const { signUp, configured } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    rememberPostAuthRedirect(redirect);
+  }, [redirect]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,9 +63,12 @@ function SignupForm() {
       toast.error(error);
       return;
     }
+    rememberPostAuthRedirect(redirect);
     toast.success("Account created — let's set up your profile.");
     void navigate({ to: "/onboarding" });
   };
+
+  const loginSearch = sanitizeAppPath(redirect) ? { redirect: sanitizeAppPath(redirect) } : {};
 
   return (
     <AuthLayout
@@ -123,7 +141,11 @@ function SignupForm() {
       </p>
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already a member?{" "}
-        <Link to="/login" className="text-accent-blue hover:text-bone transition">
+        <Link
+          to="/login"
+          search={loginSearch}
+          className="text-accent-blue hover:text-bone transition"
+        >
           Log in
         </Link>
       </p>

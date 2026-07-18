@@ -1,6 +1,13 @@
-# 1200x630 OG preview  replace with branded asset before launch
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#0a0a0b"/>
-  <text x="600" y="300" text-anchor="middle" fill="#F2EBDD" font-family="system-ui,sans-serif" font-size="96" font-weight="800">BU1LD</text>
-  <text x="600" y="380" text-anchor="middle" fill="#3DB1E2" font-family="system-ui,sans-serif" font-size="28" letter-spacing="0.2em">A MACHINE LEARNING INSTITUTION</text>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0b"/>
+      <stop offset="100%" stop-color="#12141a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect x="72" y="72" width="48" height="4" fill="#3DB1E2"/>
+  <text x="72" y="280" fill="#F2EBDD" font-family="Georgia, serif" font-size="92" font-weight="700">The Bu1ld</text>
+  <text x="72" y="360" fill="#3DB1E2" font-family="ui-monospace, monospace" font-size="26" letter-spacing="0.18em">MACHINE LEARNING RESEARCH + BUILDING</text>
+  <text x="72" y="520" fill="#8a8680" font-family="ui-monospace, monospace" font-size="18" letter-spacing="0.12em">LABS · PROGRAMS · PROJECTS · EVIDENCE</text>
 </svg>

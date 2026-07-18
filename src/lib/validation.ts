@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-import { LIMITS } from "@/lib/security";
+import { LIMITS, sanitizeAppPath } from "@/lib/security";
 import { isSafeUrl } from "@/lib/urls";
-import type { ProjectType } from "@/lib/types";
+import type { ProjectStatus, ProjectType } from "@/lib/types";
 
 export const projectTypeSchema = z.enum(["research", "startup", "program"]);
 
@@ -21,6 +21,7 @@ export const createProjectInputSchema = z.object({
   skills_needed: z.array(z.string().trim().max(40)).max(20),
   tags: z.array(z.string().trim().max(40)).max(20),
   capacity: z.number().int().min(1).max(50),
+  weekly_commitment_hours: z.number().int().min(1).max(60).optional().nullable(),
   discord_url: z
     .string()
     .trim()
@@ -31,6 +32,30 @@ export const createProjectInputSchema = z.object({
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectInputSchema>;
+
+const projectWorkspaceLinkSchema = z.object({
+  label: z.string().trim().min(1, "Resource labels cannot be empty.").max(80),
+  url: z
+    .string()
+    .trim()
+    .max(LIMITS.profileUrl)
+    .refine(
+      (value) => Boolean(sanitizeAppPath(value)) || isSafeUrl(value),
+      "Workspace links must use a safe internal path or an http(s) URL.",
+    ),
+  kind: z.string().trim().max(40).optional(),
+});
+
+export const updateProjectInputSchema = createProjectInputSchema
+  .partial()
+  .extend({
+    status: z.enum(["open", "active", "closed"]).optional(),
+    workspace_links: z.array(projectWorkspaceLinkSchema).max(20).optional(),
+    lab_id: z.string().uuid().optional().nullable(),
+  })
+  .strict();
+
+export type UpdateProjectInput = z.infer<typeof updateProjectInputSchema>;
 
 export const leadRequestSchema = z.object({
   message: z
@@ -49,11 +74,32 @@ export function parseCreateProjectInput(input: {
   skills_needed: string[];
   tags: string[];
   capacity: number;
+  weekly_commitment_hours?: number | null;
   discord_url?: string | null;
 }): { data: CreateProjectInput | null; error: string | null } {
   const result = createProjectInputSchema.safeParse(input);
   if (!result.success) {
     return { data: null, error: result.error.errors[0]?.message ?? "Invalid project input." };
+  }
+  return { data: result.data, error: null };
+}
+
+export function parseUpdateProjectInput(input: {
+  title?: string;
+  description?: string;
+  type?: ProjectType;
+  status?: ProjectStatus;
+  skills_needed?: string[];
+  tags?: string[];
+  capacity?: number;
+  weekly_commitment_hours?: number | null;
+  discord_url?: string | null;
+  workspace_links?: { label: string; url: string; kind?: string }[];
+  lab_id?: string | null;
+}): { data: UpdateProjectInput | null; error: string | null } {
+  const result = updateProjectInputSchema.safeParse(input);
+  if (!result.success) {
+    return { data: null, error: result.error.errors[0]?.message ?? "Invalid project update." };
   }
   return { data: result.data, error: null };
 }

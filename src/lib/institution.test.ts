@@ -32,6 +32,10 @@ describe("institution catalog", () => {
   test("apply hrefs are relative institution paths", () => {
     for (const p of INSTITUTION_PROGRAMS) {
       expect(p.applyHref.startsWith("/")).toBe(true);
+      expect(p.objective.length).toBeGreaterThan(20);
+      expect(p.commitment.length).toBeGreaterThan(10);
+      expect(p.timeline.length).toBeGreaterThan(10);
+      expect(["open", "rolling", "upcoming", "closed"]).toContain(p.status);
     }
   });
 });

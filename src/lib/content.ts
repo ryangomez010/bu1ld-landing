@@ -69,6 +69,9 @@ function normalizePaper(row: Record<string, unknown>): Paper {
       row.review_status === "draft" || row.review_status === "in_review"
         ? row.review_status
         : "published",
+    venue: row.venue != null ? String(row.venue) : null,
+    prerequisites: (row.prerequisites as string[]) ?? [],
+    editorial_summary: row.editorial_summary != null ? String(row.editorial_summary) : null,
   };
 }
 
@@ -133,6 +136,32 @@ export async function fetchPapers(): Promise<Paper[]> {
     return isDemoMode() ? SEED_PAPERS : [];
   }
   return isDemoMode() ? SEED_PAPERS : [];
+}
+
+/** Public catalog: published papers with review_status = published (anon-safe). */
+export async function fetchPublicPapers(): Promise<Paper[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("papers")
+      .select("*")
+      .eq("published", true)
+      .eq("review_status", "published")
+      .order("published_at", { ascending: false });
+    if (!error) {
+      const rows = (data ?? []).map((r) => normalizePaper(r as Record<string, unknown>));
+      return withSeedFallback(
+        rows,
+        SEED_PAPERS.filter((p) => p.published && (p.review_status ?? "published") === "published"),
+      );
+    }
+    return isDemoMode()
+      ? SEED_PAPERS.filter((p) => p.published && (p.review_status ?? "published") === "published")
+      : [];
+  }
+  return isDemoMode()
+    ? SEED_PAPERS.filter((p) => p.published && (p.review_status ?? "published") === "published")
+    : [];
 }
 
 export async function fetchPaperBySlug(slug: string): Promise<Paper | null> {
@@ -226,7 +255,10 @@ export function relatedEvents(event: MlEvent, all: MlEvent[], limit = 3): MlEven
 async function requireSupabase() {
   const supabase = getSupabase();
   if (!supabase)
-    return { supabase: null as ReturnType<typeof getSupabase>, error: "Supabase required." };
+    return {
+      supabase: null as ReturnType<typeof getSupabase>,
+      error: "Content administration is temporarily unavailable.",
+    };
   return { supabase, error: null as string | null };
 }
 
@@ -346,6 +378,9 @@ export async function updatePaperAdmin(
     source_url: string | null;
     review_status: Paper["review_status"];
     published: boolean;
+    venue: string | null;
+    editorial_summary: string | null;
+    prerequisites: string[];
   }>,
 ): Promise<{ error: string | null }> {
   const { supabase, error } = await requireSupabase();

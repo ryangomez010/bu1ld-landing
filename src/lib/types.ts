@@ -98,6 +98,10 @@ export type Profile = {
   directory_visible?: boolean;
   profile_slug?: string | null;
   weekly_paper_goal?: number;
+  availability_hours_per_week?: number | null;
+  experience_level?: string | null;
+  desired_roles?: string[];
+  member_skills?: string[];
   role: MemberRole;
   institutional_roles?: InstitutionalRole[];
   created_at: string;
@@ -115,6 +119,10 @@ export type OnboardingData = {
   twitter_url?: string;
   website_url?: string;
   timezone: string;
+  availability_hours_per_week?: number | null;
+  experience_level?: string | null;
+  desired_roles?: string[];
+  member_skills?: string[];
 };
 
 export type EventResource = {
@@ -167,6 +175,9 @@ export type Paper = {
   source_url?: string | null;
   reviewer_id?: string | null;
   review_status?: "draft" | "in_review" | "published";
+  venue?: string | null;
+  prerequisites?: string[];
+  editorial_summary?: string | null;
 };
 
 export type PaperAnalysisResult = {
@@ -261,6 +272,8 @@ export type Project = {
   published_at?: string | null;
   discord_url?: string | null;
   workspace_links?: { label: string; url: string; kind?: string }[];
+  lab_id?: string | null;
+  weekly_commitment_hours?: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -347,6 +360,7 @@ export type ProjectContribution = {
   verification_note?: string | null;
   verified_by: string | null;
   verified_at: string | null;
+  assigned_reviewer_id?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -482,4 +496,9 @@ export type AdminStats = {
   evidenceClaims: number;
   pendingProjectReviews: number;
   pendingProgramApplications: number;
+  /** Leadership ops — de-emphasize vanity counts */
+  pendingContributionReviews: number;
+  overdueMilestones: number;
+  projectsWithoutLead: number;
+  stalledProjects: number;
 };

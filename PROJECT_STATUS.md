@@ -1,40 +1,53 @@
 # Project status
 
-**Date:** 2026-07-17  
+**Date:** 2026-07-18
 **Branch:** `main`
+**Governor phase:** 4 (Release candidate)
+**Focus:** Institution credibility + main journeys + public evidence archive
 
-## What works
+## Verified complete (local)
 
-- Public institution IA: 6 labs, programs, competitions (detail + submit), people, partnerships, publications, apply flow
-- Member portal: projects, applications, programs, research, events, jobs, directory, invitations (accept → membership via RPC)
-- Project lead invite-by-email on manage page
-- Admin console: members, content, moderation, evidence, **institutions** (competition review)
-- Schema through **phase25** (`is_platform_admin`, lab/competition seeds, experiments, deliverables)
-- Cloudflare deploy pipeline + runtime-env injection for Supabase keys
-- Role helpers unify legacy admin and institutional administrator in UI; DB helper `is_platform_admin()` for RLS
+- typecheck / lint / **130 tests** / smoke / build / `release:check`
+- Schema through **phase32** in repo (`FINAL_SETUP.sql`)
+- phase32 independently enforces no contribution self-review/self-reviewer assignment
+- Leadership overview surfaces review backlog, overdue milestones, owner gaps, and stalled projects
+- Member/account export includes contribution evidence and verification state
+- phase31 RLS/RPC integrity (competition review, invitation accept, deliverable review, membership, claims evidence, collaborator-scoped experiments/datasets)
+- Paper→project bridge; lead experiment/deliverable review UI; accepted-app workspace CTA
+- Public → auth → member program apply funnel with safe redirects
+- Program pages state objective, audience, commitment, timeline, selection, status, outputs, CTA
+- Homepage without fake KPIs / anonymous team / newsletter-as-startup CTAs
+- Competitions labeled as catalog preview when seed-only
+- Labs catalog available even when DB empty
+- Partnership inquiry drafts a real mailto
+- Institution mobile Sheet nav; OG meta improved
+- `/evidence` shows verified institutional claims + public project outputs (honest empty states)
+- Builder discovery shows skills + weekly commitment hours
+- Visitors can browse published projects before authentication and hand off to signup/login with a safe return path
+- Project edits are validated client-side and by the phase30 database trigger; private resource links are not granted to anon
+- Lead management/edit pages explicitly reject projects owned by another lead
+- `/announcements` registered in route tree
 
-## Journey coverage
+## Implemented but partially verified
 
-| Step                        | Status                                              |
-| --------------------------- | --------------------------------------------------- |
-| Discover institution        | Public pages live                                   |
-| Apply                       | `/apply` → signup → onboarding                      |
-| Accepted to project/program | RPC + manage queues                                 |
-| Join team                   | Memberships + `/invitations` + `accept_invitation`  |
-| Submit work                 | Contributions / milestones / competition submissions |
-| Receive feedback            | Lead verification + admin competition review        |
+- Live program applications require published DB program rows
+- Competition submissions require live open rows (not seed IDs)
+- phase26–32 must be applied on staging Supabase
 
-## Remaining external blockers
+## Externally blocked
 
-1. **Apply `phase25.sql` (or re-run FINAL_SETUP / VERIFY_SETUP) on live Supabase** so labs/competitions seed and `is_platform_admin` exist.
-2. **CLOUDFLARE_API_TOKEN** (+ account id) in GitHub for automated deploys.
-3. Set competition `status = 'open'` in SQL when a challenge is ready for entries.
-4. Optional: promote operators with `profiles.role = 'admin'` **or** `member_roles.role = 'administrator'`.
+1. Apply `FINAL_SETUP.sql` through phase32
+2. Secrets + `release:prod`
+3. OAuth / storage / email
+4. Multi-account role smokes
+
+## Not completed
+
+- Full Playwright browser E2E
+- Startup CRM / experiment immutability
 
 ## Quality gates
 
 ```bash
-bun run typecheck && bun run lint && bun test && bun run build
+bun run typecheck && bun run lint && bun run test && bun run smoke && bun run release:check && bun run build
 ```
-
-Credential blockers: `DEPLOYMENT.md`, `REMAINING_EXTERNAL_ACTIONS.md`.

@@ -30,7 +30,7 @@ export function AdminNewslettersTab({
     e.preventDefault();
     const supabase = getSupabase();
     if (!supabase) {
-      toast.error("Supabase required to publish.");
+      toast.error("Newsletter publishing is temporarily unavailable.");
       return;
     }
     setSaving(true);

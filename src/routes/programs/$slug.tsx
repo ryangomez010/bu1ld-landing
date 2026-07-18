@@ -7,6 +7,7 @@ import { MemberLayout } from "@/components/member/MemberLayout";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { getProgram } from "@/data/institution";
 import { useAuth } from "@/lib/auth";
 import {
   applyToProgram,
@@ -66,6 +67,61 @@ function ProgramDetail() {
     );
   }
   if (!program) {
+    const catalog = getProgram(slug);
+    if (catalog && catalog.slug !== "open-competitions") {
+      return (
+        <MemberLayout title={catalog.name} eyebrow={catalog.kind}>
+          <p className="-mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">
+            {catalog.summary}
+          </p>
+          <dl className="mt-7 grid gap-4 sm:grid-cols-2">
+            <div>
+              <dt className="font-mono text-[8px] uppercase text-muted-foreground">Objective</dt>
+              <dd className="mt-2 text-sm text-bone">{catalog.objective}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[8px] uppercase text-muted-foreground">Audience</dt>
+              <dd className="mt-2 text-sm text-bone">{catalog.whoFor}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[8px] uppercase text-muted-foreground">Commitment</dt>
+              <dd className="mt-2 text-sm text-bone">{catalog.commitment}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[8px] uppercase text-muted-foreground">Selection</dt>
+              <dd className="mt-2 text-sm text-bone">{catalog.selectivity}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[8px] uppercase text-muted-foreground">Timeline</dt>
+              <dd className="mt-2 text-sm text-bone">{catalog.timeline}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[8px] uppercase text-muted-foreground">Status</dt>
+              <dd className="mt-2 text-sm text-bone">{catalog.status}</dd>
+            </div>
+          </dl>
+          <h2 className="mt-8 font-display text-xl text-bone">Expected output</h2>
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+            {catalog.outcomes.map((outcome) => (
+              <li key={outcome}>· {outcome}</li>
+            ))}
+          </ul>
+          <p className="mt-8 rounded-sm border border-border/50 bg-bone/[0.03] p-4 text-sm text-muted-foreground">
+            This track is defined in the institution catalog. Live applications open when an
+            administrator publishes a dated cycle in the member programs list. Until then, finish
+            your profile and watch announcements — or apply to an open project.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link to="/programs" className="text-sm text-accent-blue">
+              Browse published programs →
+            </Link>
+            <Link to="/projects" className="text-sm text-accent-blue">
+              Browse projects →
+            </Link>
+          </div>
+        </MemberLayout>
+      );
+    }
     return (
       <MemberLayout title="Program not found">
         <p className="text-muted-foreground">

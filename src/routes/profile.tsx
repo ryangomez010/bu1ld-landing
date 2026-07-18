@@ -63,6 +63,9 @@ function ProfileEditor() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [goals, setGoals] = useState<string[]>([]);
   const [goalInput, setGoalInput] = useState("");
+  const [availabilityHours, setAvailabilityHours] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState("");
+  const [desiredRoles, setDesiredRoles] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [weeklyPaperGoal, setWeeklyPaperGoal] = useState(2);
@@ -96,6 +99,13 @@ function ProfileEditor() {
     setTwitterUrl(profile.twitter_url ?? "");
     setWebsiteUrl(profile.website_url ?? "");
     setGoals(profile.goals ?? []);
+    setAvailabilityHours(
+      profile.availability_hours_per_week != null
+        ? String(profile.availability_hours_per_week)
+        : "",
+    );
+    setExperienceLevel(profile.experience_level ?? "");
+    setDesiredRoles((profile.desired_roles ?? []).join(", "));
     setAvatarUrl(profile.avatar_url ?? "");
     setWeeklyPaperGoal(profile.weekly_paper_goal ?? 2);
     setTimezone(profile.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -172,7 +182,7 @@ function ProfileEditor() {
     e.preventDefault();
     if (!user) return;
     if (!isSupabaseConfigured) {
-      toast.error("Connect Supabase to save profile changes.");
+      toast.error("Profile updates are temporarily unavailable. Please try again later.");
       return;
     }
     if (githubUrl.trim() && !isSafeUrl(githubUrl)) {
@@ -204,6 +214,12 @@ function ProfileEditor() {
         twitter_url: twitterUrl,
         website_url: websiteUrl,
         timezone,
+        availability_hours_per_week: availabilityHours ? Number(availabilityHours) : null,
+        experience_level: experienceLevel || null,
+        desired_roles: desiredRoles
+          .split(",")
+          .map((r) => r.trim())
+          .filter(Boolean),
       });
       await upsertProfile(user.id, {
         directory_visible: directoryVisible,
@@ -492,6 +508,47 @@ function ProfileEditor() {
               ))}
             </ul>
           ) : null}
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="availability">Hours / week</Label>
+            <Input
+              id="availability"
+              type="number"
+              min={0}
+              max={80}
+              value={availabilityHours}
+              onChange={(e) => setAvailabilityHours(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Experience level</Label>
+            <Select
+              value={experienceLevel || "unset"}
+              onValueChange={(v) => setExperienceLevel(v === "unset" ? "" : v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Optional" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unset">Not set</SelectItem>
+                <SelectItem value="student">Student</SelectItem>
+                <SelectItem value="early_career">Early career</SelectItem>
+                <SelectItem value="mid_career">Mid career</SelectItem>
+                <SelectItem value="senior">Senior</SelectItem>
+                <SelectItem value="researcher">Researcher</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="desired-roles">Desired roles (comma-separated)</Label>
+          <Input
+            id="desired-roles"
+            placeholder="Research contributor, Reviewer"
+            value={desiredRoles}
+            onChange={(e) => setDesiredRoles(e.target.value)}
+          />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">

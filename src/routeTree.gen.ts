@@ -26,6 +26,7 @@ import { Route as EvidenceRouteImport } from './routes/evidence'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as ApplyRouteImport } from './routes/apply'
+import { Route as AnnouncementsRouteImport } from './routes/announcements'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as SavedIndexRouteImport } from './routes/saved/index'
@@ -151,6 +152,11 @@ const CompetitionsRoute = CompetitionsRouteImport.update({
 const ApplyRoute = ApplyRouteImport.update({
   id: '/apply',
   path: '/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnouncementsRoute = AnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -361,6 +367,7 @@ const ProjectsEditSlugRoute = ProjectsEditSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/announcements': typeof AnnouncementsRoute
   '/apply': typeof ApplyRoute
   '/competitions': typeof CompetitionsRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -421,6 +428,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/announcements': typeof AnnouncementsRoute
   '/apply': typeof ApplyRoute
   '/competitions': typeof CompetitionsRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -482,6 +490,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/announcements': typeof AnnouncementsRoute
   '/apply': typeof ApplyRoute
   '/competitions': typeof CompetitionsRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -544,6 +553,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/announcements'
     | '/apply'
     | '/competitions'
     | '/dashboard'
@@ -604,6 +614,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/announcements'
     | '/apply'
     | '/competitions'
     | '/dashboard'
@@ -664,6 +675,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/announcements'
     | '/apply'
     | '/competitions'
     | '/dashboard'
@@ -725,6 +737,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnnouncementsRoute: typeof AnnouncementsRoute
   ApplyRoute: typeof ApplyRoute
   CompetitionsRoute: typeof CompetitionsRouteWithChildren
   DashboardRoute: typeof DashboardRoute
@@ -902,6 +915,13 @@ declare module '@tanstack/react-router' {
       path: '/apply'
       fullPath: '/apply'
       preLoaderRoute: typeof ApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/announcements': {
+      id: '/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AnnouncementsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -1208,6 +1228,7 @@ const CompetitionsRouteWithChildren = CompetitionsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnnouncementsRoute: AnnouncementsRoute,
   ApplyRoute: ApplyRoute,
   CompetitionsRoute: CompetitionsRouteWithChildren,
   DashboardRoute: DashboardRoute,

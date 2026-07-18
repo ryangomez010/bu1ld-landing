@@ -20,10 +20,10 @@ Or push to `main` to run `.github/workflows/deploy-cloudflare.yml` (requires sec
 
 | Name                     | Where                                          |
 | ------------------------ | ---------------------------------------------- |
-| `VITE_SUPABASE_URL`      | `.env`, CI secrets, or `wrangler.jsonc` `vars` |
-| `VITE_SUPABASE_ANON_KEY` | same                                           |
+| `VITE_SUPABASE_URL`      | `.env` locally; CI/deployment environment in production |
+| `VITE_SUPABASE_ANON_KEY` | same |
 
-`scripts/generate-runtime-env.mjs` falls back to `wrangler.jsonc` vars when CI secrets are empty.
+`scripts/generate-runtime-env.mjs` fails closed when these values are absent; no project-specific key is committed in `wrangler.jsonc`.
 
 ### GitHub Actions deploy
 

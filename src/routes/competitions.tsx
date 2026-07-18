@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
-import { fetchPublishedCompetitions } from "@/lib/competitions";
+import { fetchPublishedCompetitions, isCatalogPreviewCompetition } from "@/lib/competitions";
 import type { Competition } from "@/lib/types";
 
 export const Route = createFileRoute("/competitions")({
@@ -23,10 +23,20 @@ function CompetitionsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void fetchPublishedCompetitions().then((rows) => {
-      setItems(rows);
-      setLoading(false);
-    });
+    let cancelled = false;
+    void fetchPublishedCompetitions()
+      .then((rows) => {
+        if (!cancelled) setItems(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setItems([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -39,6 +49,12 @@ function CompetitionsPage() {
         <p className="font-mono text-xs text-muted-foreground">Loading competitions…</p>
       ) : (
         <div className="space-y-4">
+          {items.some(isCatalogPreviewCompetition) ? (
+            <p className="rounded-sm border border-border/50 bg-bone/[0.03] p-4 text-sm text-muted-foreground">
+              Some challenges below are listed for planning. Submissions open only when a challenge
+              status is <span className="text-bone">open</span> — create an account to get notified.
+            </p>
+          ) : null}
           {items.map((competition) => (
             <article
               key={competition.slug}
@@ -48,6 +64,11 @@ function CompetitionsPage() {
                 <span className="rounded-sm border border-bone/20 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.16em] text-bone">
                   {competition.status}
                 </span>
+                {isCatalogPreviewCompetition(competition) ? (
+                  <span className="font-mono text-[10px] text-muted-foreground">
+                    Catalog preview
+                  </span>
+                ) : null}
                 {competition.deadline ? (
                   <span className="font-mono text-[10px] text-muted-foreground">
                     Deadline {competition.deadline}
@@ -79,7 +100,9 @@ function CompetitionsPage() {
                 params={{ slug: competition.slug }}
                 className="mt-5 inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-accent-blue hover:text-bone"
               >
-                View protocol & submit →
+                {competition.status === "open" && !isCatalogPreviewCompetition(competition)
+                  ? "View protocol & submit →"
+                  : "View challenge details →"}
               </Link>
             </article>
           ))}

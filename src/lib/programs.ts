@@ -110,7 +110,7 @@ export async function reviewProgramApplication(
   note?: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Program review requires a live database connection." };
+  if (!supabase) return { error: "Program review is temporarily unavailable." };
   const { data: application } = await supabase
     .from("program_applications")
     .select("user_id, program_id, programs(slug, title)")
@@ -150,7 +150,7 @@ export async function applyToProgram(
     };
   }
   const supabase = getSupabase();
-  if (!supabase) return { error: "Program applications require a live database connection." };
+  if (!supabase) return { error: "Program applications are temporarily unavailable." };
   const { error } = await supabase.from("program_applications").insert({
     program_id: programId,
     user_id: userId,
@@ -164,7 +164,7 @@ export async function withdrawProgramApplication(
   applicationId: string,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Program applications require a live database connection." };
+  if (!supabase) return { error: "Program applications are temporarily unavailable." };
   const { error } = await supabase
     .from("program_applications")
     .delete()
@@ -202,7 +202,7 @@ export async function createProgram(input: {
   if (title.length < 3 || summary.length < 20)
     return { error: "Add a title and a specific program summary." };
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required to publish programs." };
+  if (!supabase) return { error: "Program publishing is temporarily unavailable." };
   const { error } = await supabase.from("programs").insert({
     slug: slugify(title),
     title,
@@ -235,7 +235,7 @@ export async function updateProgramAdmin(
   }>,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required to update programs." };
+  if (!supabase) return { error: "Program updates are temporarily unavailable." };
   const patch: Partial<Program> = { updated_at: new Date().toISOString() };
   if (input.title !== undefined) patch.title = clampText(input.title, 160);
   if (input.summary !== undefined) patch.summary = clampText(input.summary, 2000);
@@ -255,7 +255,7 @@ export async function updateProgramAdmin(
 
 export async function deleteProgramAdmin(programId: string): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required to delete programs." };
+  if (!supabase) return { error: "Program deletion is temporarily unavailable." };
   const { count } = await supabase
     .from("program_applications")
     .select("id", { count: "exact", head: true })
@@ -274,7 +274,7 @@ export async function setProgramPublished(
   published: boolean,
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Supabase required to update programs." };
+  if (!supabase) return { error: "Program updates are temporarily unavailable." };
   const { error } = await supabase
     .from("programs")
     .update({ published, updated_at: new Date().toISOString() })

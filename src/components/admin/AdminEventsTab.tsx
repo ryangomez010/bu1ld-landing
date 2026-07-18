@@ -56,7 +56,7 @@ export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved
     e.preventDefault();
     const supabase = getSupabase();
     if (!supabase) {
-      toast.error("Supabase required to publish.");
+      toast.error("Event publishing is temporarily unavailable.");
       return;
     }
     setSaving(true);

@@ -35,6 +35,7 @@ const NAV = [
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/programs", label: "Programs", icon: GraduationCap },
   { to: "/events", label: "Events", icon: Calendar },
+  { to: "/announcements", label: "Announcements", icon: Bell },
   { to: "/members", label: "Member directory", icon: Users },
   { to: "/search", label: "Search", icon: Search },
   { to: "/profile", label: "Profile & export", icon: Settings },

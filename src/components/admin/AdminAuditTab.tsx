@@ -6,8 +6,7 @@ export function AdminAuditTab({ entries }: { entries: AuditEntry[] }) {
   if (!isSupabaseConfigured) {
     return (
       <p className="text-sm text-muted-foreground">
-        Audit log requires Supabase. Run <code className="font-mono text-xs">phase12.sql</code> on
-        your project.
+        The audit log is temporarily unavailable. Try again shortly.
       </p>
     );
   }

@@ -119,7 +119,7 @@ function CollectionsContent() {
       </p>
       {!isSupabaseConfigured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red mb-6">
-          Collections require Supabase. Run <code className="font-mono text-xs">phase13.sql</code>.
+          Collections are temporarily unavailable. Please try again later.
         </p>
       ) : null}
 

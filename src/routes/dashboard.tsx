@@ -330,7 +330,17 @@ function DashboardHome() {
 
           {announcements.length > 1 ? (
             <section className="section-gap">
-              <SectionHeader title="Recent updates" />
+              <SectionHeader
+                title="Recent updates"
+                action={
+                  <Link
+                    to="/announcements"
+                    className="font-mono text-[9px] uppercase tracking-[0.16em] text-accent-blue hover:text-bone"
+                  >
+                    All announcements →
+                  </Link>
+                }
+              />
               <div className="grid gap-px border border-border/40 bg-border/40">
                 {announcements
                   .filter((a) => a.id !== pinned?.id)

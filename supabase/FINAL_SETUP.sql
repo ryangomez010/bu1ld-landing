@@ -3475,3 +3475,1268 @@ where not exists (
 );
 
 insert into public.schema_migrations (phase) values ('phase25') on conflict (phase) do nothing;
+
+
+-- BEGIN supabase/phase26.sql
+-- Phase 26 — Pass 2 heavy additions: profile enrichment, paper metadata,
+-- public papers catalog, research paths, application questions, project datasets.
+-- Additive migration. Apply after phase25.sql.
+
+create extension if not exists pgcrypto;
+
+-- ---------------------------------------------------------------------------
+-- Profile enrichment
+-- ---------------------------------------------------------------------------
+alter table public.profiles
+  add column if not exists availability_hours_per_week integer
+    check (availability_hours_per_week is null or availability_hours_per_week between 0 and 80);
+
+alter table public.profiles
+  add column if not exists experience_level text
+    check (experience_level is null or experience_level in (
+      'student', 'early_career', 'mid_career', 'senior', 'researcher'
+    ));
+
+alter table public.profiles
+  add column if not exists desired_roles text[] not null default '{}';
+
+alter table public.profiles
+  add column if not exists member_skills text[] not null default '{}';
+
+-- ---------------------------------------------------------------------------
+-- Paper metadata + public catalog RLS
+-- ---------------------------------------------------------------------------
+alter table public.papers
+  add column if not exists venue text check (venue is null or char_length(venue) <= 200);
+
+alter table public.papers
+  add column if not exists prerequisites text[] not null default '{}';
+
+alter table public.papers
+  add column if not exists editorial_summary text
+    check (editorial_summary is null or char_length(editorial_summary) <= 4000);
+
+-- Anon may read fully published papers (separate from authenticated member policy)
+drop policy if exists "Public reads published papers catalog" on public.papers;
+create policy "Public reads published papers catalog" on public.papers for select
+  to anon
+  using (published = true and review_status = 'published');
+
+-- Ensure authenticated can still read published papers without auth.uid() gate for catalog
+drop policy if exists "Authenticated read published papers catalog" on public.papers;
+create policy "Authenticated read published papers catalog" on public.papers for select
+  to authenticated
+  using (published = true and review_status = 'published');
+
+-- ---------------------------------------------------------------------------
+-- Research paths (DB-backed learning pathways)
+-- ---------------------------------------------------------------------------
+create table if not exists public.research_paths (
+  id text primary key check (char_length(trim(id)) between 2 and 80),
+  title text not null check (char_length(trim(title)) between 3 and 160),
+  description text not null default '' check (char_length(description) <= 2000),
+  published boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.research_path_steps (
+  id uuid primary key default gen_random_uuid(),
+  path_id text not null references public.research_paths(id) on delete cascade,
+  step_kind text not null check (step_kind in ('guide', 'paper')),
+  step_slug text not null check (char_length(trim(step_slug)) between 2 and 120),
+  sort_order integer not null default 0,
+  unique (path_id, step_kind, step_slug)
+);
+
+create index if not exists research_path_steps_path_idx
+  on public.research_path_steps (path_id, sort_order);
+
+create table if not exists public.research_path_progress (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  path_id text not null references public.research_paths(id) on delete cascade,
+  completed_steps integer not null default 0 check (completed_steps >= 0),
+  last_step_slug text,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, path_id)
+);
+
+alter table public.research_paths enable row level security;
+alter table public.research_path_steps enable row level security;
+alter table public.research_path_progress enable row level security;
+
+revoke all on table public.research_paths from anon;
+revoke all on table public.research_path_steps from anon;
+revoke all on table public.research_path_progress from anon;
+
+grant select on table public.research_paths to anon, authenticated;
+grant select on table public.research_path_steps to anon, authenticated;
+grant select, insert, update, delete on table public.research_paths to authenticated;
+grant select, insert, update, delete on table public.research_path_steps to authenticated;
+grant select, insert, update, delete on table public.research_path_progress to authenticated;
+
+drop policy if exists "Public reads published research paths" on public.research_paths;
+create policy "Public reads published research paths" on public.research_paths for select
+  to anon, authenticated
+  using (published = true or public.is_platform_admin());
+
+drop policy if exists "Admins manage research paths" on public.research_paths;
+create policy "Admins manage research paths" on public.research_paths for all
+  to authenticated
+  using (public.is_platform_admin())
+  with check (public.is_platform_admin());
+
+drop policy if exists "Public reads research path steps" on public.research_path_steps;
+create policy "Public reads research path steps" on public.research_path_steps for select
+  to anon, authenticated
+  using (
+    exists (
+      select 1 from public.research_paths p
+      where p.id = path_id and (p.published = true or public.is_platform_admin())
+    )
+  );
+
+drop policy if exists "Admins manage research path steps" on public.research_path_steps;
+create policy "Admins manage research path steps" on public.research_path_steps for all
+  to authenticated
+  using (public.is_platform_admin())
+  with check (public.is_platform_admin());
+
+drop policy if exists "Members manage own path progress" on public.research_path_progress;
+create policy "Members manage own path progress" on public.research_path_progress for all
+  to authenticated
+  using (user_id = auth.uid() or public.is_platform_admin())
+  with check (user_id = auth.uid() or public.is_platform_admin());
+
+-- Seed static research paths when empty
+insert into public.research_paths (id, title, description, sort_order)
+values
+  ('foundations', 'Transformer foundations',
+   'Start with attention mechanics, then read the paper that made it the default.', 1),
+  ('world-models', 'World models & JEPA',
+   'Representation-space prediction and residual tokenization threads.', 2),
+  ('scaling-alignment', 'Scaling & alignment',
+   'Compute budgeting and preference optimization in practice.', 3),
+  ('build-method', 'Paper → prototype',
+   'How The Bu1ld reads papers and scopes prototypes.', 4)
+on conflict (id) do nothing;
+
+insert into public.research_path_steps (path_id, step_kind, step_slug, sort_order)
+select * from (values
+  ('foundations', 'guide', 'what-is-attention', 1),
+  ('foundations', 'paper', 'attention-is-all-you-need', 2),
+  ('foundations', 'guide', 'math-behind-ai', 3),
+  ('world-models', 'guide', 'what-is-jepa', 1),
+  ('world-models', 'paper', 'lecun-jepa-world-models', 2),
+  ('world-models', 'paper', 'residual-event-tokenization', 3),
+  ('scaling-alignment', 'paper', 'chinchilla-scaling-laws', 1),
+  ('scaling-alignment', 'paper', 'direct-preference-optimization', 2),
+  ('scaling-alignment', 'guide', 'how-llms-work', 3),
+  ('build-method', 'guide', 'paper-to-prototype', 1),
+  ('build-method', 'guide', 'physics-informed-nns', 2),
+  ('build-method', 'paper', 'residual-event-tokenization', 3)
+) as v(path_id, step_kind, step_slug, sort_order)
+where not exists (
+  select 1 from public.research_path_steps s
+  where s.path_id = v.path_id and s.step_kind = v.step_kind and s.step_slug = v.step_slug
+);
+
+-- ---------------------------------------------------------------------------
+-- Project application questions
+-- ---------------------------------------------------------------------------
+create table if not exists public.project_application_questions (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  prompt text not null check (char_length(trim(prompt)) between 5 and 500),
+  required boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists project_application_questions_project_idx
+  on public.project_application_questions (project_id, sort_order);
+
+create table if not exists public.project_application_answers (
+  id uuid primary key default gen_random_uuid(),
+  application_id uuid not null references public.project_applications(id) on delete cascade,
+  question_id uuid not null references public.project_application_questions(id) on delete cascade,
+  answer text not null check (char_length(trim(answer)) between 1 and 4000),
+  created_at timestamptz not null default now(),
+  unique (application_id, question_id)
+);
+
+alter table public.project_application_questions enable row level security;
+alter table public.project_application_answers enable row level security;
+
+revoke all on table public.project_application_questions from anon;
+revoke all on table public.project_application_answers from anon;
+grant select on table public.project_application_questions to authenticated;
+grant select, insert, update, delete on table public.project_application_questions to authenticated;
+grant select, insert on table public.project_application_answers to authenticated;
+
+drop policy if exists "Members read project questions" on public.project_application_questions;
+create policy "Members read project questions" on public.project_application_questions for select
+  to authenticated
+  using (
+    exists (
+      select 1 from public.projects p
+      where p.id = project_id and (p.published = true or p.lead_id = auth.uid() or public.is_platform_admin())
+    )
+  );
+
+drop policy if exists "Leads manage project questions" on public.project_application_questions;
+create policy "Leads manage project questions" on public.project_application_questions for all
+  to authenticated
+  using (
+    public.is_platform_admin()
+    or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+  )
+  with check (
+    public.is_platform_admin()
+    or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+  );
+
+drop policy if exists "Applicants insert answers" on public.project_application_answers;
+create policy "Applicants insert answers" on public.project_application_answers for insert
+  to authenticated
+  with check (
+    exists (
+      select 1 from public.project_applications a
+      where a.id = application_id and a.user_id = auth.uid()
+    )
+  );
+
+drop policy if exists "Applicants and leads read answers" on public.project_application_answers;
+create policy "Applicants and leads read answers" on public.project_application_answers for select
+  to authenticated
+  using (
+    public.is_platform_admin()
+    or exists (
+      select 1 from public.project_applications a
+      where a.id = application_id and a.user_id = auth.uid()
+    )
+    or exists (
+      select 1 from public.project_applications a
+      join public.projects p on p.id = a.project_id
+      where a.id = application_id and p.lead_id = auth.uid()
+    )
+  );
+
+-- ---------------------------------------------------------------------------
+-- Project datasets registry
+-- ---------------------------------------------------------------------------
+create table if not exists public.project_datasets (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  created_by uuid not null references public.profiles(id) on delete restrict,
+  name text not null check (char_length(trim(name)) between 2 and 160),
+  version_label text not null default 'v1' check (char_length(trim(version_label)) between 1 and 40),
+  description text not null default '' check (char_length(description) <= 4000),
+  source_url text check (source_url is null or source_url ~ '^https?://'),
+  license text check (license is null or char_length(license) <= 120),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists project_datasets_project_idx
+  on public.project_datasets (project_id, created_at desc);
+
+alter table public.project_datasets enable row level security;
+revoke all on table public.project_datasets from anon;
+grant select, insert, update, delete on table public.project_datasets to authenticated;
+
+drop policy if exists "Collaborators read project datasets" on public.project_datasets;
+create policy "Collaborators read project datasets" on public.project_datasets for select
+  to authenticated
+  using (
+    public.is_platform_admin()
+    or exists (
+      select 1 from public.projects p
+      where p.id = project_id and (p.lead_id = auth.uid() or p.published = true)
+    )
+    or exists (
+      select 1 from public.project_memberships m
+      where m.project_id = project_datasets.project_id
+        and m.user_id = auth.uid()
+        and m.status = 'active'
+    )
+  );
+
+drop policy if exists "Leads and members write project datasets" on public.project_datasets;
+create policy "Leads and members write project datasets" on public.project_datasets for insert
+  to authenticated
+  with check (
+    created_by = auth.uid()
+    and (
+      public.is_platform_admin()
+      or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+      or exists (
+        select 1 from public.project_memberships m
+        where m.project_id = project_id and m.user_id = auth.uid() and m.status = 'active'
+      )
+    )
+  );
+
+drop policy if exists "Leads update project datasets" on public.project_datasets;
+create policy "Leads update project datasets" on public.project_datasets for update
+  to authenticated
+  using (
+    public.is_platform_admin()
+    or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+    or created_by = auth.uid()
+  )
+  with check (
+    public.is_platform_admin()
+    or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+    or created_by = auth.uid()
+  );
+
+drop policy if exists "Leads delete project datasets" on public.project_datasets;
+create policy "Leads delete project datasets" on public.project_datasets for delete
+  to authenticated
+  using (
+    public.is_platform_admin()
+    or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+  );
+
+insert into public.schema_migrations (phase) values ('phase26') on conflict (phase) do nothing;
+
+-- END supabase/phase26.sql
+
+
+-- BEGIN supabase/phase27.sql
+-- Phase 27 — Assigned reviewers for project contributions (independent of lead-only review).
+-- Additive. Apply after phase26.sql.
+
+alter table public.project_contributions
+  add column if not exists assigned_reviewer_id uuid references public.profiles(id) on delete set null;
+
+create index if not exists project_contributions_assigned_reviewer_idx
+  on public.project_contributions (assigned_reviewer_id)
+  where assigned_reviewer_id is not null;
+
+-- Lead/admin may assign a reviewer; assigned reviewer may clear only via lead reassignment
+drop policy if exists "Leads assign contribution reviewers" on public.project_contributions;
+create policy "Leads assign contribution reviewers" on public.project_contributions for update
+  to authenticated
+  using (
+    public.is_platform_admin()
+    or exists (
+      select 1 from public.projects p
+      where p.id = project_id and p.lead_id = auth.uid()
+    )
+  )
+  with check (
+    public.is_platform_admin()
+    or exists (
+      select 1 from public.projects p
+      where p.id = project_id and p.lead_id = auth.uid()
+    )
+  );
+
+create or replace function public.review_project_contribution(
+  p_contribution_id uuid,
+  p_status text,
+  p_note text default null
+)
+returns public.project_contributions
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare contribution_row public.project_contributions;
+declare safe_note text := nullif(trim(coalesce(p_note, '')), '');
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+  if p_status not in ('verified', 'needs_changes') then raise exception 'Invalid verification status'; end if;
+  if safe_note is not null and char_length(safe_note) > 2000 then raise exception 'Verification note is too long'; end if;
+  if p_status = 'needs_changes' and safe_note is null then raise exception 'A revision request requires a note'; end if;
+
+  select * into contribution_row
+  from public.project_contributions
+  where id = p_contribution_id
+  for update;
+  if not found then raise exception 'Contribution not found'; end if;
+
+  if not (
+    public.is_platform_admin()
+    or exists (
+      select 1 from public.projects p
+      where p.id = contribution_row.project_id and p.lead_id = auth.uid()
+    )
+    or contribution_row.assigned_reviewer_id = auth.uid()
+  ) then
+    raise exception 'Only the project lead, assigned reviewer, or an administrator may review contributions';
+  end if;
+
+  perform set_config('app.contribution_review', 'true', true);
+  update public.project_contributions
+  set verification_status = p_status,
+      verification_note = safe_note,
+      verified_by = auth.uid(),
+      verified_at = now(),
+      updated_at = now()
+  where id = p_contribution_id
+  returning * into contribution_row;
+  return contribution_row;
+end;
+$$;
+
+revoke all on function public.review_project_contribution(uuid, text, text) from public;
+grant execute on function public.review_project_contribution(uuid, text, text) to authenticated;
+
+create or replace function public.assign_contribution_reviewer(
+  p_contribution_id uuid,
+  p_reviewer_id uuid
+)
+returns public.project_contributions
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare contribution_row public.project_contributions;
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+
+  select * into contribution_row
+  from public.project_contributions
+  where id = p_contribution_id
+  for update;
+  if not found then raise exception 'Contribution not found'; end if;
+
+  if not (
+    public.is_platform_admin()
+    or exists (
+      select 1 from public.projects p
+      where p.id = contribution_row.project_id and p.lead_id = auth.uid()
+    )
+  ) then
+    raise exception 'Only the project lead or an administrator may assign reviewers';
+  end if;
+
+  if p_reviewer_id is not null and not exists (
+    select 1 from public.profiles where id = p_reviewer_id
+  ) then
+    raise exception 'Reviewer profile not found';
+  end if;
+
+  update public.project_contributions
+  set assigned_reviewer_id = p_reviewer_id,
+      updated_at = now()
+  where id = p_contribution_id
+  returning * into contribution_row;
+  return contribution_row;
+end;
+$$;
+
+revoke all on function public.assign_contribution_reviewer(uuid, uuid) from public;
+grant execute on function public.assign_contribution_reviewer(uuid, uuid) to authenticated;
+
+insert into public.schema_migrations (phase) values ('phase27') on conflict (phase) do nothing;
+
+-- END supabase/phase27.sql
+
+-- BEGIN supabase/phase28.sql
+-- Phase 28 — Public project output archive.
+-- Additive. Apply after phase27.sql.
+
+-- RLS policies from phase19 already restrict anonymous reads to visibility = 'public'.
+-- Granting SELECT makes those policy-approved rows available to the public evidence register.
+revoke all on table public.project_milestones from anon;
+grant select on table public.project_milestones to anon, authenticated;
+
+revoke all on table public.project_contributions from anon;
+grant select on table public.project_contributions to anon, authenticated;
+
+-- Re-scope the phase19 policies to authenticated users. Without this, their
+-- implicit PUBLIC role would also expose submitted (unverified) public rows.
+drop policy if exists "Project collaborators read permitted milestones" on public.project_milestones;
+create policy "Project collaborators read permitted milestones" on public.project_milestones
+  for select
+  to authenticated
+  using (
+    visibility = 'public'
+    or exists (
+      select 1 from public.project_memberships pm
+      where pm.project_id = project_milestones.project_id
+        and pm.user_id = auth.uid()
+        and pm.status in ('active', 'paused')
+    )
+    or exists (
+      select 1 from public.projects p
+      where p.id = project_milestones.project_id and p.lead_id = auth.uid()
+    )
+    or public.is_platform_admin()
+  );
+
+drop policy if exists "Collaborators read permitted contributions" on public.project_contributions;
+create policy "Collaborators read permitted contributions" on public.project_contributions
+  for select
+  to authenticated
+  using (
+    -- Evidence-safe public branch: unverified submissions stay out of the open archive.
+    (visibility = 'public' and verification_status = 'verified')
+    or contributor_id = auth.uid()
+    or exists (
+      select 1 from public.project_memberships pm
+      where pm.project_id = project_contributions.project_id
+        and pm.user_id = auth.uid()
+        and pm.status in ('active', 'paused')
+    )
+    or exists (
+      select 1 from public.projects p
+      where p.id = project_contributions.project_id and p.lead_id = auth.uid()
+    )
+    or public.is_platform_admin()
+  );
+
+-- Keep the anonymous public branch explicit and evidence-safe.
+drop policy if exists "Public reads public project milestones" on public.project_milestones;
+create policy "Public reads public project milestones" on public.project_milestones
+  for select
+  to anon
+  using (visibility = 'public');
+
+drop policy if exists "Public reads verified project contributions" on public.project_contributions;
+create policy "Public reads verified project contributions" on public.project_contributions
+  for select
+  to anon
+  using (visibility = 'public' and verification_status = 'verified');
+
+insert into public.schema_migrations (phase)
+values ('phase28')
+on conflict (phase) do nothing;
+-- END supabase/phase28.sql
+
+-- BEGIN supabase/phase29.sql
+-- Phase 29 — Project weekly commitment (builder discovery honesty).
+-- Additive. Apply after phase28.sql.
+
+alter table public.projects
+  add column if not exists weekly_commitment_hours integer;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'projects_weekly_commitment_hours_check'
+  ) then
+    alter table public.projects
+      add constraint projects_weekly_commitment_hours_check
+      check (
+        weekly_commitment_hours is null
+        or (weekly_commitment_hours >= 1 and weekly_commitment_hours <= 60)
+      );
+  end if;
+end $$;
+
+insert into public.schema_migrations (phase)
+values ('phase29')
+on conflict (phase) do nothing;
+-- END supabase/phase29.sql
+
+-- BEGIN supabase/phase30.sql
+-- Phase 30 — Server-side project brief validation.
+-- Additive. Apply after phase29.sql.
+
+-- Visitors can inspect only the fields needed to evaluate published opportunities.
+-- Internal workspace links and Discord coordinates remain available to authenticated collaborators.
+revoke all on table public.projects from anon;
+grant select (
+  id, slug, title, description, type, status, skills_needed, tags, lead_name,
+  capacity, team_count, published, publication_status, lab_id,
+  weekly_commitment_hours, created_at, updated_at
+) on table public.projects to anon;
+
+drop policy if exists "Members read published projects" on public.projects;
+create policy "Members read published projects" on public.projects
+  for select
+  to authenticated
+  using (
+    published = true
+    or lead_id = auth.uid()
+    or public.is_platform_admin()
+  );
+
+drop policy if exists "Visitors read published project catalog" on public.projects;
+create policy "Visitors read published project catalog" on public.projects
+  for select
+  to anon
+  using (published = true);
+
+create or replace function public.validate_project_brief()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare resource jsonb;
+declare resource_url text;
+begin
+  new.title := trim(new.title);
+  new.description := trim(new.description);
+
+  if char_length(new.title) < 3 or char_length(new.title) > 120 then
+    raise exception 'Project title must be between 3 and 120 characters';
+  end if;
+  if char_length(new.description) < 20 or char_length(new.description) > 4000 then
+    raise exception 'Project description must be between 20 and 4000 characters';
+  end if;
+  if new.capacity < 1 or new.capacity > 50 then
+    raise exception 'Project capacity must be between 1 and 50';
+  end if;
+  if cardinality(new.skills_needed) > 20 or cardinality(new.tags) > 20 then
+    raise exception 'Projects support at most 20 skills and 20 topic tags';
+  end if;
+  if exists (
+    select 1 from unnest(coalesce(new.skills_needed, '{}'::text[]) || coalesce(new.tags, '{}'::text[])) item
+    where char_length(trim(item)) = 0 or char_length(trim(item)) > 40
+  ) then
+    raise exception 'Project skills and tags must contain 1 to 40 characters';
+  end if;
+  if new.discord_url is not null
+     and (char_length(new.discord_url) > 500 or new.discord_url !~* '^https?://') then
+    raise exception 'Project Discord URL must be an http(s) URL';
+  end if;
+
+  if jsonb_typeof(coalesce(new.workspace_links, '[]'::jsonb)) <> 'array' then
+    raise exception 'Project workspace links must be an array';
+  end if;
+  if jsonb_array_length(coalesce(new.workspace_links, '[]'::jsonb)) > 20 then
+    raise exception 'Projects support at most 20 workspace links';
+  end if;
+
+  for resource in
+    select value from jsonb_array_elements(coalesce(new.workspace_links, '[]'::jsonb))
+  loop
+    if jsonb_typeof(resource) <> 'object'
+       or char_length(trim(coalesce(resource ->> 'label', ''))) not between 1 and 80 then
+      raise exception 'Each workspace link requires a label between 1 and 80 characters';
+    end if;
+    resource_url := trim(coalesce(resource ->> 'url', ''));
+    if char_length(resource_url) = 0
+       or char_length(resource_url) > 500
+       or not (
+         resource_url ~ '^/([^/\\]|$)'
+         or resource_url ~* '^https?://'
+       ) then
+      raise exception 'Workspace links must use a safe internal path or an http(s) URL';
+    end if;
+  end loop;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists validate_project_brief_trigger on public.projects;
+create trigger validate_project_brief_trigger
+  before insert or update of title, description, capacity, skills_needed, tags, discord_url, workspace_links
+  on public.projects
+  for each row execute function public.validate_project_brief();
+
+insert into public.schema_migrations (phase)
+values ('phase30')
+on conflict (phase) do nothing;
+-- END supabase/phase30.sql
+
+-- BEGIN supabase/phase31.sql
+-- Phase 31 — Authorization integrity for competitions, invitations, deliverables,
+-- contributions, memberships, and program seed catalog.
+-- Additive. Apply after phase30.sql.
+
+-- ── Competitions: submitters may withdraw; only admins decide accept/reject ──
+drop policy if exists "Members manage own competition submissions" on public.competition_submissions;
+drop policy if exists "Admins review competition submissions" on public.competition_submissions;
+
+create policy "Members read own competition submissions" on public.competition_submissions
+  for select
+  to authenticated
+  using (
+    submitter_id = auth.uid()
+    or public.is_platform_admin()
+  );
+
+create policy "Members submit to open competitions" on public.competition_submissions
+  for insert
+  to authenticated
+  with check (
+    submitter_id = auth.uid()
+    and exists (
+      select 1 from public.competitions c
+      where c.id = competition_id
+        and c.published = true
+        and c.status = 'open'
+    )
+  );
+
+create policy "Members withdraw own competition submissions" on public.competition_submissions
+  for update
+  to authenticated
+  using (submitter_id = auth.uid() and status = 'submitted')
+  with check (submitter_id = auth.uid() and status = 'withdrawn');
+
+create or replace function public.review_competition_submission(
+  p_submission_id uuid,
+  p_status text,
+  p_note text default null
+)
+returns public.competition_submissions
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare submission_row public.competition_submissions;
+declare safe_note text := nullif(trim(coalesce(p_note, '')), '');
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+  if not public.is_platform_admin() then raise exception 'Administrator access required'; end if;
+  if p_status not in ('accepted', 'rejected', 'submitted') then
+    raise exception 'Invalid competition review status';
+  end if;
+  if safe_note is not null and char_length(safe_note) > 4000 then
+    raise exception 'Review note is too long';
+  end if;
+
+  update public.competition_submissions
+  set status = p_status,
+      review_note = safe_note,
+      updated_at = now()
+  where id = p_submission_id
+  returning * into submission_row;
+  if not found then raise exception 'Submission not found'; end if;
+  return submission_row;
+end;
+$$;
+
+revoke all on function public.review_competition_submission(uuid, text, text) from public;
+grant execute on function public.review_competition_submission(uuid, text, text) to authenticated;
+
+-- ── Invitations: direct accept blocked; accept_invitation remains the only path ──
+create or replace function public.guard_invitation_update()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if current_setting('app.invitation_accept', true) = 'true' then
+    return new;
+  end if;
+
+  if new.status = 'accepted' and old.status is distinct from 'accepted' then
+    raise exception 'Accept invitations through accept_invitation';
+  end if;
+
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+
+  if public.is_platform_admin() then
+    return new;
+  end if;
+
+  if old.invited_by = auth.uid() then
+    if new.status not in ('pending', 'revoked') then
+      raise exception 'Inviters may only revoke pending invitations';
+    end if;
+    if new.target_id is distinct from old.target_id
+       or new.role_offered is distinct from old.role_offered
+       or new.invitation_type is distinct from old.invitation_type then
+      raise exception 'Invitation target fields are immutable';
+    end if;
+    return new;
+  end if;
+
+  if old.invitee_id = auth.uid()
+     or lower(coalesce(old.email, '')) = lower(coalesce(auth.jwt() ->> 'email', '')) then
+    if new.status <> 'declined' or old.status <> 'pending' then
+      raise exception 'Invitees may only decline pending invitations';
+    end if;
+    if new.target_id is distinct from old.target_id
+       or new.role_offered is distinct from old.role_offered then
+      raise exception 'Invitation target fields are immutable';
+    end if;
+    return new;
+  end if;
+
+  raise exception 'Not authorized to update this invitation';
+end;
+$$;
+
+drop trigger if exists guard_invitation_update_trigger on public.invitations;
+create trigger guard_invitation_update_trigger
+  before update on public.invitations
+  for each row execute function public.guard_invitation_update();
+
+create or replace function public.accept_invitation(p_invitation_id uuid)
+returns public.invitations
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  inv public.invitations;
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+  select * into inv from public.invitations where id = p_invitation_id for update;
+  if not found then raise exception 'Invitation not found'; end if;
+  if inv.invitee_id is distinct from auth.uid()
+     and lower(coalesce(inv.email, '')) <> lower(coalesce(auth.jwt() ->> 'email', ''))
+     and not public.is_platform_admin() then
+    raise exception 'Not authorized';
+  end if;
+  if inv.status <> 'pending' then raise exception 'Invitation is not pending'; end if;
+  if inv.expires_at < now() then
+    update public.invitations set status = 'expired' where id = inv.id;
+    raise exception 'Invitation expired';
+  end if;
+
+  if inv.invitation_type = 'project' then
+    insert into public.project_memberships (project_id, user_id, member_role, status)
+    values (inv.target_id, coalesce(inv.invitee_id, auth.uid()), inv.role_offered, 'active')
+    on conflict (project_id, user_id) do update
+      set status = 'active', member_role = excluded.member_role, left_at = null;
+  elsif inv.invitation_type = 'lab' then
+    insert into public.lab_memberships (lab_id, user_id, member_role, status)
+    values (inv.target_id, coalesce(inv.invitee_id, auth.uid()), inv.role_offered, 'active')
+    on conflict (lab_id, user_id) do update
+      set status = 'active', member_role = excluded.member_role;
+  end if;
+
+  perform set_config('app.invitation_accept', 'true', true);
+  update public.invitations
+    set status = 'accepted',
+        accepted_at = now(),
+        invitee_id = coalesce(invitee_id, auth.uid())
+    where id = inv.id
+    returning * into inv;
+  return inv;
+end;
+$$;
+
+revoke all on function public.accept_invitation(uuid) from public;
+grant execute on function public.accept_invitation(uuid) to authenticated;
+
+-- ── Deliverables: authors revise content; only leads/admins decide status ──
+create or replace function public.guard_project_deliverable_update()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare is_lead boolean;
+begin
+  if current_setting('app.deliverable_review', true) = 'true' then
+    return new;
+  end if;
+
+  select exists (
+    select 1 from public.projects p
+    where p.id = old.project_id and p.lead_id = auth.uid()
+  ) or public.is_platform_admin() into is_lead;
+
+  if coalesce(is_lead, false) then
+    return new;
+  end if;
+
+  if old.submitted_by = auth.uid() then
+    if new.status is distinct from old.status
+       and not (old.status in ('draft', 'changes_requested') and new.status = 'submitted')
+       and not (old.status = 'submitted' and new.status = 'draft') then
+      raise exception 'Deliverable status changes require a project lead';
+    end if;
+    if new.review_note is distinct from old.review_note
+       or new.reviewed_by is distinct from old.reviewed_by then
+      raise exception 'Deliverable review fields require a project lead';
+    end if;
+    return new;
+  end if;
+
+  raise exception 'Not authorized to update this deliverable';
+end;
+$$;
+
+drop trigger if exists guard_project_deliverable_update_trigger on public.project_deliverables;
+create trigger guard_project_deliverable_update_trigger
+  before update on public.project_deliverables
+  for each row execute function public.guard_project_deliverable_update();
+
+create or replace function public.review_project_deliverable(
+  p_deliverable_id uuid,
+  p_status text,
+  p_note text default null
+)
+returns public.project_deliverables
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare deliverable_row public.project_deliverables;
+declare safe_note text := nullif(trim(coalesce(p_note, '')), '');
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+  if p_status not in ('accepted', 'changes_requested', 'submitted') then
+    raise exception 'Invalid deliverable review status';
+  end if;
+  if safe_note is not null and char_length(safe_note) > 4000 then
+    raise exception 'Review note is too long';
+  end if;
+
+  select * into deliverable_row from public.project_deliverables where id = p_deliverable_id for update;
+  if not found then raise exception 'Deliverable not found'; end if;
+  if not public.is_platform_admin()
+     and not exists (
+       select 1 from public.projects p
+       where p.id = deliverable_row.project_id and p.lead_id = auth.uid()
+     ) then
+    raise exception 'Not authorized';
+  end if;
+
+  perform set_config('app.deliverable_review', 'true', true);
+  update public.project_deliverables
+  set status = p_status,
+      review_note = safe_note,
+      reviewed_by = auth.uid(),
+      updated_at = now()
+  where id = p_deliverable_id
+  returning * into deliverable_row;
+  return deliverable_row;
+end;
+$$;
+
+revoke all on function public.review_project_deliverable(uuid, text, text) from public;
+grant execute on function public.review_project_deliverable(uuid, text, text) to authenticated;
+
+-- ── Contributions: drop broad lead UPDATE; assignment stays on the RPC ──
+drop policy if exists "Leads assign contribution reviewers" on public.project_contributions;
+
+-- ── Memberships: leads may read; status changes via RPC only ──
+drop policy if exists "Leads manage project memberships" on public.project_memberships;
+create policy "Leads read project memberships" on public.project_memberships
+  for select
+  to authenticated
+  using (
+    user_id = auth.uid()
+    or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+    or public.is_platform_admin()
+  );
+
+create or replace function public.set_project_membership_status(
+  p_project_id uuid,
+  p_user_id uuid,
+  p_status text
+)
+returns public.project_memberships
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare membership_row public.project_memberships;
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+  if p_status not in ('active', 'paused', 'alumni', 'removed') then
+    raise exception 'Invalid membership status';
+  end if;
+  if not public.is_platform_admin()
+     and not exists (
+       select 1 from public.projects p
+       where p.id = p_project_id and p.lead_id = auth.uid()
+     ) then
+    raise exception 'Not authorized';
+  end if;
+
+  update public.project_memberships
+  set status = p_status,
+      left_at = case when p_status in ('removed', 'alumni') then now() else null end
+  where project_id = p_project_id and user_id = p_user_id
+  returning * into membership_row;
+  if not found then raise exception 'Membership not found'; end if;
+  return membership_row;
+end;
+$$;
+
+revoke all on function public.set_project_membership_status(uuid, uuid, text) from public;
+grant execute on function public.set_project_membership_status(uuid, uuid, text) to authenticated;
+
+-- ── Application answers only while the application is still pending ──
+drop policy if exists "Applicants insert answers" on public.project_application_answers;
+create policy "Applicants insert answers" on public.project_application_answers
+  for insert
+  to authenticated
+  with check (
+    exists (
+      select 1
+      from public.project_applications a
+      join public.project_application_questions q on q.id = question_id
+      where a.id = application_id
+        and a.user_id = auth.uid()
+        and a.status = 'pending'
+        and q.project_id = a.project_id
+    )
+  );
+
+grant update on table public.project_application_answers to authenticated;
+drop policy if exists "Applicants revise pending answers" on public.project_application_answers;
+create policy "Applicants revise pending answers" on public.project_application_answers
+  for update
+  to authenticated
+  using (
+    exists (
+      select 1 from public.project_applications a
+      where a.id = application_id and a.user_id = auth.uid() and a.status = 'pending'
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.project_applications a
+      where a.id = application_id and a.user_id = auth.uid() and a.status = 'pending'
+    )
+  );
+
+-- ── Claims: evidence URL required server-side at verify time ──
+create or replace function public.review_institutional_claim(
+  p_claim_id uuid,
+  p_status text
+)
+returns public.institutional_claims
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare claim_row public.institutional_claims;
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+  if not public.is_platform_admin() then raise exception 'Administrator access required'; end if;
+  if p_status not in ('verified', 'retired') then
+    raise exception 'Invalid claim review status';
+  end if;
+
+  select * into claim_row from public.institutional_claims where id = p_claim_id for update;
+  if not found then raise exception 'Claim not found'; end if;
+
+  if p_status = 'verified' then
+    if claim_row.evidence_url is null
+       or claim_row.evidence_url !~* '^https?://'
+       or char_length(trim(coalesce(claim_row.evidence_label, ''))) < 2 then
+      raise exception 'Verified claims require an https evidence URL and label';
+    end if;
+  end if;
+
+  update public.institutional_claims
+  set status = p_status,
+      reviewed_by = auth.uid(),
+      reviewed_at = now(),
+      updated_at = now()
+  where id = p_claim_id
+  returning * into claim_row;
+  return claim_row;
+end;
+$$;
+
+revoke all on function public.review_institutional_claim(uuid, text) from public;
+grant execute on function public.review_institutional_claim(uuid, text) to authenticated;
+
+-- ── Published projects: keep experiments/datasets collaborator-scoped ──
+drop policy if exists "Collaborators read project experiments" on public.project_experiments;
+create policy "Collaborators read project experiments" on public.project_experiments
+  for select
+  to authenticated
+  using (
+    public.is_platform_admin()
+    or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+    or exists (
+      select 1 from public.project_memberships pm
+      where pm.project_id = project_experiments.project_id
+        and pm.user_id = auth.uid()
+        and pm.status in ('active', 'paused')
+    )
+  );
+
+drop policy if exists "Collaborators read project datasets" on public.project_datasets;
+create policy "Collaborators read project datasets" on public.project_datasets
+  for select
+  to authenticated
+  using (
+    public.is_platform_admin()
+    or exists (select 1 from public.projects p where p.id = project_id and p.lead_id = auth.uid())
+    or exists (
+      select 1 from public.project_memberships pm
+      where pm.project_id = project_datasets.project_id
+        and pm.user_id = auth.uid()
+        and pm.status in ('active', 'paused')
+    )
+  );
+
+-- ── Seed institution program cycles so public CTAs resolve to applyable rows ──
+insert into public.programs (
+  slug, title, program_type, summary, application_instructions,
+  capacity, applications_open_at, applications_close_at, outcomes, published
+)
+values
+  (
+    'research-fellowship',
+    'Research Fellowship',
+    'fellowship',
+    'A structured research cycle: clarify a question, run disciplined experiments, and leave a public project record with evidence, limitations, and next decisions.',
+    'Submit a 40+ character statement covering the question you would pursue, relevant prior work, and weekly availability.',
+    12,
+    now() - interval '1 day',
+    now() + interval '90 days',
+    'Scoped research charter; milestone and contribution history; optional research note; demo or written postmortem.',
+    true
+  ),
+  (
+    'startup-incubation',
+    'Startup Incubation',
+    'incubation',
+    'For builders testing whether a technical thread deserves a product prototype and early user conversations — not a fundraising narrative.',
+    'Describe the product claim, current prototype state, kill criteria, and founding-team commitment.',
+    8,
+    now() - interval '1 day',
+    now() + interval '90 days',
+    'Working prototype; evaluator sessions; go / pivot / stop decision memo.',
+    true
+  ),
+  (
+    'ai-builder-cohort',
+    'AI Builder Cohort',
+    'cohort',
+    'A project-driven cohort that turns a scoped technical question into a reproducible prototype, clear documentation, and a final demo.',
+    'Name the prototype you intend to ship in 12 weeks and the skills you bring to weekly demos.',
+    24,
+    now() - interval '1 day',
+    now() + interval '90 days',
+    'Weekly shipping cadence; peer review of demos; final demo day artifact.',
+    true
+  )
+on conflict (slug) do update
+set title = excluded.title,
+    program_type = excluded.program_type,
+    summary = excluded.summary,
+    application_instructions = excluded.application_instructions,
+    capacity = excluded.capacity,
+    applications_open_at = excluded.applications_open_at,
+    applications_close_at = excluded.applications_close_at,
+    outcomes = excluded.outcomes,
+    published = true,
+    updated_at = now();
+
+insert into public.schema_migrations (phase)
+values ('phase31')
+on conflict (phase) do nothing;
+-- END supabase/phase31.sql
+
+-- BEGIN supabase/phase32.sql
+-- phase32: contribution self-verify ban + leadership ops counters support
+-- Extends review_project_contribution / assign_contribution_reviewer.
+
+create or replace function public.review_project_contribution(
+  p_contribution_id uuid,
+  p_status text,
+  p_note text default null
+)
+returns public.project_contributions
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare contribution_row public.project_contributions;
+declare safe_note text := nullif(trim(coalesce(p_note, '')), '');
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+  if p_status not in ('verified', 'needs_changes') then raise exception 'Invalid verification status'; end if;
+  if safe_note is not null and char_length(safe_note) > 2000 then raise exception 'Verification note is too long'; end if;
+  if p_status = 'needs_changes' and safe_note is null then raise exception 'A revision request requires a note'; end if;
+
+  select * into contribution_row
+  from public.project_contributions
+  where id = p_contribution_id
+  for update;
+  if not found then raise exception 'Contribution not found'; end if;
+
+  -- Never allow the contributor to verify (or request changes on) their own submission,
+  -- even if they are the project lead or a platform administrator.
+  if contribution_row.contributor_id = auth.uid() then
+    raise exception 'Contributors cannot review their own submissions';
+  end if;
+
+  if not (
+    public.is_platform_admin()
+    or exists (
+      select 1 from public.projects p
+      where p.id = contribution_row.project_id and p.lead_id = auth.uid()
+    )
+    or contribution_row.assigned_reviewer_id = auth.uid()
+  ) then
+    raise exception 'Only the project lead, assigned reviewer, or an administrator may review contributions';
+  end if;
+
+  perform set_config('app.contribution_review', 'true', true);
+  update public.project_contributions
+  set verification_status = p_status,
+      verification_note = safe_note,
+      verified_by = auth.uid(),
+      verified_at = now(),
+      updated_at = now()
+  where id = p_contribution_id
+  returning * into contribution_row;
+  return contribution_row;
+end;
+$$;
+
+revoke all on function public.review_project_contribution(uuid, text, text) from public;
+grant execute on function public.review_project_contribution(uuid, text, text) to authenticated;
+
+create or replace function public.assign_contribution_reviewer(
+  p_contribution_id uuid,
+  p_reviewer_id uuid
+)
+returns public.project_contributions
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare contribution_row public.project_contributions;
+begin
+  if auth.uid() is null then raise exception 'Not authenticated'; end if;
+
+  select * into contribution_row
+  from public.project_contributions
+  where id = p_contribution_id
+  for update;
+  if not found then raise exception 'Contribution not found'; end if;
+
+  if not (
+    public.is_platform_admin()
+    or exists (
+      select 1 from public.projects p
+      where p.id = contribution_row.project_id and p.lead_id = auth.uid()
+    )
+  ) then
+    raise exception 'Only the project lead or an administrator may assign reviewers';
+  end if;
+
+  if p_reviewer_id is not null and p_reviewer_id = contribution_row.contributor_id then
+    raise exception 'Contributors cannot be assigned as reviewers of their own submissions';
+  end if;
+
+  if p_reviewer_id is not null and not exists (
+    select 1 from public.profiles where id = p_reviewer_id
+  ) then
+    raise exception 'Reviewer profile not found';
+  end if;
+
+  update public.project_contributions
+  set assigned_reviewer_id = p_reviewer_id,
+      updated_at = now()
+  where id = p_contribution_id
+  returning * into contribution_row;
+  return contribution_row;
+end;
+$$;
+
+revoke all on function public.assign_contribution_reviewer(uuid, uuid) from public;
+grant execute on function public.assign_contribution_reviewer(uuid, uuid) to authenticated;
+
+insert into public.schema_migrations (phase) values ('phase32')
+on conflict (phase) do nothing;
+
+-- END supabase/phase32.sql

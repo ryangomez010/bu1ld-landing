@@ -1,14 +1,18 @@
-import { Link } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Menu } from "lucide-react";
+import { useState, type ReactNode } from "react";
 
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { PageBackground } from "@/components/layout/PageBackground";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Wordmark } from "@/components/Wordmark";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const PUBLIC_NAV = [
   { label: "Labs", to: "/labs" },
+  { label: "Projects", to: "/projects" },
   { label: "Programs", to: "/programs-public" },
   { label: "Competitions", to: "/competitions" },
   { label: "People", to: "/people" },
@@ -25,6 +29,14 @@ type InstitutionLayoutProps = {
   className?: string;
 };
 
+function navActive(pathname: string, to: string): boolean {
+  if (pathname === to) return true;
+  if (to === "/labs") return pathname.startsWith("/labs/");
+  if (to === "/projects") return pathname.startsWith("/projects/");
+  if (to === "/competitions") return pathname.startsWith("/competitions/");
+  return false;
+}
+
 export function InstitutionLayout({
   children,
   title,
@@ -33,6 +45,8 @@ export function InstitutionLayout({
   className,
 }: InstitutionLayoutProps) {
   const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -44,23 +58,30 @@ export function InstitutionLayout({
       </a>
       <PageBackground density={80} />
       <header className="relative z-20 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <Link to="/" className="flex items-center gap-3">
             <Wordmark />
             <span className="hidden font-mono text-[9px] uppercase tracking-[0.28em] text-muted-foreground sm:inline">
               Institution
             </span>
           </Link>
-          <nav className="hidden items-center gap-5 lg:flex">
-            {PUBLIC_NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground transition hover:text-bone"
-              >
-                {item.label}
-              </Link>
-            ))}
+          <nav className="hidden items-center gap-5 lg:flex" aria-label="Institution">
+            {PUBLIC_NAV.map((item) => {
+              const active = navActive(pathname, item.to);
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "font-mono text-[10px] uppercase tracking-[0.18em] transition hover:text-bone",
+                    active ? "text-bone" : "text-muted-foreground",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
           <div className="flex items-center gap-2">
             {user ? (
@@ -86,19 +107,49 @@ export function InstitutionLayout({
                 </Link>
               </>
             )}
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden text-bone"
+                  aria-label="Open menu"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="border-border/60 bg-background/95 backdrop-blur-xl"
+              >
+                <SheetHeader>
+                  <SheetTitle className="font-display text-left">
+                    <Wordmark />
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="mt-8 flex flex-col gap-4" aria-label="Mobile institution">
+                  {PUBLIC_NAV.map((item) => {
+                    const active = navActive(pathname, item.to);
+                    return (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        aria-current={active ? "page" : undefined}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "font-mono text-sm uppercase tracking-[0.18em] transition hover:text-bone",
+                          active ? "text-bone" : "text-muted-foreground",
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-6xl gap-4 overflow-x-auto border-t border-border/40 px-6 py-3 lg:hidden">
-          {PUBLIC_NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="shrink-0 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground hover:text-bone"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
       </header>
 
       <main

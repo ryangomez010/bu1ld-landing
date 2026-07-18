@@ -74,6 +74,28 @@ export async function upsertProfile(userId: string, patch: Partial<Profile>): Pr
       .filter(Boolean)
       .slice(0, 8);
   }
+  if (safe.desired_roles != null) {
+    safe.desired_roles = safe.desired_roles
+      .map((r) => clampText(r, 80))
+      .filter(Boolean)
+      .slice(0, 12);
+  }
+  if (safe.member_skills != null) {
+    safe.member_skills = safe.member_skills
+      .map((s) => clampText(s, 60))
+      .filter(Boolean)
+      .slice(0, 24);
+  }
+  if (safe.availability_hours_per_week != null) {
+    const hours = Number(safe.availability_hours_per_week);
+    safe.availability_hours_per_week = Number.isFinite(hours)
+      ? Math.max(0, Math.min(80, Math.round(hours)))
+      : null;
+  }
+  if (safe.experience_level != null) {
+    const allowed = ["student", "early_career", "mid_career", "senior", "researcher"];
+    safe.experience_level = allowed.includes(safe.experience_level) ? safe.experience_level : null;
+  }
 
   const { data, error } = await supabase
     .from("profiles")

@@ -83,6 +83,12 @@ const TABLES = [
   "invitations",
   "project_experiments",
   "project_deliverables",
+  "research_paths",
+  "research_path_steps",
+  "research_path_progress",
+  "project_application_questions",
+  "project_application_answers",
+  "project_datasets",
   "schema_migrations",
 ];
 

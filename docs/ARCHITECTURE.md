@@ -1,6 +1,53 @@
 # Architecture
 
-Status: active-product architecture reference.
+Status: active-product architecture reference. **Canonical context:** [PROJECT_MEMORY.md](./PROJECT_MEMORY.md). Updated 2026-07-18 (through phase32).
+
+## Architecture map
+
+```mermaid
+flowchart TB
+  subgraph client [Browser]
+    PublicRoutes[PublicRoutes]
+    MemberShell[MemberShell_RequireMember]
+    AdminConsole[AdminConsole_RequireAdmin]
+  end
+
+  subgraph server [ServerRuntime]
+    TanStackStart[TanStackStart_SSR]
+    EmailAPI[api/email.ts]
+    DigestAPI[api/digest.ts]
+    DeletionAPI[api/account-deletion.ts]
+  end
+
+  subgraph supabase [Supabase]
+    Auth[Auth]
+    Postgres[(Postgres_RLS)]
+    Storage[Storage]
+    RPC[GuardedRPCs]
+  end
+
+  PublicRoutes --> TanStackStart
+  MemberShell --> TanStackStart
+  AdminConsole --> TanStackStart
+  TanStackStart --> Auth
+  TanStackStart --> Postgres
+  TanStackStart --> Storage
+  TanStackStart --> RPC
+  EmailAPI --> Postgres
+  DigestAPI --> Postgres
+  DeletionAPI --> Auth
+```
+
+## Layer reference
+
+| Layer          | Paths                                                  | Detail doc                                             |
+| -------------- | ------------------------------------------------------ | ------------------------------------------------------ |
+| Public site    | `src/routes/index.tsx`, labs, apply, evidence          | [PRODUCT_SPEC.md](./PRODUCT_SPEC.md)                   |
+| Member portal  | `src/routes/dashboard.tsx`, projects, papers, research | [USER_FLOW_MAP.md](./USER_FLOW_MAP.md)                 |
+| Project engine | `src/lib/projects.ts`, `project-collaboration.ts`      | [DATA_MODEL.md](./DATA_MODEL.md)                       |
+| Admin          | `src/routes/admin/`, `src/components/admin/*`          | [SYSTEM_MAP.md](./SYSTEM_MAP.md)                       |
+| Security       | `src/lib/security.ts`, `supabase/phase*.sql`           | [SECURITY_REVIEW.md](./SECURITY_REVIEW.md)             |
+| Release        | `scripts/release-readiness.mjs`                        | [LAST_KNOWN_GOOD_STATE.md](./LAST_KNOWN_GOOD_STATE.md) |
 
 ## Stack
 
@@ -9,8 +56,9 @@ Status: active-product architecture reference.
 - Backend: Supabase Auth, Postgres, Row Level Security, Storage, and SQL RPCs.
 - Runtime APIs: Vercel/Cloudflare-compatible handlers for email, digest, and
   account deletion.
-- Tooling: Bun scripts, TypeScript, ESLint, Bun tests, Supabase verification
-  scripts, release readiness script, Vercel and Cloudflare configs.
+- Tooling: Bun scripts, TypeScript, ESLint, Bun tests, route smoke script,
+  Supabase verification scripts, release readiness script, Vercel and Cloudflare
+  configs.
 
 ## Product Areas
 
@@ -19,7 +67,7 @@ Status: active-product architecture reference.
 - Member shell: dashboard, search, saved items, applications, notifications,
   profile, account settings, and learning/research work.
 - Project workspaces: lead-created projects, applications, collaboration,
-  contribution evidence, review, updates, and governed publication.
+  contribution evidence, assigned reviewers, updates, and governed publication.
 - Admin console: publishable content, members, claims, moderation, reports,
   audit/security, programmes, papers, projects, jobs, guides, events, and bulk
   operations.
@@ -28,11 +76,17 @@ Status: active-product architecture reference.
 
 The browser handles interaction and optimistic state only. Supabase RLS, SQL
 functions, and server/API handlers must enforce identity, ownership, roles,
-publication state, application windows, evidence review, and destructive account
-operations.
+publication state, application windows, evidence review (lead/admin or assigned
+reviewer), and destructive account operations.
 
 Local seed fallbacks are development-only. Production must use live Supabase
 data and real empty states when records do not exist.
+
+## Schema chain
+
+Migrations live under `supabase/schema.sql` + `phase2.sql` … `phase27.sql`,
+bundled as `FINAL_SETUP.sql`. Notable late phases: phase26 (research paths,
+datasets, public papers catalog), phase27 (assigned contribution reviewers).
 
 ## Deployment Boundary
 

@@ -52,11 +52,13 @@ function ProgramsContent() {
         then leave with an artifact, a research record, or a working prototype.
       </p>
       <div className="mb-6 flex flex-wrap items-center gap-2">
-        {(["all", "cohort", "fellowship", "workshop"] as const).map((item) => (
-          <FilterChip key={item} active={type === item} onClick={() => setType(item)}>
-            {item}
-          </FilterChip>
-        ))}
+        {(["all", "cohort", "fellowship", "workshop", "incubation", "competition"] as const).map(
+          (item) => (
+            <FilterChip key={item} active={type === item} onClick={() => setType(item)}>
+              {item}
+            </FilterChip>
+          ),
+        )}
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}

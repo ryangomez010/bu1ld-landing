@@ -46,7 +46,7 @@ function seedAnnouncements(): Announcement[] {
   });
 }
 
-export async function fetchAnnouncements(): Promise<Announcement[]> {
+export async function fetchAnnouncements(limit = 10): Promise<Announcement[]> {
   const supabase = getSupabase();
   if (supabase) {
     const { data, error } = await supabase
@@ -55,7 +55,7 @@ export async function fetchAnnouncements(): Promise<Announcement[]> {
       .eq("published", true)
       .order("pinned", { ascending: false })
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(Math.max(1, Math.min(100, limit)));
     if (!error) {
       return withSeedFallback(
         (data ?? []).map((r) => normalize(r as Record<string, unknown>)),
@@ -69,7 +69,8 @@ export async function fetchAnnouncements(): Promise<Announcement[]> {
     .sort((a, b) => {
       if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
       return b.created_at.localeCompare(a.created_at);
-    });
+    })
+    .slice(0, Math.max(1, Math.min(100, limit)));
 }
 
 export async function fetchAllAnnouncementsAdmin(): Promise<Announcement[]> {

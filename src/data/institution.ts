@@ -31,8 +31,17 @@ export type InstitutionProgram = {
   duration: string;
   selectivity: string;
   summary: string;
+  /** What the program exists to accomplish. */
+  objective: string;
+  /** Expected weekly / cycle commitment. */
+  commitment: string;
+  /** Schedule framing (dates may be TBA until a live cycle is published). */
+  timeline: string;
+  /** Honest operating status for visitors. */
+  status: "open" | "rolling" | "upcoming" | "closed";
   outcomes: string[];
   whoFor: string;
+  /** Member-portal or competitions destination after auth. */
   applyHref: string;
 };
 
@@ -193,9 +202,15 @@ export const INSTITUTION_PROGRAMS: InstitutionProgram[] = [
     name: "Research Fellowship",
     kind: "fellowship",
     duration: "6 months, selective",
-    selectivity: "Application + interview",
+    selectivity: "Written application + interview with a lab lead",
     summary:
       "A structured research cycle: clarify a question, run disciplined experiments, and leave a public project record with evidence, limitations, and next decisions.",
+    objective:
+      "Produce a falsifiable research charter, executed milestones, and an evidence-backed record other members can inspect.",
+    commitment: "About 8–12 hours per week, including a weekly research sync.",
+    timeline:
+      "Six-month cycles. Exact start dates publish when a live cohort opens in the member portal.",
+    status: "rolling",
     outcomes: [
       "Scoped research charter",
       "Milestone and contribution history",
@@ -203,45 +218,60 @@ export const INSTITUTION_PROGRAMS: InstitutionProgram[] = [
       "Demo or written postmortem",
     ],
     whoFor: "Researchers, advanced students, and engineers ready to own a methodological thread.",
-    applyHref: "/apply?program=research-fellowship",
+    applyHref: "/programs/research-fellowship",
   },
   {
     slug: "startup-incubation",
     name: "Startup Incubation",
     kind: "incubation",
     duration: "Ongoing, stage-gated",
-    selectivity: "Active build + clear kill criteria",
+    selectivity: "Active build + clear kill criteria reviewed by a lead",
     summary:
       "For builders testing whether a technical thread deserves a product prototype and early user conversations — not a fundraising narrative.",
+    objective:
+      "Decide go / pivot / stop with a working prototype, evaluator sessions, and a written decision memo.",
+    commitment: "Founding-team intensity — typically 15+ hours per week while a stage is open.",
+    timeline: "Stage-gated. Each stage has an explicit review date before the next commitment.",
+    status: "rolling",
     outcomes: [
       "Working prototype with documented scope",
       "User or evaluator sessions",
       "Go / pivot / stop decision memo",
     ],
     whoFor: "Founders and founding engineers with a narrow, testable product claim.",
-    applyHref: "/apply?program=startup-incubation",
+    applyHref: "/programs/startup-incubation",
   },
   {
     slug: "ai-builder-cohort",
     name: "AI Builder Cohort",
     kind: "cohort",
     duration: "12 weeks, rolling admission",
-    selectivity: "Open with capacity limits per wave",
+    selectivity: "Open application with capacity limits per wave",
     summary:
       "A project-driven cohort that turns a scoped technical question into a reproducible prototype, clear documentation, and a final demo.",
+    objective:
+      "Ship a scoped prototype with weekly demos, peer review, and a final demo-day artifact.",
+    commitment: "6–10 hours per week plus demo day at the end of the wave.",
+    timeline: "12-week waves. Admission rolls until the wave is full.",
+    status: "rolling",
     outcomes: ["Weekly shipping cadence", "Peer review of demos", "Final demo day artifact"],
     whoFor:
       "Engineers, researchers, and students who want structured practice shipping ML systems.",
-    applyHref: "/apply?program=ai-builder-cohort",
+    applyHref: "/programs/ai-builder-cohort",
   },
   {
     slug: "open-competitions",
     name: "Competitions",
     kind: "competition",
     duration: "Varies by challenge",
-    selectivity: "Public entry when a challenge is open",
+    selectivity: "Public entry when a challenge status is open",
     summary:
       "Time-boxed challenges with published evaluation protocols. Winning means beating the protocol — not networking.",
+    objective:
+      "Evaluate submissions against a frozen protocol and surface strong work into lab threads.",
+    commitment: "Challenge-specific; published with each open call.",
+    timeline: "Challenges remain upcoming until evaluation rules and deadlines are frozen.",
+    status: "upcoming",
     outcomes: [
       "Public leaderboard or judged review",
       "Reproducible submission package",

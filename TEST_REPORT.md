@@ -7,7 +7,7 @@ Generated during the final production-hardening pass.
 | Command                 | Result          | Notes                                                                                                                                                                                       |
 | ----------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bun run typecheck`     | Passed          | TypeScript route, schema, and library types compile.                                                                                                                                        |
-| `bun run test`          | Passed          | 90 tests passed across 18 files, including paper analyzer, release artifacts, role helpers, auth guards, security utilities, digest/email handlers, production copy, and content integrity. |
+| `bun run test`          | Passed          | 95 tests passed across 19 files, including paper analyzer, release artifacts, role helpers, auth guards, security utilities, digest/email handlers, production copy, and content integrity. |
 | `bun run format`        | Passed          | Prettier completed across source, docs, scripts, SQL, and configuration files.                                                                                                              |
 | `bun run lint`          | Passed          | ESLint completed without reported errors.                                                                                                                                                   |
 | `bun run build`         | Passed          | Production client and SSR builds completed successfully.                                                                                                                                    |
@@ -19,7 +19,7 @@ Generated during the final production-hardening pass.
 - Paper analyzer library validation, SHA-256 hashing, structural extraction, and safety note behavior.
 - Member-only paper analyzer route with loading, empty, success, error, and database-unavailable states.
 - Private `paper_analyses` Supabase table with explicit authenticated grants, anon revocation, row-level security, JSON-shape constraints, and setup verification.
-- Release gate updated to require all final migrations through phase 24 and this test report.
+- Release gate updated to require all final migrations through phase 25 and this test report.
 
 ## Manual production checks after environment setup
 

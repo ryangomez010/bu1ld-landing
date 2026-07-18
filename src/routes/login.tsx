@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
@@ -11,8 +12,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
 import { guardAuthAttempt } from "@/lib/auth-rate-limit";
+import {
+  postAuthDestination,
+  postAuthNavigateTarget,
+  rememberPostAuthRedirect,
+} from "@/lib/post-auth-redirect";
+import { sanitizeAppPath } from "@/lib/security";
+
+const loginSearchSchema = z.object({
+  redirect: z.string().optional(),
+});
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search) => loginSearchSchema.parse(search),
   component: LoginPage,
   head: () => ({
     meta: [{ title: "Log in — The Bu1ld" }],
@@ -20,14 +32,17 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
+  const { redirect } = Route.useSearch();
+  const destination = postAuthDestination(redirect);
   return (
-    <RedirectIfAuthed to="/dashboard">
+    <RedirectIfAuthed to={destination}>
       <LoginForm />
     </RedirectIfAuthed>
   );
 }
 
 function LoginForm() {
+  const { redirect } = Route.useSearch();
   const { signIn, configured } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -49,8 +64,11 @@ function LoginForm() {
       return;
     }
     toast.success("Welcome back.");
-    void navigate({ to: "/dashboard" });
+    rememberPostAuthRedirect(redirect);
+    void navigate(postAuthNavigateTarget(redirect));
   };
+
+  const signupSearch = sanitizeAppPath(redirect) ? { redirect: sanitizeAppPath(redirect) } : {};
 
   return (
     <AuthLayout
@@ -98,7 +116,11 @@ function LoginForm() {
       <OAuthButtons />
       <p className="mt-6 text-center text-sm text-muted-foreground">
         No account?{" "}
-        <Link to="/signup" className="text-accent-blue hover:text-bone transition">
+        <Link
+          to="/signup"
+          search={signupSearch}
+          className="text-accent-blue hover:text-bone transition"
+        >
           Become a member
         </Link>
       </p>

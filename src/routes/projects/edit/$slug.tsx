@@ -16,9 +16,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/lib/auth";
+import { fetchPublishedLabs } from "@/lib/labs";
 import { fetchProjectBySlug, updateProject } from "@/lib/projects";
 import { projectManageLink } from "@/lib/app-paths";
-import type { Project, ProjectStatus, ProjectType } from "@/lib/types";
+import type { Lab, Project, ProjectStatus, ProjectType } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/edit/$slug")({
   component: EditProjectPage,
@@ -37,6 +39,7 @@ function EditProjectPage() {
 function EditProjectForm() {
   const { slug } = Route.useParams();
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -45,11 +48,19 @@ function EditProjectForm() {
   const [skills, setSkills] = useState("");
   const [tags, setTags] = useState("");
   const [capacity, setCapacity] = useState("5");
+  const [weeklyHours, setWeeklyHours] = useState("");
   const [discordUrl, setDiscordUrl] = useState("");
   const [workspaceLinksText, setWorkspaceLinksText] = useState("");
-  const [published, setPublished] = useState(true);
+  const [labId, setLabId] = useState("none");
+  const [labs, setLabs] = useState<Lab[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    void fetchPublishedLabs().then((rows) =>
+      setLabs(rows.filter((l) => !l.id.startsWith("seed-"))),
+    );
+  }, []);
 
   useEffect(() => {
     void fetchProjectBySlug(slug).then((p) => {
@@ -62,11 +73,12 @@ function EditProjectForm() {
         setSkills(p.skills_needed.join(", "));
         setTags(p.tags.join(", "));
         setCapacity(String(p.capacity));
+        setWeeklyHours(p.weekly_commitment_hours != null ? String(p.weekly_commitment_hours) : "");
         setDiscordUrl(p.discord_url ?? "");
         setWorkspaceLinksText(
           (p.workspace_links ?? []).map((l) => `${l.label} | ${l.url}`).join("\n"),
         );
-        setPublished(p.published);
+        setLabId(p.lab_id && !p.lab_id.startsWith("seed-") ? p.lab_id : "none");
       }
       setLoading(false);
     });
@@ -87,6 +99,7 @@ function EditProjectForm() {
       })
       .filter((l) => l.label && l.url);
 
+    const hoursParsed = weeklyHours.trim() ? Number(weeklyHours) : null;
     const { error } = await updateProject(project.id, {
       title,
       description,
@@ -101,9 +114,11 @@ function EditProjectForm() {
         .map((s) => s.trim())
         .filter(Boolean),
       capacity: Number(capacity) || 5,
+      weekly_commitment_hours:
+        hoursParsed != null && Number.isFinite(hoursParsed) ? hoursParsed : null,
       discord_url: discordUrl || null,
       workspace_links,
-      published,
+      lab_id: labId === "none" ? null : labId,
     });
     setSubmitting(false);
     if (error) {
@@ -128,6 +143,20 @@ function EditProjectForm() {
     return (
       <MemberLayout title="Not found">
         <Link to="/projects/manage" className="text-accent-blue text-sm">
+          ← My projects
+        </Link>
+      </MemberLayout>
+    );
+  }
+
+  if (project.lead_id !== user?.id && profile?.role !== "admin") {
+    return (
+      <MemberLayout title="Project access denied" eyebrow="project lead">
+        <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+          You can edit only projects you lead. Project roles do not grant access to another
+          lead&apos;s private brief or management controls.
+        </p>
+        <Link to="/projects/manage" className="mt-5 inline-block text-sm text-accent-blue">
           ← My projects
         </Link>
       </MemberLayout>
@@ -167,8 +196,30 @@ function EditProjectForm() {
                 <SelectItem value="closed">Closed</SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Open accepts applications. Active keeps the workspace available but closes intake.
+              Closed preserves the project as a read-only alumni record.
+            </p>
           </div>
         </div>
+        {labs.length > 0 || labId !== "none" ? (
+          <div className="space-y-2">
+            <Label>Lab (optional)</Label>
+            <Select value={labId} onValueChange={setLabId}>
+              <SelectTrigger>
+                <SelectValue placeholder="No lab" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No lab</SelectItem>
+                {labs.map((lab) => (
+                  <SelectItem key={lab.id} value={lab.id}>
+                    {lab.short_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
           <Textarea
@@ -200,6 +251,18 @@ function EditProjectForm() {
             />
           </div>
           <div className="space-y-2">
+            <Label htmlFor="weeklyHours">Expected hours / week</Label>
+            <Input
+              id="weeklyHours"
+              type="number"
+              min={1}
+              max={60}
+              value={weeklyHours}
+              onChange={(e) => setWeeklyHours(e.target.value)}
+              placeholder="Optional"
+            />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="discord">Discord URL</Label>
             <Input
               id="discord"
@@ -222,14 +285,10 @@ function EditProjectForm() {
             Shown to accepted members in the project workspace panel.
           </p>
         </div>
-        <label className="flex items-center gap-2 text-sm text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={published}
-            onChange={(e) => setPublished(e.target.checked)}
-          />
-          Published on project board
-        </label>
+        <p className="rounded-sm border border-border/50 bg-bone/[0.02] p-4 text-xs leading-relaxed text-muted-foreground">
+          Publication is controlled by institutional review. Edit the brief and submit revisions
+          from My projects; administrators publish or archive the public listing.
+        </p>
         <div className="flex flex-wrap gap-3">
           <Button
             type="submit"
@@ -237,27 +296,6 @@ function EditProjectForm() {
             className="font-mono text-[10px] tracking-[0.2em] uppercase"
           >
             {submitting ? "Saving…" : "Save changes"}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            disabled={submitting}
-            onClick={() => {
-              setPublished(false);
-              void (async () => {
-                setSubmitting(true);
-                const { error } = await updateProject(project.id, { published: false });
-                setSubmitting(false);
-                if (error) toast.error(error);
-                else {
-                  toast.success("Project unpublished.");
-                  void navigate({ to: "/projects/manage" });
-                }
-              })();
-            }}
-            className="font-mono text-[10px] tracking-[0.2em] uppercase text-accent-red"
-          >
-            Unpublish
           </Button>
           <Link
             {...projectManageLink(project.slug)}

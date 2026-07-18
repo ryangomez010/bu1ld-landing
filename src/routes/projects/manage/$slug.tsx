@@ -11,6 +11,7 @@ import { ListSkeleton } from "@/components/member/LoadingState";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { PageBackLink } from "@/components/member/PageBackLink";
 import { ApplicationStatusBadge } from "@/components/member/ProjectBadges";
+import { ProjectWorkspaceExtras } from "@/components/member/ProjectWorkspaceExtras";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import {
+  addProjectQuestion,
+  deleteProjectQuestion,
+  fetchAnswersForApplications,
+  fetchProjectQuestions,
+  type ApplicationAnswerRow,
+  type ProjectApplicationQuestion,
+} from "@/lib/project-application-questions";
 import {
   bulkUpdateApplicationStatus,
   fetchProjectApplications,
@@ -40,7 +50,6 @@ import type {
   ProjectApplication,
   ProjectMembership,
 } from "@/lib/types";
-import { Input } from "@/components/ui/input";
 
 const STATUS_HELP: Record<ApplicationStatus, string> = {
   pending: "Awaiting your review — accept, waitlist, or decline.",
@@ -65,7 +74,7 @@ function ManageProjectPage() {
 
 function ManageProject() {
   const { slug } = Route.useParams();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [applications, setApplications] = useState<ProjectApplication[]>([]);
   const [memberships, setMemberships] = useState<ProjectMembership[]>([]);
@@ -76,11 +85,19 @@ function ManageProject() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("contributor");
   const [inviteBusy, setInviteBusy] = useState(false);
+  const [questions, setQuestions] = useState<ProjectApplicationQuestion[]>([]);
+  const [answersByApp, setAnswersByApp] = useState<Map<string, ApplicationAnswerRow[]>>(new Map());
+  const [newQuestion, setNewQuestion] = useState("");
+  const [questionBusy, setQuestionBusy] = useState(false);
 
   const reload = useCallback(() => {
     if (!project) return;
-    void fetchProjectApplications(project.id).then(setApplications);
+    void fetchProjectApplications(project.id).then(async (apps) => {
+      setApplications(apps);
+      setAnswersByApp(await fetchAnswersForApplications(apps.map((a) => a.id)));
+    });
     void fetchProjectMemberships(project.id).then(setMemberships);
+    void fetchProjectQuestions(project.id).then(setQuestions);
   }, [project]);
 
   useEffect(() => {
@@ -88,8 +105,12 @@ function ManageProject() {
       setProject(p);
       setLoading(false);
       if (p) {
-        void fetchProjectApplications(p.id).then(setApplications);
+        void fetchProjectApplications(p.id).then(async (apps) => {
+          setApplications(apps);
+          setAnswersByApp(await fetchAnswersForApplications(apps.map((a) => a.id)));
+        });
         void fetchProjectMemberships(p.id).then(setMemberships);
+        void fetchProjectQuestions(p.id).then(setQuestions);
       }
     });
   }, [slug]);
@@ -147,6 +168,20 @@ function ManageProject() {
     return (
       <MemberLayout title="Not found">
         <Link to="/projects/manage" className="text-accent-blue text-sm">
+          ← My projects
+        </Link>
+      </MemberLayout>
+    );
+  }
+
+  if (project.lead_id !== user?.id && profile?.role !== "admin") {
+    return (
+      <MemberLayout title="Project access denied" eyebrow="project lead">
+        <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Application queues, team membership, and internal project resources are available only to
+          this project&apos;s lead and platform administrators.
+        </p>
+        <Link to="/projects/manage" className="mt-5 inline-block text-sm text-accent-blue">
           ← My projects
         </Link>
       </MemberLayout>
@@ -395,6 +430,87 @@ function ManageProject() {
         </button>
       ) : null}
 
+      <section className="mb-10 rounded-sm border border-border/50 p-5">
+        <h2 className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          Application questions
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Optional prompts shown on the project apply form. Answers appear below each pitch in this
+          queue.
+        </p>
+        <ul className="mt-4 space-y-2">
+          {questions.length === 0 ? (
+            <li className="text-sm text-muted-foreground">No custom questions yet.</li>
+          ) : (
+            questions.map((q) => (
+              <li
+                key={q.id}
+                className="flex flex-wrap items-start justify-between gap-3 rounded-sm border border-border/40 px-3 py-2"
+              >
+                <p className="text-sm text-bone">
+                  {q.prompt}
+                  {q.required ? (
+                    <span className="ml-2 font-mono text-[8px] uppercase text-accent-blue">
+                      required
+                    </span>
+                  ) : null}
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="font-mono text-[9px] uppercase text-accent-red"
+                  onClick={() =>
+                    void deleteProjectQuestion(q.id).then(({ error }) => {
+                      if (error) toast.error(error);
+                      else {
+                        toast.success("Question removed.");
+                        reload();
+                      }
+                    })
+                  }
+                >
+                  Remove
+                </Button>
+              </li>
+            ))
+          )}
+        </ul>
+        <form
+          className="mt-4 flex flex-wrap gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!project) return;
+            setQuestionBusy(true);
+            void addProjectQuestion({
+              projectId: project.id,
+              prompt: newQuestion,
+              sortOrder: questions.length,
+            }).then(({ error }) => {
+              setQuestionBusy(false);
+              if (error) toast.error(error);
+              else {
+                toast.success("Question added.");
+                setNewQuestion("");
+                reload();
+              }
+            });
+          }}
+        >
+          <Input
+            value={newQuestion}
+            onChange={(e) => setNewQuestion(e.target.value)}
+            placeholder="e.g. What experiment would you run in the first two weeks?"
+            className="min-w-[16rem] flex-1 font-mono text-xs"
+            minLength={5}
+            required
+          />
+          <Button type="submit" size="sm" disabled={questionBusy}>
+            {questionBusy ? "Adding…" : "Add question"}
+          </Button>
+        </form>
+      </section>
+
       <FilterBar
         className="mb-6"
         value={statusFilter}
@@ -483,6 +599,25 @@ function ManageProject() {
                 <p className="text-sm text-foreground/90 leading-relaxed">{app.pitch}</p>
               </div>
 
+              {(answersByApp.get(app.id) ?? []).length > 0 ? (
+                <div className="mt-4 space-y-3">
+                  <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-bone/40">
+                    Application answers
+                  </p>
+                  {(answersByApp.get(app.id) ?? []).map((row) => (
+                    <div
+                      key={`${row.application_id}-${row.question_id}`}
+                      className="rounded-sm border border-border/40 p-3"
+                    >
+                      <p className="text-xs font-medium text-bone">{row.prompt ?? "Question"}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {row.answer}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
               <div className="mt-4 flex flex-wrap gap-2">
                 {app.status !== "accepted" ? (
                   <Button
@@ -540,6 +675,10 @@ function ManageProject() {
           ))
         )}
       </div>
+
+      {project ? (
+        <ProjectWorkspaceExtras projectId={project.id} userId={user?.id} canEdit canManage />
+      ) : null}
     </MemberLayout>
   );
 }

@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 import { SectionShell } from "@/components/landing/Section";
 import { TEAM, hoverGlow, textAccent } from "@/data/landing";
 
@@ -8,7 +10,7 @@ export function TeamSection() {
       eyebrow="06"
       label="people and practice"
       title="A small, accountable core."
-      subtitle="The Bu1ld names people only when their role is confirmed. Project teams and program contributors are represented through their own records, with members controlling directory visibility."
+      subtitle="The Bu1ld names people only when their role is confirmed. Project teams and program contributors appear through their own records, with members controlling directory visibility."
     >
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-border/40 border border-border/40">
         {TEAM.map((m) => (
@@ -17,15 +19,7 @@ export function TeamSection() {
             className={`p-7 bg-background/75 backdrop-blur-md ${hoverGlow[m.color]} transition group`}
           >
             <div
-              className={`h-14 w-14 rounded-sm grid place-items-center bg-background border font-display text-lg ${textAccent[m.color]} ${
-                m.color === "red"
-                  ? "border-accent-red/40"
-                  : m.color === "green"
-                    ? "border-accent-green/40"
-                    : m.color === "blue"
-                      ? "border-accent-blue/40"
-                      : "border-bone/30"
-              }`}
+              className={`h-14 w-14 rounded-sm grid place-items-center bg-background border border-accent-blue/40 font-display text-lg ${textAccent[m.color]}`}
             >
               {m.initials}
             </div>
@@ -35,6 +29,21 @@ export function TeamSection() {
             </p>
           </div>
         ))}
+        <Link
+          to="/people"
+          className="p-7 bg-background/75 backdrop-blur-md hover:bg-background/40 transition group block"
+        >
+          <p className="font-mono text-[9px] uppercase tracking-[0.28em] text-accent-blue">
+            Directory
+          </p>
+          <h3 className="mt-6 font-display text-lg text-bone tracking-tight">Member people</h3>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            Confirmed members control visibility. Browse the directory after you join.
+          </p>
+          <span className="mt-6 inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground group-hover:text-bone">
+            Open people →
+          </span>
+        </Link>
       </div>
     </SectionShell>
   );

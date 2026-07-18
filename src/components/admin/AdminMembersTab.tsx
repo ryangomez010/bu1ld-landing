@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { AdminPaginationControls } from "@/components/admin/AdminPaginationControls";
 import { Input } from "@/components/ui/input";
 import { setInstitutionalRole, updateMemberRole } from "@/lib/admin";
+import { paginateItems } from "@/lib/admin-pagination";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import type { InstitutionalRole, MemberRole, Profile } from "@/lib/types";
 
@@ -18,12 +20,23 @@ export function AdminMembersTab({
   onSaved: () => void;
 }) {
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+
+  const filtered = useMemo(() => {
+    return members.filter((m) => {
+      const q = query.trim().toLowerCase();
+      if (!q) return true;
+      const hay = [m.full_name, m.role, ...(m.interests ?? [])].join(" ").toLowerCase();
+      return hay.includes(q);
+    });
+  }, [members, query]);
+
+  const slice = useMemo(() => paginateItems(filtered, page, 25), [filtered, page]);
 
   if (!isSupabaseConfigured) {
     return (
       <p className="text-sm text-muted-foreground">
-        Member list requires Supabase with admin profile read policy (phase4.sql). Run phase6.sql
-        for role updates.
+        Member administration is temporarily unavailable. Try again shortly.
       </p>
     );
   }
@@ -55,18 +68,14 @@ export function AdminMembersTab({
     }
   };
 
-  const filtered = members.filter((m) => {
-    const q = query.trim().toLowerCase();
-    if (!q) return true;
-    const hay = [m.full_name, m.role, ...(m.interests ?? [])].join(" ").toLowerCase();
-    return hay.includes(q);
-  });
-
   return (
     <div>
       <Input
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setPage(1);
+        }}
         placeholder="Search members by name, role, interest…"
         className="mb-4 max-w-md font-mono text-sm"
       />
@@ -83,7 +92,7 @@ export function AdminMembersTab({
             </tr>
           </thead>
           <tbody>
-            {filtered.map((m) => (
+            {slice.items.map((m) => (
               <tr key={m.id} className="border-b border-border/40 last:border-0 admin-row-hover">
                 <td className="p-3 text-bone">{m.full_name || "—"}</td>
                 <td className="p-3 font-mono text-[10px] uppercase">{m.role}</td>
@@ -147,6 +156,12 @@ export function AdminMembersTab({
           </tbody>
         </table>
       </div>
+      <AdminPaginationControls
+        page={slice.page}
+        totalPages={slice.totalPages}
+        total={slice.total}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

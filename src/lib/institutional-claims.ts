@@ -62,7 +62,7 @@ export async function createInstitutionalClaim(
   if (!isSafeUrl(evidenceUrl))
     return { error: "Evidence must be a valid http:// or https:// URL." };
   const supabase = getSupabase();
-  if (!supabase) return { error: "Institutional claims require a live database connection." };
+  if (!supabase) return { error: "Institutional claims are temporarily unavailable." };
   const { error } = await supabase.from("institutional_claims").insert({
     claim_type: input.claimType,
     statement,
@@ -76,12 +76,37 @@ export async function createInstitutionalClaim(
   return { error: error?.message ?? null };
 }
 
+export function canVerifyInstitutionalClaim(claim: {
+  evidence_url?: string | null;
+  evidence_label?: string | null;
+}): string | null {
+  const url = claim.evidence_url?.trim() ?? "";
+  const label = claim.evidence_label?.trim() ?? "";
+  if (label.length < 3) return "Verified claims require a named primary source.";
+  if (!isSafeUrl(url)) return "Verified claims require a valid http(s) evidence URL.";
+  return null;
+}
+
 export async function reviewInstitutionalClaim(
   claimId: string,
   status: "verified" | "retired",
+  claim?: { evidence_url?: string | null; evidence_label?: string | null },
 ): Promise<{ error: string | null }> {
+  if (status === "verified") {
+    const blocked = canVerifyInstitutionalClaim(claim ?? {});
+    if (blocked) return { error: blocked };
+  }
   const supabase = getSupabase();
-  if (!supabase) return { error: "Institutional claims require a live database connection." };
+  if (!supabase) return { error: "Institutional claims are temporarily unavailable." };
+  if (status === "verified" && !claim) {
+    const { data } = await supabase
+      .from("institutional_claims")
+      .select("evidence_url, evidence_label")
+      .eq("id", claimId)
+      .maybeSingle();
+    const blocked = canVerifyInstitutionalClaim(data ?? {});
+    if (blocked) return { error: blocked };
+  }
   const { error } = await supabase.rpc("review_institutional_claim", {
     p_claim_id: claimId,
     p_status: status,
@@ -91,7 +116,7 @@ export async function reviewInstitutionalClaim(
 
 export async function deleteInstitutionalClaim(claimId: string): Promise<{ error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Institutional claims require a live database connection." };
+  if (!supabase) return { error: "Institutional claims are temporarily unavailable." };
   const { error } = await supabase
     .from("institutional_claims")
     .delete()

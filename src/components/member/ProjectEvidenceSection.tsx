@@ -14,8 +14,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  assignContributionReviewer,
+  canReviewContribution,
   createMilestone,
   fetchProjectContributions,
+  fetchProjectMemberships,
   fetchProjectMilestones,
   submitContribution,
   resubmitContribution,
@@ -23,7 +26,12 @@ import {
   updateMilestoneStatus,
   verifyContribution,
 } from "@/lib/project-collaboration";
-import type { ContributionType, ProjectContribution, ProjectMilestone } from "@/lib/types";
+import type {
+  ContributionType,
+  ProjectContribution,
+  ProjectMembership,
+  ProjectMilestone,
+} from "@/lib/types";
 
 const CONTRIBUTION_TYPES: ContributionType[] = [
   "research",
@@ -66,14 +74,17 @@ export function ProjectEvidenceSection({
   const [editContributionSummary, setEditContributionSummary] = useState("");
   const [editContributionEvidence, setEditContributionEvidence] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [memberships, setMemberships] = useState<ProjectMembership[]>([]);
 
   const reload = useCallback(() => {
     void Promise.all([
       fetchProjectMilestones(projectId),
       fetchProjectContributions(projectId),
-    ]).then(([nextMilestones, nextContributions]) => {
+      fetchProjectMemberships(projectId),
+    ]).then(([nextMilestones, nextContributions, nextMemberships]) => {
       setMilestones(nextMilestones);
       setContributions(nextContributions);
+      setMemberships(nextMemberships.filter((m) => m.status === "active" || m.status === "paused"));
     });
   }, [projectId]);
 
@@ -129,7 +140,10 @@ export function ProjectEvidenceSection({
   if (!isCollaborator && !canManage) return null;
 
   return (
-    <section className="mt-10 rounded-sm border border-border/60 bg-background/70 p-5 md:p-6">
+    <section
+      id="project-evidence"
+      className="mt-10 rounded-sm border border-border/60 bg-background/70 p-5 md:p-6"
+    >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-green">
@@ -366,6 +380,13 @@ export function ProjectEvidenceSection({
                   <p className="mt-1 font-mono text-[8px] uppercase text-accent-blue">
                     {contribution.contribution_type}
                   </p>
+                  {contribution.assigned_reviewer_id ? (
+                    <p className="mt-1 font-mono text-[8px] uppercase text-muted-foreground">
+                      Reviewer:{" "}
+                      {memberships.find((m) => m.user_id === contribution.assigned_reviewer_id)
+                        ?.member_name ?? contribution.assigned_reviewer_id.slice(0, 8)}
+                    </p>
+                  ) : null}
                   <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                     {contribution.summary}
                   </p>
@@ -459,6 +480,42 @@ export function ProjectEvidenceSection({
                     )
                   ) : null}
                   {canManage && contribution.verification_status === "submitted" ? (
+                    <div className="mt-3 space-y-2 border-t border-border/40 pt-3">
+                      <Label htmlFor={`reviewer-${contribution.id}`}>Assigned reviewer</Label>
+                      <Select
+                        value={contribution.assigned_reviewer_id ?? "none"}
+                        onValueChange={(value) =>
+                          void assignContributionReviewer(
+                            contribution.id,
+                            value === "none" ? null : value,
+                          ).then(({ error }) => {
+                            if (error) toast.error(error);
+                            else {
+                              toast.success(
+                                value === "none" ? "Reviewer cleared." : "Reviewer assigned.",
+                              );
+                              reload();
+                            }
+                          })
+                        }
+                      >
+                        <SelectTrigger id={`reviewer-${contribution.id}`}>
+                          <SelectValue placeholder="Unassigned" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Unassigned</SelectItem>
+                          {memberships.map((m) => (
+                            <SelectItem key={m.user_id} value={m.user_id}>
+                              {m.member_name ?? m.user_id.slice(0, 8)}
+                              {m.member_role === "reviewer" ? " (reviewer)" : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : null}
+                  {canReviewContribution(contribution, userId, canManage) &&
+                  contribution.verification_status === "submitted" ? (
                     <div className="mt-3 space-y-2 border-t border-border/40 pt-3">
                       <Textarea
                         value={reviewNotes[contribution.id] ?? ""}

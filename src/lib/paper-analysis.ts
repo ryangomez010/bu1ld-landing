@@ -290,7 +290,7 @@ export async function savePaperAnalysis(
   analysis: AnalyzePaperOutput,
 ): Promise<PaperAnalysis> {
   const supabase = getSupabase();
-  if (!supabase) throw new Error("A live database connection is required to save analyses.");
+  if (!supabase) throw new Error("Saving analyses is temporarily unavailable.");
 
   const { data, error } = await supabase
     .from("paper_analyses")
@@ -315,7 +315,7 @@ export async function savePaperAnalysis(
 
 export async function deletePaperAnalysis(userId: string, id: string): Promise<void> {
   const supabase = getSupabase();
-  if (!supabase) throw new Error("A live database connection is required to delete analyses.");
+  if (!supabase) throw new Error("Deleting analyses is temporarily unavailable.");
 
   const { error } = await supabase
     .from("paper_analyses")

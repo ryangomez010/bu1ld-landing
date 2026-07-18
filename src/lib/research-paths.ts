@@ -1,4 +1,6 @@
 import { getAllGuides } from "@/content/guides";
+import { getSupabase } from "@/lib/supabase";
+import { withSeedFallback, isDemoMode } from "@/lib/supabase-fallback";
 import type { Guide } from "@/lib/types";
 import type { Paper } from "@/lib/types";
 
@@ -152,10 +154,11 @@ export function findContinueResearch(
   guideProgress: Record<string, number>,
   guides: Guide[] = getAllGuides(),
   papers: Paper[] = [],
+  paths: ResearchPath[] = RESEARCH_PATHS,
 ): ContinueResearch | null {
   let best: ContinueResearch | null = null;
 
-  for (const path of RESEARCH_PATHS) {
+  for (const path of paths) {
     const progress = pathProgress(path, readPaperSlugs, guideProgress);
     if (progress.percent >= 100) continue;
     const step = findNextStepInPath(path, readPaperSlugs, guideProgress);
@@ -171,4 +174,95 @@ export function findContinueResearch(
   }
 
   return best;
+}
+
+export async function fetchResearchPathsFromDb(): Promise<ResearchPath[]> {
+  const supabase = getSupabase();
+  if (!supabase) return isDemoMode() ? RESEARCH_PATHS : RESEARCH_PATHS;
+
+  const { data: paths, error } = await supabase
+    .from("research_paths")
+    .select("id, title, description, sort_order")
+    .eq("published", true)
+    .order("sort_order", { ascending: true });
+
+  if (error || !paths?.length) {
+    return withSeedFallback([], RESEARCH_PATHS);
+  }
+
+  const ids = paths.map((p) => String(p.id));
+  const { data: steps } = await supabase
+    .from("research_path_steps")
+    .select("path_id, step_kind, step_slug, sort_order")
+    .in("path_id", ids)
+    .order("sort_order", { ascending: true });
+
+  const byPath = new Map<string, PathStep[]>();
+  for (const row of steps ?? []) {
+    const pathId = String(row.path_id);
+    const kind = row.step_kind === "paper" ? "paper" : "guide";
+    const list = byPath.get(pathId) ?? [];
+    list.push({ kind, slug: String(row.step_slug) });
+    byPath.set(pathId, list);
+  }
+
+  const mapped: ResearchPath[] = paths.map((p) => ({
+    id: String(p.id),
+    title: String(p.title),
+    description: String(p.description ?? ""),
+    steps: byPath.get(String(p.id)) ?? [],
+  }));
+
+  return withSeedFallback(
+    mapped.filter((p) => p.steps.length > 0),
+    RESEARCH_PATHS,
+  );
+}
+
+export type PathProgressRow = {
+  user_id: string;
+  path_id: string;
+  completed_steps: number;
+  last_step_slug: string | null;
+  updated_at: string;
+};
+
+export async function fetchPathProgress(
+  userId: string,
+  pathId?: string,
+): Promise<PathProgressRow[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  let q = supabase.from("research_path_progress").select("*").eq("user_id", userId);
+  if (pathId) q = q.eq("path_id", pathId);
+  const { data, error } = await q;
+  if (error || !data) return [];
+  return data.map((row) => ({
+    user_id: String(row.user_id),
+    path_id: String(row.path_id),
+    completed_steps: Number(row.completed_steps ?? 0),
+    last_step_slug: row.last_step_slug != null ? String(row.last_step_slug) : null,
+    updated_at: String(row.updated_at),
+  }));
+}
+
+export async function upsertPathProgress(input: {
+  userId: string;
+  pathId: string;
+  completedSteps: number;
+  lastStepSlug?: string | null;
+}): Promise<{ error: string | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { error: "This action is temporarily unavailable." };
+  const { error } = await supabase.from("research_path_progress").upsert(
+    {
+      user_id: input.userId,
+      path_id: input.pathId,
+      completed_steps: Math.max(0, Math.round(input.completedSteps)),
+      last_step_slug: input.lastStepSlug ?? null,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,path_id" },
+  );
+  return { error: error?.message ?? null };
 }

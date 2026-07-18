@@ -52,7 +52,7 @@ export async function toggleEventRsvp(
   event: MlEvent,
 ): Promise<{ rsvped: boolean; error: string | null }> {
   const supabase = getSupabase();
-  if (!supabase) return { rsvped: false, error: "Supabase required." };
+  if (!supabase) return { rsvped: false, error: "Event registration is temporarily unavailable." };
 
   const existing = await isRsvped(userId, event.id);
   if (existing) {

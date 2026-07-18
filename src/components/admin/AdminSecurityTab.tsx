@@ -6,8 +6,7 @@ export function AdminSecurityTab({ events }: { events: SecurityEvent[] }) {
   if (!isSupabaseConfigured) {
     return (
       <p className="text-sm text-muted-foreground">
-        Security events require Supabase. Run <code className="font-mono text-xs">phase13.sql</code>{" "}
-        on your project.
+        Security events are temporarily unavailable. Try again shortly.
       </p>
     );
   }
@@ -35,7 +34,7 @@ export function AdminSecurityTab({ events }: { events: SecurityEvent[] }) {
             Tip
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Auth user removal still requires Supabase dashboard or service role.
+            Account deletion requests are logged here after a member confirms removal.
           </p>
         </div>
       </div>

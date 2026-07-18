@@ -65,7 +65,7 @@ function ReviewSubmission() {
     if (safeSourceUrl && !isSafeUrl(safeSourceUrl))
       return toast.error("Source URL must use http:// or https://.");
     const supabase = getSupabase();
-    if (!supabase) return toast.error("A live database connection is required to submit analysis.");
+    if (!supabase) return toast.error("Submitting analysis is temporarily unavailable.");
     setSaving(true);
     const { data, error } = await supabase
       .from("papers")

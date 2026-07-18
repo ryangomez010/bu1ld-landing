@@ -9,6 +9,7 @@ import { AdminAnnouncementsTab } from "@/components/admin/AdminAnnouncementsTab"
 import { AdminEventsTab } from "@/components/admin/AdminEventsTab";
 import { AdminGuidesTab } from "@/components/admin/AdminGuidesTab";
 import { AdminJobsTab } from "@/components/admin/AdminJobsTab";
+import { AdminLabsTab } from "@/components/admin/AdminLabsTab";
 import { AdminLeadsTab } from "@/components/admin/AdminLeadsTab";
 import { AdminMembersTab } from "@/components/admin/AdminMembersTab";
 import { AdminNewslettersTab } from "@/components/admin/AdminNewslettersTab";
@@ -29,6 +30,7 @@ import { fetchAdminSecurityEvents } from "@/lib/account-security";
 import type { AuditEntry } from "@/lib/audit-log";
 import type { SecurityEvent } from "@/lib/account-security";
 import { fetchAllEventsAdmin, fetchAllNewslettersAdmin, fetchAllPapersAdmin } from "@/lib/content";
+import { fetchAllLabsAdmin } from "@/lib/labs";
 import { fetchAllJobsAdmin, fetchAllProjectsAdmin, fetchPendingLeadRequests } from "@/lib/projects";
 import { fetchAllProgramsAdmin, fetchProgramApplicationsAdmin } from "@/lib/programs";
 import { fetchAllInstitutionalClaimsAdmin } from "@/lib/institutional-claims";
@@ -38,6 +40,7 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 import type {
   AdminStats,
   Job,
+  Lab,
   LeadVerificationRequest,
   MlEvent,
   NewsletterIssue,
@@ -72,6 +75,7 @@ type AdminTab =
   | "announcements"
   | "events"
   | "papers"
+  | "labs"
   | "programs"
   | "projects"
   | "claims"
@@ -92,6 +96,7 @@ function AdminContent() {
   const [loadedTabs, setLoadedTabs] = useState<Set<AdminTab>>(new Set(["overview"]));
   const [events, setEvents] = useState<MlEvent[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
+  const [labs, setLabs] = useState<Lab[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [programApplications, setProgramApplications] = useState<ProgramApplication[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -130,6 +135,9 @@ function AdminContent() {
           break;
         case "papers":
           void fetchAllPapersAdmin().then(setPapers);
+          break;
+        case "labs":
+          void fetchAllLabsAdmin().then(setLabs);
           break;
         case "programs":
           void fetchAllProgramsAdmin().then(setPrograms);
@@ -203,6 +211,7 @@ function AdminContent() {
             "announcements",
             "events",
             "papers",
+            "labs",
             "programs",
             "projects",
             "claims",
@@ -241,6 +250,8 @@ function AdminContent() {
         <AdminEventsTab events={events} onSaved={onSaved} />
       ) : tab === "papers" ? (
         <AdminPapersTab papers={papers} onSaved={onSaved} />
+      ) : tab === "labs" ? (
+        <AdminLabsTab labs={labs} onSaved={onSaved} />
       ) : tab === "programs" ? (
         <AdminProgramsTab
           programs={programs}

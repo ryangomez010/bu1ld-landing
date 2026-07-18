@@ -23,7 +23,7 @@ Status: source-level security audit for The Bu1ld Nexus.
 ## Release Security Checks
 
 - Run `bun run supabase:verify` and `bun run supabase:rls` against the target
-  Supabase project after applying every phase through `phase24.sql`.
+  Supabase project after applying every phase through `phase25.sql`.
 - Run `bun run release:prod` with strict production environment variables.
 - Confirm no `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, or digest secret is
   present in any `VITE_` variable or bundled client output.

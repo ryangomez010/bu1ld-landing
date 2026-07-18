@@ -213,23 +213,38 @@ export async function buildForYouFeed(
     .map(({ slug: _slug, ...rest }) => rest);
 }
 
-/** Rank open projects by interest overlap for the projects index. */
+/** Rank open projects by interest + skills + desired-role overlap. */
 export function recommendProjects(
   projects: Awaited<ReturnType<typeof fetchProjects>>,
   interests: string[],
-  opts?: { excludeIds?: Set<string>; limit?: number },
+  opts?: {
+    excludeIds?: Set<string>;
+    limit?: number;
+    memberSkills?: string[];
+    desiredRoles?: string[];
+  },
 ): Array<{ project: (typeof projects)[0]; score: number; matchTags: string[]; reason: string }> {
-  if (!interests.length) return [];
+  const interestPool = [
+    ...interests,
+    ...(opts?.memberSkills ?? []),
+    ...(opts?.desiredRoles ?? []),
+  ].filter(Boolean);
+  if (!interestPool.length) return [];
   const exclude = opts?.excludeIds ?? new Set<string>();
   const limit = opts?.limit ?? 3;
 
   return projects
     .filter((p) => p.status === "open" && !exclude.has(p.id))
     .map((p) => {
-      const { score, matches } = scoreTags([...p.tags, ...p.skills_needed], interests);
+      const { score, matches } = scoreTags([...p.tags, ...p.skills_needed], interestPool);
+      const skillBoost = (opts?.memberSkills ?? []).some((skill) =>
+        p.skills_needed.some((needed) => needed.toLowerCase() === skill.toLowerCase()),
+      )
+        ? 2
+        : 0;
       return {
         project: p,
-        score: score + (TYPE_BOOST.project ?? 0),
+        score: score + skillBoost + (TYPE_BOOST.project ?? 0),
         matchTags: matches,
         reason: buildReason("project", matches, { isOpen: true }),
       };

@@ -20,17 +20,18 @@ Open `http://localhost:3000`
 
 ## Environment
 
-| Variable                 | Required              | Notes                                                     |
-| ------------------------ | --------------------- | --------------------------------------------------------- |
-| `VITE_SUPABASE_URL`      | for live auth/data    | Supabase project URL                                      |
-| `VITE_SUPABASE_ANON_KEY` | for live auth/data    | anon/public key                                           |
-| `VITE_EMAIL_ENDPOINT`    | recommended for email | Server/edge URL that sends mail with a private Resend key |
-| `VITE_RESEND_API_KEY`    | local only            | Do **not** use in production client builds                |
+| Variable                         | Required              | Notes                                                     |
+| -------------------------------- | --------------------- | --------------------------------------------------------- |
+| `VITE_SUPABASE_URL`              | for live auth/data    | Supabase project URL                                      |
+| `VITE_SUPABASE_ANON_KEY`         | for live auth/data    | anon/public key                                           |
+| `VITE_EMAIL_ENDPOINT`            | recommended for email | Server/edge URL that sends mail with a private Resend key |
+| `VITE_ACCOUNT_DELETION_ENDPOINT` | for account deletion  | Server/edge URL for account deletion handler              |
+| `VITE_RESEND_API_KEY`            | local only            | Do **not** use in production client builds                |
 
 ## Supabase setup
 
-1. Run `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`, or paste `supabase/full-setup.sql`, then `supabase/phase19.sql`, `phase20.sql`, `phase21.sql`, `phase22.sql`, `phase23.sql`, and `phase24.sql` into the SQL editor in that order.
-   - Existing projects: apply every missing incremental phase through `phase24.sql`. Phases 19–24 add programmes, project memberships, contribution evidence and review, governed project publication, institutional roles, application windows, the public evidence register, and private saved paper analyses, labs, competitions, partnerships, and invitations.
+1. Run `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`, or paste `supabase/FINAL_SETUP.sql` into the SQL editor.
+   - Existing projects: apply every missing incremental phase through `phase32.sql`. The later phases add research paths, datasets, public evidence, project brief validation, integrity RPCs, and a hard ban on contribution self-review.
    - Seed/update content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_DB_PASSWORD`) or paste `supabase/seed-data.sql` in the SQL editor.
    - Apply a single phase: `bun run supabase:apply-phase -- phase12.sql`
 2. Seed demo content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or DB password), or paste `supabase/seed-data.sql`.
@@ -135,7 +136,7 @@ bun run release:prod
 ```
 
 That strict gate runs type checks, tests, lint, the production build, live table verification, and
-RLS verification. It must pass after applying all schema phases through `phase24.sql`, configuring
+RLS verification. It must pass after applying all schema phases through `phase32.sql`, configuring
 Supabase site URL and redirect URLs, setting provider secrets, configuring the daily digest cron, and
 verifying the email sender domain. Then run final smoke tests with separate visitor, member,
 project lead, reviewer, and administrator accounts.

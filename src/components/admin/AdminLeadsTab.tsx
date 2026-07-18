@@ -37,8 +37,7 @@ export function AdminLeadsTab({
   if (!isSupabaseConfigured) {
     return (
       <p className="text-sm text-muted-foreground">
-        Lead verification requires Supabase. Requests submitted in local-only mode are not listed
-        here.
+        Lead verification is temporarily unavailable. Try again shortly.
       </p>
     );
   }

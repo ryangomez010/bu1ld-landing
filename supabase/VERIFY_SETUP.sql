@@ -49,6 +49,12 @@ with required_tables(table_name) as (
     ('invitations'),
     ('project_experiments'),
     ('project_deliverables'),
+    ('research_paths'),
+    ('research_path_steps'),
+    ('research_path_progress'),
+    ('project_application_questions'),
+    ('project_application_answers'),
+    ('project_datasets'),
     ('schema_migrations')
 ),
 table_status as (
@@ -88,7 +94,9 @@ required_rls(table_name) as (
     ('partnerships'),
     ('invitations'),
     ('project_experiments'),
-    ('project_deliverables')
+    ('project_deliverables'),
+    ('research_paths'),
+    ('project_datasets')
 ),
 rls_status as (
   select
@@ -111,7 +119,10 @@ required_functions(function_name) as (
     ('set_project_membership_status'),
     ('review_institutional_claim'),
     ('accept_invitation'),
-    ('assert_private_collaboration_tables')
+    ('assert_private_collaboration_tables'),
+    ('review_competition_submission'),
+    ('review_project_deliverable'),
+    ('assign_contribution_reviewer')
 ),
 function_status as (
   select
@@ -130,7 +141,7 @@ migration_status as (
       then 'ok'
       else 'missing'
     end as status
-  from (values (19), (20), (21), (22), (23), (24), (25)) as phases(phase_id)
+  from (values (19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32)) as phases(phase_id)
 )
 select * from table_status
 union all select * from rls_status

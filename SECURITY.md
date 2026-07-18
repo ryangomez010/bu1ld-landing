@@ -18,14 +18,14 @@
 
 ## Roles
 
-| Capability                        | Who                                                                                                                                                           |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Public browse (institution pages) | Anyone                                                                                                                                                        |
-| Member portal                     | Authenticated + onboarding complete                                                                                                                           |
-| Project lead tools                | `profiles.role = project_lead` or institutional `project_lead` / `lab_lead`                                                                                   |
-| Reviewer submit path              | Institutional `reviewer`                                                                                                                                      |
+| Capability                        | Who                                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Public browse (institution pages) | Anyone                                                                                                                                |
+| Member portal                     | Authenticated + onboarding complete                                                                                                   |
+| Project lead tools                | `profiles.role = project_lead` or institutional `project_lead` / `lab_lead`                                                           |
+| Reviewer submit path              | Institutional `reviewer`                                                                                                              |
 | Admin console                     | `profiles.role = admin` **or** institutional `administrator` (UI + `is_platform_admin()` for labs/competitions/partnerships policies) |
-| Super-admin                       | Same as admin today; promote via SQL `update profiles set role = 'admin'` or grant `member_roles.administrator`                       |
+| Bootstrap administrator           | One owner action through the database console; subsequent role changes use protected admin operations and are audited                 |
 
 ## Headers
 

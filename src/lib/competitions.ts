@@ -38,33 +38,47 @@ function seedAsCompetition(slug: string): Competition | null {
   };
 }
 
+export function isCatalogPreviewCompetition(competition: Pick<Competition, "id">): boolean {
+  return competition.id.startsWith("seed-");
+}
+
 export async function fetchPublishedCompetitions(): Promise<Competition[]> {
   const supabase = getSupabase();
   if (!supabase) {
     return COMPETITIONS.map((c) => seedAsCompetition(c.slug)!).filter(Boolean);
   }
-  const { data, error } = await supabase
-    .from("competitions")
-    .select("*")
-    .eq("published", true)
-    .order("deadline", { ascending: true, nullsFirst: false });
-  if (error || !data?.length) {
+  try {
+    const { data, error } = await supabase
+      .from("competitions")
+      .select("*")
+      .eq("published", true)
+      .order("deadline", { ascending: true, nullsFirst: false })
+      .abortSignal(AbortSignal.timeout(8000));
+    if (error || !data?.length) {
+      return COMPETITIONS.map((c) => seedAsCompetition(c.slug)!).filter(Boolean);
+    }
+    return data as Competition[];
+  } catch {
     return COMPETITIONS.map((c) => seedAsCompetition(c.slug)!).filter(Boolean);
   }
-  return data as Competition[];
 }
 
 export async function fetchCompetitionBySlug(slug: string): Promise<Competition | null> {
   const supabase = getSupabase();
   if (!supabase) return seedAsCompetition(slug);
-  const { data, error } = await supabase
-    .from("competitions")
-    .select("*")
-    .eq("slug", slug)
-    .eq("published", true)
-    .maybeSingle();
-  if (error || !data) return seedAsCompetition(slug);
-  return data as Competition;
+  try {
+    const { data, error } = await supabase
+      .from("competitions")
+      .select("*")
+      .eq("slug", slug)
+      .eq("published", true)
+      .abortSignal(AbortSignal.timeout(8000))
+      .maybeSingle();
+    if (error || !data) return seedAsCompetition(slug);
+    return data as Competition;
+  } catch {
+    return seedAsCompetition(slug);
+  }
 }
 
 export async function fetchMyCompetitionSubmission(
@@ -96,7 +110,7 @@ export async function submitCompetitionEntry(input: {
   if (input.competitionId.startsWith("seed-")) {
     return {
       submission: null,
-      error: "Competition catalog is seed-only until phase25 is applied on the live database.",
+      error: "This challenge is not accepting submissions yet.",
     };
   }
   const title = clampText(input.title, 160);
@@ -155,13 +169,10 @@ export async function reviewCompetitionSubmission(
 ): Promise<{ error: string | null }> {
   const supabase = getSupabase();
   if (!supabase) return { error: "Competition service is temporarily unavailable." };
-  const { error } = await supabase
-    .from("competition_submissions")
-    .update({
-      status,
-      review_note: reviewNote ? clampText(reviewNote, 4000) : null,
-      updated_at: new Date().toISOString(),
-    } as never)
-    .eq("id", id);
+  const { error } = await supabase.rpc("review_competition_submission", {
+    p_submission_id: id,
+    p_status: status,
+    p_note: reviewNote ? clampText(reviewNote, 4000) : null,
+  });
   return { error: error?.message ?? null };
 }

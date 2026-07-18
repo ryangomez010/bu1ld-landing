@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, KeyRound, LogOut, Mail, Shield, Trash2 } from "lucide-react";
+import { AlertTriangle, Download, KeyRound, LogOut, Mail, Shield, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -20,6 +20,10 @@ import {
   type SignInSession,
 } from "@/lib/account-security";
 import { useAuth } from "@/lib/auth";
+import {
+  downloadContributionExport,
+  fetchMyContributionsForExport,
+} from "@/lib/contribution-export";
 import { relativeTime } from "@/lib/date";
 import { validatePassword } from "@/lib/security";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -47,6 +51,7 @@ function AccountSecurityContent() {
   const [changingPw, setChangingPw] = useState(false);
   const [resending, setResending] = useState(false);
   const [signingOutAll, setSigningOutAll] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [events, setEvents] = useState<SecurityEvent[]>([]);
   const [sessions, setSessions] = useState<SignInSession[]>([]);
@@ -128,6 +133,23 @@ function AccountSecurityContent() {
     void navigate({ to: "/" });
   };
 
+  const onExportContributions = async () => {
+    if (!user) return;
+    setExporting(true);
+    const { rows, error } = await fetchMyContributionsForExport(user.id);
+    setExporting(false);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    downloadContributionExport(rows);
+    toast.success(
+      rows.length
+        ? `Exported ${rows.length} contribution${rows.length === 1 ? "" : "s"}.`
+        : "Exported an empty contribution record.",
+    );
+  };
+
   return (
     <MemberLayout title="Account security" eyebrow="member settings">
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
@@ -136,7 +158,7 @@ function AccountSecurityContent() {
       </p>
       {!isSupabaseConfigured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red mb-6">
-          Connect Supabase to manage account security.
+          Account security controls are temporarily unavailable. Please try again later.
         </p>
       ) : null}
 
@@ -287,6 +309,28 @@ function AccountSecurityContent() {
           />
         </section>
 
+        <section className="rounded-sm border border-border/60 bg-background/70 p-5 space-y-4">
+          <div className="flex items-center gap-2">
+            <Download className="h-4 w-4 text-accent-blue" />
+            <h2 className="font-mono text-[10px] tracking-[0.25em] uppercase text-bone">
+              Contribution export
+            </h2>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Download your submitted and verified contribution history as JSON. Private review notes
+            and other members&apos; records are not included.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={exporting}
+            onClick={() => void onExportContributions()}
+            className="font-mono text-[10px] tracking-[0.2em] uppercase"
+          >
+            {exporting ? "Preparing…" : "Download contribution record"}
+          </Button>
+        </section>
+
         <section className="rounded-sm border border-accent-red/30 bg-accent-red/5 p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Trash2 className="h-4 w-4 text-accent-red" />
@@ -296,11 +340,11 @@ function AccountSecurityContent() {
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Removes your profile, saved items, applications, and notifications from The Bu1ld. Your
-            auth login may remain in Supabase until an admin purges it — contact{" "}
+            sign-in credential is also removed when the deletion service is available. Contact{" "}
             <a href="mailto:hello@thebu1ld.com" className="text-accent-blue hover:text-bone">
               hello@thebu1ld.com
             </a>{" "}
-            for full erasure.
+            if you need confirmation or a manual erasure request.
           </p>
           <ConfirmButton
             title="Delete your The Bu1ld account?"

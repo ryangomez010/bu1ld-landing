@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
-import { RequireMember } from "@/components/auth/RequireAuth";
+import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { EmptyState, TagList } from "@/components/member/ContentCard";
 import { FilterChip } from "@/components/member/FilterChip";
 import { InterestMatchTags } from "@/components/member/InterestMatchTags";
@@ -30,10 +30,20 @@ const EMPTY_PROJECTS: import("@/lib/types").Project[] = [];
 const EMPTY_APPLICATION_STATUSES = new Map<string, ApplicationStatus>();
 
 function ProjectsPage() {
-  return (
-    <RequireMember>
-      <ProjectsContent />
-    </RequireMember>
+  const { user } = useAuth();
+  const content = <ProjectsContent />;
+  return user ? (
+    <MemberLayout title="Projects" eyebrow="join & build">
+      {content}
+    </MemberLayout>
+  ) : (
+    <InstitutionLayout
+      eyebrow="Research and startup opportunities"
+      title="Find a concrete problem to work on."
+      description="Review published project briefs, required skills, expected commitment, capacity, and current status before creating an account."
+    >
+      {content}
+    </InstitutionLayout>
   );
 }
 
@@ -63,20 +73,24 @@ function ProjectsContent() {
   const list = statusFilter === "all" ? filtered.filter((p) => p.status !== "closed") : filtered;
 
   const recommendations = useMemo(() => {
-    if (!profile?.interests?.length) return [];
     const appliedIds = new Set([...applied.keys()].map((id) => id));
-    return recommendProjects(projects, profile.interests, {
+    return recommendProjects(projects, profile?.interests ?? [], {
       excludeIds: appliedIds,
       limit: 3,
+      memberSkills: profile?.member_skills ?? [],
+      desiredRoles: profile?.desired_roles ?? [],
     });
-  }, [projects, profile?.interests, applied]);
+  }, [projects, profile?.interests, profile?.member_skills, profile?.desired_roles, applied]);
 
   return (
-    <MemberLayout title="Projects" eyebrow="join & build">
+    <>
       <p className="text-muted-foreground mb-6 max-w-2xl leading-relaxed -mt-4">
-        Open research threads, startup builds, and program cohorts. Each listing shows capacity,
-        required skills, and application status — your profile (bio, background, interests, links)
-        attaches automatically when you submit a pitch.
+        Open research threads, startup builds, and program cohorts. Each listing shows capacity and
+        required skills — filter by type to find research vs product work. Your profile (bio,
+        background, interests, skills, links) attaches automatically when you submit a pitch.
+        {profile?.availability_hours_per_week
+          ? ` Your profile lists ~${profile.availability_hours_per_week} hours/week available.`
+          : ""}
       </p>
 
       <div className="mb-6 grid gap-2 sm:grid-cols-3">
@@ -109,12 +123,22 @@ function ProjectsContent() {
               {f} {f === "open" ? `(${open.length})` : ""}
             </FilterChip>
           ))}
-          <Link
-            to="/applications"
-            className="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone transition-colors"
-          >
-            My applications →
-          </Link>
+          {user ? (
+            <Link
+              to="/applications"
+              className="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone transition-colors"
+            >
+              My applications →
+            </Link>
+          ) : (
+            <Link
+              to="/signup"
+              search={{ redirect: "/projects" }}
+              className="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone transition-colors"
+            >
+              Create account to apply →
+            </Link>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -165,8 +189,14 @@ function ProjectsContent() {
         <ListSkeleton rows={5} />
       ) : list.length === 0 ? (
         <EmptyState
-          title="No projects match these filters"
-          body="Clear the search box, set Status to Open, or remove the type filter. Alumni (closed) threads appear at the bottom when no search is active."
+          title={
+            projects.length === 0 ? "No published projects yet" : "No projects match these filters"
+          }
+          body={
+            projects.length === 0
+              ? "When leads publish open threads, they appear here with skills, capacity, and commitment. Create an account to get notified, or browse programs and labs in the meantime."
+              : "Clear the search box, set Status to Open, or remove the type filter. Alumni (closed) threads appear at the bottom when no search is active."
+          }
         />
       ) : (
         <div className="grid gap-2">
@@ -199,12 +229,24 @@ function ProjectsContent() {
                 <span>
                   {project.team_count}/{project.capacity} slots
                 </span>
+                {project.weekly_commitment_hours ? (
+                  <span>~{project.weekly_commitment_hours} hrs/week</span>
+                ) : null}
               </div>
+              {project.skills_needed.length > 0 ? (
+                <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-accent-blue">
+                  Skills · {project.skills_needed.join(" · ")}
+                </p>
+              ) : null}
               <TagList tags={project.tags} className="mt-4" />
-              {profile?.interests?.length ? (
+              {profile?.interests?.length || profile?.member_skills?.length ? (
                 <InterestMatchTags
                   tags={[...project.tags, ...project.skills_needed]}
-                  interests={profile.interests}
+                  interests={[
+                    ...(profile?.interests ?? []),
+                    ...(profile?.member_skills ?? []),
+                    ...(profile?.desired_roles ?? []),
+                  ]}
                   className="mt-2"
                 />
               ) : null}
@@ -241,6 +283,6 @@ function ProjectsContent() {
           </div>
         </section>
       ) : null}
-    </MemberLayout>
+    </>
   );
 }

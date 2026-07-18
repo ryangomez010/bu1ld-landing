@@ -33,18 +33,6 @@ function loadEnvFile() {
   return out;
 }
 
-function loadWranglerVars() {
-  const path = resolve(root, "wrangler.jsonc");
-  if (!existsSync(path)) return {};
-  const raw = readFileSync(path, "utf8");
-  const out = {};
-  for (const key of ["ENVIRONMENT", "VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"]) {
-    const match = raw.match(new RegExp(`"${key}"\\s*:\\s*"([^"]+)"`));
-    if (match) out[key] = match[1];
-  }
-  return out;
-}
-
 function pickNonEmptyEnv(source) {
   const out = {};
   for (const [key, value] of Object.entries(source)) {
@@ -54,9 +42,7 @@ function pickNonEmptyEnv(source) {
 }
 
 const fileEnv = loadEnvFile();
-const wranglerEnv = loadWranglerVars();
 const merged = {
-  ...wranglerEnv,
   ...pickNonEmptyEnv(fileEnv),
   ...pickNonEmptyEnv(process.env),
 };

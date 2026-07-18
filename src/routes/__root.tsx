@@ -4,12 +4,14 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
 
+import { trackPageView } from "@/lib/analytics";
 import { AuthProvider } from "@/lib/auth";
 import { initTheme } from "@/lib/theme";
 
@@ -106,9 +108,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Read closely, apply to scoped work, record what you contribute, and build an evidence-backed technical practice.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://thebu1ld.com/" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@thebu1ld" },
       { property: "og:image", content: "https://thebu1ld.com/og.svg" },
+      { name: "twitter:image", content: "https://thebu1ld.com/og.svg" },
       { name: "theme-color", content: "#0a0a0b" },
       { name: "robots", content: "index, follow" },
     ],
@@ -149,10 +153,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useRouterState({ select: (s) => s.location });
 
   useEffect(() => {
     initTheme();
   }, []);
+
+  useEffect(() => {
+    trackPageView(`${window.location.pathname}${window.location.search}`);
+  }, [location.pathname, location.search]);
 
   return (
     <QueryClientProvider client={queryClient}>

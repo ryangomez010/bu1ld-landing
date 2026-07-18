@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { ExternalLink, Users } from "lucide-react";
 
 import { memberLink } from "@/lib/app-paths";
+import { sanitizeAppPath } from "@/lib/security";
+import { safeHref } from "@/lib/urls";
 import type { Project } from "@/lib/types";
 import type { ProjectApplication } from "@/lib/types";
 
@@ -69,27 +71,32 @@ export function ProjectMemberWorkspace({
               Pinned resources
             </p>
             <ul className="space-y-2">
-              {project.workspace_links.map((link) => (
-                <li key={link.url}>
-                  {link.url.startsWith("/") ? (
-                    <Link
-                      to={link.url}
-                      className="text-sm text-accent-blue hover:text-bone transition"
-                    >
-                      {link.label} →
-                    </Link>
-                  ) : (
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm text-accent-blue hover:text-bone"
-                    >
-                      {link.label} <ExternalLink className="h-3 w-3" />
-                    </a>
-                  )}
-                </li>
-              ))}
+              {project.workspace_links.map((link) => {
+                const internalPath = sanitizeAppPath(link.url);
+                const externalHref = safeHref(link.url);
+                if (!internalPath && !externalHref) return null;
+                return (
+                  <li key={link.url}>
+                    {internalPath ? (
+                      <Link
+                        to={internalPath}
+                        className="text-sm text-accent-blue hover:text-bone transition"
+                      >
+                        {link.label} →
+                      </Link>
+                    ) : (
+                      <a
+                        href={externalHref}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-sm text-accent-blue hover:text-bone"
+                      >
+                        {link.label} <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ) : null}
@@ -110,6 +117,18 @@ export function ProjectMemberWorkspace({
         )}
 
         <div className="flex flex-wrap gap-4 pt-2 border-t border-border/40">
+          <a
+            href="#project-evidence"
+            className="font-mono text-[9px] uppercase text-accent-blue hover:text-bone"
+          >
+            Milestones & contributions →
+          </a>
+          <a
+            href="#project-workspace-extras"
+            className="font-mono text-[9px] uppercase text-accent-blue hover:text-bone"
+          >
+            Experiments & deliverables →
+          </a>
           <Link
             to="/applications"
             className="font-mono text-[9px] uppercase text-muted-foreground hover:text-bone"
