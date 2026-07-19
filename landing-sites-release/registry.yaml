@@ -16,6 +16,8 @@ sites:
     security_status: phase33_local_pass_live_schema_pending
     deployment_status: not_deployed_credentials_required
     verified_url: null
+    git_commit: 83a6183669682026b65a9b35dbaf8b1c0ab8b387
+    push_result: origin/main c72fe2a..83a6183
     external_blockers:
       - Apply supabase/phase33.sql (atomic application submission) to live Supabase
       - Configure Cloudflare deploy secrets and execute deploy verification
