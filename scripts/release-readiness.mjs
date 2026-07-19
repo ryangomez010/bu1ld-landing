@@ -135,6 +135,7 @@ for (const phase of [
   "phase30.sql",
   "phase31.sql",
   "phase32.sql",
+  "phase33.sql",
 ]) {
   if (!existsSync(resolve(root, "supabase", phase)))
     failures.push(`Missing required migration supabase/${phase}.`);
@@ -236,6 +237,23 @@ if (existsSync(phase32)) {
   ]) {
     if (!sql.includes(invariant)) {
       failures.push(`phase32.sql is missing required invariant: ${invariant}.`);
+    }
+  }
+}
+
+const phase33 = resolve(root, "supabase/phase33.sql");
+if (existsSync(phase33)) {
+  const sql = readFileSync(phase33, "utf8");
+  for (const invariant of [
+    "create or replace function public.submit_project_application",
+    "for update",
+    "Answer every required application question",
+    "revoke insert on table public.project_applications from authenticated",
+    "revoke all on function public.submit_project_application(uuid, text, jsonb) from public",
+    "values ('phase33')",
+  ]) {
+    if (!sql.includes(invariant)) {
+      failures.push(`phase33.sql is missing required invariant: ${invariant}.`);
     }
   }
 }

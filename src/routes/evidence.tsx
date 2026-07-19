@@ -5,19 +5,18 @@ import { useEffect, useMemo, useState } from "react";
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { fetchVerifiedInstitutionalClaims } from "@/lib/institutional-claims";
 import { fetchPublicProjectOutputs, type PublicProjectOutput } from "@/lib/project-collaboration";
+import { pageHead } from "@/lib/seo";
 import type { InstitutionalClaim } from "@/lib/types";
 
 export const Route = createFileRoute("/evidence")({
   component: EvidencePage,
-  head: () => ({
-    meta: [
-      { title: "Evidence register — The Bu1ld" },
-      {
-        name: "description",
-        content: "Primary sources for The Bu1ld's public institutional claims.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Evidence register — The Bu1ld",
+      description:
+        "Inspect primary sources for verified institutional claims and public, independently reviewed project contributions.",
+      path: "/evidence",
+    }),
 });
 
 function EvidencePage() {

@@ -171,12 +171,11 @@ export const FAQ = [
 ] as const;
 
 export const NAV_ITEMS = [
+  ["Projects", "/projects"],
   ["Labs", "/labs"],
   ["Programs", "/programs-public"],
-  ["Competitions", "/competitions"],
   ["Publications", "/publications"],
-  ["People", "/people"],
-  ["Apply", "/apply"],
+  ["Evidence", "/evidence"],
 ] as const;
 
 /** In-page anchors still used on the landing scroll experience. */

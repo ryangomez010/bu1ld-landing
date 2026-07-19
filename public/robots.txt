@@ -4,8 +4,22 @@ Disallow: /dashboard
 Disallow: /admin
 Disallow: /onboarding
 Disallow: /applications
+Disallow: /account
 Disallow: /projects/manage
+Disallow: /projects/edit
+Disallow: /projects/new
 Disallow: /notifications
 Disallow: /saved
+Disallow: /profile
+Disallow: /members
+Disallow: /invitations
+Disallow: /jobs/tracker
+Disallow: /research/analyze
+Disallow: /research/submit
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth
+Disallow: /login
+Disallow: /signup
 
 Sitemap: https://thebu1ld.com/sitemap.xml

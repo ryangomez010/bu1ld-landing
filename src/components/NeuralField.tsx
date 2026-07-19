@@ -27,6 +27,7 @@ export function NeuralField({
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let w = 0,
       h = 0;
+    let vignette: CanvasGradient;
 
     const resize = () => {
       w = canvas.clientWidth;
@@ -34,6 +35,9 @@ export function NeuralField({
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      vignette = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * 0.75);
+      vignette.addColorStop(0, "rgba(0,0,0,0)");
+      vignette.addColorStop(1, "rgba(0,0,0,0.55)");
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -99,13 +103,22 @@ export function NeuralField({
       mouse.x = -9999;
       mouse.y = -9999;
     };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseleave", onLeave);
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    if (finePointer) {
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseleave", onLeave);
+    }
 
     let raf = 0;
     const t0 = performance.now();
+    let lastFrame = 0;
 
     const tick = (now: number) => {
+      if (document.hidden || (!reduce && now - lastFrame < 1000 / 30)) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      lastFrame = now;
       const t = now - t0;
 
       // Trail fade. Lower alpha = longer trails.
@@ -113,10 +126,7 @@ export function NeuralField({
       ctx.fillRect(0, 0, w, h);
 
       // Vignette.
-      const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * 0.75);
-      g.addColorStop(0, "rgba(0,0,0,0)");
-      g.addColorStop(1, "rgba(0,0,0,0.55)");
-      ctx.fillStyle = g;
+      ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, w, h);
 
       // Update + draw particles.
@@ -201,8 +211,10 @@ export function NeuralField({
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseleave", onLeave);
+      if (finePointer) {
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseleave", onLeave);
+      }
     };
   }, [density]);
 

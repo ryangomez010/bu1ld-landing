@@ -902,6 +902,14 @@ export type Database = {
         Args: { p_project_id: string };
         Returns: Project;
       };
+      submit_project_application: {
+        Args: {
+          p_project_id: string;
+          p_pitch: string;
+          p_answers?: Array<{ questionId: string; answer: string }>;
+        };
+        Returns: import("@/lib/types").ProjectApplication;
+      };
       review_project_publication: {
         Args: { p_project_id: string; p_decision: string; p_note?: string | null };
         Returns: Project;

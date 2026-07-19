@@ -13,6 +13,7 @@ import { useAuth } from "@/lib/auth";
 import { guardAuthAttempt } from "@/lib/auth-rate-limit";
 import { postAuthDestination, rememberPostAuthRedirect } from "@/lib/post-auth-redirect";
 import { sanitizeAppPath } from "@/lib/security";
+import { privatePageHead } from "@/lib/seo";
 
 const signupSearchSchema = z.object({
   redirect: z.string().optional(),
@@ -21,9 +22,7 @@ const signupSearchSchema = z.object({
 export const Route = createFileRoute("/signup")({
   validateSearch: (search) => signupSearchSchema.parse(search),
   component: SignupPage,
-  head: () => ({
-    meta: [{ title: "Become a member — The Bu1ld" }],
-  }),
+  head: () => privatePageHead("Become a member — The Bu1ld"),
 });
 
 function SignupPage() {

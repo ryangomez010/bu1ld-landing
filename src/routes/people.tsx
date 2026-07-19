@@ -2,19 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { PEOPLE_PUBLIC } from "@/data/institution";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/people")({
   component: PeoplePage,
-  head: () => ({
-    meta: [
-      { title: "People — The Bu1ld" },
-      {
-        name: "description",
-        content:
-          "Leadership and contributors at The Bu1ld. Named members appear in the directory once profiles are public.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "People — The Bu1ld",
+      description:
+        "Verified public leadership and contributor roles at The Bu1ld; member profiles remain opt-in.",
+      path: "/people",
+    }),
 });
 
 function PeoplePage() {

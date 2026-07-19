@@ -6,21 +6,18 @@ import { COMPETITIONS, getLab, INSTITUTION_PROGRAMS } from "@/data/institution";
 import { textAccent } from "@/data/landing";
 import { fetchLabBySlug } from "@/lib/labs";
 import { fetchProjects } from "@/lib/projects";
+import { pageHead, titleFromSlug } from "@/lib/seo";
 import type { Lab, Project } from "@/lib/types";
 
 export const Route = createFileRoute("/labs/$slug")({
   component: LabDetailPage,
   head: ({ params }) => {
     const lab = getLab(params.slug);
-    return {
-      meta: [
-        { title: lab ? `${lab.name} — The Bu1ld` : "Lab — The Bu1ld" },
-        {
-          name: "description",
-          content: lab?.summary ?? "Research lab at The Bu1ld.",
-        },
-      ],
-    };
+    return pageHead({
+      title: `${lab?.name ?? titleFromSlug(params.slug)} — The Bu1ld`,
+      description: lab?.summary ?? "Research division and connected projects at The Bu1ld.",
+      path: `/labs/${encodeURIComponent(params.slug)}`,
+    });
   },
 });
 

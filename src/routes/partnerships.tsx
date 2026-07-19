@@ -17,19 +17,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { PARTNERSHIPS } from "@/data/institution";
 import { CONTACT_EMAIL } from "@/data/landing";
 import { clampText, checkFormRateLimit } from "@/lib/security";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/partnerships")({
   component: PartnershipsPage,
-  head: () => ({
-    meta: [
-      { title: "Partnerships — The Bu1ld" },
-      {
-        name: "description",
-        content:
-          "Academic, infrastructure, and community partnerships. We disclose relationships when they are active and material.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Partnerships — The Bu1ld",
+      description:
+        "Propose a scoped academic, infrastructure, or community partnership with clear contribution, timeline, and success criteria.",
+      path: "/partnerships",
+    }),
 });
 
 function PartnershipsPage() {

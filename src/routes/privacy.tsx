@@ -3,12 +3,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { PageBackground } from "@/components/layout/PageBackground";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/privacy")({
   component: PrivacyPage,
-  head: () => ({
-    meta: [{ title: "Privacy Policy — The Bu1ld" }],
-  }),
+  head: () =>
+    pageHead({
+      title: "Privacy Policy — The Bu1ld",
+      description:
+        "How The Bu1ld collects, uses, protects, exports, and deletes member and application data.",
+      path: "/privacy",
+    }),
 });
 
 function PrivacyPage() {

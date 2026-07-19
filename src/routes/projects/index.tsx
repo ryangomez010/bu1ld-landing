@@ -17,13 +17,19 @@ import { useAuth } from "@/lib/auth";
 import { projectLink } from "@/lib/app-paths";
 import { useProjectsQuery } from "@/lib/queries/use-projects";
 import { recommendProjects } from "@/lib/personalization";
+import { pageHead } from "@/lib/seo";
+import { PROJECT_STATUS_LABEL } from "@/data/seed/projects";
 import type { ApplicationStatus, ProjectStatus, ProjectType } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
-  head: () => ({
-    meta: [{ title: "Projects — The Bu1ld" }],
-  }),
+  head: () =>
+    pageHead({
+      title: "Projects — The Bu1ld",
+      description:
+        "Browse scoped machine-learning research and product projects by status, skills, capacity, and weekly commitment.",
+      path: "/projects",
+    }),
 });
 
 const EMPTY_PROJECTS: import("@/lib/types").Project[] = [];
@@ -96,7 +102,7 @@ function ProjectsContent() {
       <div className="mb-6 grid gap-2 sm:grid-cols-3">
         <div className="panel p-4 rounded-sm">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-            Open
+            Recruiting
           </p>
           <p className="mt-2 font-display text-2xl text-bone">{open.length}</p>
         </div>
@@ -110,7 +116,7 @@ function ProjectsContent() {
         </div>
         <div className="panel p-4 rounded-sm">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-            Alumni
+            Completed
           </p>
           <p className="mt-2 font-display text-2xl text-bone">{alumni.length}</p>
         </div>
@@ -120,7 +126,8 @@ function ProjectsContent() {
         <div className="flex flex-wrap items-center gap-2">
           {(["all", "open", "active", "closed"] as const).map((f) => (
             <FilterChip key={f} active={statusFilter === f} onClick={() => setStatusFilter(f)}>
-              {f} {f === "open" ? `(${open.length})` : ""}
+              {f === "all" ? "all" : (PROJECT_STATUS_LABEL[f] ?? f).toLowerCase()}
+              {f === "open" ? ` (${open.length})` : ""}
             </FilterChip>
           ))}
           {user ? (
@@ -147,7 +154,12 @@ function ProjectsContent() {
               {f}
             </FilterChip>
           ))}
+          <label htmlFor="project-search" className="sr-only">
+            Search projects by skill or tag
+          </label>
           <Input
+            id="project-search"
+            type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Skill or tag — e.g. PyTorch, world models, CUDA"

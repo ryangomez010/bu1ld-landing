@@ -1,62 +1,78 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 
 import { Wordmark } from "@/components/Wordmark";
-import { LINKEDIN_URL } from "@/data/landing";
+import { CONTACT_EMAIL, LINKEDIN_URL } from "@/data/landing";
 
 export function SiteFooter() {
-  const [time, setTime] = useState("");
-
-  useEffect(() => {
-    const tick = () => {
-      const d = new Date();
-      setTime(
-        `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}:${String(
-          d.getUTCSeconds(),
-        ).padStart(2, "0")} UTC`,
-      );
-    };
-    tick();
-    const i = setInterval(tick, 1000);
-    return () => clearInterval(i);
-  }, []);
-
   return (
-    <footer className="relative border-t border-border/60 py-10 bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto max-w-7xl px-6 flex flex-wrap items-center justify-between gap-4 font-mono text-[10px] tracking-[0.28em] uppercase text-muted-foreground">
-        <div className="flex items-center gap-3">
-          <Wordmark className="text-sm" />
-          <span className="text-bone/30">·</span>
-          <span>© 2026 the bu1ld</span>
-          <span className="text-bone/30">·</span>
-          <span>ml research + building</span>
+    <footer className="relative border-t border-border/60 bg-background/90 py-14">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+        <div>
+          <Wordmark className="text-lg" />
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            Independent machine-learning projects, reviewed contributions, and evidence-backed
+            technical work.
+          </p>
+          <p className="mt-5 font-mono text-[9px] uppercase tracking-[0.2em] text-bone/40">
+            © 2026 The Bu1ld
+          </p>
         </div>
-        <div className="flex items-center gap-4">
-          <a
-            href={LINKEDIN_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-bone transition"
-          >
+
+        <nav
+          aria-label="Explore"
+          className="grid content-start gap-3 text-sm text-muted-foreground"
+        >
+          <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.24em] text-bone/40">
+            Explore
+          </p>
+          <Link to="/projects" className="hover:text-bone">
+            Projects
+          </Link>
+          <Link to="/labs" className="hover:text-bone">
+            Research labs
+          </Link>
+          <Link to="/programs-public" className="hover:text-bone">
+            Programs
+          </Link>
+          <Link to="/publications" className="hover:text-bone">
+            Publications
+          </Link>
+          <Link to="/evidence" className="hover:text-bone">
+            Evidence register
+          </Link>
+        </nav>
+
+        <nav
+          aria-label="Institution"
+          className="grid content-start gap-3 text-sm text-muted-foreground"
+        >
+          <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.24em] text-bone/40">
+            Institution
+          </p>
+          <Link to="/people" className="hover:text-bone">
+            People
+          </Link>
+          <Link to="/partnerships" className="hover:text-bone">
+            Partnerships
+          </Link>
+          <Link to="/apply" className="hover:text-bone">
+            Application paths
+          </Link>
+          <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-bone">
+            Contact
+          </a>
+          <a href={LINKEDIN_URL} target="_blank" rel="noreferrer" className="hover:text-bone">
             LinkedIn
           </a>
-          <Link to="/labs" className="hover:text-bone transition">
-            Labs
-          </Link>
-          <Link to="/apply" className="hover:text-bone transition">
-            Apply
-          </Link>
-          <Link to="/privacy" className="hover:text-bone transition">
-            Privacy
-          </Link>
-          <Link to="/terms" className="hover:text-bone transition">
-            Terms
-          </Link>
-          <Link to="/evidence" className="hover:text-bone transition">
-            Evidence
-          </Link>
-          <span>{time}</span>
-        </div>
+          <div className="mt-2 flex gap-4 font-mono text-[9px] uppercase tracking-[0.16em]">
+            <Link to="/privacy" className="hover:text-bone">
+              Privacy
+            </Link>
+            <Link to="/terms" className="hover:text-bone">
+              Terms
+            </Link>
+          </div>
+        </nav>
       </div>
     </footer>
   );

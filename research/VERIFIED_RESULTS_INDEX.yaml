@@ -1,0 +1,45 @@
+generated_at: "2026-07-19"
+status: "index of discovered artifacts; not all commands were rerun in this pass"
+artifacts:
+  - id: genesis-smoke-summary
+    project: project-genesis
+    path: /Users/ryan/Documents/Genesis/runs/smoke/summary.json
+    evidence_level: E3
+    claim_allowed: local smoke run exists
+    claim_not_allowed: public benchmark superiority
+  - id: genesis-continual-smoke
+    project: project-genesis
+    path: /Users/ryan/Documents/Genesis/runs/continual-smoke/summary.json
+    evidence_level: E3
+    claim_allowed: continual smoke artifacts exist
+    claim_not_allowed: robust continual-learning improvement
+  - id: genesis-portfolio-ablation-smoke
+    project: project-genesis
+    path: /Users/ryan/Documents/Genesis/runs/portfolio-ablation-smoke/manifest.json
+    evidence_level: E4
+    claim_allowed: portfolio ablation smoke artifacts exist
+    claim_not_allowed: final multi-seed publication result
+  - id: genesis-econ-portfolio
+    project: genesis-econ
+    path: /Users/ryan/Documents/GenesisE/artifacts/portfolio.json
+    evidence_level: E4
+    claim_allowed: synthetic 24-program portfolio artifact exists; GenesisE unittest suite passed locally in this pass
+    claim_not_allowed: real-market validation
+  - id: genesis-econ-benchmark
+    project: genesis-econ
+    path: /Users/ryan/Documents/GenesisE/artifacts/benchmark.json
+    evidence_level: E4
+    claim_allowed: synthetic benchmark artifact exists; GenesisE unittest suite passed locally in this pass
+    claim_not_allowed: external economic evidence
+  - id: bu1ld-test-report
+    project: bu1ld-nexus
+    path: /Users/ryan/Downloads/the-bu1ld-nexus-main/TEST_REPORT.md
+    evidence_level: E4
+    claim_allowed: "local BU1LD release gate passed in this pass: typecheck, 151 Bun tests, lint, and production build"
+    claim_not_allowed: live release without Supabase credentials and role smoke tests
+  - id: financemeta-validation-report
+    project: financemeta
+    path: /Users/ryan/Downloads/finance4all-global-reach-main/docs/VALIDATION_REPORT.md
+    evidence_level: E4
+    claim_allowed: repository contains validation documentation; 123 Vitest tests passed locally in this pass
+    claim_not_allowed: current dirty branch is release-ready without Playwright and live Supabase reruns

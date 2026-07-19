@@ -1,0 +1,19 @@
+# Conversion events
+
+events:
+  - name: landing_primary_cta_clicked
+    description: Homepage Find a project CTA
+    props: [destination]
+  - name: landing_evidence_cta_clicked
+    description: Homepage Inspect public evidence CTA
+    props: [destination]
+  - name: featured_project_viewed
+    description: Featured project card opened from homepage
+    props: [project_slug, project_status]
+  - name: pageview
+    description: Route change page view via Plausible adapter
+    props: [url]
+
+notes:
+  - Adapter is privacy-conscious and no-ops unless VITE_ANALYTICS_DOMAIN is set.
+  - No passwords, pitch text, or application answers are recorded.

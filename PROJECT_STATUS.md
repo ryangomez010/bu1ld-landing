@@ -1,50 +1,39 @@
 # Project status
 
-**Date:** 2026-07-18
+**Date:** 2026-07-19
 **Branch:** `main`
-**Governor phase:** 4 (Release candidate)
-**Focus:** Institution credibility + main journeys + public evidence archive
+**Governor phase:** 4 (Release candidate — Pass Two)
+**Focus:** Public contribution journey + SEO + atomic applications
 
 ## Verified complete (local)
 
-- typecheck / lint / **130 tests** / smoke / build / `release:check`
-- Schema through **phase32** in repo (`FINAL_SETUP.sql`)
-- phase32 independently enforces no contribution self-review/self-reviewer assignment
-- Leadership overview surfaces review backlog, overdue milestones, owner gaps, and stalled projects
-- Member/account export includes contribution evidence and verification state
-- phase31 RLS/RPC integrity (competition review, invitation accept, deliverable review, membership, claims evidence, collaborator-scoped experiments/datasets)
-- Paper→project bridge; lead experiment/deliverable review UI; accepted-app workspace CTA
-- Public → auth → member program apply funnel with safe redirects
-- Program pages state objective, audience, commitment, timeline, selection, status, outputs, CTA
-- Homepage without fake KPIs / anonymous team / newsletter-as-startup CTAs
-- Competitions labeled as catalog preview when seed-only
-- Labs catalog available even when DB empty
-- Partnership inquiry drafts a real mailto
-- Institution mobile Sheet nav; OG meta improved
-- `/evidence` shows verified institutional claims + public project outputs (honest empty states)
-- Builder discovery shows skills + weekly commitment hours
-- Visitors can browse published projects before authentication and hand off to signup/login with a safe return path
-- Project edits are validated client-side and by the phase30 database trigger; private resource links are not granted to anon
-- Lead management/edit pages explicitly reject projects owned by another lead
-- `/announcements` registered in route tree
+- typecheck / lint / release tests / smoke / build / `release:check` / `audit:ci`
+- Schema through **phase33** in repo (`FINAL_SETUP.sql`)
+- Homepage primary journey is project discovery, not membership-first signup
+- Featured active projects section; honest empty state when none published
+- Public routes emit canonical + Open Graph metadata; Organization JSON-LD present
+- Login/signup marked noindex; robots deny private member surfaces
+- phase33 atomic `submit_project_application` with direct insert privileges revoked
+- Anonymous project detail uses public catalog columns only
+- NeuralField background throttled / reduced; decorative clocks removed
+- Landing-site release package under `landing-sites-release/`
 
 ## Implemented but partially verified
 
-- Live program applications require published DB program rows
-- Competition submissions require live open rows (not seed IDs)
-- phase26–32 must be applied on staging Supabase
+- Live applications require phase33 applied on Supabase
+- Live program/competition submissions still need published DB rows
+- Analytics events no-op until `VITE_ANALYTICS_DOMAIN` is configured
 
 ## Externally blocked
 
-1. Apply `FINAL_SETUP.sql` through phase32
-2. Secrets + `release:prod`
+1. Apply `FINAL_SETUP.sql` through phase33
+2. Secrets + Cloudflare deploy verification
 3. OAuth / storage / email
 4. Multi-account role smokes
 
-## Not completed
+## Portfolio note
 
-- Full Playwright browser E2E
-- Startup CRM / experiment immutability
+FinanceMeta and VertexED canonical trees are dirty with concurrent work and were not overwritten this pass. Obscured Records static v2 has no git remote. Oakridge Codefest remains pending isolated verify.
 
 ## Quality gates
 

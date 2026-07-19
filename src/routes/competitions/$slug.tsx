@@ -16,13 +16,18 @@ import {
   submitCompetitionEntry,
   type CompetitionSubmission,
 } from "@/lib/competitions";
+import { pageHead, titleFromSlug } from "@/lib/seo";
 import type { Competition } from "@/lib/types";
 
 export const Route = createFileRoute("/competitions/$slug")({
   component: CompetitionDetailPage,
-  head: ({ params }) => ({
-    meta: [{ title: `Competition — ${params.slug} — The Bu1ld` }],
-  }),
+  head: ({ params }) =>
+    pageHead({
+      title: `${titleFromSlug(params.slug)} — The Bu1ld competition`,
+      description:
+        "Review this challenge's status, eligibility, timeline, submission requirements, and evaluation protocol.",
+      path: `/competitions/${encodeURIComponent(params.slug)}`,
+    }),
 });
 
 function CompetitionDetailPage() {

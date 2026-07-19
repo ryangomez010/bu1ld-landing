@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Wordmark } from "@/components/Wordmark";
 import { Button } from "@/components/ui/button";
@@ -10,22 +10,7 @@ import { useAuth } from "@/lib/auth";
 
 export function SiteHeader() {
   const { user } = useAuth();
-  const [time, setTime] = useState("");
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const tick = () => {
-      const d = new Date();
-      setTime(
-        `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}:${String(
-          d.getUTCSeconds(),
-        ).padStart(2, "0")} UTC`,
-      );
-    };
-    tick();
-    const i = setInterval(tick, 1000);
-    return () => clearInterval(i);
-  }, []);
 
   return (
     <header className="fixed top-[2px] left-0 right-0 z-50 backdrop-blur-xl bg-background/30 border-b border-border/60">
@@ -50,8 +35,8 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2 md:gap-3">
           <span className="hidden md:flex items-center gap-2 label-xs text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-green animate-pulse" />
-            {time}
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-green" />
+            independent / remote
           </span>
 
           {user ? (
@@ -70,10 +55,10 @@ export function SiteHeader() {
                 Log in
               </Link>
               <Link
-                to="/signup"
+                to="/projects"
                 className="label-sm px-3.5 py-2 border border-accent-blue/40 text-bone hover:bg-accent-blue/10 hover:border-accent-blue transition rounded-sm"
               >
-                Join →
+                Find a project →
               </Link>
             </>
           )}
@@ -135,11 +120,19 @@ export function SiteHeader() {
                       Log in
                     </Link>
                     <Link
-                      to="/signup"
+                      to="/projects"
                       onClick={() => setOpen(false)}
                       className="text-accent-blue py-1"
                     >
-                      Become a member
+                      Find a project
+                    </Link>
+                    <Link
+                      to="/signup"
+                      search={{ redirect: "/projects" }}
+                      onClick={() => setOpen(false)}
+                      className="text-muted-foreground py-1"
+                    >
+                      Create account to apply
                     </Link>
                   </>
                 )}

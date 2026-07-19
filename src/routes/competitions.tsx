@@ -3,19 +3,18 @@ import { useEffect, useState } from "react";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { fetchPublishedCompetitions, isCatalogPreviewCompetition } from "@/lib/competitions";
+import { pageHead } from "@/lib/seo";
 import type { Competition } from "@/lib/types";
 
 export const Route = createFileRoute("/competitions")({
   component: CompetitionsPage,
-  head: () => ({
-    meta: [
-      { title: "Competitions — The Bu1ld" },
-      {
-        name: "description",
-        content: "Time-boxed challenges with published evaluation protocols at The Bu1ld.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Competitions — The Bu1ld",
+      description:
+        "Browse time-boxed machine-learning challenges with explicit status, submission rules, and published evaluation protocols.",
+      path: "/competitions",
+    }),
 });
 
 function CompetitionsPage() {

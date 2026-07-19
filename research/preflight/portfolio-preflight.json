@@ -1,0 +1,1077 @@
+{
+  "generated_at": "2026-07-19T07:22:21.304Z",
+  "registry_path": "/Users/ryan/Downloads/the-bu1ld-nexus-main/research/PROJECT_REGISTRY.yaml",
+  "roots": [
+    "/Users/ryan/Downloads/the-bu1ld-nexus-main",
+    "/Users/ryan/Downloads/finance4all-global-reach-main",
+    "/Users/ryan/Documents/Genesis",
+    "/Users/ryan/Documents/GenesisE",
+    "/Users/ryan/Documents/MonteCarlo",
+    "/Users/ryan/.codex/visualizations/2026/07/12/019f558a-453d-7cb0-8943-42c7b533d6eb"
+  ],
+  "summary": {
+    "project_count": 6,
+    "dirty_project_count": 5,
+    "secret_risk_project_count": 2,
+    "broken_link_project_count": 0,
+    "release_blocker_count": 23
+  },
+  "projects": [
+    {
+      "root": "/Users/ryan/Downloads/the-bu1ld-nexus-main",
+      "name": "bu1ld-nexus",
+      "branch": "main",
+      "git": {
+        "dirty": true,
+        "dirty_count": 65,
+        "deleted_count": 1,
+        "untracked_count": 23,
+        "sample": [
+          "M docs/ACCEPTANCE_CRITERIA.md",
+          " M docs/ARCHITECTURE.md",
+          " M package.json",
+          " M public/robots.txt",
+          " M public/sitemap.xml",
+          " M scripts/apply-schema.mjs",
+          " M scripts/release-readiness.mjs",
+          " D src/components/GenesisIntro.tsx",
+          " M src/components/NeuralField.tsx",
+          " M src/components/landing/ContactSection.tsx",
+          " M src/components/landing/HeroSection.tsx",
+          " M src/components/landing/MembershipSection.tsx"
+        ]
+      },
+      "classification": "PRODUCT",
+      "evidence_level": "E4",
+      "recommended_final_disposition": "PRODUCT",
+      "package_json_present": true,
+      "pyproject_present": false,
+      "commands": {
+        "install": "bun install",
+        "test": "bun run test",
+        "typecheck": "bun run typecheck",
+        "lint": "bun run lint",
+        "build": "bun run build",
+        "release:check": "bun run release:check",
+        "release:prod": "bun run release:prod"
+      },
+      "migrations": {
+        "sql_count": 37,
+        "sample": [
+          "supabase/FINAL_SETUP.sql",
+          "supabase/VERIFY_SETUP.sql",
+          "supabase/full-setup.sql",
+          "supabase/phase10.sql",
+          "supabase/phase11.sql",
+          "supabase/phase12.sql",
+          "supabase/phase13.sql",
+          "supabase/phase14.sql"
+        ]
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 40,
+        "placeholder_matches": [
+          {
+            "file": "src/routes/onboarding.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/partnerships.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/profile.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/search/index.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/saved/collections.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/research/analyze.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/research/submit.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/projects/$slug.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/projects/index.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/projects/new.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/projects/manage/$slug.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/projects/edit/$slug.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/programs/index.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/papers/index.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/members/index.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/lead/apply.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/jobs/tracker.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/routes/competitions/$slug.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/lib/portfolio-preflight.test.ts",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/lib/production-copy.test.ts",
+            "patterns": [
+              "\\bPLACEHOLDER\\b",
+              "\\bLOREM IPSUM\\b",
+              "\\bcoming soon\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/command.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/input.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/select.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/textarea.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/member/FeedbackButton.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/member/MemberCommandPalette.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/member/PaperReader.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/member/ProjectEvidenceSection.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/member/ProjectUpdatesSection.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/member/ProjectWorkspaceExtras.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/member/ReportContentButton.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminAnnouncementsTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminEventsTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminJobsTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminLabsTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminMembersTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminModerationTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminPapersTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminProgramsTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/admin/AdminProjectsTab.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          }
+        ],
+        "secret_risk_count": 25,
+        "secret_risk_matches": [
+          {
+            "file": "DATABASE_SETUP.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "DEPLOYMENT.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "README.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "REMAINING_EXTERNAL_ACTIONS.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "SECURITY.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "TEST_REPORT.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "src/lib/account-deletion-handler.test.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "src/lib/account-deletion-handler.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "src/lib/digest-handler.test.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "src/lib/digest-handler.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "src/lib/email-handler.test.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "src/lib/email-handler.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "src/lib/portfolio-preflight.test.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "scripts/release-readiness.mjs",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "scripts/seed-supabase.ts",
+            "patterns": [
+              "\\bservice_role\\b",
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "public/runtime-env.js",
+            "patterns": [
+              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+            ]
+          },
+          {
+            "file": "docs/AUDIT_MASTER.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "docs/OWNER_ACTIONS.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "docs/PROJECT_MEMORY.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "docs/RELEASE_CHECKLIST.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "docs/SECURITY_AUDIT.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "docs/SECURITY_REVIEW.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "api/account-deletion.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "api/digest.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "api/email.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          }
+        ],
+        "scanned_file_count": 501
+      },
+      "broken_markdown_links": [],
+      "registry_missing_work": [
+        "resolve current dirty worktree before final release branch",
+        "run live Supabase FINAL_SETUP/VERIFY_SETUP",
+        "run role smoke tests with visitor/member/project lead/reviewer/admin accounts"
+      ],
+      "release_blockers": [
+        "65 dirty git entries require review",
+        "secret-like literals require human review",
+        "resolve current dirty worktree before final release branch",
+        "run live Supabase FINAL_SETUP/VERIFY_SETUP",
+        "run role smoke tests with visitor/member/project lead/reviewer/admin accounts"
+      ]
+    },
+    {
+      "root": "/Users/ryan/Downloads/finance4all-global-reach-main",
+      "name": "financemeta",
+      "branch": "cursor/membership-security-supabase-fix",
+      "git": {
+        "dirty": true,
+        "dirty_count": 46,
+        "deleted_count": 5,
+        "untracked_count": 17,
+        "sample": [
+          "M DEPLOYMENT.md",
+          " M docs/ACCEPTANCE_CRITERIA.md",
+          " M e2e/mobile.spec.ts",
+          " M e2e/smoke.spec.ts",
+          " M eslint.config.js",
+          " M package.json",
+          " M playwright.config.ts",
+          " M public/robots.txt",
+          " M public/sitemap.xml",
+          " M scripts/final-readiness.mjs",
+          " M scripts/release-check.mjs",
+          " M src/components/ContactSection.tsx"
+        ]
+      },
+      "classification": "PRODUCT",
+      "evidence_level": "E4",
+      "recommended_final_disposition": "PRODUCT",
+      "package_json_present": true,
+      "pyproject_present": false,
+      "commands": {
+        "install": "bun install",
+        "test": "bun run test",
+        "typecheck": "bun run typecheck",
+        "lint": "bun run lint",
+        "build": "bun run build",
+        "release:check": "bun run release:check"
+      },
+      "migrations": {
+        "sql_count": 26,
+        "sample": [
+          "supabase/FINAL_SETUP.sql",
+          "supabase/VERIFY_RLS_MATRIX.sql",
+          "supabase/VERIFY_SETUP.sql",
+          "supabase/seed.sql",
+          "supabase/verify_migration_status.sql",
+          "supabase/migrations/001_initial_schema.sql",
+          "supabase/migrations/002_google_oauth.sql",
+          "supabase/migrations/003_bookmarks_notifications.sql"
+        ]
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 32,
+        "placeholder_matches": [
+          {
+            "file": "AGENTS.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b",
+              "\\bLOREM IPSUM\\b"
+            ]
+          },
+          {
+            "file": "PRODUCTION_READINESS_REPORT.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "README.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "TESTING.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "supabase/README.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/pages/portal/Admin.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/pages/portal/Settings.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/pages/portal/resources/ResourcesHub.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/pages/portal/pathways/AxiomPathways.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/pages/portal/network/Networking.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/pages/portal/labs/MetaLabs.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/pages/auth/Onboarding.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/lib/ciViteEnv.ts",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/lib/portalCopy.ts",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ContactSection.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/command.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/input.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/select.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/textarea.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/portal/GlossarySearch.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/portal/PortalSearch.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/portal/PortalUI.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/portal/ReportContentButton.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "scripts/final-readiness.mjs",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bFIXME\\b",
+              "\\bLOREM IPSUM\\b"
+            ]
+          },
+          {
+            "file": "scripts/portfolio-preflight.mjs",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bFIXME\\b",
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/AUDIT_MASTER.md",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": "docs/DECISIONS.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/LAUNCH_CHECKLIST.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/RELEASE_CHECKLIST.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/RISKS.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".github/workflows/ci.yml",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cursor/execution_ledger.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          }
+        ],
+        "secret_risk_count": 19,
+        "secret_risk_matches": [
+          {
+            "file": "DATABASE_SETUP.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "DEPLOYMENT.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "README.md",
+            "patterns": [
+              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+            ]
+          },
+          {
+            "file": "REMAINING_EXTERNAL_ACTIONS.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "SECURITY.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "TESTING.md",
+            "patterns": [
+              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+            ]
+          },
+          {
+            "file": "supabase/README.md",
+            "patterns": [
+              "\\bservice_role\\b",
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "supabase/SUPABASE_SETUP.md",
+            "patterns": [
+              "\\bservice_role\\b",
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "supabase/functions/weekly-digest/index.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "supabase/functions/delete-account/index.ts",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "src/lib/ciViteEnv.ts",
+            "patterns": [
+              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+            ]
+          },
+          {
+            "file": "src/lib/security.ts",
+            "patterns": [
+              "\\bservice_role\\b"
+            ]
+          },
+          {
+            "file": "scripts/final-readiness.mjs",
+            "patterns": [
+              "\\bservice_role\\b",
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "scripts/portfolio-preflight.mjs",
+            "patterns": [
+              "\\bservice_role\\b",
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "scripts/release-check.mjs",
+            "patterns": [
+              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+            ]
+          },
+          {
+            "file": "docs/OWNER_ACTIONS.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "docs/SECURITY_REVIEW.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": "docs/SUPABASE_CONNECTION_STATUS.md",
+            "patterns": [
+              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+            ]
+          },
+          {
+            "file": ".github/workflows/ci.yml",
+            "patterns": [
+              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+            ]
+          }
+        ],
+        "scanned_file_count": 419
+      },
+      "broken_markdown_links": [],
+      "registry_missing_work": [
+        "inspect 24 dirty changes before building further",
+        "run release checks after dirty branch is stabilized",
+        "compare overlapping member-platform patterns with BU1LD to avoid generic duplication"
+      ],
+      "release_blockers": [
+        "46 dirty git entries require review",
+        "secret-like literals require human review",
+        "inspect 24 dirty changes before building further",
+        "run release checks after dirty branch is stabilized",
+        "compare overlapping member-platform patterns with BU1LD to avoid generic duplication"
+      ]
+    },
+    {
+      "root": "/Users/ryan/Documents/Genesis",
+      "name": "project-genesis",
+      "branch": "codex/portfolio-finalization-20260715",
+      "git": {
+        "dirty": true,
+        "dirty_count": 5,
+        "deleted_count": 0,
+        "untracked_count": 1,
+        "sample": [
+          "M src/genesis/evaluate.py",
+          " M src/genesis/portfolio/benchmark.py",
+          " M src/genesis/portfolio/evaluate.py",
+          " M src/genesis/robustness.py",
+          "?? tests/test_checkpoint_security.py"
+        ]
+      },
+      "classification": "FLAGSHIP",
+      "evidence_level": "E4",
+      "recommended_final_disposition": "FLAGSHIP",
+      "package_json_present": false,
+      "pyproject_present": true,
+      "commands": {
+        "install": "python3 -m pip install -e .",
+        "test": "python3 -m pytest -q || PYTHONPATH=src python3 -m unittest discover -s tests -v"
+      },
+      "migrations": {
+        "sql_count": 0,
+        "sample": []
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 0,
+        "placeholder_matches": [],
+        "secret_risk_count": 0,
+        "secret_risk_matches": [],
+        "scanned_file_count": 1229
+      },
+      "broken_markdown_links": [],
+      "registry_missing_work": [
+        "complete declared public benchmark campaign with multiple seeds",
+        "freeze model-selection protocol before held-out reporting",
+        "produce final tables/figures from raw artifacts",
+        "independent reproduction"
+      ],
+      "release_blockers": [
+        "5 dirty git entries require review",
+        "complete declared public benchmark campaign with multiple seeds",
+        "freeze model-selection protocol before held-out reporting",
+        "produce final tables/figures from raw artifacts",
+        "independent reproduction"
+      ]
+    },
+    {
+      "root": "/Users/ryan/Documents/GenesisE",
+      "name": "genesis-econ",
+      "branch": "main",
+      "git": {
+        "dirty": true,
+        "dirty_count": 9,
+        "deleted_count": 0,
+        "untracked_count": 1,
+        "sample": [
+          "M CHANGELOG.md",
+          " M README.md",
+          " M docs/RESEARCH_RELEASE_PACKET.md",
+          " M src/genesis_econ/__init__.py",
+          " M src/genesis_econ/cli.py",
+          " M src/genesis_econ/ventures.py",
+          " M tests/test_research_programs.py",
+          " M tests/test_simulation.py",
+          "?? src/genesis_econ/audit.py"
+        ]
+      },
+      "classification": "CORE",
+      "evidence_level": "E4",
+      "recommended_final_disposition": "CORE",
+      "package_json_present": false,
+      "pyproject_present": true,
+      "commands": {
+        "install": "python3 -m pip install -e .",
+        "test": "python3 -m pytest -q || PYTHONPATH=src python3 -m unittest discover -s tests -v"
+      },
+      "migrations": {
+        "sql_count": 0,
+        "sample": []
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 0,
+        "placeholder_matches": [],
+        "secret_risk_count": 0,
+        "secret_risk_matches": [],
+        "scanned_file_count": 64
+      },
+      "broken_markdown_links": [],
+      "registry_missing_work": [
+        "decide whether this merges under FinanceMeta research or remains standalone",
+        "add real public economics datasets only if claims expand beyond synthetic worlds",
+        "strengthen nearest-baseline comparison for each of 24 programs"
+      ],
+      "release_blockers": [
+        "9 dirty git entries require review",
+        "decide whether this merges under FinanceMeta research or remains standalone",
+        "add real public economics datasets only if claims expand beyond synthetic worlds",
+        "strengthen nearest-baseline comparison for each of 24 programs"
+      ]
+    },
+    {
+      "root": "/Users/ryan/Documents/MonteCarlo",
+      "name": "montecarlo",
+      "branch": "main",
+      "git": {
+        "dirty": true,
+        "dirty_count": 2,
+        "deleted_count": 0,
+        "untracked_count": 2,
+        "sample": [
+          "?? README.md",
+          "?? project.manifest.yaml"
+        ]
+      },
+      "classification": "ARCHIVE",
+      "evidence_level": "E0",
+      "recommended_final_disposition": "ARCHIVE",
+      "package_json_present": false,
+      "pyproject_present": false,
+      "commands": {},
+      "migrations": {
+        "sql_count": 0,
+        "sample": []
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 2,
+        "placeholder_matches": [
+          {
+            "file": "README.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "project.manifest.yaml",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          }
+        ],
+        "secret_risk_count": 0,
+        "secret_risk_matches": [],
+        "scanned_file_count": 2
+      },
+      "broken_markdown_links": [],
+      "registry_missing_work": [
+        "decide whether to archive or seed with a real objective"
+      ],
+      "release_blockers": [
+        "2 dirty git entries require review",
+        "decide whether to archive or seed with a real objective",
+        "evidence level E0 is below runnable release threshold"
+      ]
+    },
+    {
+      "root": "/Users/ryan/.codex/visualizations/2026/07/12/019f558a-453d-7cb0-8943-42c7b533d6eb",
+      "name": "visualization-scratch",
+      "branch": null,
+      "git": {
+        "dirty": false,
+        "dirty_count": 0,
+        "deleted_count": 0,
+        "untracked_count": 0,
+        "sample": []
+      },
+      "classification": "ARCHIVE",
+      "evidence_level": "E0",
+      "recommended_final_disposition": "ARCHIVE",
+      "package_json_present": false,
+      "pyproject_present": false,
+      "commands": {},
+      "migrations": {
+        "sql_count": 0,
+        "sample": []
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 0,
+        "placeholder_matches": [],
+        "secret_risk_count": 0,
+        "secret_risk_matches": [],
+        "scanned_file_count": 0
+      },
+      "broken_markdown_links": [],
+      "registry_missing_work": [],
+      "release_blockers": [
+        "evidence level E0 is below runnable release threshold"
+      ]
+    }
+  ]
+}

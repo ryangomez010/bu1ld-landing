@@ -43,10 +43,10 @@ export function WhatWeDoSection() {
               ))}
             </ul>
             <Link
-              to="/signup"
+              to="/projects"
               className="inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] uppercase text-accent-blue hover:text-bone transition pt-2"
             >
-              Create your member account →
+              Browse scoped projects →
             </Link>
           </div>
         </div>

@@ -31,17 +31,25 @@ export function MembershipSection() {
       </div>
       <div className="mt-10 flex flex-wrap gap-4">
         <Link
-          to="/signup"
+          to="/projects"
           className="group inline-flex items-center gap-3 px-7 py-3.5 rounded-sm bg-bone text-background font-mono text-[11px] tracking-[0.3em] uppercase hover:bg-accent-blue transition"
         >
-          Create your account{" "}
+          Browse projects first{" "}
           <span className="transition-transform group-hover:translate-x-1">→</span>
         </Link>
         <Link
-          to="/login"
+          to="/signup"
+          search={{ redirect: "/projects" }}
           className="inline-flex items-center gap-3 px-7 py-3.5 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:border-bone hover:bg-bone/5 transition"
         >
-          Already a member? Log in
+          Create account to apply
+        </Link>
+        <Link
+          to="/login"
+          search={{ redirect: "/projects" }}
+          className="inline-flex items-center gap-3 px-7 py-3.5 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:border-bone hover:bg-bone/5 transition"
+        >
+          Log in
         </Link>
       </div>
     </SectionShell>

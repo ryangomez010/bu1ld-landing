@@ -18,6 +18,7 @@ import {
   rememberPostAuthRedirect,
 } from "@/lib/post-auth-redirect";
 import { sanitizeAppPath } from "@/lib/security";
+import { privatePageHead } from "@/lib/seo";
 
 const loginSearchSchema = z.object({
   redirect: z.string().optional(),
@@ -26,9 +27,7 @@ const loginSearchSchema = z.object({
 export const Route = createFileRoute("/login")({
   validateSearch: (search) => loginSearchSchema.parse(search),
   component: LoginPage,
-  head: () => ({
-    meta: [{ title: "Log in — The Bu1ld" }],
-  }),
+  head: () => privatePageHead("Log in — The Bu1ld"),
 });
 
 function LoginPage() {

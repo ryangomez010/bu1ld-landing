@@ -66,26 +66,6 @@ export async function deleteProjectQuestion(id: string): Promise<{ error: string
   return { error: error?.message ?? null };
 }
 
-export async function saveApplicationAnswers(input: {
-  applicationId: string;
-  answers: { questionId: string; answer: string }[];
-}): Promise<{ error: string | null }> {
-  const supabase = getSupabase();
-  if (!supabase) return { error: "This action is temporarily unavailable." };
-  const rows = input.answers
-    .map((a) => ({
-      application_id: input.applicationId,
-      question_id: a.questionId,
-      answer: clampText(a.answer, 4000),
-    }))
-    .filter((r) => r.answer.length >= 1);
-  if (!rows.length) return { error: null };
-  const { error } = await supabase.from("project_application_answers").upsert(rows, {
-    onConflict: "application_id,question_id",
-  });
-  return { error: error?.message ?? null };
-}
-
 export type ApplicationAnswerRow = {
   application_id: string;
   question_id: string;

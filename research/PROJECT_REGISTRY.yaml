@@ -1,0 +1,330 @@
+generated_at: "2026-07-19"
+scope:
+  roots:
+    - /Users/ryan/Downloads/the-bu1ld-nexus-main
+    - /Users/ryan/Downloads/finance4all-global-reach-main
+    - /Users/ryan/Documents/Genesis
+    - /Users/ryan/Documents/GenesisE
+    - /Users/ryan/Documents/MonteCarlo
+    - /Users/ryan/.codex/visualizations/2026/07/12/019f558a-453d-7cb0-8943-42c7b533d6eb
+  excluded_from_deep_scan:
+    - node_modules
+    - dist
+    - build
+    - .git
+evidence_levels:
+  E0: idea only
+  E1: written specification
+  E2: code exists
+  E3: smoke-tested
+  E4: controlled result or complete local user flow
+  E5: multi-seed benchmark or comprehensive product test
+  E6: external dataset or real-user evidence
+  E7: independent reproduction or external reviewer confirmation
+  E8: release-ready or production-ready after live credentials and external checks
+projects:
+  - id: bu1ld-nexus
+    name: The BU1LD Nexus
+    path: /Users/ryan/Downloads/the-bu1ld-nexus-main
+    lane: The_BU1LD
+    classification: PRODUCT
+    category: research-and-builder institution platform
+    intended_output: deployable public site, member portal, research/project evidence system
+    research_or_product_objective: credible institutional journey from visitor/applicant to contributor evidence and public proof
+    claimed_contribution: verifiable research/building institution with labs, projects, contributors, paper analysis, evidence, cohorts, and admin governance
+    actual_implemented_contribution: TanStack/Vite product with Supabase schema phases through at least phase32, member portal routes, labs/competitions/invitations, project evidence, tests, release scripts, and documentation
+    architecture:
+      frontend: React/TanStack Start routes under src/routes
+      backend: API handlers under api and src/server.ts
+      data: Supabase SQL phases, seed-data.sql, typed client in src/lib/supabase.ts
+      tests: bun tests under src/lib/*.test.ts
+      release: scripts/release-readiness.mjs, verify-supabase.mjs, verify-rls.mjs
+    code_completeness: high but dirty worktree and live credentials still block final release verdict
+    datasets: Supabase seed content; no external research dataset required for core product
+    entrypoints:
+      install: bun install
+      dev: bun run dev
+      tests: bun run test
+      build: bun run build
+      release: bun run release:check
+      strict_release: bun run release:prod
+    existing_evidence:
+      - TEST_REPORT.md
+      - PRODUCTION_READINESS_REPORT.md
+      - docs/PRODUCT_AUDIT.md
+      - supabase/VERIFY_SETUP.sql
+      - src/lib/*.test.ts
+    baselines: product journey baselines are manual role smoke tests; no ML baseline applies
+    paper_status: not a research paper; institutional/product docs exist
+    compute_requirements: local Node/Bun build plus Supabase project for strict verification
+    dependency_status: package.json present; node_modules present in workspace
+    tests_reproducibility_status: "local release gate passed in this pass: typecheck, 151 Bun tests, lint, and production build; strict deployment/live Supabase checks require credentials"
+    licensing_release_risks: verify site/domain, email provider, Supabase secrets, and unsupported public claims before launch
+    missing_work:
+      - resolve current dirty worktree before final release branch
+      - run live Supabase FINAL_SETUP/VERIFY_SETUP
+      - run role smoke tests with visitor/member/project lead/reviewer/admin accounts
+    scientific_weaknesses: paper analyzer is deterministic triage, not citation verification or model-based scientific review
+    engineering_weaknesses:
+      - several migration phases exist beyond final docs and must stay synchronized
+      - product release depends on external secrets and database state
+    recommended_final_disposition: PRODUCT
+    evidence_level: E4
+    frozen_minimum_release:
+      code: current app plus migrations through latest phase
+      data: seed-data.sql and live Supabase rows
+      baselines: role journey smoke matrix
+      tests: typecheck, bun tests, lint, build, release:check, live supabase:verify, live supabase:rls
+      docs: README, RELEASE_CHECKLIST, SECURITY_AUDIT, PRODUCT_AUDIT, USER_FLOW_MAP
+      release_criteria: strict release gate passes in deployment environment and manual role smoke tests pass
+
+  - id: financemeta
+    name: FinanceMeta / Finance4All Global Reach
+    path: /Users/ryan/Downloads/finance4all-global-reach-main
+    lane: FinanceMeta
+    classification: PRODUCT
+    category: finance education/member platform
+    intended_output: deployable website, member portal, programs, finance debrief/editorial workflow
+    research_or_product_objective: visitor-to-member finance learning and contribution journey
+    claimed_contribution: coherent finance community/product with Supabase auth, roles, analytics, notifications, bookmarks, admin workflows
+    actual_implemented_contribution: Vite React app with Supabase migrations 001-021, edge functions, e2e specs, many unit tests, release scripts, and detailed docs
+    architecture:
+      frontend: src/pages, src/components, src/routes/portal.ts
+      backend: Supabase migrations/functions and client libs
+      tests: Vitest plus Playwright e2e
+      release: scripts/final-readiness.mjs and scripts/release-check.mjs
+    code_completeness: high but current branch has 24 dirty files; not independently verified in this pass
+    datasets: Supabase seed.sql and platform CMS/default content
+    entrypoints:
+      install: npm install
+      tests: npm run test
+      e2e: npm run test:e2e
+      build: npm run build
+      release: npm run release:check
+    existing_evidence:
+      - TEST_REPORT.md
+      - docs/VALIDATION_REPORT.md
+      - docs/RELEASE_CANDIDATE_AUDIT.md
+      - supabase/VERIFY_RLS_MATRIX.sql
+    baselines: product golden journey/e2e smoke tests; no ML baseline applies
+    paper_status: not a research paper
+    compute_requirements: local Node/npm plus Supabase for live checks
+    dependency_status: package-lock.json and node_modules present
+    tests_reproducibility_status: 123 Vitest tests passed locally in this pass; Playwright and live Supabase checks not rerun
+    licensing_release_risks: verify finance/advice disclaimers, user data privacy, Supabase RLS, and public claims
+    missing_work:
+      - inspect 24 dirty changes before building further
+      - run release checks after dirty branch is stabilized
+      - compare overlapping member-platform patterns with BU1LD to avoid generic duplication
+    scientific_weaknesses: finance claims must avoid investment-performance inference unless artifact-backed
+    engineering_weaknesses: duplicate platform concepts with BU1LD; separate product identity must remain clear
+    recommended_final_disposition: PRODUCT
+    evidence_level: E4
+    frozen_minimum_release:
+      code: current app and migrations
+      data: seed.sql
+      baselines: visitor-to-member-to-proof e2e journey
+      tests: typecheck, Vitest, Playwright, release:check, live RLS matrix
+      docs: FINANCEMETA_PRODUCT_SPEC, RLS_ROLE_MATRIX, RELEASE_CANDIDATE_AUDIT
+      release_criteria: unauthorized paths denied and full member journey executable
+
+  - id: project-genesis
+    name: Project Genesis
+    path: /Users/ryan/Documents/Genesis
+    lane: Research_Collections
+    classification: FLAGSHIP
+    category: continual/modular learning research implementation
+    intended_output: reproducible research release with code, configs, runs, paper packet, and multi-seed experiments
+    research_or_product_objective: test bounded developmental modular learning with sparse routing and continual learning controls
+    claimed_contribution: conditional sparse routing, controlled activation, continual task streams, EWC/SI/replay controls, portfolio of trainable developmental model variants
+    actual_implemented_contribution: Python package with configs, CLI entry points, tests, synthetic and vision task loaders, saved smoke artifacts, paper/audit docs, and release scripts
+    architecture:
+      package: src/genesis
+      configs: configs/*.json
+      experiments: genesis.experiment and scripts/run_*.sh
+      artifacts: runs/* summaries/checkpoints/figures
+      docs: paper/PROJECT_GENESIS.md and docs/project/*
+    code_completeness: high for local/synthetic smoke; public benchmark campaign still incomplete
+    datasets:
+      synthetic: built-in synthetic continual streams
+      external_optional: MNIST, Split MNIST, Permuted MNIST, CIFAR10 via torchvision download flag
+    entrypoints:
+      install: pip install -e '.[dev]'
+      smoke: bash scripts/verify_release.sh
+      train: genesis-train --config configs/synthetic_smoke.json
+      portfolio: genesis-portfolio
+      report: genesis-report
+    existing_evidence:
+      - runs/smoke/summary.json
+      - runs/continual-smoke/summary.json
+      - runs/portfolio-ablation-smoke/manifest.json
+      - runs/synthetic-control-suite/manifest.json
+      - docs/project/VERIFIED_COMMANDS.md
+    baselines:
+      - dense/static routed
+      - random/scheduled growth
+      - EWC
+      - Synaptic Intelligence
+      - reservoir replay
+    paper_status: technical paper draft and claim-evidence audit exist; no submission-ready external benchmark claim yet
+    compute_requirements: CPU for smoke/synthetic; GPU recommended for full vision campaigns
+    dependency_status: pyproject.toml present; torch/numpy runtime; pytest/ruff dev
+    tests_reproducibility_status: 29 tests detected; not rerun yet in this pass
+    licensing_release_risks: README says MIT but LICENSE file was not seen in shallow file list; verify before publication
+    missing_work:
+      - complete declared public benchmark campaign with multiple seeds
+      - freeze model-selection protocol before held-out reporting
+      - produce final tables/figures from raw artifacts
+      - independent reproduction
+    scientific_weaknesses:
+      - novelty depends on nearest continual-learning/dynamic-sparse-routing comparisons
+      - smoke artifacts are not sufficient for public claims
+      - Python routing is correctness baseline, not systems-speed evidence
+    engineering_weaknesses:
+      - many portfolio variants risk diluting flagship
+      - checkpoint compatibility/security should remain tested
+    recommended_final_disposition: FLAGSHIP
+    evidence_level: E4
+    frozen_minimum_release:
+      code: src/genesis package plus configs
+      datasets: synthetic generator and explicitly downloaded public datasets
+      baselines: static/dense/EWC/SI/replay/random-growth matched seeds
+      experiments: five-seed public benchmark plus ablations and robustness
+      tests: pytest, release guards, smoke scripts
+      paper: PROJECT_GENESIS.md updated only from artifacts
+      release_criteria: multi-seed artifact manifest validates and all claims map to raw outputs
+
+  - id: genesis-econ
+    name: GenesisE / Genesis Economics Edition
+    path: /Users/ryan/Documents/GenesisE
+    lane: Research_Collections
+    classification: CORE
+    category: synthetic economic intelligence simulator and portfolio
+    intended_output: reproducible synthetic economic simulation/research package with artifacts and validation
+    research_or_product_objective: executable lab for adaptive markets, memory, regimes, agents, counterfactuals, and economic world models
+    claimed_contribution: 24 executable economic intelligence programs plus flagship shared-evidence integration
+    actual_implemented_contribution: dependency-free Python package with CLI, simulation modules, benchmark/validation artifacts, docs, and tests
+    architecture:
+      package: src/genesis_econ
+      cli: genesis-econ
+      artifacts: artifacts/*.json and artifacts/*.md
+      tests: tests/test_*.py
+    code_completeness: high for synthetic simulator; not evidence about real markets
+    datasets:
+      synthetic: built-in generated market/economic simulations
+      external: none discovered
+    entrypoints:
+      install: python3 -m pip install .
+      tests: PYTHONPATH=src python3 -m unittest discover -s tests -v
+      portfolio: genesis-econ portfolio --steps 160 --seed 7
+      benchmark: genesis-econ benchmark --steps 160 --seeds 1,2,3,4,5
+      validate: genesis-econ validate artifacts/portfolio.json
+    existing_evidence:
+      - artifacts/portfolio.json
+      - artifacts/benchmark.json
+      - artifacts/validation.json
+      - artifacts/release-study.json
+      - docs/RESEARCH_RELEASE_PACKET.md
+    baselines:
+      - ablated program outputs
+      - matched-seed counterfactuals
+      - simulation validation contracts
+    paper_status: research release packet and final release decision docs exist; no real-market paper claim
+    compute_requirements: CPU-only Python 3.11+
+    dependency_status: pyproject.toml present; no third-party runtime dependencies
+    tests_reproducibility_status: 49 unittest cases passed locally in this pass
+    licensing_release_risks: pyproject references LICENSE; verify file exists before public release
+    missing_work:
+      - decide whether this merges under FinanceMeta research or remains standalone
+      - add real public economics datasets only if claims expand beyond synthetic worlds
+      - strengthen nearest-baseline comparison for each of 24 programs
+    scientific_weaknesses:
+      - all evidence appears synthetic/internal
+      - many programs increase surface area; risk of shallow novelty
+      - artifact validity does not imply real-market validity
+    engineering_weaknesses:
+      - broad 24-program portfolio may be harder to maintain than a few flagship experiments
+    recommended_final_disposition: CORE
+    evidence_level: E4
+    frozen_minimum_release:
+      code: src/genesis_econ
+      datasets: synthetic generator with fixed seeds
+      baselines: ablations and counterfactual matched-seed studies
+      experiments: benchmark and validation artifacts regenerated from CLI
+      tests: unittest discovery plus artifact schema validation
+      report: RESEARCH_RELEASE_PACKET with synthetic-only limitations
+      release_criteria: artifacts validate from clean checkout without third-party dependencies
+
+  - id: montecarlo
+    name: MonteCarlo
+    path: /Users/ryan/Documents/MonteCarlo
+    lane: Research_Collections
+    classification: ARCHIVE
+    category: empty or uninitialized research repository
+    intended_output: unknown; name suggests simulation/statistics work
+    research_or_product_objective: not evidenced by files
+    claimed_contribution: none found
+    actual_implemented_contribution: only .git metadata found in shallow scan
+    architecture: none
+    code_completeness: none
+    datasets: none
+    entrypoints: {}
+    existing_evidence: []
+    baselines: []
+    paper_status: none
+    compute_requirements: none until scoped
+    dependency_status: no package metadata found
+    tests_reproducibility_status: no tests found
+    licensing_release_risks: no license found
+    missing_work:
+      - decide whether to archive or seed with a real objective
+    scientific_weaknesses:
+      - no falsifiable question or artifacts
+    engineering_weaknesses:
+      - empty repo wastes discovery time
+    recommended_final_disposition: ARCHIVE
+    evidence_level: E0
+    frozen_minimum_release: null
+
+  - id: visualization-scratch
+    name: Codex visualization scratch root
+    path: /Users/ryan/.codex/visualizations/2026/07/12/019f558a-453d-7cb0-8943-42c7b533d6eb
+    lane: out_of_scope
+    classification: ARCHIVE
+    category: scratch artifact directory
+    intended_output: conversation visualizations
+    research_or_product_objective: none discovered
+    claimed_contribution: none
+    actual_implemented_contribution: no files found in shallow scan
+    architecture: none
+    code_completeness: none
+    datasets: none
+    entrypoints: {}
+    existing_evidence: []
+    baselines: []
+    paper_status: none
+    compute_requirements: none
+    dependency_status: no package metadata
+    tests_reproducibility_status: no tests
+    licensing_release_risks: none
+    missing_work: []
+    scientific_weaknesses: []
+    engineering_weaknesses: []
+    recommended_final_disposition: ARCHIVE
+    evidence_level: E0
+    frozen_minimum_release: null
+not_found_as_runnable_repositories:
+  - Olympus
+  - VertexED
+  - Obscured Records Agent
+  - PI-JEPA
+  - APEN/PEN
+  - RIPII/IPII
+  - Eigen-JEPA
+  - Eigen-Finance
+  - LGWM
+  - ESNF
+  - NFGM
+  - NPMS
+  - ATG
+  - NeuroCAD

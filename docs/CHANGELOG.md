@@ -1,5 +1,26 @@
 # Changelog
 
+## Landing Pass Two — 2026-07-19 — Conversion, SEO, atomic applications
+
+### Added
+
+- `supabase/phase33.sql` — atomic `submit_project_application` with required-answer enforcement
+- Homepage featured projects section and project-first hero CTA
+- Shared `src/lib/seo.ts` helpers, Organization JSON-LD, route canonicals
+- `landing-sites-release/` evidence package for multi-site registry
+
+### Changed
+
+- Removed cinematic Genesis intro and decorative UTC clocks
+- Header/footer navigation prioritize Projects and Evidence
+- Public project fetches abort on timeout; anonymous detail stays on public columns
+- NeuralField density and frame cost reduced
+
+### Verified
+
+- `release:check`, smoke, audit, and production build PASS locally
+- Public HTTP probe confirms canonicals on critical acquisition routes
+
 ## Finalization Pass One — 2026-07-18 — Contribution integrity + operations
 
 ### Added

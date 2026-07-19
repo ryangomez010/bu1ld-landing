@@ -1,0 +1,101 @@
+# Landing-site registry — evidence as of 2026-07-19
+# Status values: release_candidate | blocked_dirty_tree | prototype | archive | not_found
+
+sites:
+  - id: the-bu1ld
+    name: The Bu1LD
+    canonical_repository: /Users/ryan/Downloads/the-bu1ld-nexus-main
+    remote: https://github.com/ryangomez010/bu1ld-landing.git
+    framework: TanStack Start + Vite + Cloudflare Worker
+    primary_audience: Machine-learning researchers, builders, and students seeking scoped technical work
+    primary_conversion: Find a project and contribute (/projects → project detail → signup/apply)
+    status: release_candidate
+    build_status: pass
+    test_status: pass
+    accessibility_status: source_and_smoke_pass
+    security_status: phase33_local_pass_live_schema_pending
+    deployment_status: not_deployed_credentials_required
+    verified_url: null
+    external_blockers:
+      - Apply supabase/phase33.sql (atomic application submission) to live Supabase
+      - Configure Cloudflare deploy secrets and execute deploy verification
+      - Role-separated live RLS smoke
+    last_verified: 2026-07-19
+
+  - id: financemeta
+    name: FinanceMeta
+    canonical_repository: /Users/ryan/Downloads/finance4all-global-reach-main
+    framework: Vite/React (portal + landing)
+    primary_audience: Students and emerging contributors in finance, economics, markets, and policy
+    primary_conversion: Join / apply pathway (implementation present; concurrent dirty branch)
+    status: blocked_dirty_tree
+    build_status: not_rerun_this_pass
+    test_status: prior_pass_123_tests_reported
+    accessibility_status: unverified_this_pass
+    security_status: unverified_this_pass
+    deployment_status: unknown
+    verified_url: null
+    external_blockers:
+      - Active dirty branch cursor/membership-security-supabase-fix with concurrent landing edits
+      - Must not overwrite user-owned uncommitted work
+    last_verified: 2026-07-19
+
+  - id: vertexed
+    name: VertexED.ai
+    canonical_repository: /Users/ryan/Downloads/VertexEDU
+    alternate_candidate: /Users/ryan/Downloads/PublishProjects/labos/tests/VertexED-AI
+    framework: Vite + Vercel API handlers
+    primary_audience: IB Mathematics AA HL learners
+    primary_conversion: Start a diagnostic / try the platform
+    status: blocked_dirty_tree
+    build_status: not_rerun_this_pass
+    test_status: unverified_this_pass
+    accessibility_status: unverified_this_pass
+    security_status: unverified_this_pass
+    deployment_status: unknown
+    verified_url: null
+    external_blockers:
+      - Dirty branch cursor/fix-adaptive-handoff-vite-vercel with active API/product edits
+      - VertexED-AI alternate tree is a research/test package, not the public landing
+    last_verified: 2026-07-19
+
+  - id: obscured-records
+    name: Obscured Records
+    canonical_repository: /Users/ryan/Downloads/obscured-records-v2
+    alternate_candidate: /Users/ryan/Downloads/ObscuredRecordsAgent
+    framework: static HTML/CSS/JS (v2); Python reel agent (alternate)
+    primary_audience: Readers of investigative finance/history stories
+    primary_conversion: Read the latest story
+    status: prototype
+    build_status: static_site_no_build
+    test_status: not_present
+    accessibility_status: unverified
+    security_status: client_api_key_settings_present
+    deployment_status: no_git_remote
+    verified_url: null
+    external_blockers:
+      - No git repository / remote for the static site
+      - WordPress API settings modal implies external CMS credentials
+      - ObscuredRecordsAgent is a production reel agent, not the editorial landing
+    last_verified: 2026-07-19
+
+  - id: oakridge-codefest
+    name: Oakridge Codefest
+    canonical_repository: /Users/ryan/Downloads/OakridgeCodefest2027/oakridge-codefest-2027
+    framework: Next.js 15
+    primary_audience: High-school hackathon participants and teams
+    primary_conversion: Register your team
+    status: release_candidate_pending_local_verify
+    build_status: pending_verify
+    test_status: pending_verify
+    accessibility_status: pending_verify
+    security_status: pending_verify
+    deployment_status: unknown
+    verified_url: null
+    external_blockers:
+      - One uncommitted change in components/SponsorsSection.tsx must be inspected before overwrite
+    last_verified: 2026-07-19
+
+not_found:
+  - Olympus public landing
+  - Dedicated bu1ld-landing duplicate (remote points at the-bu1ld-nexus-main)

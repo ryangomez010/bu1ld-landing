@@ -156,18 +156,22 @@ function localProjects(status?: ProjectStatus): Project[] {
 export async function fetchProjects(status?: ProjectStatus): Promise<Project[]> {
   const supabase = getSupabase();
   if (supabase) {
-    let q = supabase
-      .from("projects")
-      .select(PUBLIC_PROJECT_COLUMNS)
-      .eq("published", true)
-      .order("created_at", { ascending: false });
-    if (status) q = q.eq("status", status);
-    const { data, error } = await q;
-    if (!error) {
-      return withSeedFallback(
-        (data ?? []).map((r) => normalizeProject(r as Record<string, unknown>)),
-        localProjects(status),
-      );
+    try {
+      let query = supabase
+        .from("projects")
+        .select(PUBLIC_PROJECT_COLUMNS)
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+      if (status) query = query.eq("status", status);
+      const { data, error } = await query.abortSignal(AbortSignal.timeout(8_000));
+      if (!error) {
+        return withSeedFallback(
+          (data ?? []).map((row) => normalizeProject(row as Record<string, unknown>)),
+          localProjects(status),
+        );
+      }
+    } catch {
+      // Public catalog falls through to the safe environment-specific fallback.
     }
     return isDemoMode() ? localProjects(status) : [];
   }
@@ -177,15 +181,41 @@ export async function fetchProjects(status?: ProjectStatus): Promise<Project[]> 
 export async function fetchProjectBySlug(slug: string): Promise<Project | null> {
   const supabase = getSupabase();
   if (supabase) {
-    const { data } = await supabase.from("projects").select("*").eq("slug", slug).maybeSingle();
-    if (data) return normalizeProject(data as Record<string, unknown>);
-    const { data: publicProject } = await supabase
-      .from("projects")
-      .select(PUBLIC_PROJECT_COLUMNS)
-      .eq("slug", slug)
-      .eq("published", true)
-      .maybeSingle();
-    if (publicProject) return normalizeProject(publicProject as Record<string, unknown>);
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      // Visitors only receive the public catalog columns (no discord/workspace links).
+      if (!session) {
+        const { data: publicProject } = await supabase
+          .from("projects")
+          .select(PUBLIC_PROJECT_COLUMNS)
+          .eq("slug", slug)
+          .eq("published", true)
+          .abortSignal(AbortSignal.timeout(8_000))
+          .maybeSingle();
+        if (publicProject) return normalizeProject(publicProject as Record<string, unknown>);
+      } else {
+        const { data } = await supabase
+          .from("projects")
+          .select("*")
+          .eq("slug", slug)
+          .abortSignal(AbortSignal.timeout(8_000))
+          .maybeSingle();
+        if (data) return normalizeProject(data as Record<string, unknown>);
+        const { data: publicProject } = await supabase
+          .from("projects")
+          .select(PUBLIC_PROJECT_COLUMNS)
+          .eq("slug", slug)
+          .eq("published", true)
+          .abortSignal(AbortSignal.timeout(8_000))
+          .maybeSingle();
+        if (publicProject) return normalizeProject(publicProject as Record<string, unknown>);
+      }
+    } catch {
+      // Public detail falls through to the safe environment-specific fallback.
+    }
     return resolveSeedItem(null, () => localProjects().find((p) => p.slug === slug));
   }
   return resolveSeedItem(null, () => localProjects().find((p) => p.slug === slug));
@@ -456,32 +486,18 @@ export async function applyToProject(
   questionAnswers?: { questionId: string; answer: string }[],
 ): Promise<{ error: string | null }> {
   const safePitch = clampText(pitch, LIMITS.applicationPitch);
-  if (!safePitch) return { error: "Pitch is required." };
+  if (safePitch.length < 20) return { error: "Pitch must be at least 20 characters." };
 
   const now = new Date().toISOString();
   const supabase = getSupabase();
 
   if (supabase) {
-    const { data, error } = await supabase
-      .from("project_applications")
-      .insert({
-        project_id: project.id,
-        user_id: userId,
-        pitch: safePitch,
-        status: "pending",
-      })
-      .select("id")
-      .maybeSingle();
-    if (error) return { error: error.message };
-    if (data?.id && questionAnswers?.length) {
-      const { saveApplicationAnswers } = await import("@/lib/project-application-questions");
-      const answerResult = await saveApplicationAnswers({
-        applicationId: String(data.id),
-        answers: questionAnswers,
-      });
-      if (answerResult.error) return { error: answerResult.error };
-    }
-    return { error: null };
+    const { error } = await supabase.rpc("submit_project_application", {
+      p_project_id: project.id,
+      p_pitch: safePitch,
+      p_answers: questionAnswers ?? [],
+    });
+    return { error: error?.message ?? null };
   }
 
   if (!isLocalPersistenceEnabled()) {

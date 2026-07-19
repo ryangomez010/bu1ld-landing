@@ -3,12 +3,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { PageBackground } from "@/components/layout/PageBackground";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/terms")({
   component: TermsPage,
-  head: () => ({
-    meta: [{ title: "Terms of Use — The Bu1ld" }],
-  }),
+  head: () =>
+    pageHead({
+      title: "Terms of Use — The Bu1ld",
+      description:
+        "Terms for membership, project applications, contributions, evidence, acceptable use, and account termination.",
+      path: "/terms",
+    }),
 });
 
 function TermsPage() {

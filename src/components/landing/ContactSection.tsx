@@ -19,17 +19,23 @@ export function ContactSection() {
           Build with <Wordmark />.
         </h2>
         <p className="mt-10 max-w-xl mx-auto text-muted-foreground text-lg leading-relaxed">
-          Researchers, engineers, founders, and serious students are welcome. Start with a member
-          account if you want to study, contribute to a confirmed project, or build a record of
-          technical work. Use direct contact for partnerships or an operational question.
+          Researchers, engineers, founders, and serious students are welcome. Browse a project brief
+          first, then create an account to apply with a concrete pitch. Use email or Discord for
+          partnerships and operational questions.
         </p>
         <div className="mt-14 flex flex-wrap justify-center gap-4">
           <Link
-            to="/signup"
+            to="/projects"
             className="group inline-flex items-center gap-3 px-9 py-4 rounded-sm bg-bone text-background font-mono text-[11px] tracking-[0.3em] uppercase hover:bg-accent-blue transition glow-bone"
           >
-            Become a member{" "}
-            <span className="transition-transform group-hover:translate-x-1">→</span>
+            Find a project <span className="transition-transform group-hover:translate-x-1">→</span>
+          </Link>
+          <Link
+            to="/signup"
+            search={{ redirect: "/projects" }}
+            className="inline-flex items-center gap-3 px-9 py-4 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:bg-bone/5 hover:border-bone/60 transition"
+          >
+            Create account to apply
           </Link>
           <a
             href={DISCORD_URL}

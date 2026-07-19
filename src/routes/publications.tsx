@@ -3,20 +3,18 @@ import { useEffect, useState } from "react";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { fetchPublicPapers } from "@/lib/content";
+import { pageHead } from "@/lib/seo";
 import type { Paper } from "@/lib/types";
 
 export const Route = createFileRoute("/publications")({
   component: PublicationsPage,
-  head: () => ({
-    meta: [
-      { title: "Publications — The Bu1ld" },
-      {
-        name: "description",
-        content:
-          "Paper reviews, explainers, and research notes from The Bu1ld. Full library available to members.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Publications — The Bu1ld",
+      description:
+        "Read published paper reviews, explainers, and research notes with explicit status and evidence-aware analysis.",
+      path: "/publications",
+    }),
 });
 
 function PublicationsPage() {

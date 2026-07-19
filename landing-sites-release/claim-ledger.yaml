@@ -1,0 +1,37 @@
+# Claim ledger — public claims used or rejected this pass
+
+claims:
+  - id: bu1ld-independent-research-builder
+    text: The Bu1ld is an independent research and builder institution for scoped ML work.
+    classification: repository_inferred
+    usage: homepage hero and metadata
+
+  - id: bu1ld-six-labs
+    text: Six research labs / published research divisions.
+    classification: repository_inferred
+    usage: stats strip; backed by institution/lab seed data
+
+  - id: bu1ld-evidence-first
+    text: Public claims require sources.
+    classification: verified
+    usage: homepage, evidence register, production-copy scanners
+
+  - id: bu1ld-member-portal
+    text: Members can apply, contribute, and record work.
+    classification: verified
+    usage: conversion copy; implemented routes and RPCs exist locally
+
+  - id: bu1ld-live-user-counts
+    text: Any stated member/user/partner counts.
+    classification: unverified
+    usage: not published
+
+  - id: oakridge-2027
+    text: Event year is 2027 / 10th edition.
+    classification: repository_inferred
+    usage: package.json and site naming; must remain consistent
+
+  - id: financemeta-scale
+    text: Global platform traction claims.
+    classification: unverified
+    usage: not asserted this pass

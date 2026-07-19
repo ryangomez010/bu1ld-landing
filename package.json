@@ -22,6 +22,7 @@
     "smoke": "node scripts/smoke-routes.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "audit:ci": "bun audit --audit-level=high",
+    "portfolio:preflight": "node scripts/portfolio-preflight.mjs",
     "release:check": "node scripts/release-readiness.mjs",
     "release:prod": "BU1LD_RELEASE_STRICT=1 node scripts/release-readiness.mjs"
   },

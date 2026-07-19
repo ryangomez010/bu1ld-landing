@@ -102,6 +102,16 @@ Frozen acceptance criteria for The Bu1ld Nexus. Pass 1 defines; Pass 2+ validate
 | Typecheck in CI                | After AUD-018 fix |
 | Deploy blocked on test failure | After AUD-021 fix |
 
+### Portfolio evidence
+
+| Criterion                                       | Validation                       |
+| ----------------------------------------------- | -------------------------------- |
+| Portfolio preflight command runs                | `bun run portfolio:preflight`    |
+| JSON and Markdown preflight artifacts are saved | `research/preflight/` inspection |
+| Dirty state and evidence levels are reported    | preflight JSON                   |
+| `.env` contents are not printed                 | preflight tests + code review    |
+| Placeholder, secret-risk, and broken links scan | preflight tests + report         |
+
 ### Mobile and accessibility
 
 | Criterion                             | Validation       |
@@ -119,7 +129,8 @@ All of the following must pass:
 3. Role smoke tests (member, lead, admin, removed user) documented green
 4. Email send + digest dry-run + account deletion tested
 5. OAuth on production domain
-6. No BLOCKED items in AUDIT_MASTER except explicitly deferred (AUD-008, AUD-009, AUD-022, AUD-023)
+6. `bun run portfolio:preflight` has no unexplained release blockers for BU1LD
+7. No BLOCKED items in AUDIT_MASTER except explicitly deferred (AUD-008, AUD-009, AUD-022, AUD-023)
 
 ## Production launch gate (future)
 

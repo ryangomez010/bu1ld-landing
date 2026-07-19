@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 
 import { trackPageView } from "@/lib/analytics";
 import { AuthProvider } from "@/lib/auth";
+import { ORGANIZATION_STRUCTURED_DATA } from "@/lib/seo";
 import { initTheme } from "@/lib/theme";
 
 import appCss from "../styles.css?url";
@@ -39,10 +40,10 @@ function NotFoundComponent() {
             Home
           </Link>
           <Link
-            to="/dashboard"
+            to="/projects"
             className="inline-flex items-center justify-center rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground hover:text-bone hover:border-bone/50 transition"
           >
-            Member area
+            Find a project
           </Link>
         </div>
       </div>
@@ -114,7 +115,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image", content: "https://thebu1ld.com/og.svg" },
       { name: "twitter:image", content: "https://thebu1ld.com/og.svg" },
       { name: "theme-color", content: "#0a0a0b" },
-      { name: "robots", content: "index, follow" },
     ],
     links: [
       {
@@ -141,6 +141,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <script src="/runtime-env.js" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_STRUCTURED_DATA) }}
+        />
         <HeadContent />
       </head>
       <body>

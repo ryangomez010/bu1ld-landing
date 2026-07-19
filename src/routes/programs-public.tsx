@@ -8,25 +8,17 @@ import {
   programApplyPath,
   signupPathWithRedirect,
 } from "@/lib/post-auth-redirect";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/programs-public")({
   component: ProgramsPublicPage,
-  head: () => ({
-    meta: [
-      { title: "Programs — The Bu1ld" },
-      {
-        name: "description",
-        content:
-          "Research fellowship, startup incubation, builder cohorts, and competitions at The Bu1ld.",
-      },
-      { property: "og:title", content: "Programs — The Bu1ld" },
-      {
-        property: "og:description",
-        content:
-          "Four operating tracks with explicit objectives, commitment, selection, and application paths.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Programs — The Bu1ld",
+      description:
+        "Compare The Bu1ld's research fellowship, startup incubation, builder cohort, and competition paths by objective, commitment, status, and output.",
+      path: "/programs-public",
+    }),
 });
 
 function ProgramsPublicPage() {

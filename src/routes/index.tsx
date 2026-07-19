@@ -1,12 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { lazy, Suspense, useState } from "react";
-
-const GenesisIntro = lazy(() =>
-  import("@/components/GenesisIntro").then((m) => ({ default: m.GenesisIntro })),
-);
+import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { ContactSection } from "@/components/landing/ContactSection";
 import { FaqSection } from "@/components/landing/FaqSection";
+import { FeaturedProjectsSection } from "@/components/landing/FeaturedProjectsSection";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { MarqueeStrip } from "@/components/landing/MarqueeStrip";
 import { MembershipSection } from "@/components/landing/MembershipSection";
@@ -19,20 +15,20 @@ import { TeamSection } from "@/components/landing/TeamSection";
 import { WhatWeDoSection } from "@/components/landing/WhatWeDoSection";
 import { PageBackground } from "@/components/layout/PageBackground";
 import { STATS } from "@/data/landing";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
+  head: () =>
+    pageHead({
+      title: "The Bu1ld — Join machine-learning projects",
+      description:
+        "Find scoped machine-learning research and builder projects, apply with a technical profile, and publish reviewed contribution evidence.",
+      path: "/",
+    }),
 });
 
 function HomePage() {
-  const [intro, setIntro] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return !localStorage.getItem("build:intro-seen");
-    } catch {
-      return true;
-    }
-  });
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 });
@@ -45,15 +41,7 @@ function HomePage() {
       >
         Skip to content
       </a>
-      <AnimatePresence>
-        {intro ? (
-          <Suspense fallback={null}>
-            <GenesisIntro onDone={() => setIntro(false)} />
-          </Suspense>
-        ) : null}
-      </AnimatePresence>
-
-      <PageBackground density={140} />
+      <PageBackground density={72} />
 
       {!reduce ? (
         <motion.div
@@ -84,6 +72,7 @@ function HomePage() {
             ))}
           </div>
         </section>
+        <FeaturedProjectsSection />
         <WhatWeDoSection />
         <MembershipSection />
         <ResearchSection />

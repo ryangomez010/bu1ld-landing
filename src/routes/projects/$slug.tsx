@@ -50,9 +50,17 @@ import { pushRecentView } from "@/lib/recent-views";
 import type { Project, ProjectApplication } from "@/lib/types";
 import { fetchProjectMembership } from "@/lib/project-collaboration";
 import { isAdministrator } from "@/lib/roles";
+import { pageHead, titleFromSlug } from "@/lib/seo";
 
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
+  head: ({ params }) =>
+    pageHead({
+      title: `${titleFromSlug(params.slug)} — The Bu1ld project`,
+      description:
+        "Review this project's problem, maturity, required skills, weekly commitment, open roles, and public evidence before applying.",
+      path: `/projects/${encodeURIComponent(params.slug)}`,
+    }),
 });
 
 function ProjectDetailPage() {
@@ -86,20 +94,46 @@ function ProjectDetail() {
   const [editingPitch, setEditingPitch] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [questions, setQuestions] = useState<ProjectApplicationQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    void Promise.all([fetchProjectBySlug(slug), fetchProjects()]).then(([p, all]) => {
-      setProject(p);
-      if (p) {
-        setRelated(relatedProjects(p, all));
-        void fetchProjectTeamMembers(p.id).then(setTeamMembers);
-        void fetchProjectQuestions(p.id).then(setQuestions);
+    let cancelled = false;
+    void (async () => {
+      setLoading(true);
+      setLoadError(false);
+      try {
+        const [nextProject, allProjects] = await Promise.all([
+          fetchProjectBySlug(slug),
+          fetchProjects(),
+        ]);
+        if (cancelled) return;
+        setProject(nextProject);
+        if (nextProject) {
+          setRelated(relatedProjects(nextProject, allProjects));
+          const [members, applicationQuestions] = await Promise.all([
+            fetchProjectTeamMembers(nextProject.id),
+            fetchProjectQuestions(nextProject.id),
+          ]);
+          if (cancelled) return;
+          setTeamMembers(members);
+          setQuestions(applicationQuestions);
+        }
+      } catch {
+        if (!cancelled) {
+          setProject(null);
+          setLoadError(true);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      setLoading(false);
-    });
-  }, [slug]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, loadAttempt]);
 
   useEffect(() => {
     if (!user || !project) return;
@@ -139,29 +173,55 @@ function ProjectDetail() {
       }
     }
     setSubmitting(true);
-    const { error } = await applyToProject(
-      user.id,
-      project,
-      pitch,
-      profile,
-      questions.map((q) => ({ questionId: q.id, answer: answers[q.id] ?? "" })),
-    );
-    setSubmitting(false);
-    if (error) {
-      toast.error(error);
-      return;
+    try {
+      const { error } = await applyToProject(
+        user.id,
+        project,
+        pitch,
+        profile,
+        questions.map((q) => ({ questionId: q.id, answer: answers[q.id] ?? "" })),
+      );
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      toast.success("Application submitted.");
+      clearPitchDraft(user.id, project.id);
+      void getApplicationForProject(user.id, project.id).then(setApplication);
+      setPitch("");
+      setAnswers({});
+    } catch {
+      toast.error("Your application could not be submitted. Check your connection and retry.");
+    } finally {
+      setSubmitting(false);
     }
-    toast.success("Application submitted.");
-    clearPitchDraft(user.id, project.id);
-    void getApplicationForProject(user.id, project.id).then(setApplication);
-    setPitch("");
-    setAnswers({});
   };
 
   if (loading) {
     return (
       <ProjectPageLayout title="Loading project">
         <LoadingState />
+      </ProjectPageLayout>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <ProjectPageLayout title="Project temporarily unavailable">
+        <div className="rounded-sm border border-accent-red/30 bg-accent-red/5 p-6">
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            The project brief could not be loaded. Check your connection and retry; your account and
+            application data were not changed.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-4"
+            onClick={() => setLoadAttempt((attempt) => attempt + 1)}
+          >
+            Retry project
+          </Button>
+        </div>
       </ProjectPageLayout>
     );
   }
@@ -197,11 +257,7 @@ function ProjectDetail() {
             </span>
           ) : null}
         </div>
-        {user ? (
-          <h1 className="mt-4 font-display text-4xl tracking-tight text-bone">{project.title}</h1>
-        ) : (
-          <h2 className="mt-4 font-display text-4xl tracking-tight text-bone">{project.title}</h2>
-        )}
+        <h1 className="mt-4 font-display text-4xl tracking-tight text-bone">{project.title}</h1>
         {!project.published && project.lead_id === user?.id ? (
           <div className="mt-4 max-w-3xl rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-4 text-sm leading-relaxed text-muted-foreground">
             <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-accent-blue">
@@ -408,6 +464,7 @@ function ProjectDetail() {
               <Textarea
                 id="pitch"
                 required
+                minLength={20}
                 rows={5}
                 value={pitch}
                 onChange={(e) => setPitch(e.target.value)}

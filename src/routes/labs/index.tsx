@@ -4,20 +4,18 @@ import { useEffect, useState } from "react";
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { textAccent } from "@/data/landing";
 import { fetchPublishedLabs } from "@/lib/labs";
+import { pageHead } from "@/lib/seo";
 import type { Lab } from "@/lib/types";
 
 export const Route = createFileRoute("/labs/")({
   component: LabsIndexPage,
-  head: () => ({
-    meta: [
-      { title: "Research labs — The Bu1ld" },
-      {
-        name: "description",
-        content:
-          "Six research labs spanning scientific discovery, mathematical intelligence, robotics, computational finance, real-world AI, and emerging interdisciplinary work.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Research labs — The Bu1ld",
+      description:
+        "Six research divisions spanning scientific discovery, mathematical intelligence, robotics, computational finance, real-world AI, and interdisciplinary work.",
+      path: "/labs",
+    }),
 });
 
 function LabsIndexPage() {

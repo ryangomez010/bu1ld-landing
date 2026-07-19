@@ -48,6 +48,7 @@ flowchart TB
 | Admin          | `src/routes/admin/`, `src/components/admin/*`          | [SYSTEM_MAP.md](./SYSTEM_MAP.md)                       |
 | Security       | `src/lib/security.ts`, `supabase/phase*.sql`           | [SECURITY_REVIEW.md](./SECURITY_REVIEW.md)             |
 | Release        | `scripts/release-readiness.mjs`                        | [LAST_KNOWN_GOOD_STATE.md](./LAST_KNOWN_GOOD_STATE.md) |
+| Portfolio QA   | `scripts/portfolio-preflight.mjs`                      | [EVIDENCE.md](./EVIDENCE.md)                           |
 
 ## Stack
 
@@ -93,3 +94,15 @@ datasets, public papers catalog), phase27 (assigned contribution reviewers).
 The same source can deploy through Vercel or Cloudflare, but production requires
 one canonical deployment target, one canonical domain, one Supabase project, and
 server-only secrets configured outside the client bundle.
+
+## Portfolio preflight boundary
+
+`scripts/portfolio-preflight.mjs` is an executable audit layer around the
+BU1LD-centered workspace. It reads `research/PROJECT_REGISTRY.yaml`, inspects
+configured repository roots, and writes JSON/Markdown evidence to
+`research/preflight/`. It is intentionally local and non-destructive: it does not
+install dependencies, run migrations, read `.env` values, deploy code, or mutate
+other repositories. Its job is to catch stale registry claims, dirty worktrees,
+missing release commands, migration gaps, placeholder/source risks, secret-like
+literals, broken local documentation links, and evidence-level blockers before a
+human calls a product or research project release-ready.

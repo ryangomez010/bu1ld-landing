@@ -9,6 +9,7 @@ import {
   programApplyPath,
   signupPathWithRedirect,
 } from "@/lib/post-auth-redirect";
+import { pageHead } from "@/lib/seo";
 
 const applySearchSchema = z.object({
   program: z.string().optional(),
@@ -17,16 +18,13 @@ const applySearchSchema = z.object({
 export const Route = createFileRoute("/apply")({
   validateSearch: (search) => applySearchSchema.parse(search),
   component: ApplyPage,
-  head: () => ({
-    meta: [
-      { title: "Apply — The Bu1ld" },
-      {
-        name: "description",
-        content:
-          "How to apply to The Bu1ld: account, profile, program or project application, review, and team membership.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Apply — The Bu1ld",
+      description:
+        "Choose a project or program, understand the commitment and selection process, then continue through a connected application path.",
+      path: "/apply",
+    }),
 });
 
 function ApplyPage() {
@@ -39,8 +37,8 @@ function ApplyPage() {
   return (
     <InstitutionLayout
       eyebrow="Applications"
-      title="One connected path from discovery to contribution."
-      description="Applicants create an account, finish a profile, apply to a program or project, get reviewed, join a team, and submit work with feedback — inside one system."
+      title="Start from a project, or choose a program path."
+      description="Most builders browse an open project brief first, then create an account to apply. Program paths follow the same account → profile → review → contribution loop."
     >
       {selected ? (
         <div className="mb-10 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-5">
@@ -168,24 +166,24 @@ function ApplyPage() {
 
       {!selected ? (
         <div className="mt-12 flex flex-wrap gap-3">
-          <a
-            href={signupPathWithRedirect("/programs")}
-            className="rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-background transition hover:bg-accent-blue"
-          >
-            Create account
-          </a>
-          <a
-            href={loginPathWithRedirect("/programs")}
-            className="rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition hover:text-bone"
-          >
-            Already a member? Log in
-          </a>
           <Link
             to="/projects"
+            className="rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-background transition hover:bg-accent-blue"
+          >
+            Browse projects →
+          </Link>
+          <a
+            href={signupPathWithRedirect("/projects")}
             className="rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition hover:text-bone"
           >
-            Browse projects
-          </Link>
+            Create account to apply
+          </a>
+          <a
+            href={loginPathWithRedirect("/projects")}
+            className="rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition hover:text-bone"
+          >
+            Log in
+          </a>
         </div>
       ) : null}
     </InstitutionLayout>

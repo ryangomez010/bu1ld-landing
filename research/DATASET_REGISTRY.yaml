@@ -1,0 +1,50 @@
+generated_at: "2026-07-19"
+datasets:
+  - id: bu1ld-seed-data
+    project: bu1ld-nexus
+    type: application_seed
+    path: /Users/ryan/Downloads/the-bu1ld-nexus-main/supabase/seed-data.sql
+    access: local
+    verified_external: false
+    risk: seeded content must not be represented as production activity or unsupported institutional proof
+    split_policy: not applicable
+  - id: financemeta-seed-data
+    project: financemeta
+    type: application_seed
+    path: /Users/ryan/Downloads/finance4all-global-reach-main/supabase/seed.sql
+    access: local
+    verified_external: false
+    risk: seeded finance content must avoid investment-performance claims
+    split_policy: not applicable
+  - id: genesis-synthetic-continual
+    project: project-genesis
+    type: synthetic_ml
+    path: /Users/ryan/Documents/Genesis/configs/synthetic_smoke.json
+    access: generated locally
+    verified_external: false
+    risk: synthetic smoke cannot support public benchmark claims
+    split_policy: configured by genesis.data/task streams
+  - id: genesis-split-mnist
+    project: project-genesis
+    type: public_vision
+    path: /Users/ryan/Documents/Genesis/configs/split_mnist.json
+    access: external download via torchvision when --download-data is explicit
+    verified_external: not in this pass
+    risk: must avoid using test split for model selection
+    split_policy: torchvision/public benchmark conventions plus declared seeds
+  - id: genesis-cifar10
+    project: project-genesis
+    type: public_vision
+    path: /Users/ryan/Documents/Genesis/configs/cifar10.json
+    access: external download via torchvision when enabled
+    verified_external: not in this pass
+    risk: compute and protocol must be fixed before claims
+    split_policy: torchvision/public benchmark conventions plus declared seeds
+  - id: genesis-econ-synthetic-market
+    project: genesis-econ
+    type: synthetic_economic_simulation
+    path: /Users/ryan/Documents/GenesisE/src/genesis_econ/simulation.py
+    access: generated locally
+    verified_external: false
+    risk: synthetic market behavior is not evidence of real market performance or investment utility
+    split_policy: seed-controlled generated histories and confirmation split in discovery workflows

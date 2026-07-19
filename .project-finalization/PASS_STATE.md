@@ -2,31 +2,26 @@
 
 ## Completed pass
 
-**PASS ONE — Forensic reconstruction and major expansion**
+**PASS TWO — Adversarial landing conversion and application integrity**
 
-- Started: 2026-07-18T10:43:16Z
-- Completed: 2026-07-18 (local gates green)
+- Started: 2026-07-19
 - Branch: `main`
-- Starting commit: `d49626b07768d6ad1c4eea0193dd42651c5ba604`
-- Ending commit: `47126aef1c0e8e390c945d739d3c71cfe97de040`
-- Push result: `origin/main` updated `d49626b..47126ae`
-- Working tree at start: large preserved uncommitted project body; integrated, not discarded
+- Starting commit: `c72fe2abf34aeca853526362af3a0b78347bff55`
+- Ending commit: pending
+- Push result: pending
 - Remote: `origin` (`https://github.com/ryangomez010/bu1ld-landing.git`)
 - Runtime: Bun + TanStack Start / Cloudflare Worker
-- Initial risks addressed locally: contribution self-review, ops queues, contribution export, Wrangler committed project config, production-copy leaks, phase32 release chain
-- Remaining risks: live schema/RLS, OAuth/email/deletion, role-separated production smoke, Playwright AT suite
 
 ## Exit record
 
-- Files changed: full release body through phase32 + finalization memory
-- Systems added: phase32 integrity, contribution export, leadership ops counters, finalization ledger, Makefile
-- Systems removed: committed project-specific Wrangler public keys
+- Systems added: SEO helper, featured projects section, phase33 atomic applications, landing release package
+- Systems removed: GenesisIntro cinematic gate, decorative UTC clocks
 - Tests: release:check PASS; smoke PASS; audit:ci PASS
-- Security fixed: self-review ban, deploy secret hygiene, copy scanners
+- Security fixed: atomic application RPC; revoke direct application inserts
 - Build: PASS
 - Deployment: not executed (credentials)
-- Recommended next pass: Pass Two adversarial perfection against live staging evidence
+- Recommended next pass: live phase33 + Cloudflare deploy smoke, then FinanceMeta/VertexED from clean trees
 
 ## Next invocation rule
 
-If this prompt is pasted again, treat Pass One as complete and begin Pass Two. Distrust these conclusions until live role-separated RLS and deployed smoke evidence exist.
+If this prompt is pasted again, treat Pass Two local landing work as complete for The Bu1LD. Distrust until live schema and deploy evidence exist. Continue with blocked portfolio sites only if their dirty trees are resolved or isolated.
