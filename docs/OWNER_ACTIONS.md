@@ -15,7 +15,7 @@ Last updated: Phase 4 packaging, 2026-07-18
 
 ```text
 Paste supabase/FINAL_SETUP.sql into Supabase SQL editor and run it
-(or apply through supabase/phase32.sql if earlier phases already exist).
+(or apply through supabase/phase34.sql if earlier phases already exist).
 Paste supabase/VERIFY_SETUP.sql and run it.
 ```
 
@@ -36,6 +36,8 @@ bun run supabase:apply
 - phase30: public project-catalog grants + server-side project brief/resource validation
 - phase31: competition/invitation/deliverable/membership integrity RPCs + seeded published programs
 - phase32: contribution authors cannot review themselves or be assigned as their own reviewer
+- phase33: applications and required answers are submitted atomically
+- phase34: active/paused collaborators can read their unpublished project workspace; alumni/removed memberships cannot
 - `bun run supabase:verify` and `bun run supabase:rls` pass
 
 ### Optional — open competition

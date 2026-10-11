@@ -9,6 +9,8 @@ import {
   GraduationCap,
   Home,
   Library,
+  ListChecks,
+  Network,
   Search,
   Settings,
   Shield,
@@ -29,6 +31,7 @@ import {
 
 const NAV = [
   { to: "/dashboard", label: "Home", icon: Home },
+  { to: "/workspace", label: "My work and evidence", icon: ListChecks },
   { to: "/research", label: "Research library", icon: Library },
   { to: "/papers", label: "Paper reviews", icon: BookOpen },
   { to: "/guides", label: "Guides", icon: GraduationCap },
@@ -37,6 +40,7 @@ const NAV = [
   { to: "/events", label: "Events", icon: Calendar },
   { to: "/announcements", label: "Announcements", icon: Bell },
   { to: "/members", label: "Member directory", icon: Users },
+  { to: "/network", label: "Portfolio network", icon: Network },
   { to: "/search", label: "Search", icon: Search },
   { to: "/profile", label: "Profile & export", icon: Settings },
   { to: "/account/security", label: "Account security", icon: Shield },

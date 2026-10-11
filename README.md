@@ -31,7 +31,7 @@ Open `http://localhost:3000`
 ## Supabase setup
 
 1. Run `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`, or paste `supabase/FINAL_SETUP.sql` into the SQL editor.
-   - Existing projects: apply every missing incremental phase through `phase32.sql`. The later phases add research paths, datasets, public evidence, project brief validation, integrity RPCs, and a hard ban on contribution self-review.
+   - Existing projects: apply every missing incremental phase through `phase34.sql`. The later phases add research paths, datasets, public evidence, project brief validation, integrity RPCs, a hard ban on contribution self-review, atomic applications, and member-only reads for unpublished project workspaces.
    - Seed/update content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_DB_PASSWORD`) or paste `supabase/seed-data.sql` in the SQL editor.
    - Apply a single phase: `bun run supabase:apply-phase -- phase12.sql`
 2. Seed demo content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or DB password), or paste `supabase/seed-data.sql`.
@@ -136,7 +136,7 @@ bun run release:prod
 ```
 
 That strict gate runs type checks, tests, lint, the production build, live table verification, and
-RLS verification. It must pass after applying all schema phases through `phase32.sql`, configuring
+RLS verification. It must pass after applying all schema phases through `phase34.sql`, configuring
 Supabase site URL and redirect URLs, setting provider secrets, configuring the daily digest cron, and
 verifying the email sender domain. Then run final smoke tests with separate visitor, member,
 project lead, reviewer, and administrator accounts.

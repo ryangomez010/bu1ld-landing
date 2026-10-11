@@ -32,8 +32,10 @@ describe("public landing release", () => {
     const signup = read("src/routes/signup.tsx");
     expect(robots).toContain("Disallow: /account");
     expect(robots).toContain("Disallow: /profile");
+    expect(robots).toContain("Disallow: /workspace");
     expect(sitemap).not.toContain("https://thebu1ld.com/login");
     expect(sitemap).not.toContain("https://thebu1ld.com/signup");
+    expect(sitemap).not.toContain("https://thebu1ld.com/workspace");
     expect(login).toContain("privatePageHead");
     expect(signup).toContain("privatePageHead");
   });

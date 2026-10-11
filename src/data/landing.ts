@@ -176,6 +176,7 @@ export const NAV_ITEMS = [
   ["Programs", "/programs-public"],
   ["Publications", "/publications"],
   ["Evidence", "/evidence"],
+  ["Network", "/network"],
 ] as const;
 
 /** In-page anchors still used on the landing scroll experience. */

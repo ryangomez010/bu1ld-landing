@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "eigen-finance",
+    "name": "Eigen-Finance",
+    "classification": "RESEARCH",
+    "evidence_level": "E1"
+  },
+  "initialized_at": "2026-10-10T17:25:18.740Z",
+  "updated_at": "2026-10-10T17:25:18.740Z",
+  "source": {
+    "declared_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance",
+    "resolved_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance",
+    "exists": true,
+    "directory_entry_count": 3,
+    "source_status": "BOUND_DISCOVERED_REPOSITORY",
+    "binding_note": "Repository contains only reserved-scope documentation at the inspected revision.",
+    "git": {
+      "top_level": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance",
+      "commit": "8c9f34947fb2c50dbb55cabc8f3759f37ab2443c",
+      "branch": "main",
+      "remote": "https://github.com/Finance-Meta-Research/EigenFinance.git",
+      "dirty": false,
+      "dirty_entry_count": 0,
+      "dirty_sample": []
+    }
+  },
+  "research_contract": {
+    "exact_research_question": null,
+    "scientific_objective": null,
+    "current_hypothesis": null,
+    "intended_contribution": null,
+    "project_scope": null,
+    "current_phase": "INITIALIZE",
+    "development_budget": null,
+    "compute_budget": null,
+    "protected_evaluation_boundary": {
+      "status": "NOT_DEFINED",
+      "opened": false,
+      "protected_artifacts": []
+    },
+    "repositories": [
+      "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance"
+    ],
+    "datasets": [],
+    "artifacts": [],
+    "claims": [],
+    "decisions": [
+      {
+        "at": "2026-10-10T17:25:18.740Z",
+        "decision": "Initialize fail-closed canonical research state without inferring missing science.",
+        "basis": "Portfolio-wide research pipeline request and evidence-gated workspace rules."
+      }
+    ],
+    "failures": []
+  },
+  "checkpoints": [
+    {
+      "number": 1,
+      "name": "IDEA_READY",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "RESEARCH_QUESTION_NOT_FROZEN",
+        "DEVELOPMENT_AND_COMPUTE_BUDGETS_UNDEFINED",
+        "PROTECTED_EVALUATION_BOUNDARY_NOT_FROZEN"
+      ]
+    },
+    {
+      "number": 2,
+      "name": "MODEL_SPECIFICATION_READY",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_1_NOT_COMPLETE"
+      ]
+    },
+    {
+      "number": 3,
+      "name": "METHODOLOGY_READY",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_2_NOT_COMPLETE"
+      ]
+    },
+    {
+      "number": 4,
+      "name": "MODEL_IMPLEMENTED",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_3_NOT_COMPLETE"
+      ]
+    },
+    {
+      "number": 5,
+      "name": "EXPERIMENT_SYSTEM_IMPLEMENTED",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_4_NOT_COMPLETE"
+      ]
+    },
+    {
+      "number": 6,
+      "name": "RUN_READY",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_5_NOT_COMPLETE"
+      ]
+    },
+    {
+      "number": 7,
+      "name": "CONFIRMATORY_PROTOCOL_FROZEN",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_6_NOT_COMPLETE"
+      ]
+    },
+    {
+      "number": 8,
+      "name": "EVIDENCE_LOCKED",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_7_NOT_COMPLETE"
+      ]
+    },
+    {
+      "number": 9,
+      "name": "VERIFIED",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_8_NOT_COMPLETE"
+      ]
+    },
+    {
+      "number": 10,
+      "name": "RESEARCH_COMPLETE",
+      "status": "NOT_READY",
+      "evidence": [],
+      "blockers": [
+        "CHECKPOINT_9_NOT_COMPLETE"
+      ]
+    }
+  ],
+  "scientific_result": {
+    "disposition": "NOT_EVALUATED",
+    "scope": null,
+    "evidence_locked": false
+  },
+  "controls": {
+    "development_and_confirmatory_separated": false,
+    "protected_outcomes_observed": false,
+    "negative_results_preserved": true,
+    "overwrite_policy": "PRESERVE_EXISTING_STATE_AND_APPEND_HISTORY"
+  },
+  "next_actions": [
+    "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "Do not open protected evaluation until Checkpoint 7 is frozen."
+  ]
+}

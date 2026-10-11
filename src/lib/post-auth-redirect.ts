@@ -56,6 +56,7 @@ export type PostAuthNav =
   | { to: "/research" }
   | { to: "/events" }
   | { to: "/applications" }
+  | { to: "/workspace" }
   | { to: "/papers" }
   | { to: "/publications" }
   | { to: "/labs" }
@@ -85,6 +86,7 @@ export function postAuthNavigateTarget(redirect?: string | null): PostAuthNav {
     "/research": { to: "/research" },
     "/events": { to: "/events" },
     "/applications": { to: "/applications" },
+    "/workspace": { to: "/workspace" },
     "/papers": { to: "/papers" },
     "/publications": { to: "/publications" },
     "/labs": { to: "/labs" },

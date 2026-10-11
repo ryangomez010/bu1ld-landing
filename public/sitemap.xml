@@ -41,6 +41,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://thebu1ld.com/network</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://thebu1ld.com/partnerships</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

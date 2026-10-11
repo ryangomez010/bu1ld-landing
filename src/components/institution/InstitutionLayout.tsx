@@ -18,6 +18,7 @@ const PUBLIC_NAV = [
   { label: "People", to: "/people" },
   { label: "Partnerships", to: "/partnerships" },
   { label: "Publications", to: "/publications" },
+  { label: "Network", to: "/network" },
   { label: "Apply", to: "/apply" },
 ] as const;
 

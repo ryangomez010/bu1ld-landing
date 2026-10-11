@@ -53,12 +53,23 @@ const SECRET_PATTERNS = [
 ];
 
 export const DEFAULT_ROOTS = [
-  "/Users/ryan/Downloads/the-bu1ld-nexus-main",
-  "/Users/ryan/Downloads/finance4all-global-reach-main",
-  "/Users/ryan/Documents/Genesis",
-  "/Users/ryan/Documents/GenesisE",
-  "/Users/ryan/Documents/MonteCarlo",
-  "/Users/ryan/.codex/visualizations/2026/07/12/019f558a-453d-7cb0-8943-42c7b533d6eb",
+  "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web",
+  "/Volumes/PRO-BLADE/GitHubRepos/Finance4all-Web/finance4all-global-reach",
+  "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Genesis",
+  "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/GenesisE",
+  "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Everything Else/MonteCarlo",
+  "/Volumes/PRO-BLADE/GitHubRepos/olympus-cognitive-architecture",
+  "/Volumes/PRO-BLADE/GitHubRepos/vertexED.ai",
+  "/Volumes/PRO-BLADE/GitHubRepos/Obscured-Records",
+  "/Volumes/PRO-BLADE/.portfolio/verification/jepa-source-recovery-20260924/R15-porous-source",
+  "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/APEN-Synthica",
+  "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/RIPII",
+  "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/Eigen-JEPA",
+  "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance",
+  "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/LGWM-Hedge-Fund",
+  "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/NPMS",
+  "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/Adaptive-Theory-Geometry",
+  "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/NeuroCAD",
 ];
 
 export function command(cwd, args) {

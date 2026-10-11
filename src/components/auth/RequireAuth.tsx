@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 
 import { InlineEmpty } from "@/components/member/ContentCard";
@@ -11,7 +11,8 @@ import { sanitizeAppPath } from "@/lib/security";
 function useLoginRedirectPath(): string {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.searchStr });
-  return sanitizeAppPath(`${pathname}${search}`) ?? "/dashboard";
+  const initialPath = useRef(sanitizeAppPath(`${pathname}${search}`) ?? "/dashboard");
+  return initialPath.current;
 }
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -22,7 +23,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loading && !user) {
       rememberPostAuthRedirect(redirectPath);
-      void navigate({ to: "/login", search: { redirect: redirectPath } });
+      void navigate({ to: "/login", search: { redirect: redirectPath }, replace: true });
     }
   }, [user, loading, navigate, redirectPath]);
 
@@ -48,7 +49,7 @@ export function RequireMember({ children }: { children: React.ReactNode }) {
     if (loading || profileLoading) return;
     if (!user) {
       rememberPostAuthRedirect(redirectPath);
-      void navigate({ to: "/login", search: { redirect: redirectPath } });
+      void navigate({ to: "/login", search: { redirect: redirectPath }, replace: true });
       return;
     }
     if (profile && !profile.onboarding_completed) {

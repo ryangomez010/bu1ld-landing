@@ -1,21 +1,22 @@
 # Portfolio Map
 
-Generated: 2026-07-19.
+Updated: 2026-10-10.
 
 ## Canonical lanes found
 
 | Lane | Canonical repository | Status | Disposition |
 | --- | --- | --- | --- |
-| The BU1LD | `/Users/ryan/Downloads/the-bu1ld-nexus-main` | Mature product repo with dirty working tree and many Supabase phases | PRODUCT |
-| FinanceMeta | `/Users/ryan/Downloads/finance4all-global-reach-main` | Mature product repo with dirty branch and e2e/Supabase infrastructure | PRODUCT |
-| Research Collections / developmental ML | `/Users/ryan/Documents/Genesis` | Strongest research-release candidate with code, configs, runs, and paper audit | FLAGSHIP |
-| Research Collections / economic simulation | `/Users/ryan/Documents/GenesisE` | Runnable synthetic economics portfolio with artifacts | CORE |
-| MonteCarlo | `/Users/ryan/Documents/MonteCarlo` | Empty git repository | ARCHIVE |
-| Visualization scratch | `.codex/visualizations/...` | Empty or no auditable files in shallow scan | ARCHIVE |
+| The BU1LD | `/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web` | Governed workspace for this pass | PRODUCT |
+| FinanceMeta | `/Volumes/PRO-BLADE/GitHubRepos/Finance4all-Web/finance4all-global-reach` | Relocated standalone repository | PRODUCT |
+| Research Collections / developmental ML | `/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Genesis` | Relocated archived repository; activation decision pending | FLAGSHIP |
+| Research Collections / economic simulation | `/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/GenesisE` | Relocated archived synthetic research repository | CORE |
+| MonteCarlo | `/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Everything Else/MonteCarlo` | Empty git repository | ARCHIVE |
+| Recovered named projects | See `research/SOURCE_BINDINGS.json` | Twelve identities bound; IPII partially resolved | MIXED |
+| ESNF / NFGM | Canonical state folders only | No authoritative source found | HOLD |
 
-## Named projects not found as runnable repositories
+## Source-discovery result
 
-Olympus, VertexED, Obscured Records Agent, PI-JEPA, APEN/PEN, RIPII/IPII, Eigen-JEPA, Eigen-Finance, LGWM, ESNF, NFGM, NPMS, ATG, and NeuroCAD were not discovered as standalone runnable repositories under the accessible workspace roots. If they exist inside private folders, compressed archives, or branches not mounted here, they need explicit paths in Pass 2.
+Explicit bindings now exist for Olympus, VertexED, Obscured Records Agent, PI-JEPA, APEN/PEN, RIPII, Eigen-JEPA, Eigen-Finance, LGWM, NPMS, ATG, and NeuroCAD. PI-JEPA is a recovered subtree rather than an independently established repository, and IPII was not independently resolved. ESNF and NFGM remain unresolved after local-drive and connected GitHub-organization discovery. See `research/SOURCE_BINDINGS.json` for the exact evidence boundary.
 
 ## Duplicate and merge relationships
 

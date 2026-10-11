@@ -46,4 +46,8 @@ describe("post-auth redirect", () => {
     expect(postAuthNavigateTarget("/competitions")).toEqual({ to: "/competitions" });
     expect(postAuthNavigateTarget("//evil")).toEqual({ to: "/dashboard" });
   });
+
+  test("returns members to the unified work portal", () => {
+    expect(postAuthNavigateTarget("/workspace")).toEqual({ to: "/workspace" });
+  });
 });

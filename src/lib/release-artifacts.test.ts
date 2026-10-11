@@ -51,6 +51,9 @@ describe("release artifacts", () => {
     expect(finalSetup).toContain("-- BEGIN supabase/phase33.sql");
     expect(finalSetup).toContain("create or replace function public.submit_project_application");
     expect(finalSetup).toContain("values ('phase33')");
+    expect(finalSetup).toContain("-- BEGIN supabase/phase34.sql");
+    expect(finalSetup).toContain("create or replace function public.is_project_collaborator");
+    expect(finalSetup).toContain("values ('phase34')");
     expect(finalSetup).not.toContain("schema_migrations (version");
   });
 
@@ -170,6 +173,18 @@ describe("release artifacts", () => {
     expect(sql).toContain("values ('phase33')");
   });
 
+  test("phase 34 grants project reads only to current collaborators", () => {
+    const sql = read("supabase/phase34.sql");
+    expect(sql).toContain("create or replace function public.is_project_collaborator");
+    expect(sql).toContain("security definer");
+    expect(sql).toContain("pm.user_id = (select auth.uid())");
+    expect(sql).toContain("pm.status in ('active', 'paused')");
+    expect(sql).toContain("or public.is_project_collaborator(id)");
+    expect(sql).not.toContain("'alumni'");
+    expect(sql).not.toContain("'removed'");
+    expect(sql).toContain("values ('phase34')");
+  });
+
   test("verification and release gates require final phases", () => {
     const verifySql = read("supabase/VERIFY_SETUP.sql");
     const releaseGate = read("scripts/release-readiness.mjs");
@@ -182,8 +197,9 @@ describe("release artifacts", () => {
     expect(verifySql).toContain("('project_datasets')");
     expect(verifySql).toContain("('review_competition_submission')");
     expect(verifySql).toContain("('submit_project_application')");
+    expect(verifySql).toContain("('is_project_collaborator')");
     expect(verifySql).toContain(
-      "(19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32), (33)",
+      "(19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32), (33), (34)",
     );
     expect(releaseGate).toContain('"phase23.sql"');
     expect(releaseGate).toContain('"phase24.sql"');
@@ -196,6 +212,7 @@ describe("release artifacts", () => {
     expect(releaseGate).toContain('"phase31.sql"');
     expect(releaseGate).toContain('"phase32.sql"');
     expect(releaseGate).toContain('"phase33.sql"');
+    expect(releaseGate).toContain('"phase34.sql"');
     expect(schemaApply).toContain('"supabase/phase23.sql"');
     expect(schemaApply).toContain('"supabase/phase24.sql"');
     expect(schemaApply).toContain('"supabase/phase25.sql"');
@@ -207,5 +224,6 @@ describe("release artifacts", () => {
     expect(schemaApply).toContain('"supabase/phase31.sql"');
     expect(schemaApply).toContain('"supabase/phase32.sql"');
     expect(schemaApply).toContain('"supabase/phase33.sql"');
+    expect(schemaApply).toContain('"supabase/phase34.sql"');
   });
 });

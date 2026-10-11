@@ -1,6 +1,6 @@
 # Data Model
 
-Pass 1 data model reference. Source of truth: `supabase/FINAL_SETUP.sql` + phases through `phase32.sql`.
+Pass 1 data model reference. Source of truth: `supabase/FINAL_SETUP.sql` + phases through `phase34.sql`.
 
 ## Overview
 
@@ -56,6 +56,8 @@ Pass 1 data model reference. Source of truth: `supabase/FINAL_SETUP.sql` + phase
 **Lifecycle:** draft → published → recruiting → active → archived/closed
 
 **Contribution integrity:** phase32 prohibits an author from reviewing their own contribution or being assigned as its reviewer, including when the author also holds lead/admin privileges.
+
+**Workspace visibility:** phase34 allows only active/paused collaborators, the project lead, admins, or ordinary published-project readers to select the project row. Alumni/removed memberships do not grant private workspace access.
 
 ### Programs and competitions
 

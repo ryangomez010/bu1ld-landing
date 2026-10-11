@@ -1,6 +1,6 @@
 # Architecture
 
-Status: active-product architecture reference. **Canonical context:** [PROJECT_MEMORY.md](./PROJECT_MEMORY.md). Updated 2026-07-18 (through phase32).
+Status: active-product architecture reference. **Canonical context:** [PROJECT_MEMORY.md](./PROJECT_MEMORY.md). Updated 2026-10-10 (through phase34).
 
 ## Architecture map
 

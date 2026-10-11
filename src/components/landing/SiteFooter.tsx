@@ -40,6 +40,9 @@ export function SiteFooter() {
           <Link to="/evidence" className="hover:text-bone">
             Evidence register
           </Link>
+          <Link to="/network" className="hover:text-bone">
+            Portfolio network
+          </Link>
         </nav>
 
         <nav

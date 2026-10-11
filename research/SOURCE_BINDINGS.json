@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-10",
+  "discovery_scope": [
+    "/Volumes/PRO-BLADE/GitHubRepos",
+    "/Volumes/PRO-BLADE/.portfolio/verification",
+    "GitHub organizations THE-BU1LD, Finance-Meta-Research, and build-the-future-11"
+  ],
+  "projects": [
+    {
+      "id": "bu1ld-nexus",
+      "name": "The BU1LD Nexus",
+      "classification": "PRODUCT",
+      "evidence_level": "E4",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web",
+      "source_status": "BOUND_CURRENT_CHECKOUT",
+      "binding_note": "Current governed workspace for this pass."
+    },
+    {
+      "id": "financemeta",
+      "name": "FinanceMeta / Finance4All Global Reach",
+      "classification": "PRODUCT",
+      "evidence_level": "E4",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Finance4all-Web/finance4all-global-reach",
+      "source_status": "BOUND_RELOCATED_REPOSITORY",
+      "binding_note": "Standalone repository with build-the-future-11/finance4all-global-reach origin."
+    },
+    {
+      "id": "project-genesis",
+      "name": "Project Genesis",
+      "classification": "FLAGSHIP",
+      "evidence_level": "E4",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Genesis",
+      "source_status": "BOUND_ARCHIVED_REPOSITORY",
+      "binding_note": "Relocated source; archive status must be reviewed before active work."
+    },
+    {
+      "id": "genesis-econ",
+      "name": "GenesisE / Genesis Economics Edition",
+      "classification": "CORE",
+      "evidence_level": "E4",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/GenesisE",
+      "source_status": "BOUND_ARCHIVED_REPOSITORY",
+      "binding_note": "Relocated source; synthetic-only evidence boundary remains in force."
+    },
+    {
+      "id": "montecarlo",
+      "name": "MonteCarlo",
+      "classification": "ARCHIVE",
+      "evidence_level": "E0",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Everything Else/MonteCarlo",
+      "source_status": "BOUND_EMPTY_REPOSITORY",
+      "binding_note": "No research objective or runnable source was found."
+    },
+    {
+      "id": "visualization-scratch",
+      "name": "Codex visualization scratch root",
+      "classification": "ARCHIVE",
+      "evidence_level": "E0",
+      "source_path": null,
+      "source_status": "UNRESOLVED_NON_PROJECT",
+      "binding_note": "Historical scratch location no longer exists; retained only for provenance."
+    },
+    {
+      "id": "olympus",
+      "name": "Olympus",
+      "classification": "RESEARCH_PLATFORM",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/olympus-cognitive-architecture",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "Cognitive architecture repository; Olympus-Pantheon is a separate bounded research line."
+    },
+    {
+      "id": "vertexed",
+      "name": "VertexED",
+      "classification": "PRODUCT",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/vertexED.ai",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "Current standalone VertexED checkout."
+    },
+    {
+      "id": "obscured-records-agent",
+      "name": "Obscured Records Agent",
+      "classification": "PRODUCT",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Obscured-Records",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "Current standalone Obscured Records checkout."
+    },
+    {
+      "id": "pi-jepa",
+      "name": "PI-JEPA",
+      "classification": "RESEARCH",
+      "evidence_level": "E1",
+      "source_path": "/Volumes/PRO-BLADE/.portfolio/verification/jepa-source-recovery-20260924/R15-porous-source",
+      "source_status": "BOUND_RECOVERED_SOURCE",
+      "binding_note": "Recovered source subtree, not an independently established standalone repository."
+    },
+    {
+      "id": "apen-pen",
+      "name": "APEN / PEN",
+      "classification": "RESEARCH",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/APEN-Synthica",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "APEN-Synthica repository; PEN identity must remain explicitly scoped within its records."
+    },
+    {
+      "id": "ripii-ipii",
+      "name": "RIPII / IPII",
+      "classification": "RESEARCH",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/RIPII",
+      "source_status": "BOUND_PARTIAL_IDENTITY",
+      "binding_note": "RIPII repository found; IPII was not independently resolved."
+    },
+    {
+      "id": "eigen-jepa",
+      "name": "Eigen-JEPA",
+      "classification": "RESEARCH",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/Eigen-JEPA",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "Finance-Meta-Research repository."
+    },
+    {
+      "id": "eigen-finance",
+      "name": "Eigen-Finance",
+      "classification": "RESEARCH",
+      "evidence_level": "E1",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "Repository contains only reserved-scope documentation at the inspected revision."
+    },
+    {
+      "id": "lgwm",
+      "name": "LGWM",
+      "classification": "RESEARCH",
+      "evidence_level": "E1",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/LGWM-Hedge-Fund",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "Repository contains only reserved-scope documentation at the inspected revision."
+    },
+    {
+      "id": "esnf",
+      "name": "ESNF",
+      "classification": "RESEARCH",
+      "evidence_level": "E0",
+      "source_path": null,
+      "source_status": "UNRESOLVED_NO_LOCAL_OR_ORG_REPOSITORY",
+      "binding_note": "No matching local directory or repository in the three connected GitHub organizations was found."
+    },
+    {
+      "id": "nfgm",
+      "name": "NFGM",
+      "classification": "RESEARCH",
+      "evidence_level": "E0",
+      "source_path": null,
+      "source_status": "UNRESOLVED_NO_LOCAL_OR_ORG_REPOSITORY",
+      "binding_note": "No matching local directory or repository in the three connected GitHub organizations was found."
+    },
+    {
+      "id": "npms",
+      "name": "NPMS",
+      "classification": "RESEARCH",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/NPMS",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "THE-BU1LD repository; historical controlled diagnostics do not establish broad validity."
+    },
+    {
+      "id": "atg",
+      "name": "Adaptive Theory Geometry",
+      "classification": "RESEARCH",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/Adaptive-Theory-Geometry",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "THE-BU1LD repository."
+    },
+    {
+      "id": "neurocad",
+      "name": "NeuroCAD",
+      "classification": "PRODUCT_RESEARCH",
+      "evidence_level": "E2",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/NeuroCAD",
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "binding_note": "THE-BU1LD repository; bounded compiler evidence is not open-ended language intelligence."
+    }
+  ]
+}

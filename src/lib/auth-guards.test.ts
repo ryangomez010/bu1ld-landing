@@ -1,8 +1,14 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
 
 import { authedRedirectPath, memberGatePath, shouldUseNotifyUsersRpc } from "./auth-guards";
 
 describe("auth-guards", () => {
+  test("captures the original private destination and replaces login history", () => {
+    const source = readFileSync("src/components/auth/RequireAuth.tsx", "utf8");
+    expect(source).toContain("useRef(sanitizeAppPath");
+    expect(source).toContain("replace: true");
+  });
   test("authedRedirectPath sends incomplete onboarding to /onboarding", () => {
     expect(authedRedirectPath({ id: "u1" }, { onboarding_completed: false }, "/dashboard")).toBe(
       "/onboarding",

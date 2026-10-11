@@ -1,5 +1,44 @@
 # Changelog
 
+## Portfolio Network — 2026-10-11
+
+### Added
+
+- `/network` — a public, browser-safe directory for verified website destinations and all 20 canonical portfolio identities
+- Registry-sync tests that fail when the public projection drifts from `research/SOURCE_BINDINGS.json`
+
+### Changed
+
+- Public navigation, member navigation, command palette, footer, sitemap, and route smoke now link the portfolio directory
+- FinanceMeta's homepage footer now links back to the live BU1LD root while retaining its finance-specific identity and disclaimer
+- Public destinations distinguish live, preview, and owner-only states; no local source paths or private portal URL are shipped
+
+### Verification
+
+- The BU1LD and FinanceMeta public destinations returned HTTP 200 on 2026-10-11
+- VertexED's fallback deployment returned HTTP 200; its custom domain remains unlinked because TLS still fails
+- Obscured Records remains owner-only and is represented by its public source repository rather than a 401 destination
+- Typecheck, lint, 164 tests, 24-route smoke, research-state validation, and development client/SSR build pass locally
+- Desktop and 390 px browser QA passed with no console warnings/errors; the portfolio filters return the expected three unresolved records
+
+## Member Evidence Workspace — 2026-10-10
+
+### Added
+
+- `/workspace` — a unified, member-only surface for durable project memberships, milestone-linked evidence, review states, revisions, and contribution export
+- `supabase/phase34.sql` — active/paused collaborator visibility for unpublished project metadata without extending access to alumni or removed members
+
+### Changed
+
+- Desktop/mobile navigation, command palette, dashboard, and accepted applications now point members to their work log
+- Research and product documentation now treat submitted, verified, and needs-changes evidence as distinct states
+
+### Verification
+
+- Typecheck, lint, 160 tests, route smoke, research-state validation, high-severity dependency audit, frozen-lockfile install, and the development client/SSR build pass locally
+- Signed-out browser QA preserves `/workspace` as the single post-login destination and no longer nests login redirects
+- Production build/release verification remains fail-closed until the deployment Supabase URL and anon/publishable key are available
+
 ## Landing Pass Two — 2026-07-19 — Conversion, SEO, atomic applications
 
 ### Added

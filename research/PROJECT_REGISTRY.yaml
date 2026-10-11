@@ -1,12 +1,23 @@
-generated_at: "2026-07-19"
+generated_at: "2026-10-10"
 scope:
   roots:
-    - /Users/ryan/Downloads/the-bu1ld-nexus-main
-    - /Users/ryan/Downloads/finance4all-global-reach-main
-    - /Users/ryan/Documents/Genesis
-    - /Users/ryan/Documents/GenesisE
-    - /Users/ryan/Documents/MonteCarlo
-    - /Users/ryan/.codex/visualizations/2026/07/12/019f558a-453d-7cb0-8943-42c7b533d6eb
+    - /Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web
+    - /Volumes/PRO-BLADE/GitHubRepos/Finance4all-Web/finance4all-global-reach
+    - /Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Genesis
+    - /Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/GenesisE
+    - /Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Everything Else/MonteCarlo
+    - /Volumes/PRO-BLADE/GitHubRepos/olympus-cognitive-architecture
+    - /Volumes/PRO-BLADE/GitHubRepos/vertexED.ai
+    - /Volumes/PRO-BLADE/GitHubRepos/Obscured-Records
+    - /Volumes/PRO-BLADE/.portfolio/verification/jepa-source-recovery-20260924/R15-porous-source
+    - /Volumes/PRO-BLADE/GitHubRepos/Personal Research/APEN-Synthica
+    - /Volumes/PRO-BLADE/GitHubRepos/Personal Research/RIPII
+    - /Volumes/PRO-BLADE/GitHubRepos/Personal Research/Eigen-JEPA
+    - /Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance
+    - /Volumes/PRO-BLADE/GitHubRepos/Personal Research/LGWM-Hedge-Fund
+    - /Volumes/PRO-BLADE/GitHubRepos/Personal Research/NPMS
+    - /Volumes/PRO-BLADE/GitHubRepos/Personal Research/Adaptive-Theory-Geometry
+    - /Volumes/PRO-BLADE/GitHubRepos/Personal Research/NeuroCAD
   excluded_from_deep_scan:
     - node_modules
     - dist
@@ -25,7 +36,7 @@ evidence_levels:
 projects:
   - id: bu1ld-nexus
     name: The BU1LD Nexus
-    path: /Users/ryan/Downloads/the-bu1ld-nexus-main
+    path: /Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web
     lane: The_BU1LD
     classification: PRODUCT
     category: research-and-builder institution platform
@@ -80,7 +91,7 @@ projects:
 
   - id: financemeta
     name: FinanceMeta / Finance4All Global Reach
-    path: /Users/ryan/Downloads/finance4all-global-reach-main
+    path: /Volumes/PRO-BLADE/GitHubRepos/Finance4all-Web/finance4all-global-reach
     lane: FinanceMeta
     classification: PRODUCT
     category: finance education/member platform
@@ -130,7 +141,7 @@ projects:
 
   - id: project-genesis
     name: Project Genesis
-    path: /Users/ryan/Documents/Genesis
+    path: /Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Genesis
     lane: Research_Collections
     classification: FLAGSHIP
     category: continual/modular learning research implementation
@@ -196,7 +207,7 @@ projects:
 
   - id: genesis-econ
     name: GenesisE / Genesis Economics Edition
-    path: /Users/ryan/Documents/GenesisE
+    path: /Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/GenesisE
     lane: Research_Collections
     classification: CORE
     category: synthetic economic intelligence simulator and portfolio
@@ -257,7 +268,7 @@ projects:
 
   - id: montecarlo
     name: MonteCarlo
-    path: /Users/ryan/Documents/MonteCarlo
+    path: /Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Everything Else/MonteCarlo
     lane: Research_Collections
     classification: ARCHIVE
     category: empty or uninitialized research repository
@@ -313,18 +324,201 @@ projects:
     recommended_final_disposition: ARCHIVE
     evidence_level: E0
     frozen_minimum_release: null
-not_found_as_runnable_repositories:
-  - Olympus
-  - VertexED
-  - Obscured Records Agent
-  - PI-JEPA
-  - APEN/PEN
-  - RIPII/IPII
-  - Eigen-JEPA
-  - Eigen-Finance
-  - LGWM
+
+  - id: olympus
+    name: Olympus
+    path: /Volumes/PRO-BLADE/GitHubRepos/olympus-cognitive-architecture
+    lane: Research_Platforms
+    classification: RESEARCH_PLATFORM
+    category: cognitive research platform and model foundry
+    intended_output: evidence-governed local research platform
+    research_or_product_objective: reconcile distinct model and study lines without collapsing their protocols
+    claimed_contribution: not reconciled in this pass
+    actual_implemented_contribution: source repository discovered and identity-bound
+    missing_work: [reconcile Hermes and Pantheon boundaries, define the exact research question]
+    recommended_final_disposition: RESEARCH_PLATFORM
+    evidence_level: E2
+
+  - id: vertexed
+    name: VertexED
+    path: /Volumes/PRO-BLADE/GitHubRepos/vertexED.ai
+    lane: Products
+    classification: PRODUCT
+    category: education product
+    intended_output: verified production education platform
+    research_or_product_objective: product evidence and release integrity
+    claimed_contribution: not reassessed in this pass
+    actual_implemented_contribution: source repository discovered and identity-bound
+    missing_work: [run product-specific audit; do not substitute scientific checkpoints]
+    recommended_final_disposition: PRODUCT
+    evidence_level: E2
+
+  - id: obscured-records-agent
+    name: Obscured Records Agent
+    path: /Volumes/PRO-BLADE/GitHubRepos/Obscured-Records
+    lane: Products
+    classification: PRODUCT
+    category: editorial and publishing product
+    intended_output: verified editorial product and publication workflow
+    research_or_product_objective: product evidence and release integrity
+    claimed_contribution: not reassessed in this pass
+    actual_implemented_contribution: source repository discovered and identity-bound
+    missing_work: [run product-specific audit; do not substitute scientific checkpoints]
+    recommended_final_disposition: PRODUCT
+    evidence_level: E2
+
+  - id: pi-jepa
+    name: PI-JEPA
+    path: /Volumes/PRO-BLADE/.portfolio/verification/jepa-source-recovery-20260924/R15-porous-source
+    lane: Predictive_Representations
+    classification: RESEARCH
+    category: physics-informed joint-embedding predictive architecture
+    intended_output: independently scoped falsifiable study
+    research_or_product_objective: unresolved pending recovered-source reconciliation
+    claimed_contribution: not established
+    actual_implemented_contribution: recovered source subtree, not a proven standalone repository
+    missing_work: [establish authoritative source and protocol, define question mechanism and falsifier]
+    recommended_final_disposition: RESEARCH
+    evidence_level: E1
+
+  - id: apen-pen
+    name: APEN / PEN
+    path: /Volumes/PRO-BLADE/GitHubRepos/Personal Research/APEN-Synthica
+    lane: Predictive_Representations
+    classification: RESEARCH
+    category: adaptive predictive engram networks
+    intended_output: evidence-bound research release
+    research_or_product_objective: reconcile APEN and PEN identities against retained protocols
+    claimed_contribution: not reassessed in this pass
+    actual_implemented_contribution: source repository discovered and identity-bound
+    missing_work: [reconcile current state with retained negative and incomplete campaign evidence]
+    recommended_final_disposition: RESEARCH
+    evidence_level: E2
+
+  - id: ripii-ipii
+    name: RIPII / IPII
+    path: /Volumes/PRO-BLADE/GitHubRepos/Personal Research/RIPII
+    lane: Predictive_Representations
+    classification: RESEARCH
+    category: representation and projective reasoning research
+    intended_output: evidence-bound research release
+    research_or_product_objective: reconcile RIPII source and unresolved IPII identity
+    claimed_contribution: not reassessed in this pass
+    actual_implemented_contribution: RIPII source found; IPII not independently resolved
+    missing_work: [preserve RIPII and IPII as separate unless evidence binds them]
+    recommended_final_disposition: RESEARCH
+    evidence_level: E2
+
+  - id: eigen-jepa
+    name: Eigen-JEPA
+    path: /Volumes/PRO-BLADE/GitHubRepos/Personal Research/Eigen-JEPA
+    lane: Finance_Research
+    classification: RESEARCH
+    category: spectral financial predictive representation research
+    intended_output: evidence-bound research release
+    research_or_product_objective: test spectral market-state prediction under a frozen protocol
+    claimed_contribution: not reassessed in this pass
+    actual_implemented_contribution: source repository discovered and identity-bound
+    missing_work: [reconcile frozen protocol raw artifacts and current claims]
+    recommended_final_disposition: RESEARCH
+    evidence_level: E2
+
+  - id: eigen-finance
+    name: Eigen-Finance
+    path: /Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance
+    lane: Finance_Research
+    classification: RESEARCH
+    category: financial latent-structure research
+    intended_output: precise falsifiable study
+    research_or_product_objective: unresolved beyond reserved repository scope
+    claimed_contribution: not established
+    actual_implemented_contribution: reserved-scope repository discovered
+    missing_work: [define a defensible contribution before implementation]
+    recommended_final_disposition: RESEARCH
+    evidence_level: E1
+
+  - id: lgwm
+    name: LGWM
+    path: /Volumes/PRO-BLADE/GitHubRepos/Personal Research/LGWM-Hedge-Fund
+    lane: Finance_Research
+    classification: RESEARCH
+    category: liquidation graph world models
+    intended_output: precise falsifiable study
+    research_or_product_objective: unresolved beyond reserved repository scope
+    claimed_contribution: not established
+    actual_implemented_contribution: reserved-scope repository discovered
+    missing_work: [define a defensible contribution before implementation]
+    recommended_final_disposition: RESEARCH
+    evidence_level: E1
+
+  - id: esnf
+    name: ESNF
+    lane: Unresolved
+    classification: RESEARCH
+    category: unresolved research identity
+    intended_output: unknown
+    research_or_product_objective: unknown
+    claimed_contribution: none verified
+    actual_implemented_contribution: no authoritative source found
+    missing_work: [resolve full name source repository and owner intent]
+    recommended_final_disposition: HOLD
+    evidence_level: E0
+
+  - id: nfgm
+    name: NFGM
+    lane: Unresolved
+    classification: RESEARCH
+    category: unresolved research identity
+    intended_output: unknown
+    research_or_product_objective: unknown
+    claimed_contribution: none verified
+    actual_implemented_contribution: no authoritative source found
+    missing_work: [resolve full name source repository and owner intent]
+    recommended_final_disposition: HOLD
+    evidence_level: E0
+
+  - id: npms
+    name: NPMS
+    path: /Volumes/PRO-BLADE/GitHubRepos/Personal Research/NPMS
+    lane: Predictive_Representations
+    classification: RESEARCH
+    category: neural predictive memory systems
+    intended_output: evidence-bound research release
+    research_or_product_objective: reconcile controlled diagnostics with the precise claim under test
+    claimed_contribution: not reassessed in this pass
+    actual_implemented_contribution: source repository discovered and identity-bound
+    missing_work: [define confirmatory claim without promoting controlled diagnostics]
+    recommended_final_disposition: RESEARCH
+    evidence_level: E2
+
+  - id: atg
+    name: Adaptive Theory Geometry
+    path: /Volumes/PRO-BLADE/GitHubRepos/Personal Research/Adaptive-Theory-Geometry
+    lane: Mathematical_Intelligence
+    classification: RESEARCH
+    category: adaptive geometry and experimental design
+    intended_output: evidence-bound research release
+    research_or_product_objective: reconcile manuscript implementation and retained receipts
+    claimed_contribution: not reassessed in this pass
+    actual_implemented_contribution: source repository discovered and identity-bound
+    missing_work: [verify current artifacts and independent reproduction boundary]
+    recommended_final_disposition: RESEARCH
+    evidence_level: E2
+
+  - id: neurocad
+    name: NeuroCAD
+    path: /Volumes/PRO-BLADE/GitHubRepos/Personal Research/NeuroCAD
+    lane: Products_And_Research
+    classification: PRODUCT_RESEARCH
+    category: bounded language-to-CAD system
+    intended_output: verified product and bounded research artifact
+    research_or_product_objective: preserve compiler evidence separately from open-ended intelligence claims
+    claimed_contribution: not reassessed in this pass
+    actual_implemented_contribution: source repository discovered and identity-bound
+    missing_work: [separate product release gates from scientific checkpoints]
+    recommended_final_disposition: PRODUCT_RESEARCH
+    evidence_level: E2
+
+unresolved_source_repositories:
   - ESNF
   - NFGM
-  - NPMS
-  - ATG
-  - NeuroCAD

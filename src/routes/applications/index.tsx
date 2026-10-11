@@ -196,6 +196,14 @@ function ApplicationRow({
         >
           Copy
         </button>
+        {app.status === "accepted" ? (
+          <Link
+            to="/workspace"
+            className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-green hover:text-bone"
+          >
+            Open my work →
+          </Link>
+        ) : null}
         {app.status === "pending" ? (
           <ConfirmButton
             title="Withdraw application?"

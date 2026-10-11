@@ -123,7 +123,8 @@ required_functions(function_name) as (
     ('review_competition_submission'),
     ('review_project_deliverable'),
     ('assign_contribution_reviewer'),
-    ('submit_project_application')
+    ('submit_project_application'),
+    ('is_project_collaborator')
 ),
 function_status as (
   select
@@ -142,7 +143,7 @@ migration_status as (
       then 'ok'
       else 'missing'
     end as status
-  from (values (19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32), (33)) as phases(phase_id)
+  from (values (19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32), (33), (34)) as phases(phase_id)
 )
 select * from table_status
 union all select * from rls_status

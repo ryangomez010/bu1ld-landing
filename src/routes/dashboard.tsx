@@ -7,6 +7,7 @@ import {
   ClipboardList,
   FolderKanban,
   GraduationCap,
+  ListChecks,
 } from "lucide-react";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
@@ -203,6 +204,30 @@ function DashboardHome() {
               accent="violet"
               icon={GraduationCap}
             />
+          </section>
+
+          <section className="section-gap panel glass overflow-hidden rounded-2xl p-6 md:p-8">
+            <div className="relative z-[1] flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-2xl">
+                <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-accent-green">
+                  Member evidence workspace
+                </p>
+                <h2 className="mt-3 font-display text-2xl text-bone md:text-3xl">
+                  Turn project work into reviewable evidence.
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  Attach artifacts to milestones, keep negative results visible, respond to reviewer
+                  notes, and export an evidence log without treating a submission as verification.
+                </p>
+              </div>
+              <Link
+                to="/workspace"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-bone px-5 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-background transition hover:bg-accent-green"
+              >
+                <ListChecks className="h-4 w-4" />
+                Open my work
+              </Link>
+            </div>
           </section>
 
           {user ? (

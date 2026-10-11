@@ -13,10 +13,12 @@ import {
   Home,
   Layers,
   Library,
+  ListChecks,
   LogOut,
   Mail,
   Menu,
   Moon,
+  Network,
   Search,
   Settings,
   Shield,
@@ -51,6 +53,7 @@ import { cn } from "@/lib/utils";
 
 const NAV_MAIN = [
   { to: "/dashboard", label: "Home", icon: Home },
+  { to: "/workspace", label: "My work", icon: ListChecks },
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/applications", label: "Applications", icon: ClipboardList },
   { to: "/invitations", label: "Invitations", icon: UserPlus },
@@ -69,6 +72,7 @@ const NAV_CONTENT = [
   { to: "/papers", label: "Papers", icon: FileText },
   { to: "/newsletter", label: "Newsletter", icon: Mail },
   { to: "/jobs", label: "Jobs", icon: Briefcase },
+  { to: "/network", label: "Network", icon: Network },
 ] as const;
 
 export function MemberLayout({

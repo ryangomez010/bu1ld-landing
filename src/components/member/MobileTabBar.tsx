@@ -1,12 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { FolderKanban, Home, Menu, Search, Users } from "lucide-react";
+import { FolderKanban, Home, ListChecks, Menu, Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/projects", label: "Projects", icon: FolderKanban },
-  { to: "/members", label: "Members", icon: Users },
+  { to: "/workspace", label: "My work", icon: ListChecks },
   { to: "/search", label: "Search", icon: Search },
 ] as const;
 
