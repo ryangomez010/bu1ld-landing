@@ -20,8 +20,9 @@ test("mentorship distinguishes outages, empty rows, stale decisions and persiste
         or() { return this; }, order() { return this; }, maybeSingle() { return this; },
         abortSignal(signal) {
           queries.push([table, "bounded", signal instanceof AbortSignal]);
-          return Promise.resolve(response);
+          return this;
         },
+        then(resolve, reject) { return Promise.resolve(response).then(resolve, reject); },
       };
       return query;
     }};

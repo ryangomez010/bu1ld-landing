@@ -38,6 +38,7 @@ export function DashboardHero({
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               to="/workspace"
+              search={{ project: undefined }}
               className="inline-flex min-h-11 items-center justify-center gap-3 rounded-lg bg-bone px-5 py-3 text-sm font-medium text-background transition hover:bg-accent-green"
             >
               Open my work <ArrowRight className="h-4 w-4" aria-hidden />

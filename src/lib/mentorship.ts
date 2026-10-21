@@ -60,8 +60,8 @@ export async function fetchMyMentorProfile(userId: string): Promise<MentorProfil
     .from("mentor_profiles")
     .select("*, profiles:mentor_id(full_name,bio,avatar_url)")
     .eq("mentor_id", userId)
-    .maybeSingle()
-    .abortSignal(AbortSignal.timeout(10000));
+    .abortSignal(AbortSignal.timeout(10000))
+    .maybeSingle();
   if (error) throw new Error("Mentor settings could not be loaded. Please try again.");
   return data ? mentor(data as Record<string, unknown>) : null;
 }
@@ -139,8 +139,8 @@ export async function decideMentorshipRequest(
     .eq("id", id)
     .eq("status", "pending")
     .select("id")
-    .maybeSingle()
-    .abortSignal(AbortSignal.timeout(10000));
+    .abortSignal(AbortSignal.timeout(10000))
+    .maybeSingle();
   return {
     error:
       error?.message ??

@@ -43,7 +43,7 @@ export function StartupsSection() {
 
           if (reduce) {
             return (
-              <Link key={s.name} to={s.href} className={className}>
+              <Link key={s.name} to={s.to} hash={s.hash} className={className}>
                 {inner}
               </Link>
             );
@@ -56,7 +56,7 @@ export function StartupsSection() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6 }}
             >
-              <Link to={s.href} className={className}>
+              <Link to={s.to} hash={s.hash} className={className}>
                 {inner}
               </Link>
             </motion.div>

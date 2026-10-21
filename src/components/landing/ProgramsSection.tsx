@@ -34,7 +34,8 @@ export function ProgramsSection() {
             <p className="mt-6 text-muted-foreground leading-relaxed text-[15px]">{p.body}</p>
             <div className="mt-10 h-px bg-gradient-to-r from-accent-blue/50 via-accent-violet/30 to-transparent" />
             <Link
-              to={p.href}
+              to={p.to}
+              hash={p.hash}
               className="mt-6 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] uppercase text-bone hover:text-accent-blue transition"
             >
               Read program format{" "}
