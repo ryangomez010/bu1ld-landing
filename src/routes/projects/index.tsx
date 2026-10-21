@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { EmptyState, TagList } from "@/components/member/ContentCard";
@@ -13,15 +13,29 @@ import {
   ProjectTypeBadge,
 } from "@/components/member/ProjectBadges";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { projectLink } from "@/lib/app-paths";
+import { fetchProjects } from "@/lib/projects";
 import { useProjectsQuery } from "@/lib/queries/use-projects";
 import { recommendProjects } from "@/lib/personalization";
+import { filterProjects, projectSearchSchema, type ProjectSearch } from "@/lib/project-discovery";
 import { pageHead } from "@/lib/seo";
 import { PROJECT_STATUS_LABEL } from "@/data/seed/projects";
-import type { ApplicationStatus, ProjectStatus, ProjectType } from "@/lib/types";
+import type { ApplicationStatus } from "@/lib/types";
 
 export const Route = createFileRoute("/projects/")({
+  validateSearch: (search) => projectSearchSchema.parse(search),
+  loader: async () => {
+    try {
+      return {
+        state: "ready" as const,
+        projects: await fetchProjects(undefined, { throwOnUnavailable: true }),
+      };
+    } catch {
+      return { state: "unavailable" as const, projects: null };
+    }
+  },
   component: ProjectsPage,
   head: () =>
     pageHead({
@@ -55,28 +69,37 @@ function ProjectsPage() {
 
 function ProjectsContent() {
   const { user, profile } = useAuth();
-  const { data, isLoading: loading } = useProjectsQuery(undefined, user?.id);
+  const initial = Route.useLoaderData();
+  const {
+    data,
+    isLoading: queryLoading,
+    isError: queryError,
+    isFetching,
+    refetch,
+  } = useProjectsQuery(undefined, user?.id, initial.projects ?? undefined);
+  const isError = queryError || (!data && initial.state === "unavailable");
+  const loading = queryLoading && !isError;
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
   const projects = data?.projects ?? EMPTY_PROJECTS;
   const applied = data?.statusMap ?? EMPTY_APPLICATION_STATUSES;
-  const [statusFilter, setStatusFilter] = useState<ProjectStatus | "all">("all");
-  const [typeFilter, setTypeFilter] = useState<ProjectType | "all">("all");
-  const [query, setQuery] = useState("");
+  const statusFilter = search.status ?? "all";
+  const typeFilter = search.type ?? "all";
+  const query = search.q ?? "";
+  const hasFilters = Boolean(query.trim() || statusFilter !== "all" || typeFilter !== "all");
+  const updateSearch = (patch: Partial<ProjectSearch>) => {
+    void navigate({
+      search: { ...search, ...patch },
+      replace: true,
+      resetScroll: false,
+    });
+  };
+  const resetFilters = () => void navigate({ search: {}, replace: true, resetScroll: false });
 
   const open = projects.filter((p) => p.status === "open");
   const alumni = projects.filter((p) => p.status === "closed");
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return projects.filter((p) => {
-      if (statusFilter !== "all" && p.status !== statusFilter) return false;
-      if (typeFilter !== "all" && p.type !== typeFilter) return false;
-      if (!q) return true;
-      const hay = [p.title, p.description, ...p.tags, ...p.skills_needed].join(" ").toLowerCase();
-      return hay.includes(q);
-    });
-  }, [projects, statusFilter, typeFilter, query]);
-
-  const list = statusFilter === "all" ? filtered.filter((p) => p.status !== "closed") : filtered;
+  const list = useMemo(() => filterProjects(projects, search), [projects, search]);
 
   const recommendations = useMemo(() => {
     const appliedIds = new Set([...applied.keys()].map((id) => id));
@@ -104,30 +127,48 @@ function ProjectsContent() {
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Recruiting
           </p>
-          <p className="mt-2 font-display text-2xl text-bone">{open.length}</p>
+          <p className="mt-2 font-display text-2xl text-bone">{data ? open.length : "—"}</p>
         </div>
         <div className="panel p-4 rounded-sm">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             Active
           </p>
           <p className="mt-2 font-display text-2xl text-bone">
-            {projects.filter((p) => p.status === "active").length}
+            {data ? projects.filter((p) => p.status === "active").length : "—"}
           </p>
         </div>
         <div className="panel p-4 rounded-sm">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-            Completed
+            Closed
           </p>
-          <p className="mt-2 font-display text-2xl text-bone">{alumni.length}</p>
+          <p className="mt-2 font-display text-2xl text-bone">{data ? alumni.length : "—"}</p>
         </div>
       </div>
 
-      <div className="sticky top-14 z-30 -mx-4 px-4 py-3 mb-6 md:static md:mx-0 md:px-0 md:py-0 bg-background/85 backdrop-blur-xl md:bg-transparent md:backdrop-blur-none border-b border-border/40 md:border-0 space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="mb-6 space-y-4 rounded-sm border border-border/60 bg-background/85 p-4">
+        <label htmlFor="project-search" className="block text-sm font-medium text-bone">
+          Find a project by name, skill, or topic
+        </label>
+        <Input
+          id="project-search"
+          type="search"
+          value={query}
+          maxLength={200}
+          onChange={(event) => updateSearch({ q: event.target.value || undefined })}
+          placeholder="Try PyTorch, world models, or CUDA"
+          className="h-12 text-base"
+        />
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Project status">
+          <span className="mr-1 text-sm text-muted-foreground">Status</span>
           {(["all", "open", "active", "closed"] as const).map((f) => (
-            <FilterChip key={f} active={statusFilter === f} onClick={() => setStatusFilter(f)}>
+            <FilterChip
+              key={f}
+              active={statusFilter === f}
+              onClick={() => updateSearch({ status: f === "all" ? undefined : f })}
+              className="min-h-11 text-xs"
+            >
               {f === "all" ? "all" : (PROJECT_STATUS_LABEL[f] ?? f).toLowerCase()}
-              {f === "open" ? ` (${open.length})` : ""}
+              {f === "open" && data ? ` (${open.length})` : ""}
             </FilterChip>
           ))}
           {user ? (
@@ -148,27 +189,41 @@ function ProjectsContent() {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Project type">
+          <span className="mr-1 text-sm text-muted-foreground">Type</span>
           {(["all", "research", "startup", "program"] as const).map((f) => (
-            <FilterChip key={f} active={typeFilter === f} onClick={() => setTypeFilter(f)}>
+            <FilterChip
+              key={f}
+              active={typeFilter === f}
+              onClick={() => updateSearch({ type: f === "all" ? undefined : f })}
+              className="min-h-11 text-xs"
+            >
               {f}
             </FilterChip>
           ))}
-          <label htmlFor="project-search" className="sr-only">
-            Search projects by skill or tag
-          </label>
-          <Input
-            id="project-search"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Skill or tag — e.g. PyTorch, world models, CUDA"
-            className="ml-auto max-w-xs font-mono text-xs"
-          />
+        </div>
+        <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-t border-border/50 pt-3">
+          <p role="status" aria-live="polite" className="text-sm text-muted-foreground">
+            {loading
+              ? "Loading projects…"
+              : !data
+                ? "Project counts are unavailable"
+                : `${list.length} of ${projects.length} projects${hasFilters ? " match your filters" : " · all statuses included"}`}
+          </p>
+          {hasFilters ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="min-h-11 text-sm"
+              onClick={resetFilters}
+            >
+              Clear filters
+            </Button>
+          ) : null}
         </div>
       </div>
 
-      {recommendations.length > 0 && statusFilter === "all" && !query ? (
+      {recommendations.length > 0 && !hasFilters ? (
         <section className="mb-8 rounded-sm border border-accent-green/20 bg-accent-green/5 px-5 py-5">
           <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-2">
             Matches your interests
@@ -197,17 +252,64 @@ function ProjectsContent() {
         </section>
       ) : null}
 
+      {isError ? (
+        <div
+          role="alert"
+          className="mb-6 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-6"
+        >
+          <h2 className="font-display text-xl text-bone">
+            We couldn’t refresh the project directory.
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {data
+              ? "Showing the last loaded projects. Availability may have changed."
+              : "Please try again. You can still explore the research atlas while the directory is unavailable."}{" "}
+            Your filters are saved.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              disabled={isFetching}
+              onClick={() => void refetch()}
+            >
+              {isFetching ? "Retrying…" : "Retry projects"}
+            </Button>
+            <Link
+              to="/research-atlas"
+              className="inline-flex min-h-11 items-center text-sm text-accent-blue hover:text-bone"
+            >
+              Explore the research atlas →
+            </Link>
+          </div>
+        </div>
+      ) : null}
       {loading ? (
         <ListSkeleton rows={5} />
-      ) : list.length === 0 ? (
+      ) : isError && !data ? null : list.length === 0 ? (
         <EmptyState
           title={
             projects.length === 0 ? "No published projects yet" : "No projects match these filters"
           }
           body={
             projects.length === 0
-              ? "When leads publish open threads, they appear here with skills, capacity, and commitment. Create an account to get notified, or browse programs and labs in the meantime."
-              : "Clear the search box, set Status to Open, or remove the type filter. Alumni (closed) threads appear at the bottom when no search is active."
+              ? "When leads publish projects, they appear here with skills, capacity, and commitment. Explore labs or compare program paths in the meantime."
+              : "Try a broader skill or topic, or clear your filters to see projects across every status and type."
+          }
+          action={
+            hasFilters ? (
+              <Button type="button" variant="outline" className="min-h-11" onClick={resetFilters}>
+                Clear all filters
+              </Button>
+            ) : (
+              <Link
+                to="/labs"
+                className="inline-flex min-h-11 items-center text-sm text-accent-blue hover:text-bone"
+              >
+                Explore research labs →
+              </Link>
+            )
           }
         />
       ) : (
@@ -224,7 +326,7 @@ function ProjectsContent() {
                 {applied.has(project.id) ? (
                   <ApplicationStatusBadge status={applied.get(project.id)!} />
                 ) : null}
-                {project.team_count >= project.capacity ? (
+                {project.status === "open" && project.team_count >= project.capacity ? (
                   <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-red border border-accent-red/30 px-2 py-1 rounded-sm">
                     Full
                   </span>
@@ -239,7 +341,7 @@ function ProjectsContent() {
               <div className="mt-4 flex flex-wrap items-center gap-4 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                 {project.lead_name ? <span>Lead: {project.lead_name}</span> : null}
                 <span>
-                  {project.team_count}/{project.capacity} slots
+                  Team · {project.team_count}/{project.capacity}
                 </span>
                 {project.weekly_commitment_hours ? (
                   <span>~{project.weekly_commitment_hours} hrs/week</span>
@@ -266,35 +368,6 @@ function ProjectsContent() {
           ))}
         </div>
       )}
-
-      {alumni.length > 0 && statusFilter === "all" && !query ? (
-        <section className="mt-12">
-          <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
-            Alumni projects
-          </h2>
-          <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
-            Closed threads remain public — output repos, demo links, and team rosters stay visible
-            as a record of what shipped from The Bu1ld.
-          </p>
-          <div className="grid gap-2">
-            {alumni.map((project) => (
-              <Link
-                key={project.id}
-                {...projectLink(project.slug)}
-                className="panel panel-interactive group block p-6 rounded-sm opacity-90 hover:-translate-y-px"
-              >
-                <ProjectStatusBadge status={project.status} />
-                <h3 className="font-display text-lg text-bone mt-3 tracking-tight group-hover:text-accent-blue transition">
-                  {project.title}
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                  {project.description}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      ) : null}
     </>
   );
 }

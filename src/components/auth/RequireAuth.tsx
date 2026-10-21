@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 
 import { InlineEmpty } from "@/components/member/ContentCard";
@@ -11,7 +11,11 @@ import { sanitizeAppPath } from "@/lib/security";
 function useLoginRedirectPath(): string {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.searchStr });
-  return sanitizeAppPath(`${pathname}${search}`) ?? "/dashboard";
+  const hash = useRouterState({ select: (s) => s.location.hash });
+  const initialPath = useRef(
+    sanitizeAppPath(`${pathname}${search}${hash ? `#${hash}` : ""}`) ?? "/dashboard",
+  );
+  return initialPath.current;
 }
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -22,7 +26,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loading && !user) {
       rememberPostAuthRedirect(redirectPath);
-      void navigate({ to: "/login", search: { redirect: redirectPath } });
+      void navigate({ to: "/login", search: { redirect: redirectPath }, replace: true });
     }
   }, [user, loading, navigate, redirectPath]);
 
@@ -40,7 +44,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
 /** Require auth + completed onboarding for member portal routes. */
 export function RequireMember({ children }: { children: React.ReactNode }) {
-  const { user, profile, loading, profileLoading, refreshProfile } = useAuth();
+  const { user, profile, loading, profileLoading, profileError, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const redirectPath = useLoginRedirectPath();
 
@@ -48,14 +52,14 @@ export function RequireMember({ children }: { children: React.ReactNode }) {
     if (loading || profileLoading) return;
     if (!user) {
       rememberPostAuthRedirect(redirectPath);
-      void navigate({ to: "/login", search: { redirect: redirectPath } });
+      void navigate({ to: "/login", search: { redirect: redirectPath }, replace: true });
       return;
     }
-    if (profile && !profile.onboarding_completed) {
+    if (!profileError && !profile?.onboarding_completed) {
       rememberPostAuthRedirect(redirectPath);
-      void navigate({ to: "/onboarding" });
+      void navigate({ to: "/onboarding", replace: true });
     }
-  }, [user, profile, loading, profileLoading, navigate, redirectPath]);
+  }, [user, profile, loading, profileLoading, profileError, navigate, redirectPath]);
 
   if (loading || profileLoading || !user) {
     return (
@@ -86,18 +90,20 @@ export function RequireMember({ children }: { children: React.ReactNode }) {
 }
 
 export function RedirectIfAuthed({ to, children }: { to: string; children: React.ReactNode }) {
-  const { user, profile, loading, profileLoading } = useAuth();
+  const { user, profile, loading, profileLoading, profileError, refreshProfile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (loading || profileLoading || !user) return;
+    if (loading || profileLoading || profileError || !user) return;
     if (!profile?.onboarding_completed) {
       rememberPostAuthRedirect(to);
       void navigate({ to: "/onboarding" });
       return;
     }
-    void navigate(postAuthNavigateTarget(to));
-  }, [user, profile, loading, profileLoading, navigate, to]);
+    const target = postAuthNavigateTarget(to);
+    if ("href" in target) window.location.assign(target.href);
+    else void navigate(target);
+  }, [user, profile, loading, profileLoading, profileError, navigate, to]);
 
   if (loading || profileLoading) {
     return (
@@ -107,6 +113,21 @@ export function RedirectIfAuthed({ to, children }: { to: string; children: React
     );
   }
 
+  if (user && profileError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-6">
+        <InlineEmpty
+          title="Could not load your profile"
+          body={profileError}
+          action={
+            <Button variant="outline" onClick={() => void refreshProfile()}>
+              Retry
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
   if (user) return null;
   return <>{children}</>;
 }

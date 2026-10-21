@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { COMPETITIONS, getLab, INSTITUTION_PROGRAMS } from "@/data/institution";
 import { textAccent } from "@/data/landing";
 import { fetchLabBySlug } from "@/lib/labs";
-import { fetchProjects } from "@/lib/projects";
+import { useProjectsQuery } from "@/lib/queries/use-projects";
+import { PROJECT_STATUS_LABEL } from "@/data/seed/projects";
+import { Button } from "@/components/ui/button";
 import { pageHead, titleFromSlug } from "@/lib/seo";
-import type { Lab, Project } from "@/lib/types";
 
 export const Route = createFileRoute("/labs/$slug")({
   component: LabDetailPage,
@@ -23,25 +24,26 @@ export const Route = createFileRoute("/labs/$slug")({
 
 function LabDetailPage() {
   const { slug } = Route.useParams();
-  const [lab, setLab] = useState<Lab | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const [labRow, allProjects] = await Promise.all([fetchLabBySlug(slug), fetchProjects()]);
-      if (cancelled) return;
-      setLab(labRow);
-      if (labRow) {
-        setProjects(allProjects.filter((p) => p.lab_id === labRow.id));
-      }
-      setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [slug]);
+  const {
+    data: lab,
+    isLoading: loading,
+    isError: labError,
+    isFetching: labFetching,
+    refetch: retryLab,
+  } = useQuery({
+    queryKey: ["public-lab", slug],
+    queryFn: () => fetchLabBySlug(slug),
+    staleTime: 60_000,
+    retry: false,
+  });
+  const {
+    data: catalog,
+    isLoading: projectsLoading,
+    isError: projectsError,
+    isFetching: projectsFetching,
+    refetch: retryProjects,
+  } = useProjectsQuery();
+  const projects = (catalog?.projects ?? []).filter((project) => project.lab_id === lab?.id);
 
   if (loading) {
     return (
@@ -49,6 +51,29 @@ function LabDetailPage() {
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground animate-pulse">
           Loading lab…
         </p>
+      </InstitutionLayout>
+    );
+  }
+
+  if (labError) {
+    return (
+      <InstitutionLayout eyebrow="Research lab" title="We couldn’t load this lab.">
+        <p role="alert" className="text-muted-foreground">
+          Please try again, or return to the lab directory.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={labFetching}
+            onClick={() => void retryLab()}
+          >
+            {labFetching ? "Retrying…" : "Retry lab"}
+          </Button>
+          <Link to="/labs" className="inline-flex min-h-11 items-center text-accent-blue">
+            Browse labs →
+          </Link>
+        </div>
       </InstitutionLayout>
     );
   }
@@ -120,26 +145,48 @@ function LabDetailPage() {
             <Link
               key={role}
               to="/projects"
-              className="rounded-sm border border-bone/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:border-accent-blue/50 hover:text-accent-blue"
+              className="inline-flex min-h-11 items-center rounded-sm border border-bone/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:border-accent-blue/50 hover:text-accent-blue"
             >
               {role}
             </Link>
           ))}
         </div>
         <p className="mt-5 text-sm text-muted-foreground">
-          Role types are filled through project applications — open a project listing, read required
-          skills, and submit a pitch.{" "}
+          These are role types within the lab, not confirmed vacancies. Published project listings
+          show current openings, required skills, and capacity.{" "}
           <Link to="/apply" className="text-accent-blue hover:text-bone">
             Start the apply path →
           </Link>
         </p>
       </section>
 
-      {projects.length > 0 ? (
-        <section className="mt-12">
-          <h2 className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-            Open projects
-          </h2>
+      <section className="mt-12" aria-labelledby="lab-projects-title">
+        <h2 id="lab-projects-title" className="font-display text-2xl text-bone">
+          Linked projects
+        </h2>
+        {projectsError ? (
+          <div role="alert" className="mt-4 rounded-sm border border-border/50 p-5">
+            <p className="text-sm text-muted-foreground">
+              {catalog
+                ? "We couldn’t refresh the project directory. Last loaded listings may have changed."
+                : "Project listings are temporarily unavailable. The lab description is still available above."}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-4 min-h-11"
+              disabled={projectsFetching}
+              onClick={() => void retryProjects()}
+            >
+              {projectsFetching ? "Retrying…" : "Retry project listings"}
+            </Button>
+          </div>
+        ) : null}
+        {projectsLoading ? (
+          <p role="status" className="mt-4 text-sm text-muted-foreground">
+            Loading linked projects…
+          </p>
+        ) : projects.length > 0 ? (
           <div className="mt-4 space-y-3">
             {projects.map((project) => (
               <Link
@@ -149,7 +196,7 @@ function LabDetailPage() {
                 className="block rounded-sm border border-border/40 p-4 transition hover:border-accent-blue/40"
               >
                 <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent-blue">
-                  {project.type} · {project.status}
+                  {project.type} · {PROJECT_STATUS_LABEL[project.status] ?? project.status}
                 </p>
                 <p className="mt-2 font-display text-lg text-bone">{project.title}</p>
                 <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
@@ -158,8 +205,20 @@ function LabDetailPage() {
               </Link>
             ))}
           </div>
-        </section>
-      ) : null}
+        ) : !projectsError ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            {lab.id.startsWith("seed-")
+              ? "The public lab catalog is available, but current project links for this lab could not be confirmed."
+              : "No published projects are currently linked to this lab."}
+          </p>
+        ) : null}
+        <Link
+          to="/projects"
+          className="mt-4 inline-flex min-h-11 items-center text-sm text-accent-blue hover:text-bone"
+        >
+          Browse all published projects →
+        </Link>
+      </section>
 
       {related.length > 0 ? (
         <section className="mt-12">

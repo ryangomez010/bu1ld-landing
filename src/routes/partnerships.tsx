@@ -77,8 +77,8 @@ function PartnershipsPage() {
   return (
     <InstitutionLayout
       eyebrow="Partnerships"
-      title="Collaborations we can stand behind."
-      description="We do not invent logos. Partnerships appear here when the relationship is real, scoped, and useful to members."
+      title="A network with explicit status."
+      description="This page distinguishes organization-reported support, active collaboration, and exploratory outreach. A listed organization does not imply endorsement, and individual evidence records remain authoritative."
     >
       <div className="space-y-4">
         {PARTNERSHIPS.map((partner) => (

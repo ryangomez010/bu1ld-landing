@@ -9,149 +9,79 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PublicationsRouteImport } from './routes/publications'
-import { Route as ProgramsPublicRouteImport } from './routes/programs-public'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PeopleRouteImport } from './routes/people'
-import { Route as PartnershipsRouteImport } from './routes/partnerships'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as InvitationsRouteImport } from './routes/invitations'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as EvidenceRouteImport } from './routes/evidence'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CompetitionsRouteImport } from './routes/competitions'
-import { Route as ApplyRouteImport } from './routes/apply'
-import { Route as AnnouncementsRouteImport } from './routes/announcements'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SearchIndexRouteImport } from './routes/search/index'
-import { Route as SavedIndexRouteImport } from './routes/saved/index'
-import { Route as ResearchIndexRouteImport } from './routes/research/index'
-import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
-import { Route as ProgramsIndexRouteImport } from './routes/programs/index'
-import { Route as PapersIndexRouteImport } from './routes/papers/index'
-import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
-import { Route as NewsletterIndexRouteImport } from './routes/newsletter/index'
-import { Route as MembersIndexRouteImport } from './routes/members/index'
-import { Route as LabsIndexRouteImport } from './routes/labs/index'
-import { Route as JobsIndexRouteImport } from './routes/jobs/index'
-import { Route as GuidesIndexRouteImport } from './routes/guides/index'
-import { Route as EventsIndexRouteImport } from './routes/events/index'
-import { Route as ApplicationsIndexRouteImport } from './routes/applications/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as SavedCollectionsRouteImport } from './routes/saved/collections'
-import { Route as ResearchSubmitRouteImport } from './routes/research/submit'
-import { Route as ResearchHighlightsRouteImport } from './routes/research/highlights'
-import { Route as ResearchAnalyzeRouteImport } from './routes/research/analyze'
-import { Route as ProjectsNewRouteImport } from './routes/projects/new'
-import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
-import { Route as ProgramsSlugRouteImport } from './routes/programs/$slug'
-import { Route as PapersSlugRouteImport } from './routes/papers/$slug'
-import { Route as NewsletterSlugRouteImport } from './routes/newsletter/$slug'
-import { Route as MembersIdRouteImport } from './routes/members/$id'
-import { Route as LeadApplyRouteImport } from './routes/lead/apply'
-import { Route as LabsSlugRouteImport } from './routes/labs/$slug'
-import { Route as JobsTrackerRouteImport } from './routes/jobs/tracker'
-import { Route as JobsSlugRouteImport } from './routes/jobs/$slug'
-import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
-import { Route as EventsSlugRouteImport } from './routes/events/$slug'
-import { Route as CompetitionsSlugRouteImport } from './routes/competitions/$slug'
-import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
-import { Route as AccountSecurityRouteImport } from './routes/account/security'
-import { Route as AccountPreferencesRouteImport } from './routes/account/preferences'
-import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
+import { Route as AnnouncementsRouteImport } from './routes/announcements'
+import { Route as ApplyRouteImport } from './routes/apply'
+import { Route as CompetitionsRouteImport } from './routes/competitions'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as EvidenceRouteImport } from './routes/evidence'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as FormsRouteImport } from './routes/forms'
+import { Route as InvitationsRouteImport } from './routes/invitations'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as NetworkRouteImport } from './routes/network'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PartnershipsRouteImport } from './routes/partnerships'
+import { Route as PeopleRouteImport } from './routes/people'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ProgramsPublicRouteImport } from './routes/programs-public'
+import { Route as PublicationsRouteImport } from './routes/publications'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as AccountActivityRouteImport } from './routes/account/activity'
+import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
+import { Route as AccountPreferencesRouteImport } from './routes/account/preferences'
+import { Route as AccountSecurityRouteImport } from './routes/account/security'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ApplicationsIndexRouteImport } from './routes/applications/index'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as CompetitionsSlugRouteImport } from './routes/competitions/$slug'
+import { Route as EventsIndexRouteImport } from './routes/events/index'
+import { Route as EventsSlugRouteImport } from './routes/events/$slug'
+import { Route as GuidesIndexRouteImport } from './routes/guides/index'
+import { Route as GuidesSlugRouteImport } from './routes/guides/$slug'
+import { Route as JobsIndexRouteImport } from './routes/jobs/index'
+import { Route as JobsSlugRouteImport } from './routes/jobs/$slug'
+import { Route as JobsTrackerRouteImport } from './routes/jobs/tracker'
+import { Route as LabsIndexRouteImport } from './routes/labs/index'
+import { Route as LabsSlugRouteImport } from './routes/labs/$slug'
+import { Route as LeadApplyRouteImport } from './routes/lead/apply'
+import { Route as MembersIndexRouteImport } from './routes/members/index'
+import { Route as MembersIdRouteImport } from './routes/members/$id'
+import { Route as MentorshipIndexRouteImport } from './routes/mentorship/index'
+import { Route as MentorshipManageRouteImport } from './routes/mentorship/manage'
+import { Route as NewsletterIndexRouteImport } from './routes/newsletter/index'
+import { Route as NewsletterSlugRouteImport } from './routes/newsletter/$slug'
+import { Route as NotificationsIndexRouteImport } from './routes/notifications/index'
+import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities/index'
+import { Route as PapersIndexRouteImport } from './routes/papers/index'
+import { Route as PapersSlugRouteImport } from './routes/papers/$slug'
+import { Route as PortfolioProjectIdRouteImport } from './routes/portfolio/$projectId'
+import { Route as ProgramsIndexRouteImport } from './routes/programs/index'
+import { Route as ProgramsSlugRouteImport } from './routes/programs/$slug'
+import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
+import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
+import { Route as ProjectsNewRouteImport } from './routes/projects/new'
+import { Route as ResearchAtlasIndexRouteImport } from './routes/research-atlas/index'
+import { Route as ResearchAtlasSlugRouteImport } from './routes/research-atlas/$slug'
+import { Route as ResearchIndexRouteImport } from './routes/research/index'
+import { Route as ResearchSlugRouteImport } from './routes/research/$slug'
+import { Route as ResearchAnalyzeRouteImport } from './routes/research/analyze'
+import { Route as ResearchHighlightsRouteImport } from './routes/research/highlights'
+import { Route as ResearchSubmitRouteImport } from './routes/research/submit'
+import { Route as SavedIndexRouteImport } from './routes/saved/index'
+import { Route as SavedCollectionsRouteImport } from './routes/saved/collections'
+import { Route as SearchIndexRouteImport } from './routes/search/index'
+import { Route as ProjectsEditSlugRouteImport } from './routes/projects/edit/$slug'
 import { Route as ProjectsManageIndexRouteImport } from './routes/projects/manage/index'
 import { Route as ProjectsManageSlugRouteImport } from './routes/projects/manage/$slug'
-import { Route as ProjectsEditSlugRouteImport } from './routes/projects/edit/$slug'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PublicationsRoute = PublicationsRouteImport.update({
-  id: '/publications',
-  path: '/publications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProgramsPublicRoute = ProgramsPublicRouteImport.update({
-  id: '/programs-public',
-  path: '/programs-public',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PeopleRoute = PeopleRouteImport.update({
-  id: '/people',
-  path: '/people',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PartnershipsRoute = PartnershipsRouteImport.update({
-  id: '/partnerships',
-  path: '/partnerships',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InvitationsRoute = InvitationsRouteImport.update({
-  id: '/invitations',
-  path: '/invitations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EvidenceRoute = EvidenceRouteImport.update({
-  id: '/evidence',
-  path: '/evidence',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompetitionsRoute = CompetitionsRouteImport.update({
-  id: '/competitions',
-  path: '/competitions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApplyRoute = ApplyRouteImport.update({
-  id: '/apply',
-  path: '/apply',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnnouncementsRoute = AnnouncementsRouteImport.update({
@@ -159,184 +89,109 @@ const AnnouncementsRoute = AnnouncementsRouteImport.update({
   path: '/announcements',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ApplyRoute = ApplyRouteImport.update({
+  id: '/apply',
+  path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SearchIndexRoute = SearchIndexRouteImport.update({
-  id: '/search/',
-  path: '/search/',
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SavedIndexRoute = SavedIndexRouteImport.update({
-  id: '/saved/',
-  path: '/saved/',
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResearchIndexRoute = ResearchIndexRouteImport.update({
-  id: '/research/',
-  path: '/research/',
+const EvidenceRoute = EvidenceRouteImport.update({
+  id: '/evidence',
+  path: '/evidence',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProgramsIndexRoute = ProgramsIndexRouteImport.update({
-  id: '/programs/',
-  path: '/programs/',
+const FormsRoute = FormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PapersIndexRoute = PapersIndexRouteImport.update({
-  id: '/papers/',
-  path: '/papers/',
+const InvitationsRoute = InvitationsRouteImport.update({
+  id: '/invitations',
+  path: '/invitations',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NotificationsIndexRoute = NotificationsIndexRouteImport.update({
-  id: '/notifications/',
-  path: '/notifications/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsletterIndexRoute = NewsletterIndexRouteImport.update({
-  id: '/newsletter/',
-  path: '/newsletter/',
+const NetworkRoute = NetworkRouteImport.update({
+  id: '/network',
+  path: '/network',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MembersIndexRoute = MembersIndexRouteImport.update({
-  id: '/members/',
-  path: '/members/',
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LabsIndexRoute = LabsIndexRouteImport.update({
-  id: '/labs/',
-  path: '/labs/',
+const PartnershipsRoute = PartnershipsRouteImport.update({
+  id: '/partnerships',
+  path: '/partnerships',
   getParentRoute: () => rootRouteImport,
 } as any)
-const JobsIndexRoute = JobsIndexRouteImport.update({
-  id: '/jobs/',
-  path: '/jobs/',
+const PeopleRoute = PeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuidesIndexRoute = GuidesIndexRouteImport.update({
-  id: '/guides/',
-  path: '/guides/',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EventsIndexRoute = EventsIndexRouteImport.update({
-  id: '/events/',
-  path: '/events/',
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApplicationsIndexRoute = ApplicationsIndexRouteImport.update({
-  id: '/applications/',
-  path: '/applications/',
+const ProgramsPublicRoute = ProgramsPublicRouteImport.update({
+  id: '/programs-public',
+  path: '/programs-public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
+const PublicationsRoute = PublicationsRouteImport.update({
+  id: '/publications',
+  path: '/publications',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SavedCollectionsRoute = SavedCollectionsRouteImport.update({
-  id: '/saved/collections',
-  path: '/saved/collections',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResearchSubmitRoute = ResearchSubmitRouteImport.update({
-  id: '/research/submit',
-  path: '/research/submit',
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResearchHighlightsRoute = ResearchHighlightsRouteImport.update({
-  id: '/research/highlights',
-  path: '/research/highlights',
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResearchAnalyzeRoute = ResearchAnalyzeRouteImport.update({
-  id: '/research/analyze',
-  path: '/research/analyze',
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectsNewRoute = ProjectsNewRouteImport.update({
-  id: '/projects/new',
-  path: '/projects/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
-  id: '/projects/$slug',
-  path: '/projects/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProgramsSlugRoute = ProgramsSlugRouteImport.update({
-  id: '/programs/$slug',
-  path: '/programs/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PapersSlugRoute = PapersSlugRouteImport.update({
-  id: '/papers/$slug',
-  path: '/papers/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NewsletterSlugRoute = NewsletterSlugRouteImport.update({
-  id: '/newsletter/$slug',
-  path: '/newsletter/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MembersIdRoute = MembersIdRouteImport.update({
-  id: '/members/$id',
-  path: '/members/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LeadApplyRoute = LeadApplyRouteImport.update({
-  id: '/lead/apply',
-  path: '/lead/apply',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabsSlugRoute = LabsSlugRouteImport.update({
-  id: '/labs/$slug',
-  path: '/labs/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JobsTrackerRoute = JobsTrackerRouteImport.update({
-  id: '/jobs/tracker',
-  path: '/jobs/tracker',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JobsSlugRoute = JobsSlugRouteImport.update({
-  id: '/jobs/$slug',
-  path: '/jobs/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuidesSlugRoute = GuidesSlugRouteImport.update({
-  id: '/guides/$slug',
-  path: '/guides/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EventsSlugRoute = EventsSlugRouteImport.update({
-  id: '/events/$slug',
-  path: '/events/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompetitionsSlugRoute = CompetitionsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => CompetitionsRoute,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountSecurityRoute = AccountSecurityRouteImport.update({
-  id: '/account/security',
-  path: '/account/security',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountPreferencesRoute = AccountPreferencesRouteImport.update({
-  id: '/account/preferences',
-  path: '/account/preferences',
+const AccountActivityRoute = AccountActivityRouteImport.update({
+  id: '/account/activity',
+  path: '/account/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
@@ -344,9 +199,219 @@ const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
   path: '/account/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AccountActivityRoute = AccountActivityRouteImport.update({
-  id: '/account/activity',
-  path: '/account/activity',
+const AccountPreferencesRoute = AccountPreferencesRouteImport.update({
+  id: '/account/preferences',
+  path: '/account/preferences',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountSecurityRoute = AccountSecurityRouteImport.update({
+  id: '/account/security',
+  path: '/account/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplicationsIndexRoute = ApplicationsIndexRouteImport.update({
+  id: '/applications/',
+  path: '/applications/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionsSlugRoute = CompetitionsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CompetitionsRoute,
+} as any)
+const EventsIndexRoute = EventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsSlugRoute = EventsSlugRouteImport.update({
+  id: '/events/$slug',
+  path: '/events/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesIndexRoute = GuidesIndexRouteImport.update({
+  id: '/guides/',
+  path: '/guides/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesSlugRoute = GuidesSlugRouteImport.update({
+  id: '/guides/$slug',
+  path: '/guides/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobsIndexRoute = JobsIndexRouteImport.update({
+  id: '/jobs/',
+  path: '/jobs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobsSlugRoute = JobsSlugRouteImport.update({
+  id: '/jobs/$slug',
+  path: '/jobs/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobsTrackerRoute = JobsTrackerRouteImport.update({
+  id: '/jobs/tracker',
+  path: '/jobs/tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabsIndexRoute = LabsIndexRouteImport.update({
+  id: '/labs/',
+  path: '/labs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabsSlugRoute = LabsSlugRouteImport.update({
+  id: '/labs/$slug',
+  path: '/labs/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeadApplyRoute = LeadApplyRouteImport.update({
+  id: '/lead/apply',
+  path: '/lead/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembersIndexRoute = MembersIndexRouteImport.update({
+  id: '/members/',
+  path: '/members/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembersIdRoute = MembersIdRouteImport.update({
+  id: '/members/$id',
+  path: '/members/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentorshipIndexRoute = MentorshipIndexRouteImport.update({
+  id: '/mentorship/',
+  path: '/mentorship/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentorshipManageRoute = MentorshipManageRouteImport.update({
+  id: '/mentorship/manage',
+  path: '/mentorship/manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsletterIndexRoute = NewsletterIndexRouteImport.update({
+  id: '/newsletter/',
+  path: '/newsletter/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsletterSlugRoute = NewsletterSlugRouteImport.update({
+  id: '/newsletter/$slug',
+  path: '/newsletter/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsIndexRoute = NotificationsIndexRouteImport.update({
+  id: '/notifications/',
+  path: '/notifications/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
+  id: '/opportunities/',
+  path: '/opportunities/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PapersIndexRoute = PapersIndexRouteImport.update({
+  id: '/papers/',
+  path: '/papers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PapersSlugRoute = PapersSlugRouteImport.update({
+  id: '/papers/$slug',
+  path: '/papers/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioProjectIdRoute = PortfolioProjectIdRouteImport.update({
+  id: '/portfolio/$projectId',
+  path: '/portfolio/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsIndexRoute = ProgramsIndexRouteImport.update({
+  id: '/programs/',
+  path: '/programs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsSlugRoute = ProgramsSlugRouteImport.update({
+  id: '/programs/$slug',
+  path: '/programs/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
+  id: '/projects/$slug',
+  path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsNewRoute = ProjectsNewRouteImport.update({
+  id: '/projects/new',
+  path: '/projects/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchAtlasIndexRoute = ResearchAtlasIndexRouteImport.update({
+  id: '/research-atlas/',
+  path: '/research-atlas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchAtlasSlugRoute = ResearchAtlasSlugRouteImport.update({
+  id: '/research-atlas/$slug',
+  path: '/research-atlas/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchIndexRoute = ResearchIndexRouteImport.update({
+  id: '/research/',
+  path: '/research/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchSlugRoute = ResearchSlugRouteImport.update({
+  id: '/research/$slug',
+  path: '/research/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchAnalyzeRoute = ResearchAnalyzeRouteImport.update({
+  id: '/research/analyze',
+  path: '/research/analyze',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchHighlightsRoute = ResearchHighlightsRouteImport.update({
+  id: '/research/highlights',
+  path: '/research/highlights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchSubmitRoute = ResearchSubmitRouteImport.update({
+  id: '/research/submit',
+  path: '/research/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedIndexRoute = SavedIndexRouteImport.update({
+  id: '/saved/',
+  path: '/saved/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedCollectionsRoute = SavedCollectionsRouteImport.update({
+  id: '/saved/collections',
+  path: '/saved/collections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchIndexRoute = SearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsEditSlugRoute = ProjectsEditSlugRouteImport.update({
+  id: '/projects/edit/$slug',
+  path: '/projects/edit/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsManageIndexRoute = ProjectsManageIndexRouteImport.update({
@@ -359,11 +424,6 @@ const ProjectsManageSlugRoute = ProjectsManageSlugRouteImport.update({
   path: '/projects/manage/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectsEditSlugRoute = ProjectsEditSlugRouteImport.update({
-  id: '/projects/edit/$slug',
-  path: '/projects/edit/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -373,8 +433,10 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/forms': typeof FormsRoute
   '/invitations': typeof InvitationsRoute
   '/login': typeof LoginRoute
+  '/network': typeof NetworkRoute
   '/onboarding': typeof OnboardingRoute
   '/partnerships': typeof PartnershipsRoute
   '/people': typeof PeopleRoute
@@ -385,6 +447,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/workspace': typeof WorkspaceRoute
   '/account/activity': typeof AccountActivityRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/preferences': typeof AccountPreferencesRoute
@@ -398,11 +461,15 @@ export interface FileRoutesByFullPath {
   '/labs/$slug': typeof LabsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
+  '/mentorship/manage': typeof MentorshipManageRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
+  '/portfolio/$projectId': typeof PortfolioProjectIdRoute
   '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/research-atlas/$slug': typeof ResearchAtlasSlugRoute
+  '/research/$slug': typeof ResearchSlugRoute
   '/research/analyze': typeof ResearchAnalyzeRoute
   '/research/highlights': typeof ResearchHighlightsRoute
   '/research/submit': typeof ResearchSubmitRoute
@@ -414,11 +481,14 @@ export interface FileRoutesByFullPath {
   '/jobs/': typeof JobsIndexRoute
   '/labs/': typeof LabsIndexRoute
   '/members/': typeof MembersIndexRoute
+  '/mentorship/': typeof MentorshipIndexRoute
   '/newsletter/': typeof NewsletterIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
   '/papers/': typeof PapersIndexRoute
   '/programs/': typeof ProgramsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/research-atlas/': typeof ResearchAtlasIndexRoute
   '/research/': typeof ResearchIndexRoute
   '/saved/': typeof SavedIndexRoute
   '/search/': typeof SearchIndexRoute
@@ -434,8 +504,10 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/forms': typeof FormsRoute
   '/invitations': typeof InvitationsRoute
   '/login': typeof LoginRoute
+  '/network': typeof NetworkRoute
   '/onboarding': typeof OnboardingRoute
   '/partnerships': typeof PartnershipsRoute
   '/people': typeof PeopleRoute
@@ -446,6 +518,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/workspace': typeof WorkspaceRoute
   '/account/activity': typeof AccountActivityRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/preferences': typeof AccountPreferencesRoute
@@ -459,11 +532,15 @@ export interface FileRoutesByTo {
   '/labs/$slug': typeof LabsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
+  '/mentorship/manage': typeof MentorshipManageRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
+  '/portfolio/$projectId': typeof PortfolioProjectIdRoute
   '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/research-atlas/$slug': typeof ResearchAtlasSlugRoute
+  '/research/$slug': typeof ResearchSlugRoute
   '/research/analyze': typeof ResearchAnalyzeRoute
   '/research/highlights': typeof ResearchHighlightsRoute
   '/research/submit': typeof ResearchSubmitRoute
@@ -475,11 +552,14 @@ export interface FileRoutesByTo {
   '/jobs': typeof JobsIndexRoute
   '/labs': typeof LabsIndexRoute
   '/members': typeof MembersIndexRoute
+  '/mentorship': typeof MentorshipIndexRoute
   '/newsletter': typeof NewsletterIndexRoute
   '/notifications': typeof NotificationsIndexRoute
+  '/opportunities': typeof OpportunitiesIndexRoute
   '/papers': typeof PapersIndexRoute
   '/programs': typeof ProgramsIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/research-atlas': typeof ResearchAtlasIndexRoute
   '/research': typeof ResearchIndexRoute
   '/saved': typeof SavedIndexRoute
   '/search': typeof SearchIndexRoute
@@ -496,8 +576,10 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/evidence': typeof EvidenceRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/forms': typeof FormsRoute
   '/invitations': typeof InvitationsRoute
   '/login': typeof LoginRoute
+  '/network': typeof NetworkRoute
   '/onboarding': typeof OnboardingRoute
   '/partnerships': typeof PartnershipsRoute
   '/people': typeof PeopleRoute
@@ -508,6 +590,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/workspace': typeof WorkspaceRoute
   '/account/activity': typeof AccountActivityRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/preferences': typeof AccountPreferencesRoute
@@ -521,11 +604,15 @@ export interface FileRoutesById {
   '/labs/$slug': typeof LabsSlugRoute
   '/lead/apply': typeof LeadApplyRoute
   '/members/$id': typeof MembersIdRoute
+  '/mentorship/manage': typeof MentorshipManageRoute
   '/newsletter/$slug': typeof NewsletterSlugRoute
   '/papers/$slug': typeof PapersSlugRoute
+  '/portfolio/$projectId': typeof PortfolioProjectIdRoute
   '/programs/$slug': typeof ProgramsSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/research-atlas/$slug': typeof ResearchAtlasSlugRoute
+  '/research/$slug': typeof ResearchSlugRoute
   '/research/analyze': typeof ResearchAnalyzeRoute
   '/research/highlights': typeof ResearchHighlightsRoute
   '/research/submit': typeof ResearchSubmitRoute
@@ -537,11 +624,14 @@ export interface FileRoutesById {
   '/jobs/': typeof JobsIndexRoute
   '/labs/': typeof LabsIndexRoute
   '/members/': typeof MembersIndexRoute
+  '/mentorship/': typeof MentorshipIndexRoute
   '/newsletter/': typeof NewsletterIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
   '/papers/': typeof PapersIndexRoute
   '/programs/': typeof ProgramsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/research-atlas/': typeof ResearchAtlasIndexRoute
   '/research/': typeof ResearchIndexRoute
   '/saved/': typeof SavedIndexRoute
   '/search/': typeof SearchIndexRoute
@@ -559,8 +649,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/evidence'
     | '/forgot-password'
+    | '/forms'
     | '/invitations'
     | '/login'
+    | '/network'
     | '/onboarding'
     | '/partnerships'
     | '/people'
@@ -571,6 +663,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/workspace'
     | '/account/activity'
     | '/account/notifications'
     | '/account/preferences'
@@ -584,11 +677,15 @@ export interface FileRouteTypes {
     | '/labs/$slug'
     | '/lead/apply'
     | '/members/$id'
+    | '/mentorship/manage'
     | '/newsletter/$slug'
     | '/papers/$slug'
+    | '/portfolio/$projectId'
     | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/research-atlas/$slug'
+    | '/research/$slug'
     | '/research/analyze'
     | '/research/highlights'
     | '/research/submit'
@@ -600,11 +697,14 @@ export interface FileRouteTypes {
     | '/jobs/'
     | '/labs/'
     | '/members/'
+    | '/mentorship/'
     | '/newsletter/'
     | '/notifications/'
+    | '/opportunities/'
     | '/papers/'
     | '/programs/'
     | '/projects/'
+    | '/research-atlas/'
     | '/research/'
     | '/saved/'
     | '/search/'
@@ -620,8 +720,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/evidence'
     | '/forgot-password'
+    | '/forms'
     | '/invitations'
     | '/login'
+    | '/network'
     | '/onboarding'
     | '/partnerships'
     | '/people'
@@ -632,6 +734,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/workspace'
     | '/account/activity'
     | '/account/notifications'
     | '/account/preferences'
@@ -645,11 +748,15 @@ export interface FileRouteTypes {
     | '/labs/$slug'
     | '/lead/apply'
     | '/members/$id'
+    | '/mentorship/manage'
     | '/newsletter/$slug'
     | '/papers/$slug'
+    | '/portfolio/$projectId'
     | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/research-atlas/$slug'
+    | '/research/$slug'
     | '/research/analyze'
     | '/research/highlights'
     | '/research/submit'
@@ -661,11 +768,14 @@ export interface FileRouteTypes {
     | '/jobs'
     | '/labs'
     | '/members'
+    | '/mentorship'
     | '/newsletter'
     | '/notifications'
+    | '/opportunities'
     | '/papers'
     | '/programs'
     | '/projects'
+    | '/research-atlas'
     | '/research'
     | '/saved'
     | '/search'
@@ -681,8 +791,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/evidence'
     | '/forgot-password'
+    | '/forms'
     | '/invitations'
     | '/login'
+    | '/network'
     | '/onboarding'
     | '/partnerships'
     | '/people'
@@ -693,6 +805,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/terms'
+    | '/workspace'
     | '/account/activity'
     | '/account/notifications'
     | '/account/preferences'
@@ -706,11 +819,15 @@ export interface FileRouteTypes {
     | '/labs/$slug'
     | '/lead/apply'
     | '/members/$id'
+    | '/mentorship/manage'
     | '/newsletter/$slug'
     | '/papers/$slug'
+    | '/portfolio/$projectId'
     | '/programs/$slug'
     | '/projects/$slug'
     | '/projects/new'
+    | '/research-atlas/$slug'
+    | '/research/$slug'
     | '/research/analyze'
     | '/research/highlights'
     | '/research/submit'
@@ -722,11 +839,14 @@ export interface FileRouteTypes {
     | '/jobs/'
     | '/labs/'
     | '/members/'
+    | '/mentorship/'
     | '/newsletter/'
     | '/notifications/'
+    | '/opportunities/'
     | '/papers/'
     | '/programs/'
     | '/projects/'
+    | '/research-atlas/'
     | '/research/'
     | '/saved/'
     | '/search/'
@@ -743,8 +863,10 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   EvidenceRoute: typeof EvidenceRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  FormsRoute: typeof FormsRoute
   InvitationsRoute: typeof InvitationsRoute
   LoginRoute: typeof LoginRoute
+  NetworkRoute: typeof NetworkRoute
   OnboardingRoute: typeof OnboardingRoute
   PartnershipsRoute: typeof PartnershipsRoute
   PeopleRoute: typeof PeopleRoute
@@ -755,6 +877,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
+  WorkspaceRoute: typeof WorkspaceRoute
   AccountActivityRoute: typeof AccountActivityRoute
   AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountPreferencesRoute: typeof AccountPreferencesRoute
@@ -767,11 +890,15 @@ export interface RootRouteChildren {
   LabsSlugRoute: typeof LabsSlugRoute
   LeadApplyRoute: typeof LeadApplyRoute
   MembersIdRoute: typeof MembersIdRoute
+  MentorshipManageRoute: typeof MentorshipManageRoute
   NewsletterSlugRoute: typeof NewsletterSlugRoute
   PapersSlugRoute: typeof PapersSlugRoute
+  PortfolioProjectIdRoute: typeof PortfolioProjectIdRoute
   ProgramsSlugRoute: typeof ProgramsSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ProjectsNewRoute: typeof ProjectsNewRoute
+  ResearchAtlasSlugRoute: typeof ResearchAtlasSlugRoute
+  ResearchSlugRoute: typeof ResearchSlugRoute
   ResearchAnalyzeRoute: typeof ResearchAnalyzeRoute
   ResearchHighlightsRoute: typeof ResearchHighlightsRoute
   ResearchSubmitRoute: typeof ResearchSubmitRoute
@@ -783,11 +910,14 @@ export interface RootRouteChildren {
   JobsIndexRoute: typeof JobsIndexRoute
   LabsIndexRoute: typeof LabsIndexRoute
   MembersIndexRoute: typeof MembersIndexRoute
+  MentorshipIndexRoute: typeof MentorshipIndexRoute
   NewsletterIndexRoute: typeof NewsletterIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
+  OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   PapersIndexRoute: typeof PapersIndexRoute
   ProgramsIndexRoute: typeof ProgramsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  ResearchAtlasIndexRoute: typeof ResearchAtlasIndexRoute
   ResearchIndexRoute: typeof ResearchIndexRoute
   SavedIndexRoute: typeof SavedIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
@@ -798,123 +928,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/publications': {
-      id: '/publications'
-      path: '/publications'
-      fullPath: '/publications'
-      preLoaderRoute: typeof PublicationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/programs-public': {
-      id: '/programs-public'
-      path: '/programs-public'
-      fullPath: '/programs-public'
-      preLoaderRoute: typeof ProgramsPublicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/people': {
-      id: '/people'
-      path: '/people'
-      fullPath: '/people'
-      preLoaderRoute: typeof PeopleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/partnerships': {
-      id: '/partnerships'
-      path: '/partnerships'
-      fullPath: '/partnerships'
-      preLoaderRoute: typeof PartnershipsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/invitations': {
-      id: '/invitations'
-      path: '/invitations'
-      fullPath: '/invitations'
-      preLoaderRoute: typeof InvitationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/evidence': {
-      id: '/evidence'
-      path: '/evidence'
-      fullPath: '/evidence'
-      preLoaderRoute: typeof EvidenceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/competitions': {
-      id: '/competitions'
-      path: '/competitions'
-      fullPath: '/competitions'
-      preLoaderRoute: typeof CompetitionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/apply': {
-      id: '/apply'
-      path: '/apply'
-      fullPath: '/apply'
-      preLoaderRoute: typeof ApplyRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/announcements': {
@@ -924,256 +942,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnnouncementsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/apply': {
+      id: '/apply'
+      path: '/apply'
+      fullPath: '/apply'
+      preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/search/': {
-      id: '/search/'
-      path: '/search'
-      fullPath: '/search/'
-      preLoaderRoute: typeof SearchIndexRouteImport
+    '/competitions': {
+      id: '/competitions'
+      path: '/competitions'
+      fullPath: '/competitions'
+      preLoaderRoute: typeof CompetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/saved/': {
-      id: '/saved/'
-      path: '/saved'
-      fullPath: '/saved/'
-      preLoaderRoute: typeof SavedIndexRouteImport
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/research/': {
-      id: '/research/'
-      path: '/research'
-      fullPath: '/research/'
-      preLoaderRoute: typeof ResearchIndexRouteImport
+    '/evidence': {
+      id: '/evidence'
+      path: '/evidence'
+      fullPath: '/evidence'
+      preLoaderRoute: typeof EvidenceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projects/': {
-      id: '/projects/'
-      path: '/projects'
-      fullPath: '/projects/'
-      preLoaderRoute: typeof ProjectsIndexRouteImport
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/programs/': {
-      id: '/programs/'
-      path: '/programs'
-      fullPath: '/programs/'
-      preLoaderRoute: typeof ProgramsIndexRouteImport
+    '/forms': {
+      id: '/forms'
+      path: '/forms'
+      fullPath: '/forms'
+      preLoaderRoute: typeof FormsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/papers/': {
-      id: '/papers/'
-      path: '/papers'
-      fullPath: '/papers/'
-      preLoaderRoute: typeof PapersIndexRouteImport
+    '/invitations': {
+      id: '/invitations'
+      path: '/invitations'
+      fullPath: '/invitations'
+      preLoaderRoute: typeof InvitationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/notifications/': {
-      id: '/notifications/'
-      path: '/notifications'
-      fullPath: '/notifications/'
-      preLoaderRoute: typeof NotificationsIndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/newsletter/': {
-      id: '/newsletter/'
-      path: '/newsletter'
-      fullPath: '/newsletter/'
-      preLoaderRoute: typeof NewsletterIndexRouteImport
+    '/network': {
+      id: '/network'
+      path: '/network'
+      fullPath: '/network'
+      preLoaderRoute: typeof NetworkRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/members/': {
-      id: '/members/'
-      path: '/members'
-      fullPath: '/members/'
-      preLoaderRoute: typeof MembersIndexRouteImport
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/labs/': {
-      id: '/labs/'
-      path: '/labs'
-      fullPath: '/labs/'
-      preLoaderRoute: typeof LabsIndexRouteImport
+    '/partnerships': {
+      id: '/partnerships'
+      path: '/partnerships'
+      fullPath: '/partnerships'
+      preLoaderRoute: typeof PartnershipsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/jobs/': {
-      id: '/jobs/'
-      path: '/jobs'
-      fullPath: '/jobs/'
-      preLoaderRoute: typeof JobsIndexRouteImport
+    '/people': {
+      id: '/people'
+      path: '/people'
+      fullPath: '/people'
+      preLoaderRoute: typeof PeopleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guides/': {
-      id: '/guides/'
-      path: '/guides'
-      fullPath: '/guides/'
-      preLoaderRoute: typeof GuidesIndexRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/events/': {
-      id: '/events/'
-      path: '/events'
-      fullPath: '/events/'
-      preLoaderRoute: typeof EventsIndexRouteImport
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/applications/': {
-      id: '/applications/'
-      path: '/applications'
-      fullPath: '/applications/'
-      preLoaderRoute: typeof ApplicationsIndexRouteImport
+    '/programs-public': {
+      id: '/programs-public'
+      path: '/programs-public'
+      fullPath: '/programs-public'
+      preLoaderRoute: typeof ProgramsPublicRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
+    '/publications': {
+      id: '/publications'
+      path: '/publications'
+      fullPath: '/publications'
+      preLoaderRoute: typeof PublicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/saved/collections': {
-      id: '/saved/collections'
-      path: '/saved/collections'
-      fullPath: '/saved/collections'
-      preLoaderRoute: typeof SavedCollectionsRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/research/submit': {
-      id: '/research/submit'
-      path: '/research/submit'
-      fullPath: '/research/submit'
-      preLoaderRoute: typeof ResearchSubmitRouteImport
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/research/highlights': {
-      id: '/research/highlights'
-      path: '/research/highlights'
-      fullPath: '/research/highlights'
-      preLoaderRoute: typeof ResearchHighlightsRouteImport
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/research/analyze': {
-      id: '/research/analyze'
-      path: '/research/analyze'
-      fullPath: '/research/analyze'
-      preLoaderRoute: typeof ResearchAnalyzeRouteImport
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projects/new': {
-      id: '/projects/new'
-      path: '/projects/new'
-      fullPath: '/projects/new'
-      preLoaderRoute: typeof ProjectsNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects/$slug': {
-      id: '/projects/$slug'
-      path: '/projects/$slug'
-      fullPath: '/projects/$slug'
-      preLoaderRoute: typeof ProjectsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/programs/$slug': {
-      id: '/programs/$slug'
-      path: '/programs/$slug'
-      fullPath: '/programs/$slug'
-      preLoaderRoute: typeof ProgramsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/papers/$slug': {
-      id: '/papers/$slug'
-      path: '/papers/$slug'
-      fullPath: '/papers/$slug'
-      preLoaderRoute: typeof PapersSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/newsletter/$slug': {
-      id: '/newsletter/$slug'
-      path: '/newsletter/$slug'
-      fullPath: '/newsletter/$slug'
-      preLoaderRoute: typeof NewsletterSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/members/$id': {
-      id: '/members/$id'
-      path: '/members/$id'
-      fullPath: '/members/$id'
-      preLoaderRoute: typeof MembersIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lead/apply': {
-      id: '/lead/apply'
-      path: '/lead/apply'
-      fullPath: '/lead/apply'
-      preLoaderRoute: typeof LeadApplyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/labs/$slug': {
-      id: '/labs/$slug'
-      path: '/labs/$slug'
-      fullPath: '/labs/$slug'
-      preLoaderRoute: typeof LabsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/jobs/tracker': {
-      id: '/jobs/tracker'
-      path: '/jobs/tracker'
-      fullPath: '/jobs/tracker'
-      preLoaderRoute: typeof JobsTrackerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/jobs/$slug': {
-      id: '/jobs/$slug'
-      path: '/jobs/$slug'
-      fullPath: '/jobs/$slug'
-      preLoaderRoute: typeof JobsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guides/$slug': {
-      id: '/guides/$slug'
-      path: '/guides/$slug'
-      fullPath: '/guides/$slug'
-      preLoaderRoute: typeof GuidesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/events/$slug': {
-      id: '/events/$slug'
-      path: '/events/$slug'
-      fullPath: '/events/$slug'
-      preLoaderRoute: typeof EventsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/competitions/$slug': {
-      id: '/competitions/$slug'
-      path: '/$slug'
-      fullPath: '/competitions/$slug'
-      preLoaderRoute: typeof CompetitionsSlugRouteImport
-      parentRoute: typeof CompetitionsRoute
-    }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/account/security': {
-      id: '/account/security'
-      path: '/account/security'
-      fullPath: '/account/security'
-      preLoaderRoute: typeof AccountSecurityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/account/preferences': {
-      id: '/account/preferences'
-      path: '/account/preferences'
-      fullPath: '/account/preferences'
-      preLoaderRoute: typeof AccountPreferencesRouteImport
+    '/account/activity': {
+      id: '/account/activity'
+      path: '/account/activity'
+      fullPath: '/account/activity'
+      preLoaderRoute: typeof AccountActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/notifications': {
@@ -1183,11 +1096,305 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/account/activity': {
-      id: '/account/activity'
-      path: '/account/activity'
-      fullPath: '/account/activity'
-      preLoaderRoute: typeof AccountActivityRouteImport
+    '/account/preferences': {
+      id: '/account/preferences'
+      path: '/account/preferences'
+      fullPath: '/account/preferences'
+      preLoaderRoute: typeof AccountPreferencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account/security': {
+      id: '/account/security'
+      path: '/account/security'
+      fullPath: '/account/security'
+      preLoaderRoute: typeof AccountSecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/applications/': {
+      id: '/applications/'
+      path: '/applications'
+      fullPath: '/applications/'
+      preLoaderRoute: typeof ApplicationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions/$slug': {
+      id: '/competitions/$slug'
+      path: '/$slug'
+      fullPath: '/competitions/$slug'
+      preLoaderRoute: typeof CompetitionsSlugRouteImport
+      parentRoute: typeof CompetitionsRoute
+    }
+    '/events/': {
+      id: '/events/'
+      path: '/events'
+      fullPath: '/events/'
+      preLoaderRoute: typeof EventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events/$slug': {
+      id: '/events/$slug'
+      path: '/events/$slug'
+      fullPath: '/events/$slug'
+      preLoaderRoute: typeof EventsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/': {
+      id: '/guides/'
+      path: '/guides'
+      fullPath: '/guides/'
+      preLoaderRoute: typeof GuidesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/$slug': {
+      id: '/guides/$slug'
+      path: '/guides/$slug'
+      fullPath: '/guides/$slug'
+      preLoaderRoute: typeof GuidesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs/': {
+      id: '/jobs/'
+      path: '/jobs'
+      fullPath: '/jobs/'
+      preLoaderRoute: typeof JobsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs/$slug': {
+      id: '/jobs/$slug'
+      path: '/jobs/$slug'
+      fullPath: '/jobs/$slug'
+      preLoaderRoute: typeof JobsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs/tracker': {
+      id: '/jobs/tracker'
+      path: '/jobs/tracker'
+      fullPath: '/jobs/tracker'
+      preLoaderRoute: typeof JobsTrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/labs/': {
+      id: '/labs/'
+      path: '/labs'
+      fullPath: '/labs/'
+      preLoaderRoute: typeof LabsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/labs/$slug': {
+      id: '/labs/$slug'
+      path: '/labs/$slug'
+      fullPath: '/labs/$slug'
+      preLoaderRoute: typeof LabsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lead/apply': {
+      id: '/lead/apply'
+      path: '/lead/apply'
+      fullPath: '/lead/apply'
+      preLoaderRoute: typeof LeadApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/members/': {
+      id: '/members/'
+      path: '/members'
+      fullPath: '/members/'
+      preLoaderRoute: typeof MembersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/members/$id': {
+      id: '/members/$id'
+      path: '/members/$id'
+      fullPath: '/members/$id'
+      preLoaderRoute: typeof MembersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentorship/': {
+      id: '/mentorship/'
+      path: '/mentorship'
+      fullPath: '/mentorship/'
+      preLoaderRoute: typeof MentorshipIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentorship/manage': {
+      id: '/mentorship/manage'
+      path: '/mentorship/manage'
+      fullPath: '/mentorship/manage'
+      preLoaderRoute: typeof MentorshipManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/newsletter/': {
+      id: '/newsletter/'
+      path: '/newsletter'
+      fullPath: '/newsletter/'
+      preLoaderRoute: typeof NewsletterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/newsletter/$slug': {
+      id: '/newsletter/$slug'
+      path: '/newsletter/$slug'
+      fullPath: '/newsletter/$slug'
+      preLoaderRoute: typeof NewsletterSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications/': {
+      id: '/notifications/'
+      path: '/notifications'
+      fullPath: '/notifications/'
+      preLoaderRoute: typeof NotificationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/': {
+      id: '/opportunities/'
+      path: '/opportunities'
+      fullPath: '/opportunities/'
+      preLoaderRoute: typeof OpportunitiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/papers/': {
+      id: '/papers/'
+      path: '/papers'
+      fullPath: '/papers/'
+      preLoaderRoute: typeof PapersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/papers/$slug': {
+      id: '/papers/$slug'
+      path: '/papers/$slug'
+      fullPath: '/papers/$slug'
+      preLoaderRoute: typeof PapersSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio/$projectId': {
+      id: '/portfolio/$projectId'
+      path: '/portfolio/$projectId'
+      fullPath: '/portfolio/$projectId'
+      preLoaderRoute: typeof PortfolioProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs/': {
+      id: '/programs/'
+      path: '/programs'
+      fullPath: '/programs/'
+      preLoaderRoute: typeof ProgramsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs/$slug': {
+      id: '/programs/$slug'
+      path: '/programs/$slug'
+      fullPath: '/programs/$slug'
+      preLoaderRoute: typeof ProgramsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$slug': {
+      id: '/projects/$slug'
+      path: '/projects/$slug'
+      fullPath: '/projects/$slug'
+      preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/new': {
+      id: '/projects/new'
+      path: '/projects/new'
+      fullPath: '/projects/new'
+      preLoaderRoute: typeof ProjectsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research-atlas/': {
+      id: '/research-atlas/'
+      path: '/research-atlas'
+      fullPath: '/research-atlas/'
+      preLoaderRoute: typeof ResearchAtlasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research-atlas/$slug': {
+      id: '/research-atlas/$slug'
+      path: '/research-atlas/$slug'
+      fullPath: '/research-atlas/$slug'
+      preLoaderRoute: typeof ResearchAtlasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research/': {
+      id: '/research/'
+      path: '/research'
+      fullPath: '/research/'
+      preLoaderRoute: typeof ResearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research/$slug': {
+      id: '/research/$slug'
+      path: '/research/$slug'
+      fullPath: '/research/$slug'
+      preLoaderRoute: typeof ResearchSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research/analyze': {
+      id: '/research/analyze'
+      path: '/research/analyze'
+      fullPath: '/research/analyze'
+      preLoaderRoute: typeof ResearchAnalyzeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research/highlights': {
+      id: '/research/highlights'
+      path: '/research/highlights'
+      fullPath: '/research/highlights'
+      preLoaderRoute: typeof ResearchHighlightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research/submit': {
+      id: '/research/submit'
+      path: '/research/submit'
+      fullPath: '/research/submit'
+      preLoaderRoute: typeof ResearchSubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved/': {
+      id: '/saved/'
+      path: '/saved'
+      fullPath: '/saved/'
+      preLoaderRoute: typeof SavedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved/collections': {
+      id: '/saved/collections'
+      path: '/saved/collections'
+      fullPath: '/saved/collections'
+      preLoaderRoute: typeof SavedCollectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof SearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/edit/$slug': {
+      id: '/projects/edit/$slug'
+      path: '/projects/edit/$slug'
+      fullPath: '/projects/edit/$slug'
+      preLoaderRoute: typeof ProjectsEditSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/manage/': {
@@ -1202,13 +1409,6 @@ declare module '@tanstack/react-router' {
       path: '/projects/manage/$slug'
       fullPath: '/projects/manage/$slug'
       preLoaderRoute: typeof ProjectsManageSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects/edit/$slug': {
-      id: '/projects/edit/$slug'
-      path: '/projects/edit/$slug'
-      fullPath: '/projects/edit/$slug'
-      preLoaderRoute: typeof ProjectsEditSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -1234,8 +1434,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   EvidenceRoute: EvidenceRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  FormsRoute: FormsRoute,
   InvitationsRoute: InvitationsRoute,
   LoginRoute: LoginRoute,
+  NetworkRoute: NetworkRoute,
   OnboardingRoute: OnboardingRoute,
   PartnershipsRoute: PartnershipsRoute,
   PeopleRoute: PeopleRoute,
@@ -1246,6 +1448,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
+  WorkspaceRoute: WorkspaceRoute,
   AccountActivityRoute: AccountActivityRoute,
   AccountNotificationsRoute: AccountNotificationsRoute,
   AccountPreferencesRoute: AccountPreferencesRoute,
@@ -1258,11 +1461,15 @@ const rootRouteChildren: RootRouteChildren = {
   LabsSlugRoute: LabsSlugRoute,
   LeadApplyRoute: LeadApplyRoute,
   MembersIdRoute: MembersIdRoute,
+  MentorshipManageRoute: MentorshipManageRoute,
   NewsletterSlugRoute: NewsletterSlugRoute,
   PapersSlugRoute: PapersSlugRoute,
+  PortfolioProjectIdRoute: PortfolioProjectIdRoute,
   ProgramsSlugRoute: ProgramsSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   ProjectsNewRoute: ProjectsNewRoute,
+  ResearchAtlasSlugRoute: ResearchAtlasSlugRoute,
+  ResearchSlugRoute: ResearchSlugRoute,
   ResearchAnalyzeRoute: ResearchAnalyzeRoute,
   ResearchHighlightsRoute: ResearchHighlightsRoute,
   ResearchSubmitRoute: ResearchSubmitRoute,
@@ -1274,11 +1481,14 @@ const rootRouteChildren: RootRouteChildren = {
   JobsIndexRoute: JobsIndexRoute,
   LabsIndexRoute: LabsIndexRoute,
   MembersIndexRoute: MembersIndexRoute,
+  MentorshipIndexRoute: MentorshipIndexRoute,
   NewsletterIndexRoute: NewsletterIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
+  OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   PapersIndexRoute: PapersIndexRoute,
   ProgramsIndexRoute: ProgramsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
+  ResearchAtlasIndexRoute: ResearchAtlasIndexRoute,
   ResearchIndexRoute: ResearchIndexRoute,
   SavedIndexRoute: SavedIndexRoute,
   SearchIndexRoute: SearchIndexRoute,

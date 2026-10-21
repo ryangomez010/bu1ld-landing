@@ -1,0 +1,314 @@
+[
+  {
+    "project_id": "bu1ld-nexus",
+    "priority": 2,
+    "action": "Review whether the research pipeline applies to this product/archive and record the decision.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "bu1ld-nexus",
+    "priority": 3,
+    "action": "Preserve product release gates separately from scientific checkpoints.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "financemeta",
+    "priority": 2,
+    "action": "Review whether the research pipeline applies to this product/archive and record the decision.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "financemeta",
+    "priority": 3,
+    "action": "Preserve product release gates separately from scientific checkpoints.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "project-genesis",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "project-genesis",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "project-genesis",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "genesis-econ",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "genesis-econ",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "genesis-econ",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "montecarlo",
+    "priority": 2,
+    "action": "Review whether the research pipeline applies to this product/archive and record the decision.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "montecarlo",
+    "priority": 3,
+    "action": "Preserve product release gates separately from scientific checkpoints.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "visualization-scratch",
+    "priority": 1,
+    "action": "Resolve and verify the authoritative source identity before implementation.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "visualization-scratch",
+    "priority": 2,
+    "action": "Define the exact research question, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "olympus",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "olympus",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "olympus",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "vertexed",
+    "priority": 2,
+    "action": "Review whether the research pipeline applies to this product/archive and record the decision.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "vertexed",
+    "priority": 3,
+    "action": "Preserve product release gates separately from scientific checkpoints.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "obscured-records-agent",
+    "priority": 2,
+    "action": "Review whether the research pipeline applies to this product/archive and record the decision.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "obscured-records-agent",
+    "priority": 3,
+    "action": "Preserve product release gates separately from scientific checkpoints.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "pi-jepa",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "pi-jepa",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "pi-jepa",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "apen-pen",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "apen-pen",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "apen-pen",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "ripii-ipii",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "ripii-ipii",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "ripii-ipii",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "eigen-jepa",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "eigen-jepa",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "eigen-jepa",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "eigen-finance",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "eigen-finance",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "eigen-finance",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "lgwm",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "lgwm",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "lgwm",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "esnf",
+    "priority": 1,
+    "action": "Resolve and verify the authoritative source identity before implementation.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "esnf",
+    "priority": 2,
+    "action": "Define the exact research question, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "nfgm",
+    "priority": 1,
+    "action": "Resolve and verify the authoritative source identity before implementation.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "nfgm",
+    "priority": 2,
+    "action": "Define the exact research question, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "npms",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "npms",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "npms",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "atg",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "atg",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "atg",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "neurocad",
+    "priority": 2,
+    "action": "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "neurocad",
+    "priority": 3,
+    "action": "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+    "status": "OPEN"
+  },
+  {
+    "project_id": "neurocad",
+    "priority": 4,
+    "action": "Do not open protected evaluation until Checkpoint 7 is frozen.",
+    "status": "OPEN"
+  }
+]

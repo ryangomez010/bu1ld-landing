@@ -1,0 +1,266 @@
+[
+  {
+    "slug": "ml-confusion-matrix",
+    "title": "Read a Confusion Matrix Before the Headline Score",
+    "description": "Use raw counts to understand which errors a classifier makes.",
+    "level": "Beginner",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Classification"
+    ],
+    "concept": "A confusion matrix cross-tabulates true labels and predicted labels. In binary classification, its four cells count true positives, false positives, false negatives, and true negatives. Those counts reveal the consequences hidden by a single accuracy number. Always state which class is positive and which axis contains predictions: plotting conventions differ. For multiclass problems, rows and columns show which labels the model systematically confuses, suggesting more focused data or feature investigations.",
+    "example": "Suppose a detector produces 18 true positives, 6 false positives, 2 false negatives, and 74 true negatives. Its accuracy is 92%, precision is 18 divided by 24, or 75%, and recall is 18 divided by 20, or 90%. These hypothetical counts describe very different aspects of the same predictions. The review workload is 24 alerts, while two positive cases remain undiscovered. The same counts give specificity 74/(74+6) = 92.5% and F1 = 2×18/(2×18+6+2), approximately 81.8%. Accuracy counts all correct labels; F1 ignores true negatives. If every example were predicted negative, accuracy would still be 80%, but recall of the positive class would fall to zero.",
+    "pitfall": "Normalized confusion matrices can hide small sample sizes. A row showing 100% recall may contain only one example. Also, a confusion matrix corresponds to a specific threshold and population; moving the threshold changes the cells, and changing prevalence changes their expected proportions.",
+    "exercise": "For hypothetical counts TP = 12, FP = 8, FN = 3, and TN = 77, calculate precision, recall, accuracy, and the number of alerts a reviewer receives. Compare that workload with predicting every example negative. Keep the positive class and denominator explicit in every calculation.",
+    "references": [
+      {
+        "label": "scikit-learn: Classification Metrics",
+        "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics"
+      }
+    ],
+    "answer": "Precision is 12/20 = 60%, recall is 12/15 = 80%, and accuracy is 89/100 = 89%. Reviewers receive 20 alerts. An always-negative policy produces no alerts and 85% accuracy but misses all 15 positives. The better action depends on the consequences of missed cases and unnecessary reviews, not accuracy alone."
+  },
+  {
+    "slug": "ml-precision-recall-thresholds",
+    "title": "Precision and Recall Move with the Threshold",
+    "description": "Choose an operating point according to costs or capacity.",
+    "level": "Beginner",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Classification"
+    ],
+    "concept": "Many classifiers produce a score and then apply a threshold to make a decision. With fixed scores and a consistent tie rule, lowering the threshold cannot decrease recall because it cannot remove selected positives. Precision can rise or fall as newly selected examples are added. The model and decision rule are distinct components. Threshold tuning belongs on development data and should reflect intended costs, review capacity, or a minimum performance constraint rather than an arbitrary desire to maximize every metric at once.",
+    "example": "Imagine ten items ranked by risk. A team can review three. Evaluating precision at three tells you how useful that constrained queue is; evaluating recall at three tells you how many of all relevant cases it finds. A threshold selecting seven items may improve recall but exceed the team's capacity. The better operating point depends on what actually happens after a prediction.",
+    "pitfall": "Selecting the threshold on the final test set makes the final score optimistic. A fixed threshold can also select a very different number of examples after a distribution shift. Capacity constraints may call for a ranking policy, with separate treatment for ties and low-confidence cases.",
+    "exercise": "Five items are ranked from highest to lowest score with labels [positive,negative,positive,positive,negative]. Compute precision and recall when reviewing the top two and top four. If capacity is two, identify the feasible policy and explain why lowering a threshold does not guarantee lower precision.",
+    "references": [
+      {
+        "label": "scikit-learn: Tuning the Decision Threshold",
+        "url": "https://scikit-learn.org/stable/modules/classification_threshold.html"
+      }
+    ],
+    "answer": "For ranked labels [positive,negative,positive,positive,negative], reviewing two gives precision 1/2 and recall 1/3. Reviewing four gives precision 3/4 and recall 1: recall rises and precision rises too in this finite example. A capacity of two rules out the larger queue. Choose the threshold or top-k rule on validation data, define ties, and preserve it for testing. Reassess when capacity, prevalence, or calibration changes according to a documented trigger."
+  },
+  {
+    "slug": "ml-roc-pr-curves",
+    "title": "ROC and Precision–Recall Curves Answer Different Questions",
+    "description": "Understand how prevalence changes the interpretation of a ranking curve.",
+    "level": "Intermediate",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Ranking"
+    ],
+    "concept": "A receiver operating characteristic curve plots true-positive rate against false-positive rate as a threshold changes. A precision–recall curve plots precision against recall. ROC views false positives relative to all negatives; precision views them relative to all selected examples. When negatives greatly outnumber positives, a small false-positive rate can still generate many false alarms. Both curves summarize rankings across thresholds, but neither chooses the operational point or directly encodes every application cost.",
+    "example": "Suppose there are 100 positives and 9,900 negatives. At one threshold, recall is 80% and the false-positive rate is 1%. That produces 80 true positives and 99 false positives, so precision is about 45%. The ROC point may appear close to the desired upper-left region while the alert queue still contains more false than true detections. The denominator explains the apparent discrepancy.",
+    "pitfall": "Do not compare precision–recall areas across populations with different prevalence as if the baseline were unchanged. Also distinguish average precision from a trapezoidal area calculation: interpolation choices can yield different values. Report exactly which metric implementation and positive label were used.",
+    "exercise": "Plot both curves for the same predictions and mark the intended operating threshold. Add raw counts at that point and the positive prevalence of the dataset. Explain why a model with the better global area might still be worse in the narrow region your application can actually use.",
+    "references": [
+      {
+        "label": "scikit-learn: Ranking and Classification Metrics",
+        "url": "https://scikit-learn.org/stable/modules/model_evaluation.html"
+      }
+    ],
+    "answer": "At the example’s threshold, TP=80, FN=20, FP=99, and TN=9,801. Thus TPR=80%, FPR=1%, precision=80/179≈44.7%, and review workload is 179 items in a population with 1% positives. Mark this point on both curves. A model with better total area can still have lower precision or recall in the narrow feasible workload region. State whether the summary is average precision or a specified integration rule, and avoid comparing PR summaries across unmatched prevalence without explanation."
+  },
+  {
+    "slug": "ml-regression-metrics",
+    "title": "MAE, RMSE, and R-Squared Tell Different Stories",
+    "description": "Choose regression metrics that preserve units and expose large errors.",
+    "level": "Beginner",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Regression"
+    ],
+    "concept": "Mean absolute error averages absolute residuals, while root mean squared error takes the square root of the average squared residual. Both are expressed in target units, but RMSE places more weight on large errors. R-squared compares squared error with a reference based on the target mean and can be negative on held-out data. None of these metrics alone reveals whether overprediction and underprediction have different consequences or whether one subgroup performs poorly.",
+    "example": "For residuals [1, 1, 4], MAE is 2 and RMSE is the square root of 6, about 2.45. Replacing the final residual with 10 raises MAE to 4 and RMSE to about 5.83. The difference illustrates how a rare large mistake affects each metric. It does not establish that one is universally preferable; the relevant error cost decides that.",
+    "pitfall": "Percentage errors become unstable when true targets approach zero and can be difficult to interpret for negative targets. Averaging errors across targets with different units is also meaningless without a justified normalization. A strong global score can conceal systematic bias at the high end of the target range.",
+    "exercise": "Report MAE and RMSE beside a residual plot for a baseline. Break errors down by meaningful target ranges or sources. Choose a primary metric before model comparison, and state whether it represents average service quality, protection against large misses, or another explicit decision objective.",
+    "references": [
+      {
+        "label": "scikit-learn: Regression Metrics",
+        "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics"
+      }
+    ],
+    "answer": "For residuals [1,1,4], MAE=6/3=2 and RMSE=√(18/3)=√6≈2.45. For [1,1,10], they become 4 and √34≈5.83. All residuals have the same sign here, revealing systematic directional error that either unsigned metric alone hides. Select the primary metric according to the declared cost of large misses, then report residual signs, target-range slices, and counts. R-squared needs the actual targets and can be undefined or convention-dependent when their variance is zero."
+  },
+  {
+    "slug": "ml-calibration",
+    "title": "Calibration Asks Whether Probabilities Mean What They Say",
+    "description": "Separate confident ranking from trustworthy probability estimates.",
+    "level": "Intermediate",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Uncertainty"
+    ],
+    "concept": "A calibrated binary predictor assigns probabilities that agree with observed frequencies across comparable predictions. Among many cases assigned probability near 0.7, roughly 70% should be positive under the evaluated population. Calibration differs from discrimination: a model can rank positives above negatives while systematically exaggerating confidence. Reliability diagrams, proper scoring rules, and subgroup checks reveal different aspects of probability quality. Calibration is always assessed with finite data and can change across populations.",
+    "example": "Imagine two predictors rank every example identically. One assigns probabilities near 0.6 and 0.4, while the other assigns 0.99 and 0.01. Their thresholded classifications may match, but their log losses can differ substantially when confident mistakes occur. A downstream decision using expected costs needs meaningful probabilities, so identical rankings do not make the models interchangeable.",
+    "pitfall": "Binning predictions into a reliability plot introduces choices about bin width and sample size. Sparse bins can look dramatically miscalibrated by chance. Fitting a calibrator on the same data used for final evaluation also biases the assessment. Keep calibration fitting within development data and evaluate it separately.",
+    "exercise": "Ten hypothetical cases each receive probability 0.8; six are positive. Calculate observed frequency and mean Brier score, defined as mean (p−y)². Compare with predicting 0.6 for all ten. Explain why choosing 0.6 from these outcomes and reporting the same batch as a final calibration evaluation would be invalid.",
+    "references": [
+      {
+        "label": "scikit-learn: Probability Calibration",
+        "url": "https://scikit-learn.org/stable/modules/calibration.html"
+      }
+    ],
+    "answer": "Six of ten positives give an observed frequency of 0.6, below the common forecast 0.8. The Brier score is (6×0.2²+4×0.8²)/10=0.28. Assigning 0.6 to these same outcomes gives 0.24, but choosing that value from this batch is fitting, not independent calibration evidence. Ten cases also give a noisy frequency estimate. Use a development partition to fit calibration and separate evaluation data with counts and subgroup checks to assess whether it transfers."
+  },
+  {
+    "slug": "ml-cross-validation",
+    "title": "Cross-Validation Evaluates a Training Procedure",
+    "description": "Keep all learned preprocessing inside each fold.",
+    "level": "Intermediate",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Validation"
+    ],
+    "concept": "Cross-validation repeatedly fits a training procedure on one part of the data and evaluates it on another. In ordinary k-fold validation, each fold serves once as the held-out portion. The result estimates performance under that splitting scheme, not automatically under every deployment condition. Each fold must independently fit all learned preprocessing, feature selection, and model parameters. Grouped and temporal problems require splitters that preserve their corresponding information boundaries.",
+    "example": "Suppose a dataset contains five records per user. Ordinary row-wise folds may place the same user's records in both training and validation, rewarding recognition of user-specific patterns. A grouped split keeps a user's records together and asks a different question: can the procedure generalize to unseen users? Both calculations may be executable, but only one may match the intended product use.",
+    "pitfall": "Cross-validation scores from different folds are not independent repetitions when their training sets overlap. Their standard deviation is useful descriptive information but is not automatically a valid confidence interval for deployment performance. Repeatedly optimizing against the same folds also introduces selection effects.",
+    "exercise": "Build a pipeline containing preprocessing and an estimator, then inspect the group or time boundaries in every fold. Save fold assignments and per-fold scores. State precisely what kind of new example the validation scheme simulates, and identify a deployment condition that the scheme does not test.",
+    "references": [
+      {
+        "label": "scikit-learn: Cross-validation",
+        "url": "https://scikit-learn.org/stable/modules/cross_validation.html"
+      }
+    ],
+    "answer": "For unseen-user generalization, each fold’s training and validation user-ID sets must have empty intersection; all five records from one user travel together. Fit imputation, encoding, scaling, and selection anew inside each training fold. Save fold identities, counts, and scores so the boundary is inspectable. This tests new users from the sampled setting, not necessarily a future-time regime or new organization. Variation across overlapping folds is descriptive and must not be treated as independent-run uncertainty without an appropriate inferential method."
+  },
+  {
+    "slug": "ml-nested-validation",
+    "title": "Nested Validation Separates Tuning from Assessment",
+    "description": "Estimate the performance of model selection rather than the winning configuration alone.",
+    "level": "Advanced",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Model selection"
+    ],
+    "concept": "Hyperparameter search chooses a configuration using validation results. Reporting that same winning validation score as the final estimate ignores the advantage gained by selection. Nested cross-validation adds an outer assessment loop. Within each outer training partition, an inner loop selects the complete pipeline; the selected pipeline is then evaluated on the untouched outer partition. The object being assessed is the model-selection procedure, including its search space and budget.",
+    "example": "With five outer folds and a three-fold inner search over ten configurations, the inner fitting work already involves roughly 150 model fits, plus final fits for outer evaluation. Each outer fold may choose a different configuration. That variation is informative: it shows how the selection process responds to different training samples rather than requiring one universal winner to emerge from every fold.",
+    "pitfall": "Nested validation is expensive and does not repair a fundamentally wrong split. If users or future observations cross boundaries, nesting merely repeats the leakage carefully. It also does not justify expanding the search after seeing favorable outer results without acknowledging that those results influenced development.",
+    "exercise": "Write down the search space and resource budget before running a small nested experiment. Preserve each outer fold's selected configuration and score. Compare the outer estimate with the optimistic inner winner scores, and explain which estimate should support a claim about the procedure on new data.",
+    "references": [
+      {
+        "label": "scikit-learn: Nested versus Non-nested Cross-validation",
+        "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html"
+      }
+    ],
+    "answer": "Five outer folds times three inner folds times ten configurations gives 150 inner fits, plus five refits of each selected pipeline on its outer training partition. Evaluate those five refits only on their respective untouched outer folds. Their scores assess the declared selection procedure; inner winner scores participated in choosing candidates and are optimistic as final estimates. Preserve different winners across folds. Both loops need valid group/time boundaries, and redesigning the procedure after reading outer results turns those results into development evidence."
+  },
+  {
+    "slug": "ml-bootstrap-intervals",
+    "title": "Bootstrap Intervals Need the Right Resampling Unit",
+    "description": "Resample independent units instead of treating every row as independent evidence.",
+    "level": "Intermediate",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Uncertainty"
+    ],
+    "concept": "The bootstrap estimates sampling variation by repeatedly resampling observed units with replacement and recomputing a statistic. It can be useful when an analytic variance calculation is difficult, but its validity depends on the data structure and statistic. The units resampled should correspond to approximately independent pieces of evidence. A bootstrap over test predictions for a fixed trained model estimates a different uncertainty from one that also retrains the model on each resampled training set.",
+    "example": "If a benchmark contains twenty users with fifty events each, independently resampling the thousand events may understate variation across users. Resampling users and retaining each selected user's events preserves more of the dependence structure. For paired model comparisons, use the same resampled units for both models so the difference reflects their behavior on identical sampled cases.",
+    "pitfall": "A narrow interval does not protect against dataset shift, leakage, or systematic annotation bias. With few independent groups, bootstrap distributions can be unstable. Percentile intervals also have limitations for biased estimators and statistics near a boundary, so the interval method should be named explicitly.",
+    "exercise": "Choose a metric difference between two models and bootstrap the correct independent unit. Inspect the resampled distribution rather than only its endpoints. Report the unit, number of independent groups, interval method, and whether training randomness is included; avoid presenting the interval as universal uncertainty about the model.",
+    "references": [
+      {
+        "label": "An Introduction to Statistical Learning: Resampling Methods",
+        "url": "https://www.statlearning.com/"
+      }
+    ],
+    "answer": "In the twenty-user example, draw twenty user IDs with replacement per replicate and include all events for every selected user, preserving repeated selections. Apply the same draw to both models before computing the metric difference. Specify whether the estimand weights users equally or events equally; retaining events does not choose that for you. Name the interval method and report that fixed-prediction resampling excludes retraining uncertainty. Few users, dependence across users, or future shift can limit the interval even when many replicates are computed."
+  },
+  {
+    "slug": "ml-ablation-studies",
+    "title": "Ablations Test a Mechanism, Not Just a Configuration",
+    "description": "Design removals and replacements that distinguish competing explanations.",
+    "level": "Intermediate",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Research process"
+    ],
+    "concept": "An ablation changes a component to investigate what contributes to an observed result. Simply removing a module may alter parameter count, compute, optimization, and information access simultaneously. A stronger design includes controls that separate those explanations. The question should be explicit: is improvement due to a proposed mechanism, additional capacity, a longer training schedule, or a better-tuned baseline? The interpretation of an ablation is limited by the factors that remain uncontrolled.",
+    "example": "Suppose a retrieval module improves document classification. Removing it reduces both external information and computation. Add a control that receives shuffled retrieved documents with the same count and approximate length, and another that receives a simple lexical retrieval result. These controls help distinguish useful retrieval content from changes in context length or processing budget. They still need the same evaluation boundary.",
+    "pitfall": "A component can interact with the rest of the system, so removing it without retuning may create an unfairly broken baseline. On the other hand, giving one variant a much larger tuning budget also confounds the comparison. Record the budget and rationale for every variant.",
+    "exercise": "Write a table with the proposed mechanism, at least two alternative explanations, and one control for each. Specify the metric and minimum relevant effect before evaluation. If the controls perform equally well, report that the experiment does not isolate the mechanism even when the overall system improves.",
+    "references": [
+      {
+        "label": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+        "url": "https://arxiv.org/abs/1907.11692"
+      }
+    ],
+    "answer": "For retrieval, compare the proposed retriever with no retrieval, shuffled matched-length passages, and a credible lexical retriever under declared budgets. Shuffling probes whether useful content matters beyond extra context, while lexical retrieval probes whether the proposed retrieval mechanism beats a simpler alternative. Keep splits, permitted corpus, downstream training rules, and evaluation examples aligned. If lexical retrieval matches the proposed module, evidence may support retrieval generally without isolating the claimed mechanism. Preserve null results and disclose remaining differences in tuning or compute."
+  },
+  {
+    "slug": "ml-permutation-importance",
+    "title": "Permutation Importance Measures Reliance Under a Perturbation",
+    "description": "Interpret feature importance as a model-and-dataset-specific experiment.",
+    "level": "Intermediate",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Interpretability"
+    ],
+    "concept": "Permutation importance measures how a fitted model's score changes when a feature is shuffled across evaluation examples. The shuffle disrupts the relationship between that feature and other information while leaving the model fixed. A large score decrease suggests reliance on that feature under the chosen perturbation and metric. It is not a causal effect, an intrinsic property of the variable, or proof that the feature is necessary for every good model.",
+    "example": "Suppose two columns are nearly identical measurements of the same quantity. Shuffling either alone may produce little change because the model can use the other, or it may create unrealistic combinations that confuse the model. Jointly permuting the pair asks a different question about their combined information. The evaluation dataset and treatment of correlated inputs therefore shape the result.",
+    "pitfall": "Computing importance on training data can reward overfit reliance. Features used by a poor model can receive impressive-looking importance even when the model is not useful. Negative importance can occur through sampling variation or because a feature harms predictions; it should prompt investigation, not automatic storytelling.",
+    "exercise": "First establish held-out predictive quality. Repeat permutations to inspect variability, and compare individual-feature with grouped-feature perturbations where correlation is strong. Describe the exact intervention in the report, and avoid turning a predictive reliance score into a recommendation to manipulate the feature in the real world.",
+    "references": [
+      {
+        "label": "scikit-learn: Permutation Feature Importance",
+        "url": "https://scikit-learn.org/stable/modules/permutation_importance.html"
+      }
+    ],
+    "answer": "Keep the fitted model fixed and measure held-out score change under repeated shuffles. For two correlated columns, compare individual shuffles with a shared row permutation applied to both columns; the latter preserves their within-pair relationship while breaking their alignment with the other data. Report direction, variation, metric, and perturbation unit, respecting groups where required. Low individual importance may reflect redundancy rather than uselessness. Neither experiment estimates the real-world outcome of intervening on the feature, and unrealistic perturbed inputs limit interpretation."
+  },
+  {
+    "slug": "ml-decision-costs",
+    "title": "Choose a Decision Threshold from Explicit Error Costs",
+    "description": "Derive a threshold from calibrated probabilities and distinguish model quality from action quality.",
+    "level": "Intermediate",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Decision theory"
+    ],
+    "concept": "A probability forecast and a decision policy are separate objects. Suppose a false positive costs C_FP, a false negative costs C_FN, and correct decisions cost zero. For an example with calibrated positive probability p, predicting positive has expected cost C_FP(1−p); predicting negative costs C_FN p. Comparing them gives a positive decision when p exceeds C_FP/(C_FP+C_FN). This rule relies on the stated costs and probabilities, and does not include capacity limits or unequal costs across examples.",
+    "example": "In a hypothetical review queue, a false alert costs one unit and a missed relevant item costs four. The threshold is 1/5 = 0.2. For p = 0.3, alerting has expected cost 0.7, while ignoring the item costs 1.2, so the alert is preferred. Accuracy at a default threshold of 0.5 does not answer this decision question.",
+    "pitfall": "An arbitrary model score cannot be substituted for a calibrated probability. Distribution shift can invalidate previous calibration. If reviewers can handle only ten items, a capacity-constrained ranking policy may be necessary instead. Costs should be justified with the people affected by the workflow; convenient numbers are not evidence of actual impact.",
+    "exercise": "Let false positives cost two units and false negatives cost six. Derive the threshold, then compare both decisions for p = 0.2 and p = 0.4. State how you would evaluate a threshold tuned on validation data without using the same observations as the final performance estimate.",
+    "answer": "The threshold is 2/8 = 0.25. At p = 0.2, positive costs 1.6 and negative costs 1.2, so choose negative. At p = 0.4, positive costs 1.2 and negative costs 2.4, so choose positive. Freeze the policy on development data and estimate its cost on an untouched, representative test set.",
+    "references": [
+      {
+        "label": "scikit-learn: Tuning the Decision Threshold",
+        "url": "https://scikit-learn.org/stable/modules/classification_threshold.html"
+      }
+    ]
+  },
+  {
+    "slug": "ml-learning-curves",
+    "title": "Learning Curves Help Decide What to Try Next",
+    "description": "Read training-size experiments without treating every gap as proof that more data will solve the problem.",
+    "level": "Beginner",
+    "track": "Evaluation & reliability",
+    "tags": [
+      "Evaluation",
+      "Learning curves"
+    ],
+    "concept": "A learning curve plots model performance against the amount of training data. Keep the evaluation population and scoring convention consistent while varying the training subset. Plot both training and validation behavior and repeat over appropriate splits or samples. The curve is a diagnostic for the whole training procedure, including optimization and feature preparation. It suggests which intervention deserves a test; it cannot guarantee how performance will extrapolate beyond the observed sizes.",
+    "example": "Imagine training errors of 0.05, 0.08, and 0.10 and validation errors of 0.30, 0.23, and 0.18 at increasing sample sizes. The shrinking gap and improving validation error suggest additional representative data may help. If both errors instead plateau near 0.30, investigate representation, objective, label quality, and optimization. Neither pattern identifies a unique cause without further checks.",
+    "pitfall": "Using more examples while holding the number of gradient updates fixed also changes how often each example is seen. A flattened curve may therefore reflect insufficient optimization. Repeatedly inspecting the protected test set while choosing the next experiment turns it into development data. For grouped observations, subsample whole groups when the evaluation claim requires them.",
+    "exercise": "Design a three-size learning-curve experiment for a dataset with repeated devices. Specify the subsampling unit, validation population, training budget, and error bars. Then interpret training/validation errors of (0.10, 0.12), (0.10, 0.12), and (0.10, 0.12) without claiming a definitive cause.",
+    "answer": "Subsample training devices, keep validation devices separate, and report both examples and groups. Declare whether the budget is steps, epochs, or compute and check optimization adequacy. The flat, small gap suggests that simply adding similar data may offer limited benefit in this range. It does not prove irreducible noise: features or training choices could still be limiting.",
+    "references": [
+      {
+        "label": "scikit-learn: Validation and Learning Curves",
+        "url": "https://scikit-learn.org/stable/modules/learning_curve.html"
+      }
+    ]
+  }
+]

@@ -1,0 +1,266 @@
+[
+  {
+    "slug": "ml-linear-regression",
+    "title": "Linear Regression Is a Strong Diagnostic Tool",
+    "description": "Fit a transparent baseline and learn from the structure of its residuals.",
+    "level": "Beginner",
+    "track": "Supervised models",
+    "tags": [
+      "Regression",
+      "Linear models"
+    ],
+    "concept": "Linear regression predicts a numerical target as a weighted sum of features plus an intercept. Ordinary least squares chooses coefficients that minimize the sum of squared residuals. The model is linear in its coefficients, so engineered polynomial or interaction features can still produce a linear regression model. Its transparency makes it useful for diagnosing whether a feature representation captures the relationship of interest. Prediction quality and causal interpretation remain separate questions.",
+    "example": "Suppose a model predicts build duration from source-file count and dependency count. A positive residual means the actual build took longer than predicted. Plot residuals against predicted duration and each feature. A curved pattern may indicate a missing nonlinear term; increasing residual spread may indicate that error variance grows with build size. These plots suggest follow-up hypotheses rather than automatically proving a particular defect. In a small illustrative one-feature model, predicted minutes = 2 + 0.5×file count. For six files, the prediction is five minutes. If the observed duration is eight, the residual y−prediction is three and its squared contribution is nine. The intercept has units of minutes; the slope has units of minutes per file.",
+    "pitfall": "Correlated inputs can produce unstable individual coefficients even when predictions are reasonably stable. A coefficient is also conditional on the other included features and their units. Reading it as the effect of changing one variable in the real world requires causal assumptions that ordinary predictive fitting does not supply.",
+    "exercise": "For the illustrative model above, predict durations at file counts two and eight. If the observed durations are four and five minutes, calculate both residuals, mean absolute error, and mean squared error. Explain why these two observations cannot establish that adding a file causes a half-minute delay.",
+    "references": [
+      {
+        "label": "scikit-learn: Linear Models",
+        "url": "https://scikit-learn.org/stable/modules/linear_model.html"
+      }
+    ],
+    "answer": "The predictions are three and six minutes, giving residuals +1 and −1. MAE and MSE are both one in their respective units. The slope describes the fitted association, conditional on the chosen variables and data. Causal interpretation needs assumptions about confounding and intervention that this prediction exercise does not supply."
+  },
+  {
+    "slug": "ml-ridge-regression",
+    "title": "Ridge Regression Trades Flexibility for Stability",
+    "description": "Understand coefficient shrinkage and why input units affect the penalty.",
+    "level": "Intermediate",
+    "track": "Supervised models",
+    "tags": [
+      "Regression",
+      "Regularization"
+    ],
+    "concept": "Ridge regression adds a penalty proportional to the sum of squared coefficients to the regression objective. The penalty discourages very large weights and can reduce sensitivity to noisy or correlated inputs. It usually shrinks coefficients continuously rather than setting them exactly to zero. The regularization strength controls the tradeoff between fitting training data and limiting coefficient magnitude. Its numerical meaning depends on the loss normalization and feature scaling used by the implementation.",
+    "example": "Imagine two nearly identical measurements of project size. Ordinary least squares can assign a large positive coefficient to one and a large negative coefficient to the other, producing a fragile cancellation. Ridge can favor a more moderate allocation while retaining similar predictions. Standardizing the two inputs before comparing penalty strengths makes the coefficient penalty easier to interpret, although the scaler must be fitted only on training data.",
+    "pitfall": "A small coefficient does not mean a feature is unimportant in every sense. Scaling, correlation, and interactions affect coefficient size. Do not select a penalty by inspecting the final test score, and do not assume the same numerical strength is comparable across libraries with different objective conventions.",
+    "exercise": "Choose a logarithmic grid of penalty strengths. Evaluate the whole preprocessing-and-regression pipeline with an appropriate validation split. Plot validation error and coefficient norms together, then select a setting using a predeclared rule rather than choosing the prettiest coefficient plot.",
+    "references": [
+      {
+        "label": "scikit-learn: Ridge Regression",
+        "url": "https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression-and-classification"
+      }
+    ],
+    "answer": "Fit the scaler and ridge model independently inside each training fold, score the same validation folds across a logarithmic penalty grid, and save the library’s loss normalization. A predeclared selection rule could minimize mean validation error with a deterministic tie rule favoring the larger penalty. Increasing the penalty generally reduces the fitted coefficient norm for the fixed ridge objective; validation error need not improve monotonically. Compare against the unpenalized or weakly penalized baseline without reopening the final test set."
+  },
+  {
+    "slug": "ml-lasso-feature-selection",
+    "title": "Lasso Selection Is Not a Scientific Discovery Claim",
+    "description": "Use sparse coefficients carefully when predictors overlap.",
+    "level": "Intermediate",
+    "track": "Supervised models",
+    "tags": [
+      "Regression",
+      "Feature selection"
+    ],
+    "concept": "Lasso adds an L1 penalty, the sum of absolute coefficient values, to a regression objective. Its geometry can place some coefficients exactly at zero, producing a sparse model. This is useful when a compact predictor is desirable, but the selected variables depend on the data, scaling, and regularization choice. Among strongly correlated inputs, small changes can alter which representative is retained. Selection by a predictive objective does not establish that a variable is causally necessary.",
+    "example": "Suppose three measurements all approximate project size: line count, file count, and archive size. A lasso fit may retain only line count. Repeating the fit on a different training sample might retain file count instead. Both models could predict similarly because the measurements overlap. A report claiming that file count 'has no effect' from its zero coefficient would therefore go beyond what the fitting procedure establishes.",
+    "pitfall": "Selecting features on the full dataset before cross-validation leaks information into the validation folds. Feature selection must happen within each training fold. Also inspect convergence and scaling; a sparse answer from an inadequately converged optimization is not a reliable feature-selection result.",
+    "exercise": "Fit lasso over a range of strengths and repeat on admissible training resamples. Record how often each feature is selected and how predictions change. Compare with ridge or elastic net when correlated groups dominate, and separate a compact engineering model from any claim about underlying mechanisms.",
+    "references": [
+      {
+        "label": "scikit-learn: Lasso",
+        "url": "https://scikit-learn.org/stable/modules/linear_model.html#lasso"
+      }
+    ],
+    "answer": "Report each feature’s selection frequency across the declared training resamples and the accompanying validation-error distribution. If line count and file count alternate while predictions remain similar, the data support interchangeable predictive proxies rather than a uniquely necessary feature. Fit scaling and selection inside every fold and check convergence. Compare ridge or elastic net on the same partitions and budget. A sparse model may simplify serving, but neither a zero coefficient nor frequent selection identifies a causal mechanism."
+  },
+  {
+    "slug": "ml-logistic-regression",
+    "title": "Logistic Regression Predicts Probabilities from Log-Odds",
+    "description": "Separate a linear score, a probability, and a decision threshold.",
+    "level": "Beginner",
+    "track": "Supervised models",
+    "tags": [
+      "Classification",
+      "Linear models"
+    ],
+    "concept": "Binary logistic regression computes a linear score z = w dot x + b and maps it through the sigmoid function, 1 divided by 1 plus exp(-z). The resulting value models the probability of the positive class under the fitted specification. The linear relationship is in log-odds rather than probability itself. Turning that probability into a class requires a threshold, which is a separate operational choice. Regularization and feature construction remain important even for this simple model.",
+    "example": "A score of zero maps to probability 0.5. A score near 1.386 maps to approximately 0.8 because the odds are four to one. Increasing a feature by one unit multiplies the modeled odds by exp of its coefficient, holding other features fixed. That conditional model interpretation is different from claiming that an intervention on the feature causes the predicted change.",
+    "pitfall": "The default threshold of 0.5 is not automatically suitable for a rare-event detector or a capacity-limited review queue. A good ranking also does not guarantee well-calibrated probabilities. Check calibration and the consequences of false positives and false negatives separately.",
+    "exercise": "Train a regularized logistic baseline, plot its validation precision and recall at several thresholds, and select one using a stated decision cost. Save the feature transformations, coefficients, and threshold together. Then evaluate the frozen pipeline on the held-out population without choosing a new threshold there.",
+    "references": [
+      {
+        "label": "scikit-learn: Logistic Regression",
+        "url": "https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression"
+      }
+    ],
+    "answer": "At score zero, sigmoid gives 0.5; at log(4), it gives 0.8. For calibrated probabilities with false-positive cost one and false-negative cost four, comparing expected costs yields threshold 0.2, not automatically 0.5. Validation should report counts and costs at the chosen threshold and assess calibration under the target prevalence. Save the fitted feature order, coefficients, class mapping, and decision rule together; final-test outcomes assess that frozen choice and must not select a replacement threshold."
+  },
+  {
+    "slug": "ml-nearest-neighbors",
+    "title": "Nearest Neighbors Turns Representation into a Model",
+    "description": "Understand what a distance-based predictor assumes about nearby examples.",
+    "level": "Beginner",
+    "track": "Supervised models",
+    "tags": [
+      "Classification",
+      "Similarity"
+    ],
+    "concept": "A nearest-neighbor predictor finds the training examples closest to a query under a chosen distance. Classification can use their labels to vote; regression can average their targets. The number of neighbors controls how local the estimate is. The method shifts much of the modeling burden to the representation and distance function: nearby points must be meaningfully comparable. It can provide a useful baseline, but prediction cost and storage grow with the reference set unless an indexing strategy is used.",
+    "example": "Consider classifying short documents using normalized embeddings. With k = 3, a query whose nearest labels are research, research, and product receives the research majority vote. Looking at those three documents is an immediate diagnostic: are they actually similar in topic, or do they merely share formatting? Changing the embedding may matter more than changing k from three to five.",
+    "pitfall": "Irrelevant dimensions and inconsistent feature scales can distort distances. Near-duplicate training examples can overwhelm the vote, and including duplicate versions of a test example creates an artificially easy task. In high dimensions, intuitive notions of closeness may also become less informative.",
+    "exercise": "Compare two defensible representations using the same grouped split. Inspect nearest neighbors for correct and incorrect predictions, measure query latency at the intended dataset size, and decide how the system should respond when even the nearest reference examples are far outside the usual distance range.",
+    "references": [
+      {
+        "label": "scikit-learn: Nearest Neighbors",
+        "url": "https://scikit-learn.org/stable/modules/neighbors.html"
+      }
+    ],
+    "answer": "The research/research/product neighborhood votes research for unweighted k=3. A useful audit shows the actual neighbors for a predeclared sample of correct and incorrect predictions, with duplicates and common-source artifacts identified. Compare representations on the same grouped split and measure query cost at the intended reference-set size. Establish an out-of-support distance policy using development data, such as abstaining for review; the nearest item always existing does not mean that it is close enough to justify a prediction."
+  },
+  {
+    "slug": "ml-decision-trees",
+    "title": "Decision Trees Build Predictions from Repeated Questions",
+    "description": "Read splits, leaves, and depth as explicit modeling choices.",
+    "level": "Beginner",
+    "track": "Supervised models",
+    "tags": [
+      "Trees",
+      "Classification"
+    ],
+    "concept": "A decision tree routes each example through a sequence of feature-based questions. At each internal node, a split separates the available training examples; a leaf supplies a prediction. Training typically chooses splits that improve a criterion such as class impurity or squared-error reduction. Depth, minimum leaf size, and pruning limit complexity. The resulting structure can be interpretable when small, but interpretability decreases as paths multiply and thresholds become highly specific.",
+    "example": "A simple triage tree might first ask whether a task is overdue, then whether a dependency is missing. Each leaf estimates outcomes using examples reaching that branch. If a leaf contains only two training records, its apparent precision is fragile. Increasing the minimum number of examples in a leaf trades fine-grained rules for estimates supported by more observations.",
+    "pitfall": "A tree may exploit a source identifier that predicts labels in training but has no stable connection to the task. Feature-importance scores based on training split gains can also favor variables with many candidate split points. Treat the displayed tree as a fitted rule system, not an explanation of causality.",
+    "exercise": "Train shallow trees with several leaf-size constraints. For each leaf, inspect its training count and held-out error. Identify a path that sounds plausible but is weakly supported, then test whether pruning it changes validation quality or merely removes an unreliable story.",
+    "references": [
+      {
+        "label": "scikit-learn: Decision Trees",
+        "url": "https://scikit-learn.org/stable/modules/tree.html"
+      }
+    ],
+    "answer": "A leaf with two training examples, both positive, has apparent training precision 100% from only two cases. It offers little evidence about new examples. For each candidate depth and minimum leaf size, record leaf counts and validation errors, including leaves receiving no validation cases. A pruning comparison uses the same development boundary and reports whether it changes errors or only model size. A plausible-sounding path and a high split-gain importance are not causal explanations or reliable performance estimates."
+  },
+  {
+    "slug": "ml-random-forests",
+    "title": "Random Forests Reduce Dependence Between Trees",
+    "description": "See why an ensemble needs diversity as well as competent members.",
+    "level": "Intermediate",
+    "track": "Supervised models",
+    "tags": [
+      "Trees",
+      "Ensembles"
+    ],
+    "concept": "A random forest combines many decision trees trained with randomized data sampling and feature choices. Averaging can reduce variance when the trees' errors are not perfectly correlated. Random feature subsets encourage different trees to rely on different splits, rather than all repeating the strongest training pattern. Adding trees does not automatically fix systematic bias, label errors, or leakage. The forest still learns from the information and population it receives.",
+    "example": "Imagine twenty trees predicting a numerical outcome. If every tree makes the same error on a new source, averaging leaves that error intact. If their fluctuations around a reasonable prediction differ, averaging can stabilize the result. This distinction explains why feature randomization can help even when each individual tree becomes slightly weaker: lower error correlation can benefit the ensemble.",
+    "pitfall": "Out-of-bag evaluation uses examples omitted from a tree's bootstrap sample, but it does not automatically respect user groups or temporal deployment boundaries. When related rows appear in both an included and omitted sample, the estimate may still be optimistic for genuinely unseen groups.",
+    "exercise": "Compare a single tree and a forest under the same group-aware validation protocol. Measure both prediction error and variability across training resamples. Inspect a failure shared by most trees, and decide whether it points to missing features, a shifted population, or a limitation that adding more trees cannot resolve.",
+    "references": [
+      {
+        "label": "scikit-learn: Random Forests",
+        "url": "https://scikit-learn.org/stable/modules/ensemble.html#random-forests-and-other-randomized-tree-ensembles"
+      }
+    ],
+    "answer": "Compare a tuned tree and forest using identical held-out groups, reporting error and variation across admissible training resamples. Averaging can reduce fluctuating errors but leaves a shared source-specific error intact. If most trees fail on the same source, inspect missing information, labels, and population shift before adding more trees. Out-of-bag scores remain a separate diagnostic: omitting one row from a bootstrap sample does not exclude that row’s user or device from the tree’s training data."
+  },
+  {
+    "slug": "ml-gradient-boosting",
+    "title": "Gradient Boosting Adds Models to Correct Remaining Error",
+    "description": "Understand sequential fitting and the role of learning rate.",
+    "level": "Intermediate",
+    "track": "Supervised models",
+    "tags": [
+      "Trees",
+      "Ensembles"
+    ],
+    "concept": "Gradient boosting constructs an additive predictor in stages. Each new component is fitted to information about how the current predictions should change to reduce the chosen loss. For squared error, this closely resembles fitting residuals. For other losses, the fitting target comes from loss derivatives rather than raw target-minus-prediction differences. Tree depth, learning rate, and number of stages jointly control capacity, so they should not be tuned as unrelated switches.",
+    "example": "Suppose the current predictor outputs 5 for an observation whose target is 8. Under squared error, the remaining residual is 3. A newly fitted tree might predict a correction of 2 for the region containing that observation. With learning rate 0.1, the ensemble adds only 0.2, yielding 5.2. Many modest corrections can be more stable than immediately adding the full fitted adjustment.",
+    "pitfall": "Repeatedly checking the final test set for the best boosting round turns that set into validation data. Very deep trees can also memorize peculiarities that later stages reinforce. Strong tabular performance is a reason to include boosting as a baseline, not a guarantee that it dominates every neural or linear approach.",
+    "exercise": "Tune tree complexity and learning rate using validation data, with a clear stopping rule. Save the selected iteration count. Compare against a regularized linear model, and inspect whether gains occur on important subgroups or mainly on the easiest, most common examples.",
+    "references": [
+      {
+        "label": "scikit-learn: Gradient-boosted Trees",
+        "url": "https://scikit-learn.org/stable/modules/ensemble.html#gradient-boosted-trees"
+      }
+    ],
+    "answer": "The example’s update is 5+0.1×2=5.2, leaving residual 8−5.2=2.8. This is one fitted correction, not an exact step to the target. Select tree complexity, learning rate, and stopping iteration together on development data, then save the chosen iteration count. Compare the frozen ensemble with a tuned linear baseline on identical examples and report slice counts and errors. If only common easy cases improve, an aggregate gain does not establish benefit on the priority subgroup."
+  },
+  {
+    "slug": "ml-support-vector-machines",
+    "title": "Support Vector Machines Focus on the Decision Boundary",
+    "description": "Connect margins, regularization, and kernel similarity.",
+    "level": "Intermediate",
+    "track": "Supervised models",
+    "tags": [
+      "Classification",
+      "Kernels"
+    ],
+    "concept": "A support vector classifier seeks a separating decision function while controlling margin violations. The margin is the distance-related buffer around the boundary in the model's feature space. Regularization balances a wider, simpler boundary against fitting difficult training points. Kernel functions allow the algorithm to use certain implicit feature spaces through pairwise similarities. A kernel is a mathematical modeling choice, not a free route around the need for suitable features and evaluation.",
+    "example": "For two clusters in a two-dimensional plot, many lines may separate the training observations. A maximum-margin construction prefers a boundary with a larger buffer from nearby points. Add one mislabeled observation far into the opposite cluster: a hard insistence on perfect separation can become undesirable. A soft-margin formulation permits violations, controlled by a regularization parameter.",
+    "pitfall": "Kernel models can be sensitive to feature scaling and to kernel parameters. An overly narrow radial basis kernel can isolate training examples and generalize poorly. Some implementations also become expensive as the number of examples grows, so quality should be evaluated alongside fitting and inference costs.",
+    "exercise": "Compare a linear kernel with a radial basis kernel using identical standardized features and validation splits. Tune their regularization fairly. Plot errors by distance to the decision boundary, but remember that the decision score is not automatically a calibrated probability of correctness.",
+    "references": [
+      {
+        "label": "scikit-learn: Support Vector Machines",
+        "url": "https://scikit-learn.org/stable/modules/svm.html"
+      }
+    ],
+    "answer": "Fit standardization inside each training fold, then compare a linear kernel and an RBF kernel with declared searches over C and, for RBF, gamma. Report the scoring rule, fitting cost, inference cost, and important failure slices. Larger gamma makes similarity decay over shorter distances; its useful value is data-dependent. Raw decision scores measure a signed decision-function output, not calibrated probabilities, and their scales need not be comparable across models. Any probability calibration requires its own development and held-out assessment."
+  },
+  {
+    "slug": "ml-naive-bayes",
+    "title": "Naive Bayes Can Work with an Imperfect Independence Assumption",
+    "description": "Use a simple probabilistic classifier while checking its confidence.",
+    "level": "Beginner",
+    "track": "Supervised models",
+    "tags": [
+      "Classification",
+      "Probability"
+    ],
+    "concept": "Naive Bayes combines class priors with feature likelihoods under a conditional-independence assumption. The assumption says that features are independent given the class; it does not say that they are independent overall. Different variants suit different feature types, such as counts, binary indicators, or approximately Gaussian measurements. The model can be a fast, useful baseline even when the assumption is imperfect, but its probability estimates deserve separate scrutiny.",
+    "example": "For document classification, a multinomial model can use word counts. Training estimates how likely each word is within each class, with smoothing to avoid assigning zero probability to an unseen class-word combination. At prediction time, evidence from observed words and the class prior determines a score. In implementation, log probabilities avoid underflow from multiplying many tiny numbers.",
+    "pitfall": "Repeated or correlated features can effectively count similar evidence more than once. A pair such as 'neural' and 'network' is not independent within a topic, so confidence may become exaggerated. Using Gaussian assumptions for raw text counts also mismatches the observation type.",
+    "exercise": "Fit an appropriate naive Bayes variant beside a logistic-regression text baseline. Keep the vocabulary and preprocessing inside the training split. Compare classification quality and probability calibration separately, and inspect a confidently wrong document to identify whether correlated words or an unsuitable likelihood model contributed to the error.",
+    "references": [
+      {
+        "label": "scikit-learn: Naive Bayes",
+        "url": "https://scikit-learn.org/stable/modules/naive_bayes.html"
+      }
+    ],
+    "answer": "A multinomial variant is a defensible word-count baseline; fit its vocabulary and smoothing only on training data, alongside a logistic model with the same information boundary. Compare classification metrics and a proper probability score separately. For a confident error, inspect which class-prior and word-likelihood terms dominate, including repeated correlated phrases. A plausible diagnosis is a hypothesis to test, not proof from one document. Keep the likelihood family tied to the observation type and do not treat confident output as calibrated certainty."
+  },
+  {
+    "slug": "ml-quantile-regression",
+    "title": "Quantile Regression Predicts More Than the Average",
+    "description": "Calculate pinball loss and use conditional quantiles to express asymmetric prediction costs.",
+    "level": "Intermediate",
+    "track": "Supervised models",
+    "tags": [
+      "Regression",
+      "Uncertainty"
+    ],
+    "concept": "A mean prediction minimizes expected squared error, but a planning decision may need a high percentile. Quantile regression estimates a chosen conditional quantile using pinball loss. For residual r = y−q and quantile τ, the loss is τr when r is nonnegative and (τ−1)r otherwise. Underprediction is penalized more heavily when τ is high. The result is a point estimate of a distributional property, not automatically a guaranteed prediction interval.",
+    "example": "Consider a hypothetical 90th-percentile build-time forecast of 12 minutes. If the build takes 15 minutes, r = 3 and loss is 2.7. If it takes nine minutes, r = −3 and loss is 0.3. The same absolute error receives different penalties because underestimating the high quantile is more costly under this objective. A median forecast, τ = 0.5, would assign 1.5 to both cases.",
+    "pitfall": "Separately fitted lower and upper quantiles can cross. Nominal 10th and 90th percentiles do not establish 80% coverage for a misspecified model or shifted deployment population. Check interval ordering, held-out coverage, and width, including relevant slices. A very wide interval can achieve high coverage without being useful.",
+    "exercise": "Using τ = 0.8, compare constant predictions q = 2 and q = 4 for observations 1, 2, and 5. Calculate each residual and total pinball loss. Explain why choosing the larger prediction can improve this objective even when it does not minimize squared error.",
+    "answer": "For q = 2, losses are 0.2, 0, and 2.4, totaling 2.6. For q = 4, they are 0.6, 0.4, and 0.8, totaling 1.8. The latter wins because large positive residuals cost four times as much per unit as negative residuals. This calculation compares two candidates; it does not identify the optimum over all predictions.",
+    "references": [
+      {
+        "label": "scikit-learn: Pinball Loss",
+        "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#pinball-loss"
+      }
+    ]
+  },
+  {
+    "slug": "ml-monotonic-constraints",
+    "title": "Monotonic Constraints Encode a Specific Modeling Assumption",
+    "description": "Understand what increasing-feature constraints guarantee and where they can misrepresent a task.",
+    "level": "Intermediate",
+    "track": "Supervised models",
+    "tags": [
+      "Trees",
+      "Constraints"
+    ],
+    "concept": "A monotonic constraint requires a prediction to move in a specified direction as one feature changes while the others remain fixed. For example, a constrained model may require predicted energy use to be nondecreasing with operating duration. Some tree boosting implementations support these restrictions during fitting. The constraint is a design assumption about the prediction function. It does not prove causality, fairness, or accuracy, and it does not describe what happens when several correlated features change together.",
+    "example": "In a hypothetical two-feature model, hold machine load at 50% and evaluate durations of one, two, and three hours. Predictions of 4, 7, and 6 energy units violate a nondecreasing-duration constraint because the last step falls. Predictions of 4, 7, and 7 satisfy it: equality is allowed. Changing duration while also changing load tests a different comparison and cannot diagnose this one-feature constraint.",
+    "pitfall": "A plausible average relationship need not hold at every fixed combination of inputs. Efficiency regimes, measurement definitions, and interventions can create exceptions. A constraint can hide these exceptions or fit them poorly. Constraints on an internal transformed feature also need interpretation in the original units; they should not be inferred casually from a positive correlation.",
+    "exercise": "For two fixed-load slices, inspect predictions A = [2, 3, 3] and B = [5, 4, 8] over increasing durations. Identify the violation and propose a validation report that compares a constrained and unconstrained model without selecting whichever happens to win on the protected test set.",
+    "answer": "A satisfies nondecreasing order; B violates it between the first two durations. Use development data to compare error, constraint compliance, and relevant operating slices under a fixed tuning budget. Freeze the chosen procedure before final testing. Passing a sampled grid check can detect violations, but it is not itself a proof over every possible input.",
+    "references": [
+      {
+        "label": "scikit-learn: Histogram Gradient Boosting and Monotonic Constraints",
+        "url": "https://scikit-learn.org/stable/modules/ensemble.html"
+      }
+    ]
+  }
+]

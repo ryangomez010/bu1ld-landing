@@ -1,0 +1,268 @@
+[
+  {
+    "slug": "ml-falsifiable-hypotheses",
+    "title": "Turn a Research Idea into a Falsifiable Hypothesis",
+    "description": "Specify the proposed mechanism, comparison, and failure condition before running experiments.",
+    "level": "Intermediate",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Experimental design"
+    ],
+    "concept": "A useful research hypothesis predicts an observable difference under specified conditions and allows evidence to count against it. “This architecture is better” is too broad without a task, baseline, budget, metric, and expected mechanism. A stronger statement explains why a change should help and where it should not. Defining a failure condition before examining outcomes reduces the temptation to reinterpret any result as success. It also distinguishes exploratory investigations from confirmatory tests of a previously fixed claim.",
+    "example": "An illustrative hypothesis might predict that a particular representation improves performance when labels are scarce because it preserves a relevant invariance. A suitable experiment could vary label availability while holding the evaluation set and tuning budget fixed. If the gain appears only with abundant labels, the mechanism-specific prediction is challenged even if one aggregate score improves. For a sharper example, predeclare a two-point accuracy improvement over a tuned baseline at 10% labeled data, with matched compute and five planned runs. Add a mechanism check: the gain should shrink when the proposed invariance is irrelevant. A higher score in an unrelated condition would not substitute for the missing mechanism-specific prediction.",
+    "pitfall": "A post hoc explanation can be valuable for generating the next hypothesis, but it is weaker evidence for the original one. Moving the target metric, excluding difficult seeds, or changing the baseline after seeing results can make a claim difficult to falsify and easy to overstate.",
+    "exercise": "A proposed method claims to help specifically with scarce labels. Hypothetical matched experiments show a −1 percentage-point change at 10% labeled data and +3 points with all labels. Explain which claim is challenged, which exploratory observation remains interesting, and what must be frozen before another confirmatory run.",
+    "references": [
+      {
+        "label": "An Introduction to Statistical Learning",
+        "url": "https://www.statlearning.com/"
+      }
+    ],
+    "answer": "The scarce-label benefit is challenged; the full-label gain does not rescue it. The latter may motivate a new hypothesis about a different mechanism. Retain both outcomes, then predeclare the revised question, comparator, budget, metric, and uncertainty procedure before new protected evaluation. An unexpected positive result remains evidence within its measured scope."
+  },
+  {
+    "slug": "ml-fair-compute-comparisons",
+    "title": "Compare Methods under a Declared Resource Budget",
+    "description": "Include tuning and failed runs when judging whether an improvement is practical or fair.",
+    "level": "Intermediate",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Benchmarks"
+    ],
+    "concept": "A method comparison depends on the resources available to each candidate. Training time, accelerator type, parameter count, tuning trials, data exposure, and inference cost can all influence the result. No single budget is universally correct; the choice should match the claim. A compute-efficient method should be assessed under a compute constraint, while a maximum-quality study may allow different costs but must disclose them. The full search process matters because a selected winner can benefit from many more opportunities than its baseline.",
+    "example": "Suppose an illustrative new model receives 40 tuning trials while a baseline receives two default configurations. A small improvement could reflect search effort rather than a better method. Matching trial counts helps only partially if each trial has very different cost. Reporting both tuning expenditure and final-run cost makes the comparison more interpretable.",
+    "pitfall": "Discarding failed runs understates the practical cost of a fragile method. Hardware differences and implementation quality can also confound wall-clock comparisons. Parameter count alone is a poor substitute for measured training or serving expense, especially when architectures use very different operations or sequence lengths.",
+    "exercise": "Define the resource constraint before running a comparison. Record successful and failed trials, total accelerator time, data exposure, and selection rules. Give the baseline a credible implementation and tuning range. Report a quality-versus-cost view where possible, explaining any budget differences that prevent a clean head-to-head claim.",
+    "references": [
+      {
+        "label": "On the State of the Art of Evaluation in Neural Language Models",
+        "url": "https://arxiv.org/abs/1707.05589"
+      }
+    ],
+    "answer": "Choose a budget tied to the claim, such as a fixed total accelerator-hour allowance including tuning and failed attempts. Save each trial’s hardware, elapsed compute, data exposure, outcome, and selection role; keep final training and inference costs visible separately. Equal trial counts alone are insufficient if trial costs differ. Give the baseline credible preprocessing and tuning. If resources cannot be matched, report the observed quality–cost points and the asymmetry rather than attributing the entire difference to the proposed mechanism."
+  },
+  {
+    "slug": "ml-reproduction-replication",
+    "title": "Reproduction and Independent Replication Provide Different Evidence",
+    "description": "State exactly which artifacts, implementation, and data were reused when checking a result.",
+    "level": "Intermediate",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Reproducibility"
+    ],
+    "concept": "Research communities use reproducibility and replicability terminology differently, so a report should define its terms and describe the actual procedure. Re-running provided code with the original artifacts checks one kind of evidence. Reimplementing a method independently or testing it on independently collected data checks additional assumptions. A successful installation, a completed training loop, and agreement with a published metric are progressively different outcomes. None should be substituted for the others simply because a script exits successfully.",
+    "example": "In an illustrative check, a provided checkpoint may reproduce a reported test score using the original evaluation code. That supports the checkpoint's behavior under that procedure. It does not show that the training recipe reliably produces the checkpoint, nor that an independent implementation obtains the same result. Each additional step addresses a different source of uncertainty.",
+    "pitfall": "Minor numerical differences need interpretation rather than automatic dismissal or overreaction. Missing data versions, undocumented preprocessing, or ambiguous hyperparameters may prevent an exact comparison. Reporting these gaps is more informative than silently filling them with favorable assumptions and calling the result independently verified.",
+    "exercise": "Create an evidence table identifying which code, data, checkpoints, and evaluation tools come from the original authors. State what you executed and what remained unavailable. Compare results using a declared tolerance or uncertainty analysis, and describe the narrowest claim supported by the completed procedure.",
+    "references": [
+      {
+        "label": "ACM SIGSIM PADS: Reproducibility and Artifact Evaluation",
+        "url": "https://sigsim.acm.org/conf/pads/2024/blog/artifact-evaluation/"
+      }
+    ],
+    "answer": "If original code and a supplied checkpoint reproduce the reported score on original data within a declared tolerance, the supported claim is checkpoint/evaluation agreement under that setup. It does not establish that retraining obtains the checkpoint or that an independent implementation succeeds. Record provenance separately for code, data, weights, environment, and evaluation. Mark missing pieces and unsuccessful execution explicitly. An exit code, installation success, or same-host copied-tree run must not be relabeled independent reproduction of the underlying research claim."
+  },
+  {
+    "slug": "ml-negative-results",
+    "title": "A Negative Result Can Still Resolve a Useful Question",
+    "description": "Preserve failed predictions and distinguish absence of evidence from evidence of no useful effect.",
+    "level": "Beginner",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Reporting"
+    ],
+    "concept": "A negative result means an experiment did not support the anticipated claim under the tested conditions. Its usefulness depends on whether the experiment was capable of detecting a relevant effect and whether the implementation, baseline, and evaluation were credible. A noisy or underpowered comparison may remain inconclusive rather than establish equivalence. Recording unsuccessful ideas also helps prevent repeated effort and selective reporting. The goal is to explain what was learned without turning every failure into either a universal rejection or a disguised success.",
+    "example": "Imagine an illustrative method expected to improve a metric by at least two percentage points under a fixed budget. Several runs show differences near zero with wide intervals. The evidence may not support the promised improvement, but wide uncertainty can also prevent a precise claim of no effect. A stronger follow-up might require more runs or a narrower hypothesis, if resources justify it.",
+    "pitfall": "Stopping after an unfavorable seed while continuing favorable experiments creates asymmetric evidence. So does removing unstable runs from the record. Implementation failures, resource stops, and valid but unhelpful outcomes should be distinguished because they answer different questions about the method.",
+    "exercise": "Write a short result record containing the original prediction, executed protocol, observed outcomes, uncertainty, and known limitations. Preserve failed-run receipts and specify whether the conclusion is negative, mixed, or inconclusive. Propose a follow-up only if it addresses a concrete unresolved mechanism rather than merely seeking a favorable score.",
+    "references": [
+      {
+        "label": "A Metric Learning Reality Check",
+        "url": "https://arxiv.org/abs/2003.08505"
+      }
+    ],
+    "answer": "Retain the original two-point prediction, planned runs, executed outcomes, failures, and interval method. An estimate near zero with a wide interval spanning useful benefit and harm is inconclusive about the effect size while failing to support the promised benefit. A narrow valid interval below the useful threshold can more directly rule out that promised size under the tested conditions. Separate a valid negative finding from implementation failure or a resource stop, and propose a follow-up only if it resolves a named uncertainty."
+  },
+  {
+    "slug": "ml-multiple-comparisons",
+    "title": "Repeated Searching Makes a Lucky Winner More Likely",
+    "description": "Understand why the full selection process matters when reporting a best result.",
+    "level": "Intermediate",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Statistics"
+    ],
+    "concept": "Every additional model, seed, metric, subgroup, or preprocessing choice creates another opportunity to find a favorable result by chance. Selecting the best observed score can therefore overstate expected performance, especially when evaluation noise is large. The relevant search space includes informal choices made after inspecting results, not just a formal hyperparameter grid. A sound protocol separates development from final evaluation and accounts for selection when estimating uncertainty or making statistical claims. There is no universal correction that replaces understanding the actual search process.",
+    "example": "Suppose an illustrative researcher tries many variants with similar true performance and reports only the highest validation score. The winner is likely to combine genuine quality with favorable noise. Evaluating the frozen selection on an untouched test set can reduce this optimism, provided that the test result does not then trigger another round of variant selection.",
+    "pitfall": "A seed is not a hyperparameter to optimize for a flattering score. Reporting the best of many seeds while comparing against a baseline average is especially misleading. Repeatedly opening a supposedly final test set also turns it into development feedback, regardless of its filename.",
+    "exercise": "Keep a search log containing candidates, selection metrics, and reasons for follow-up changes. Define the final selection rule before opening the held-out evaluation. Report variability across planned runs and distinguish exploratory subgroup findings from claims tested under a fixed confirmatory protocol.",
+    "references": [
+      {
+        "label": "On Over-fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation",
+        "url": "https://www.jmlr.org/papers/v11/cawley10a.html"
+      }
+    ],
+    "answer": "The log must include failed and abandoned candidates, inspected metrics and slices, planned seeds, and changes inspired by earlier results. Select the complete procedure on development data and freeze it before the untouched evaluation. Report all planned-run outcomes rather than the favored method’s best seed against a baseline mean. Exploratory subgroup findings can motivate a new frozen study but are not independent confirmation. A final holdout reduces selection optimism only while its results do not trigger more selection against the same holdout."
+  },
+  {
+    "slug": "ml-causal-confounding",
+    "title": "Prediction Does Not Identify the Effect of an Intervention",
+    "description": "Separate predicting an outcome from estimating what would happen if a decision changed.",
+    "level": "Intermediate",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Causal inference"
+    ],
+    "concept": "A predictive model estimates patterns in observed data. A causal question asks how an outcome would change under an intervention, which generally requires additional assumptions or an experimental design. Confounding occurs when variables influence both the treatment or decision and the outcome, creating associations that do not directly represent an intervention effect. Adjusting for more variables is not automatically better: some variables may lie downstream of treatment or introduce selection bias. The causal target must be defined before choosing an estimation method.",
+    "example": "In an illustrative education dataset, students receiving tutoring may have lower average scores because tutoring was offered to students who were struggling. A predictive association between tutoring and lower scores does not show that tutoring caused harm. Prior attainment, assignment rules, and other factors affect how the observed comparison should be interpreted.",
+    "pitfall": "High predictive accuracy does not validate a causal effect estimate. Feature importance is also not a measure of what would happen if a feature were changed by policy. Even randomized experiments need careful treatment of adherence, attrition, interference, and the population to which results might generalize.",
+    "exercise": "Write the intervention, outcome, target population, and comparison condition in plain language. Sketch plausible causes of both treatment and outcome, distinguishing variables measured before and after treatment. State the assumptions needed for identification, then determine whether the available data can plausibly support them before fitting an estimator.",
+    "references": [
+      {
+        "label": "Causal Inference: What If",
+        "url": "https://miguelhernan.org/whatifbook"
+      }
+    ],
+    "answer": "For tutoring, define treatment assignment, the alternative, the score measured at a fixed horizon, and the student population. Prior attainment is a plausible pre-treatment cause of both tutoring and later scores; a post-tutoring engagement measure may instead lie on the treatment pathway. Identification from observational adjustment needs assumptions such as no unmeasured relevant confounding, overlap, and a well-defined intervention. If those are implausible, report the association without claiming a causal effect; predictive accuracy does not repair the missing design."
+  },
+  {
+    "slug": "ml-conformal-prediction",
+    "title": "Conformal Prediction Builds Sets with a Defined Coverage Target",
+    "description": "Understand marginal coverage, calibration data, and why distribution shift matters.",
+    "level": "Advanced",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Uncertainty"
+    ],
+    "concept": "Conformal prediction constructs prediction sets or intervals using a model and a calibration procedure. In a common split-conformal setup, a held-out calibration set supplies nonconformity scores whose quantile determines the prediction set. Under suitable exchangeability assumptions, the procedure can provide finite-sample marginal coverage. Marginal means averaged over future examples from the relevant distribution; it does not promise equal coverage for every subgroup or every individual input. The base model still matters because better predictions can produce more informative, narrower sets.",
+    "example": "For an illustrative regression model, calibration scores might be absolute residuals. A suitably chosen residual quantile creates an interval around each future prediction. The quantile calculation includes a finite-sample adjustment rather than simply selecting an arbitrary familiar percentile. A nominal 90 percent coverage target concerns the procedure's coverage under its assumptions, not certainty about a particular interval.",
+    "pitfall": "Using calibration examples to tune the model can compromise the separation the procedure relies on. Time dependence, distribution shift, and subgroup differences also require attention. Very wide intervals may achieve coverage while being operationally unhelpful, so coverage alone is not a sufficient evaluation.",
+    "exercise": "Separate training, calibration, and evaluation data according to the intended sampling assumptions. Implement a supported split-conformal procedure and measure both empirical coverage and interval width. Examine predefined subgroups and shifted data separately, clearly stating where the original coverage guarantee does not directly apply.",
+    "references": [
+      {
+        "label": "A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification",
+        "url": "https://arxiv.org/abs/2107.07511"
+      }
+    ],
+    "answer": "Keep model fitting separate from calibration and choose the finite-sample-adjusted order statistic required by the supported method. For absolute-residual split conformal, k=ceil((n+1)(1−α)); at n=9 and α=0.2, k=8, so use the eighth smallest calibration residual. Evaluate coverage and width on untouched examples and report counts, subgroup results, and shift separately. If k exceeds n, a finite empirical residual cutoff cannot supply this standard guarantee; the conservative construction uses an infinite cutoff. Exchangeability supports marginal coverage, not every-subgroup coverage."
+  },
+  {
+    "slug": "ml-physics-informed-networks",
+    "title": "Physics-Informed Networks Add Equations to the Training Objective",
+    "description": "Distinguish a small equation residual from a validated numerical solution.",
+    "level": "Advanced",
+    "track": "Research practice",
+    "tags": [
+      "Scientific ML",
+      "PINNs"
+    ],
+    "concept": "A physics-informed neural network represents a candidate solution with a neural model and penalizes violations of governing equations, boundary conditions, initial conditions, or observations. Automatic differentiation can compute derivatives needed for the residual. This creates an optimization problem whose loss combines several physical and data constraints. The approach can be useful for certain forward or inverse problems, but successful optimization is not guaranteed. Equation stiffness, sampling, loss scaling, and solution regularity can all affect whether the learned function approximates the desired solution.",
+    "example": "For an illustrative differential equation, a network predicts a scalar function of space and time. Training evaluates the equation residual at selected collocation points and boundary mismatch at designated locations. A small residual on those points shows agreement with sampled constraints. It does not by itself establish low solution error everywhere between points or correct behavior outside the tested domain.",
+    "pitfall": "Comparing a PINN only against an analytic answer on an easy case does not establish an advantage over established numerical solvers. Different loss terms can also compete, allowing the model to satisfy one constraint while neglecting another. Reporting only their combined average can conceal that imbalance.",
+    "exercise": "Choose a problem with a trusted reference solution and explicit boundary conditions. Report solution error separately from equation, boundary, and initial-condition residuals. Compare against a credible numerical baseline under a declared budget, and inspect error across the domain rather than relying on training loss alone.",
+    "references": [
+      {
+        "label": "Physics Informed Deep Learning (Part I): Data-driven Solutions of Nonlinear Partial Differential Equations",
+        "url": "https://arxiv.org/abs/1711.10561"
+      }
+    ],
+    "answer": "Specify the equation, domain, units, boundary/initial conditions, and reference-solver tolerance. Report solution error on an independent evaluation grid alongside equation, boundary, and initial residuals, keeping their units and reductions explicit. A small combined training loss can mask a large boundary error or unsampled-region failure. Give a credible numerical baseline the same problem and declared cost accounting. A synthetic known-solution test verifies behavior on that case; it does not establish superiority on broader physical problems or agreement with physical measurements."
+  },
+  {
+    "slug": "ml-neural-operators",
+    "title": "Neural Operators Learn Mappings between Functions",
+    "description": "Understand why learning a family of solutions differs from fitting one field.",
+    "level": "Advanced",
+    "track": "Research practice",
+    "tags": [
+      "Scientific ML",
+      "Neural operators"
+    ],
+    "concept": "A neural operator aims to learn a mapping from an input function to an output function, such as from a coefficient field to the solution of a differential equation. This differs from training a network to represent one fixed solution. Fourier neural operators use transformations in frequency space as part of their architecture, enabling structured interactions across a discretized field. Claims about generalization across resolutions, parameters, or geometries depend on the architecture, training distribution, discretization, and evaluation protocol rather than the operator label alone.",
+    "example": "In an illustrative family of diffusion problems, each input might specify a spatially varying coefficient and each output the corresponding solution field under fixed boundary conditions. Training requires many paired instances from that family. Predicting a new coefficient field tests instance generalization; evaluating a finer grid or a new parameter regime asks additional questions that should be reported separately.",
+    "pitfall": "A model can interpolate well within its training distribution while failing on sharper features or different boundary conditions. Reference-solver error can also enter the training labels and evaluation. Comparing inference speed without including training cost or specifying amortization assumptions can exaggerate practical benefits.",
+    "exercise": "Define the input and output function spaces, discretizations, parameter ranges, and reference solver tolerances. Hold out complete problem instances and include a clearly separated extrapolation test. Report field error, relevant physical quantities, and computational cost, stating which dimensions of generalization were actually tested.",
+    "references": [
+      {
+        "label": "Fourier Neural Operator for Parametric Partial Differential Equations",
+        "url": "https://arxiv.org/abs/2010.08895"
+      }
+    ],
+    "answer": "Hold out complete coefficient-field/solution pairs rather than grid points from the same instance. Record the function family, domain, boundary conditions, grids, parameter ranges, and solver tolerances. Report within-distribution instance tests separately from new resolutions, parameters, or geometries; success on one axis does not establish the others. Check field error and relevant physical quantities, with reference discretization error acknowledged. Include data-generation/training cost and the number of expected queries when discussing speed: fast inference alone does not prove favorable total cost."
+  },
+  {
+    "slug": "ml-model-cards",
+    "title": "A Model Card Should Describe Evidence and Limits",
+    "description": "Create a useful record of intended use, measured behavior, and unresolved limitations.",
+    "level": "Beginner",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Documentation"
+    ],
+    "concept": "A model card communicates what a model is intended to do, how it was developed and evaluated, and where its use is unsupported or risky. It should identify the model version, relevant data characteristics, evaluation conditions, performance slices, limitations, and operational assumptions. A useful card separates measured findings from design intentions and untested expectations. It is a living evidence record tied to a particular model and release, not a promotional summary that treats every planned capability as established.",
+    "example": "For an illustrative text classifier, the card might state that evaluation used English support tickets from a defined time period and excluded certain sensitive categories. A high aggregate score would not establish performance in other languages or future domains. Listing those boundaries helps downstream users understand what additional validation is necessary for a different application.",
+    "pitfall": "A long checklist can still hide weak evidence if metrics lack sample sizes, split definitions, or artifact links. Unsupported fairness or robustness claims are not made reliable by adding a disclaimer elsewhere. Updating weights without updating the card also breaks the connection between the documented result and the deployed model.",
+    "exercise": "Draft a one-page card for a model you can actually inspect. Link each performance statement to an evaluation artifact and mark unavailable evidence explicitly. Include intended and out-of-scope uses, known failure modes, and version identity, then ask whether a new reader could distinguish verified behavior from an untested plan.",
+    "references": [
+      {
+        "label": "Model Cards for Model Reporting",
+        "url": "https://arxiv.org/abs/1810.03993"
+      }
+    ],
+    "answer": "Every performance sentence should identify a model version, population and dates, split, sample/group counts, metric, and accessible evaluation receipt. Distinguish measured English-ticket behavior from untested languages or future domains. Include preprocessing/threshold versions, intended and unsupported uses, known failure slices, and unavailable evidence. If the weights or pipeline change, the old receipt does not certify the new release. A reader should be able to trace measured claims without interpreting a roadmap, planned audit, or checklist completion as an observed result."
+  },
+  {
+    "slug": "ml-paired-run-comparisons",
+    "title": "Paired Runs Expose the Variation Behind an Average Gain",
+    "description": "Compare methods within matched experimental conditions and retain every planned run.",
+    "level": "Intermediate",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Seeds",
+      "Uncertainty"
+    ],
+    "concept": "A paired comparison evaluates two methods under matched conditions and analyzes the within-pair difference. Pairs might share a data split and a declared randomization plan. This can remove some variation associated with the shared conditions. A numerical seed alone does not guarantee identical randomness across different architectures or code paths. Record what is actually matched, retain all planned runs, and distinguish variation from training randomness from uncertainty about new datasets or populations.",
+    "example": "For hypothetical accuracy pairs, method A scores [0.70,0.80,0.90] and B scores [0.72,0.81,0.91]. The within-pair gains are [0.02,0.01,0.01], averaging about 0.0133, or 1.33 percentage points. Reporting only the best B score, 0.91, against the worst A score, 0.70, would fabricate a 21-point comparison that was never the planned estimand.",
+    "pitfall": "Pairing must be established by the design, not by sorting results afterward to make differences look stable. Multiple seeds on one fixed test set do not create independent test populations. Failed runs require a predeclared treatment; dropping failures only from the favored method changes the question and can bias the comparison.",
+    "exercise": "Given matched scores A = [0.60,0.70,0.80] and B = [0.65,0.68,0.84], compute the three gains and their mean. State whether every run improved. Describe how you would retain a fourth run that failed before producing a score.",
+    "answer": "The gains are [0.05,−0.02,0.04], with mean about 0.0233, or 2.33 percentage points. One run worsened. Retain the failed-run record and apply a predeclared failure policy; do not silently remove it or assign an invented score. Report the observed gains with their scope rather than interpreting a small run set as universal superiority.",
+    "references": [
+      {
+        "label": "On the Influence of Random Seeds in Deep Learning Architectures for Computer Vision",
+        "url": "https://arxiv.org/abs/2109.08203"
+      }
+    ]
+  },
+  {
+    "slug": "ml-practical-effect-size",
+    "title": "Separate a Detectable Difference from a Useful Improvement",
+    "description": "Use an explicit practical threshold and an uncertainty interval to interpret research results.",
+    "level": "Intermediate",
+    "track": "Research practice",
+    "tags": [
+      "Research",
+      "Effect size",
+      "Confidence intervals"
+    ],
+    "concept": "A study can ask whether an effect differs from zero and whether it is large enough to matter. These are different questions. Define a minimum useful improvement in the metric’s units before confirmatory evaluation, including any resource tradeoff. An uncertainty interval around the effect helps distinguish evidence of useful benefit, a small effect, and an unresolved outcome. The interval procedure must match the sampling unit and assumptions; a numerical interval is not automatically trustworthy.",
+    "example": "Suppose a hypothetical improvement is measured in accuracy percentage points and the minimum useful gain is two points. An interval [0.2,0.8] excludes zero but stays below the useful threshold. An interval [−1,4] includes both harm and useful benefit and is inconclusive. An interval [2.5,3.5] lies above the threshold, assuming the design and interval method are valid for the claim.",
+    "pitfall": "Choosing the useful threshold after seeing results invites selective interpretation. Failure to reject a zero effect is not proof of equivalence. A confidence interval also does not assign a frequentist probability to a fixed parameter after observing the data. Repeated optional stopping can invalidate a procedure designed for a fixed sample size.",
+    "exercise": "With a predeclared useful gain of one percentage point, classify intervals [−0.5,0.5], [0.2,1.8], and [1.2,2.0]. Which supports a gain above the threshold, and which remains uncertain about practical benefit? State what would be needed for a formal equivalence claim.",
+    "answer": "Only [1.2,2.0] lies entirely above the useful threshold. [0.2,1.8] suggests a positive effect but leaves practical benefit unresolved. [−0.5,0.5] lies below the useful-gain threshold, yet equivalence needs a predeclared two-sided margin and appropriate inference procedure. These are interpretations of illustrative intervals, not evidence from an executed study.",
+    "references": [
+      {
+        "label": "NIST: Confidence Limits for the Mean",
+        "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm"
+      }
+    ]
+  }
+]

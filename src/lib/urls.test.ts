@@ -14,6 +14,8 @@ describe("url safety", () => {
     expect(isSafeUrl("file:///etc/passwd")).toBe(false);
     expect(isSafeUrl("")).toBe(false);
     expect(isSafeUrl(null)).toBe(false);
+    expect(isSafeUrl("https://")).toBe(false);
+    expect(isSafeUrl("https://user:secret@example.com/path")).toBe(false);
   });
 
   test("safeHref returns trimmed https URLs only", () => {

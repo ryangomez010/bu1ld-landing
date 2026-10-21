@@ -198,7 +198,7 @@ export const PROJECT_TYPE_LABEL: Record<string, string> = {
 export const PROJECT_STATUS_LABEL: Record<string, string> = {
   open: "Recruiting",
   active: "Active",
-  closed: "Completed",
+  closed: "Closed",
 };
 
 export const APPLICATION_STATUS_LABEL: Record<string, string> = {

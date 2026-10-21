@@ -20,9 +20,9 @@ Expected outcome: complete profile, save content, discover relevant papers/proje
 
 ## Active member
 
-Entry points: `/dashboard`, `/projects`, `/saved`, `/applications`, `/notifications`, `/account/*`.
+Entry points: `/dashboard`, `/workspace`, `/projects`, `/saved`, `/applications`, `/notifications`, `/account/*`.
 
-Expected outcome: track applications, contribute to accepted projects, submit evidence, save papers/projects, and manage account settings.
+Expected outcome: track applications, enter durable project workspaces, submit milestone-linked evidence, respond to reviewer notes, export an evidence log, save papers/projects, and manage account settings.
 
 ## Project lead
 
@@ -57,8 +57,9 @@ Current repository supports this as an operator responsibility rather than a pro
   controls.
 - Applicant: can create an account, recover access, complete onboarding, apply
   to a project/programme or lead role, and receive saved status feedback.
-- Member: can search, read, save, join/track work, manage collections, update
-  preferences, and preserve state after sign-out/sign-in.
+- Member: can search, read, save, join/track work, submit or revise evidence in
+  `/workspace`, export provenance-bearing contribution records, manage
+  collections, update preferences, and preserve state after sign-out/sign-in.
 - Project lead: can create/manage owned projects, review applications, manage
   collaboration, and publish updates only within permitted scope.
 - Reviewer/mentor: can review contribution evidence and request revision only

@@ -43,7 +43,7 @@ function LabsIndexPage() {
     <InstitutionLayout
       eyebrow="Research labs"
       title="Where questions become operating systems."
-      description="Each lab owns a problem class, a method stack, and open roles. Projects live inside labs; programs feed talent into them."
+      description="Explore each lab’s questions, methods, and ways to contribute. Published project listings confirm current openings and capacity."
     >
       {loading ? (
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground animate-pulse">
@@ -78,7 +78,7 @@ function LabsIndexPage() {
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{lab.tagline}</p>
               <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.2em] text-bone/50">
-                {lab.open_roles.length} open role types →
+                {lab.open_roles.length} contribution role types →
               </p>
             </Link>
           ))}

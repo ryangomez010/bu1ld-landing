@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -48,6 +48,10 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    rememberPostAuthRedirect(redirect);
+  }, [redirect]);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const blocked = guardAuthAttempt("login", email);
@@ -64,7 +68,9 @@ function LoginForm() {
     }
     toast.success("Welcome back.");
     rememberPostAuthRedirect(redirect);
-    void navigate(postAuthNavigateTarget(redirect));
+    const target = postAuthNavigateTarget(redirect);
+    if ("href" in target) window.location.assign(target.href);
+    else void navigate(target);
   };
 
   const signupSearch = sanitizeAppPath(redirect) ? { redirect: sanitizeAppPath(redirect) } : {};

@@ -33,6 +33,7 @@ Status: **source-level review complete; live verification blocked on owner crede
 - `is_platform_admin()` unifies admin checks (phase25)
 - Project lead checks in UI and RPCs
 - phase32 bans contribution self-review and self-reviewer assignment regardless of role
+- phase34 grants unpublished project reads only through active/paused membership, lead ownership, or platform administration
 
 ### Database security
 
@@ -62,7 +63,7 @@ Status: **source-level review complete; live verification blocked on owner crede
 
 - `release:check` scans for setup copy, TODO, lorem, unsupported claims
 - Blocks `VITE_*` server secrets
-- Requires phase19–32 SQL artifacts
+- Requires every SQL artifact through phase34, including atomic applications and collaborator-scoped unpublished project reads
 - Verifies RPC revoke/grant in phase22
 
 ## Residual risks

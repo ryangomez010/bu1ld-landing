@@ -1,7 +1,7 @@
 import { getAllGuides } from "@/content/guides";
 import { getSupabase } from "@/lib/supabase";
 import { withSeedFallback, isDemoMode } from "@/lib/supabase-fallback";
-import type { Guide } from "@/lib/types";
+import type { GuideSummary } from "@/lib/types";
 import type { Paper } from "@/lib/types";
 
 export type PathStep = { kind: "guide"; slug: string } | { kind: "paper"; slug: string };
@@ -82,7 +82,10 @@ export const RESEARCH_PATHS: ResearchPath[] = [
   },
 ];
 
-export function relatedGuidesForPaper(paper: Paper, guides: Guide[] = getAllGuides()): Guide[] {
+export function relatedGuidesForPaper(
+  paper: Paper,
+  guides: GuideSummary[] = getAllGuides(),
+): GuideSummary[] {
   const tags = new Set(paper.tags.map((t) => t.toLowerCase()));
   return guides
     .map((g) => ({
@@ -113,7 +116,7 @@ export function stepHref(step: PathStep): string {
   return step.kind === "guide" ? `/guides/${step.slug}` : `/papers/${step.slug}`;
 }
 
-export function stepLabel(step: PathStep, guides: Guide[], papers: Paper[]): string {
+export function stepLabel(step: PathStep, guides: GuideSummary[], papers: Paper[]): string {
   if (step.kind === "guide") {
     return guides.find((g) => g.slug === step.slug)?.title ?? step.slug;
   }
@@ -152,7 +155,7 @@ export type ContinueResearch = {
 export function findContinueResearch(
   readPaperSlugs: Set<string>,
   guideProgress: Record<string, number>,
-  guides: Guide[] = getAllGuides(),
+  guides: GuideSummary[] = getAllGuides(),
   papers: Paper[] = [],
   paths: ResearchPath[] = RESEARCH_PATHS,
 ): ContinueResearch | null {

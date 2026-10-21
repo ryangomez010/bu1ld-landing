@@ -1,31 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  BookOpen,
-  Bookmark,
-  Briefcase,
-  Calendar,
-  ClipboardList,
-  FileText,
-  Bell,
-  FolderKanban,
-  GraduationCap,
-  Highlighter,
-  Home,
-  Layers,
-  Library,
-  LogOut,
-  Mail,
-  Menu,
-  Moon,
-  Search,
-  Settings,
-  Shield,
-  SlidersHorizontal,
-  Sun,
-  UserPlus,
-  Users,
-} from "lucide-react";
+import { ChevronDown, LogOut, Menu, Moon, Sun, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { FeedbackButton } from "@/components/member/FeedbackButton";
 import { KeyboardShortcutsDialog } from "@/components/member/KeyboardShortcutsDialog";
@@ -37,39 +13,37 @@ import { PageTransition } from "@/components/member/PageTransition";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { Wordmark } from "@/components/Wordmark";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth";
+import {
+  activeMemberDestination,
+  MEMBER_ACCOUNT_NAV,
+  MEMBER_NAV_GROUPS,
+  memberRoleNavigation,
+} from "@/lib/member-navigation";
 import {
   densityClass,
   fetchMemberPreferences,
   MEMBER_PREFS_CHANGED,
 } from "@/lib/member-preferences";
 import type { ContentDensity, MemberPreferences } from "@/lib/types";
-import { isSupabaseConfigured } from "@/lib/supabase";
 import { getStoredTheme, toggleTheme, type ThemePreference } from "@/lib/theme";
 import { cn } from "@/lib/utils";
-
-const NAV_MAIN = [
-  { to: "/dashboard", label: "Home", icon: Home },
-  { to: "/projects", label: "Projects", icon: FolderKanban },
-  { to: "/applications", label: "Applications", icon: ClipboardList },
-  { to: "/invitations", label: "Invitations", icon: UserPlus },
-  { to: "/saved", label: "Saved", icon: Bookmark },
-  { to: "/saved/collections", label: "Collections", icon: Layers },
-  { to: "/members", label: "Members", icon: Users },
-  { to: "/programs", label: "Programs", icon: GraduationCap },
-] as const;
-
-const NAV_CONTENT = [
-  { to: "/research", label: "Research", icon: Library },
-  { to: "/research/analyze", label: "Analyzer", icon: Search },
-  { to: "/research/highlights", label: "Highlights", icon: Highlighter },
-  { to: "/events", label: "Events", icon: Calendar },
-  { to: "/guides", label: "Guides", icon: BookOpen },
-  { to: "/papers", label: "Papers", icon: FileText },
-  { to: "/newsletter", label: "Newsletter", icon: Mail },
-  { to: "/jobs", label: "Jobs", icon: Briefcase },
-] as const;
 
 export function MemberLayout({
   title,
@@ -85,16 +59,28 @@ export function MemberLayout({
   const [open, setOpen] = useState(false);
   const [contentDensity, setContentDensity] = useState<ContentDensity>("comfortable");
   const [theme, setTheme] = useState<ThemePreference>(() => getStoredTheme());
-  const isAdmin = profile?.role === "admin";
-  const isLead =
-    profile?.role === "project_lead" ||
-    isAdmin ||
-    profile?.institutional_roles?.includes("project_lead");
-  const isReviewer = isAdmin || profile?.institutional_roles?.includes("reviewer");
+  const roleLinks = memberRoleNavigation(profile);
+  const destinations = [
+    ...MEMBER_NAV_GROUPS.flatMap((group) => group.items.map((item) => item.to)),
+    ...MEMBER_ACCOUNT_NAV.map((item) => item.to),
+    ...roleLinks.map((item) => item.to),
+  ];
+  const activeDestination = activeMemberDestination(pathname, destinations);
+  const name = profile?.full_name || "Your account";
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) toast.error(error);
+  };
 
   useEffect(() => {
-    if (!user) return;
-    void fetchMemberPreferences(user.id).then((p) => setContentDensity(p.content_density));
+    let current = true;
+    if (user)
+      void fetchMemberPreferences(user.id).then((p) => {
+        if (current) setContentDensity(p.content_density);
+      });
+    return () => {
+      current = false;
+    };
   }, [user]);
 
   useEffect(() => {
@@ -106,168 +92,54 @@ export function MemberLayout({
     return () => window.removeEventListener(MEMBER_PREFS_CHANGED, onPrefs);
   }, []);
 
-  const maskedEmail = user?.email
-    ? (() => {
-        const [local, domain] = user.email.split("@");
-        if (!domain) return user.email;
-        const shown = local.length <= 2 ? `${local[0] ?? ""}*` : `${local.slice(0, 2)}···`;
-        return `${shown}@${domain}`;
-      })()
-    : null;
-
-  const navClass = (active: boolean) =>
-    cn(
-      "flex items-center gap-3 rounded-sm pl-3 pr-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-200",
-      active
-        ? "nav-active"
-        : "text-muted-foreground hover:text-bone hover:bg-bone/5 border border-transparent",
-    );
-
-  const NavItem = ({
-    to,
-    label,
-    icon: Icon,
-    onNavigate,
-  }: {
-    to: string;
-    label: string;
-    icon: React.ComponentType<{ className?: string }>;
-    onNavigate?: () => void;
-  }) => {
-    const active = pathname === to || (to !== "/dashboard" && pathname.startsWith(to));
-    return (
-      <Link
-        to={to}
-        onClick={onNavigate}
-        aria-current={active ? "page" : undefined}
-        className={navClass(active)}
-      >
-        <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-        {label}
-      </Link>
-    );
-  };
-
-  const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
-    <>
-      <p className="px-3 pt-1 pb-2 font-mono text-[8px] tracking-[0.28em] uppercase text-muted-foreground/70">
-        Dashboard
-      </p>
-      {NAV_MAIN.map((item) => (
-        <NavItem key={item.to} {...item} onNavigate={onNavigate} />
-      ))}
-      <p className="px-3 pt-4 pb-2 font-mono text-[8px] tracking-[0.28em] uppercase text-muted-foreground/70">
-        Learn
-      </p>
-      {NAV_CONTENT.map((item) => (
-        <NavItem key={item.to} {...item} onNavigate={onNavigate} />
-      ))}
-      {isLead ? (
-        <NavItem
-          to="/projects/manage"
-          label="My projects"
-          icon={FolderKanban}
-          onNavigate={onNavigate}
-        />
-      ) : null}
-      {isReviewer ? (
-        <NavItem
-          to="/research/submit"
-          label="Submit analysis"
-          icon={FileText}
-          onNavigate={onNavigate}
-        />
-      ) : null}
-      {isAdmin ? (
-        <Link
-          to="/admin"
-          onClick={onNavigate}
-          aria-current={pathname.startsWith("/admin") ? "page" : undefined}
-          className={cn(
-            navClass(pathname.startsWith("/admin")),
-            pathname.startsWith("/admin") && "border-accent-red/30 bg-accent-red/10",
-          )}
-        >
-          <Shield className="h-4 w-4 shrink-0" aria-hidden />
-          Admin
-        </Link>
-      ) : null}
-    </>
+  const navItem = (
+    {
+      to,
+      label,
+      icon: Icon,
+    }: {
+      to: string;
+      label: string;
+      icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+    },
+    onNavigate?: () => void,
+  ) => (
+    <Link
+      key={to}
+      to={to}
+      onClick={onNavigate}
+      aria-current={activeDestination === to ? "page" : undefined}
+      className={cn(
+        "flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors",
+        activeDestination === to
+          ? "nav-active font-medium"
+          : "border-transparent text-muted-foreground hover:bg-bone/5 hover:text-bone",
+      )}
+    >
+      <Icon className="h-4 w-4 shrink-0" aria-hidden />
+      {label}
+    </Link>
   );
 
-  const UtilityLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
-    <div className="space-y-0.5">
-      <Link
-        to="/search"
-        search={{ q: "" }}
-        onClick={onNavigate}
-        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
-      >
-        <Search className="h-4 w-4" />
-        Search
-      </Link>
-      <Link
-        to="/profile"
-        onClick={onNavigate}
-        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
-      >
-        <Settings className="h-4 w-4" />
-        Profile
-      </Link>
-      <Link
-        to="/account/notifications"
-        onClick={onNavigate}
-        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
-      >
-        <Bell className="h-4 w-4" />
-        Alert settings
-      </Link>
-      <button
-        type="button"
-        onClick={() => {
-          setTheme(toggleTheme());
-        }}
-        className="flex w-full items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
-      >
-        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        {theme === "dark" ? "Light mode" : "Dark mode"}
-      </button>
-      <Link
-        to="/account/preferences"
-        onClick={onNavigate}
-        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
-      >
-        <SlidersHorizontal className="h-4 w-4" />
-        Preferences
-      </Link>
-      <Link
-        to="/account/activity"
-        onClick={onNavigate}
-        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
-      >
-        <ClipboardList className="h-4 w-4" />
-        Submissions
-      </Link>
-      <Link
-        to="/account/security"
-        onClick={onNavigate}
-        className="flex items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
-      >
-        <Shield className="h-4 w-4" />
-        Security
-      </Link>
-      <button
-        type="button"
-        onClick={() => {
-          onNavigate?.();
-          void signOut();
-        }}
-        className="flex w-full items-center gap-3 rounded-sm px-3 py-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-bone hover:bg-bone/5 transition"
-      >
-        <LogOut className="h-4 w-4" />
-        Sign out
-      </button>
-    </div>
+  const navigation = (onNavigate?: () => void) => (
+    <>
+      {MEMBER_NAV_GROUPS.map((group) => (
+        <div key={group.label} className="mb-5 space-y-0.5">
+          <p className="px-3 pb-2 pt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+            {group.label}
+          </p>
+          {group.items.map((item) => navItem(item, onNavigate))}
+        </div>
+      ))}
+      {roleLinks.length > 0 ? (
+        <div className="mb-5 space-y-0.5">
+          <p className="px-3 pb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+            Manage
+          </p>
+          {roleLinks.map((item) => navItem(item, onNavigate))}
+        </div>
+      ) : null}
+    </>
   );
 
   return (
@@ -280,113 +152,174 @@ export function MemberLayout({
       <LiquidBackdrop />
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-sm focus:bg-bone focus:px-3 focus:py-2 focus:font-mono focus:text-[10px] focus:tracking-[0.2em] focus:uppercase focus:text-background"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-bone focus:px-4 focus:py-3 focus:text-background"
       >
         Skip to content
       </a>
       <div className="relative z-10 flex min-h-screen">
-        <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border/40 glass-strong p-4">
-          <Link to="/" className="px-3 py-2 mb-6 block">
+        <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r border-border/40 glass-strong lg:flex">
+          <Link
+            to="/"
+            className="mx-4 mb-2 mt-5 rounded-lg px-3 py-3"
+            aria-label="The Bu1ld public site"
+          >
             <Wordmark className="text-lg" />
+            <span className="mt-2 block font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+              Member portal
+            </span>
           </Link>
-          <nav className="flex flex-col gap-0.5 flex-1 overflow-y-auto pr-1">
-            <NavLinks />
+          <nav
+            aria-label="Member navigation"
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3"
+          >
+            {navigation()}
           </nav>
-          <div className="mt-auto pt-4 border-t border-border/50">
-            <UtilityLinks />
-          </div>
+          <Link
+            to="/profile"
+            className="m-3 flex min-h-14 items-center gap-3 rounded-xl border border-border/50 bg-bone/5 p-3 hover:bg-bone/10"
+          >
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-blue/10 text-accent-blue">
+              <UserRound className="h-4 w-4" aria-hidden />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm text-bone">{name}</span>
+              <span className="text-xs text-muted-foreground">View your profile</span>
+            </span>
+          </Link>
         </aside>
-
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border/40 px-4 py-2.5 glass-strong">
-            <Link to="/dashboard" className="lg:hidden">
-              <Wordmark />
-            </Link>
-            <div className="hidden lg:flex flex-1 items-center max-w-md ml-2">
-              <Link
-                to="/search"
-                search={{ q: "" }}
-                className="panel glass-subtle flex flex-1 items-center justify-between gap-2 rounded-xl px-3 py-2.5 font-mono text-[10px] tracking-[0.12em] uppercase text-muted-foreground hover:text-bone transition"
-              >
-                <span className="flex items-center gap-2">
-                  <Search className="h-3.5 w-3.5" />
-                  Search The Bu1ld…
-                </span>
-                <kbd className="kbd hidden xl:inline">/</kbd>
-              </Link>
-            </div>
-            <div className="flex items-center gap-1 ml-auto">
-              {isSupabaseConfigured ? (
-                <span
-                  className="hidden sm:inline-flex items-center gap-1.5 rounded-sm border border-accent-green/25 bg-accent-green/10 px-2 py-1 font-mono text-[8px] tracking-[0.2em] uppercase text-accent-green"
-                  title="Connected to Supabase"
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="sticky top-0 z-40 flex min-h-16 items-center gap-3 border-b border-border/40 px-4 py-2.5 glass-strong md:px-6">
+            <div className="lg:hidden">
+              <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Open navigation menu">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent
+                  side="left"
+                  className="flex h-dvh w-80 max-w-[90vw] flex-col gap-0 border-border/40 p-0"
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent-green animate-pulse" />
-                  Live
-                </span>
-              ) : null}
-              <FeedbackButton />
-              <NotificationBell />
-              <div className="lg:hidden">
-                <Sheet open={open} onOpenChange={setOpen}>
-                  <SheetTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Open menu"
-                      className="hover:bg-bone/5"
-                    >
-                      <Menu className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="w-72 glass-strong border-border/40 p-0">
-                    <SheetHeader className="border-b border-border/60 px-5 py-4">
-                      <SheetTitle>
-                        <Wordmark />
-                      </SheetTitle>
-                    </SheetHeader>
-                    <nav className="flex flex-col gap-0.5 p-4 overflow-y-auto max-h-[calc(100vh-8rem)]">
-                      <NavLinks onNavigate={() => setOpen(false)} />
+                  <SheetHeader className="shrink-0 border-b border-border/50 px-6 py-5 text-left">
+                    <SheetTitle>
+                      <Wordmark />
+                    </SheetTitle>
+                    <SheetDescription>Find your work, library, and account.</SheetDescription>
+                  </SheetHeader>
+                  <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                    <nav aria-label="Mobile member navigation">
+                      {navigation(() => setOpen(false))}
                     </nav>
-                    <div className="border-t border-border/60 p-4">
-                      <UtilityLinks onNavigate={() => setOpen(false)} />
-                    </div>
-                  </SheetContent>
-                </Sheet>
+                    <nav aria-label="Account navigation" className="border-t border-border/50 pt-4">
+                      <p className="px-3 pb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                        Account
+                      </p>
+                      {MEMBER_ACCOUNT_NAV.map((item) => navItem(item, () => setOpen(false)))}
+                    </nav>
+                    <button
+                      type="button"
+                      onClick={() => setTheme(toggleTheme())}
+                      className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-muted-foreground hover:bg-bone/5 hover:text-bone"
+                    >
+                      {theme === "dark" ? (
+                        <Sun className="h-4 w-4" />
+                      ) : (
+                        <Moon className="h-4 w-4" />
+                      )}
+                      {theme === "dark" ? "Light mode" : "Dark mode"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false);
+                        void handleSignOut();
+                      }}
+                      className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-muted-foreground hover:bg-bone/5 hover:text-bone"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+            <div className="min-w-0 max-w-md flex-1">
+              <MemberCommandPalette />
+            </div>
+            <div className="ml-auto flex shrink-0 items-center gap-1">
+              <div className="hidden sm:block">
+                <FeedbackButton />
               </div>
+              <NotificationBell />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="min-h-11 gap-2 px-2.5"
+                    aria-label="Open account menu"
+                  >
+                    <UserRound className="h-4 w-4" aria-hidden />
+                    <span className="hidden max-w-28 truncate text-sm xl:inline">{name}</span>
+                    <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-60">
+                  <DropdownMenuLabel className="truncate">{name}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {MEMBER_ACCOUNT_NAV.map(({ to, label, icon: Icon }) => (
+                    <DropdownMenuItem key={to} asChild>
+                      <Link to={to}>
+                        <Icon className="mr-2 h-4 w-4" aria-hidden />
+                        {label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={() => setTheme(toggleTheme())}>
+                    {theme === "dark" ? (
+                      <Sun className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Moon className="mr-2 h-4 w-4" />
+                    )}
+                    {theme === "dark" ? "Light mode" : "Dark mode"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => void handleSignOut()}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </header>
-
           <main
             id="main-content"
-            className="flex-1 px-4 py-8 md:px-8 md:py-10 max-w-6xl w-full mx-auto pb-24 lg:pb-10 page-enter"
+            tabIndex={-1}
+            className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-28 outline-none md:px-8 md:py-8 lg:pb-10"
           >
             {title ? (
-              <header className="mb-8 pb-6 glass rounded-2xl px-6 py-6 md:px-8">
+              <header className="mb-8 border-b border-border/40 pb-6">
                 {eyebrow ? (
-                  <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-accent-green relative z-[1]">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent-green">
                     {eyebrow}
                   </p>
                 ) : null}
-                <h1 className="font-display text-3xl md:text-4xl lg:text-[2.75rem] text-bone tracking-tight mt-2 leading-[1.1] relative z-[1]">
+                <h1 className="mt-2 font-display text-3xl leading-tight tracking-tight text-bone md:text-4xl">
                   {title}
                 </h1>
-                <div className="divider-grad mt-5 max-w-xs relative z-[1]" />
               </header>
             ) : null}
             <PageTransition>{children}</PageTransition>
           </main>
-
-          <footer className="border-t border-border/40 px-4 py-3.5 pb-20 lg:pb-3.5 flex flex-wrap items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/80 glass-subtle">
-            {maskedEmail ? <span title={user?.email}>{maskedEmail}</span> : null}
+          <footer className="flex flex-wrap items-center justify-center gap-3 border-t border-border/40 px-4 py-4 pb-28 text-xs text-muted-foreground lg:pb-4">
+            <span>The Bu1ld · member portal</span>
             {profile?.role ? <RoleBadge role={profile.role} /> : null}
-            <span className="text-bone/20">·</span>
-            <span>The Bu1ld · member area</span>
+            <Link to="/" className="underline-offset-4 hover:underline">
+              Public site ↗
+            </Link>
           </footer>
         </div>
       </div>
-      <MobileTabBar onMenu={() => setOpen(true)} />
-      <MemberCommandPalette />
+      <MobileTabBar onMenu={() => setOpen(true)} menuOpen={open} />
       <KeyboardShortcutsDialog />
     </div>
   );

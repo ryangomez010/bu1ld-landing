@@ -44,7 +44,7 @@ export async function buildAttentionItems(
         id: "profile",
         priority: "medium",
         title: `Profile ${completeness.percent}% complete`,
-        body: `Add ${completeness.missing.slice(0, 2).join(", ")} — incomplete profiles rank lower in directory search and give leads less context in application review.`,
+        body: `Add ${completeness.missing.slice(0, 2).join(", ")} so potential teammates and project leads can learn about your work.`,
         href: "/profile",
         cta: "Update profile",
       });
@@ -70,8 +70,8 @@ export async function buildAttentionItems(
     items.push({
       id: "accepted-apps",
       priority: "low",
-      title: `You're on ${accepted.length} project team${accepted.length === 1 ? "" : "s"}`,
-      body: "Check project updates (leads post milestones here), open the member workspace, and join Discord if linked on the project page.",
+      title: `${accepted.length} accepted application${accepted.length === 1 ? "" : "s"}`,
+      body: "Check the project for next steps. Workspace access begins when the project lead adds your membership.",
       href: accepted[0]?.project_slug ? `/projects/${accepted[0].project_slug}` : "/applications",
       cta: "Open project",
     });

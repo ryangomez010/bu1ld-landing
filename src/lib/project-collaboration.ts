@@ -13,6 +13,113 @@ import type {
 
 const toRows = <T>(data: T[] | null): T[] => data ?? [];
 
+export type MemberWorkspaceProject = Pick<
+  Project,
+  "id" | "slug" | "title" | "type" | "status" | "lead_id" | "lead_name" | "updated_at"
+> & {
+  member_role: ProjectMembership["member_role"];
+  membership_status: ProjectMembership["status"];
+  joined_at: string;
+};
+
+export type MemberWorkspaceContribution = ProjectContribution & {
+  project_title: string;
+  project_slug: string;
+  milestone_title: string | null;
+};
+
+export type MemberWorkspaceStats = {
+  total: number;
+  submitted: number;
+  verified: number;
+  needsChanges: number;
+};
+
+export function memberWorkspaceStats(
+  contributions: Pick<ProjectContribution, "verification_status">[],
+): MemberWorkspaceStats {
+  return contributions.reduce<MemberWorkspaceStats>(
+    (stats, contribution) => {
+      stats.total += 1;
+      if (contribution.verification_status === "verified") stats.verified += 1;
+      if (contribution.verification_status === "submitted") stats.submitted += 1;
+      if (contribution.verification_status === "needs_changes") stats.needsChanges += 1;
+      return stats;
+    },
+    { total: 0, submitted: 0, verified: 0, needsChanges: 0 },
+  );
+}
+
+/**
+ * Returns only durable project memberships. Application status is not treated
+ * as access; Supabase RLS remains the final authority for every returned row.
+ */
+export async function fetchMemberWorkspaceProjects(
+  userId: string,
+): Promise<MemberWorkspaceProject[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("project_memberships")
+    .select(
+      "project_id, user_id, member_role, status, joined_at, projects(id, slug, title, type, status, lead_id, lead_name, updated_at)",
+    )
+    .eq("user_id", userId)
+    .in("status", ["active", "paused"])
+    .order("joined_at", { ascending: false });
+  if (error) throw new Error("Project memberships could not be loaded.");
+
+  return (data ?? []).flatMap((row) => {
+    const record = row as unknown as Record<string, unknown>;
+    const joined = record.projects as Record<string, unknown> | null;
+    if (!joined?.id || !joined.slug || !joined.title) return [];
+    return [
+      {
+        id: String(joined.id),
+        slug: String(joined.slug),
+        title: String(joined.title),
+        type: joined.type as Project["type"],
+        status: joined.status as Project["status"],
+        lead_id: joined.lead_id ? String(joined.lead_id) : null,
+        lead_name: joined.lead_name ? String(joined.lead_name) : null,
+        updated_at: String(joined.updated_at ?? record.joined_at),
+        member_role: record.member_role as ProjectMembership["member_role"],
+        membership_status: record.status as ProjectMembership["status"],
+        joined_at: String(record.joined_at),
+      },
+    ];
+  });
+}
+
+/** Fetches the signed-in member's own evidence log with display-only joins. */
+export async function fetchMemberWorkspaceContributions(
+  userId: string,
+): Promise<MemberWorkspaceContribution[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("project_contributions")
+    .select("*, projects(title, slug), project_milestones(title)")
+    .eq("contributor_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error("Contribution records could not be loaded.");
+
+  return (data ?? []).flatMap((row) => {
+    const record = row as unknown as Record<string, unknown>;
+    const project = record.projects as Record<string, unknown> | null;
+    const milestone = record.project_milestones as Record<string, unknown> | null;
+    if (!project?.title || !project.slug) return [];
+    return [
+      {
+        ...(record as unknown as ProjectContribution),
+        project_title: String(project.title),
+        project_slug: String(project.slug),
+        milestone_title: milestone?.title ? String(milestone.title) : null,
+      },
+    ];
+  });
+}
+
 export type PublicProjectOutput =
   | {
       kind: "milestone";
@@ -30,9 +137,16 @@ export type PublicProjectOutput =
  * though RLS also limits anonymous readers, preventing authenticated visitors
  * from seeing team-only or unverified rows through this public surface.
  */
-export async function fetchPublicProjectOutputs(limit = 24): Promise<PublicProjectOutput[]> {
+export async function fetchPublicProjectOutputs(
+  limit = 24,
+  options: { throwOnUnavailable?: boolean } = {},
+): Promise<PublicProjectOutput[]> {
   const supabase = getSupabase();
-  if (!supabase) return [];
+  if (!supabase) {
+    if (options.throwOnUnavailable)
+      throw new Error("Public project outputs are temporarily unavailable.");
+    return [];
+  }
 
   const [milestoneResult, contributionResult] = await Promise.all([
     supabase
@@ -41,16 +155,21 @@ export async function fetchPublicProjectOutputs(limit = 24): Promise<PublicProje
       .eq("visibility", "public")
       .eq("status", "completed")
       .order("completed_at", { ascending: false })
-      .limit(limit),
+      .limit(limit)
+      .abortSignal(AbortSignal.timeout(8_000)),
     supabase
       .from("project_contributions")
       .select("*")
       .eq("visibility", "public")
       .eq("verification_status", "verified")
       .order("verified_at", { ascending: false })
-      .limit(limit),
+      .limit(limit)
+      .abortSignal(AbortSignal.timeout(8_000)),
   ]);
 
+  if (options.throwOnUnavailable && (milestoneResult.error || contributionResult.error)) {
+    throw new Error("Public project outputs could not be loaded completely.");
+  }
   const milestones = milestoneResult.error ? [] : toRows(milestoneResult.data);
   const contributions = contributionResult.error ? [] : toRows(contributionResult.data);
   const projectIds = [...new Set([...milestones, ...contributions].map((row) => row.project_id))];
@@ -60,8 +179,13 @@ export async function fetchPublicProjectOutputs(limit = 24): Promise<PublicProje
     .from("projects")
     .select("id, slug, title, type")
     .in("id", projectIds)
-    .eq("published", true);
-  if (projectsError || !projects) return [];
+    .eq("published", true)
+    .abortSignal(AbortSignal.timeout(8_000));
+  if (projectsError || !projects) {
+    if (options.throwOnUnavailable)
+      throw new Error("The projects for these outputs could not be loaded.");
+    return [];
+  }
 
   const projectMap = new Map(
     projects.map((project) => [

@@ -33,7 +33,11 @@ function AnnouncementHref({ href }: { href: string }) {
     return (
       <button
         type="button"
-        onClick={() => void navigate(postAuthNavigateTarget(appPath))}
+        onClick={() => {
+          const target = postAuthNavigateTarget(appPath);
+          if ("href" in target) window.location.assign(target.href);
+          else void navigate(target);
+        }}
         className="mt-4 inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-accent-blue hover:text-bone"
       >
         Open →

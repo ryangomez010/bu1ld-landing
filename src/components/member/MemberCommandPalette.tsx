@@ -1,22 +1,15 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import {
-  Bell,
-  BookOpen,
-  Calendar,
-  ClipboardList,
-  FolderKanban,
-  GraduationCap,
-  Home,
-  Library,
-  Search,
-  Settings,
-  Shield,
-  SlidersHorizontal,
-  Users,
-} from "lucide-react";
+import { Search } from "lucide-react";
 
 import { searchLink } from "@/lib/app-paths";
+import { useAuth } from "@/lib/auth";
+import {
+  MEMBER_ACCOUNT_NAV,
+  MEMBER_NAV_GROUPS,
+  MEMBER_SHORTCUT_NAV,
+  memberRoleNavigation,
+} from "@/lib/member-navigation";
 import {
   CommandDialog,
   CommandEmpty,
@@ -27,29 +20,17 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 
-const NAV = [
-  { to: "/dashboard", label: "Home", icon: Home },
-  { to: "/research", label: "Research library", icon: Library },
-  { to: "/papers", label: "Paper reviews", icon: BookOpen },
-  { to: "/guides", label: "Guides", icon: GraduationCap },
-  { to: "/projects", label: "Projects", icon: FolderKanban },
-  { to: "/programs", label: "Programs", icon: GraduationCap },
-  { to: "/events", label: "Events", icon: Calendar },
-  { to: "/announcements", label: "Announcements", icon: Bell },
-  { to: "/members", label: "Member directory", icon: Users },
-  { to: "/search", label: "Search", icon: Search },
-  { to: "/profile", label: "Profile & export", icon: Settings },
-  { to: "/account/security", label: "Account security", icon: Shield },
-  { to: "/account/notifications", label: "Notification prefs", icon: Bell },
-  { to: "/account/preferences", label: "Preferences", icon: SlidersHorizontal },
-  { to: "/account/activity", label: "Your submissions", icon: ClipboardList },
-  { to: "/jobs/tracker", label: "Job tracker", icon: FolderKanban },
-  { to: "/saved/collections", label: "Research collections", icon: BookOpen },
-] as const;
-
 export function MemberCommandPalette() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const groups = [
+    ...MEMBER_NAV_GROUPS,
+    { label: "Updates & tracking", items: MEMBER_SHORTCUT_NAV },
+    { label: "Account", items: MEMBER_ACCOUNT_NAV },
+    { label: "Manage", items: memberRoleNavigation(profile) },
+  ];
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -63,36 +44,68 @@ export function MemberCommandPalette() {
   }, []);
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Go to dashboard, papers, profile, job tracker…" />
+    <CommandDialog
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value);
+        if (!value) setQuery("");
+      }}
+      trigger={
+        <button
+          type="button"
+          className="flex min-h-11 w-full items-center gap-2 rounded-xl border border-border/50 bg-bone/5 px-3 text-left text-sm text-muted-foreground transition hover:border-bone/30 hover:text-bone"
+          aria-label="Jump to a page or search"
+        >
+          <Search className="h-4 w-4 shrink-0" aria-hidden />
+          <span className="flex-1 truncate">Jump to…</span>
+          <kbd className="kbd hidden sm:inline">⌘ / Ctrl K</kbd>
+        </button>
+      }
+    >
+      <CommandInput
+        value={query}
+        onValueChange={setQuery}
+        placeholder="Find a page, or search the portal…"
+      />
       <CommandList>
-        <CommandEmpty>No matches.</CommandEmpty>
-        <CommandGroup heading="Navigate">
-          {NAV.map(({ to, label, icon: Icon }) => (
-            <CommandItem
-              key={to}
-              value={label}
-              onSelect={() => {
-                setOpen(false);
-                void navigate(to === "/search" ? searchLink() : { to });
-              }}
-            >
-              <Icon className="mr-2 h-4 w-4 text-muted-foreground" />
-              {label}
-            </CommandItem>
+        <CommandEmpty>No pages match. Try searching the portal below.</CommandEmpty>
+        {groups
+          .filter((group) => group.items.length)
+          .map((group) => (
+            <CommandGroup key={group.label} heading={group.label}>
+              {group.items.map(({ to, label, icon: Icon }) => (
+                <CommandItem
+                  key={to}
+                  value={`${label} ${to}`}
+                  onSelect={() => {
+                    setOpen(false);
+                    setQuery("");
+                    void navigate({ to });
+                  }}
+                >
+                  <Icon className="mr-2 h-4 w-4 text-muted-foreground" aria-hidden />
+                  {label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
           ))}
-        </CommandGroup>
-        <CommandGroup heading="Search">
+        <CommandGroup heading="Search the portal" forceMount>
           <CommandItem
+            forceMount
             value="search portal"
             onSelect={() => {
               setOpen(false);
-              void navigate(searchLink());
+              void navigate(searchLink(query.trim()));
+              setQuery("");
             }}
           >
-            <Search className="mr-2 h-4 w-4 text-muted-foreground" />
-            Open search
-            <CommandShortcut>/</CommandShortcut>
+            <Search className="mr-2 h-4 w-4 text-muted-foreground" aria-hidden />
+            <span className="min-w-0 truncate">
+              {query.trim()
+                ? `Search for “${query.trim()}”`
+                : "Search projects, papers, and people"}
+            </span>
+            <CommandShortcut>↵</CommandShortcut>
           </CommandItem>
         </CommandGroup>
       </CommandList>

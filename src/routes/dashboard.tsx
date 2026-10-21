@@ -11,16 +11,16 @@ import {
 
 import { RequireMember } from "@/components/auth/RequireAuth";
 import { DashboardHero } from "@/components/member/DashboardHero";
-import { ProfileCompletenessMeter } from "@/components/member/ProfileCompletenessMeter";
 import { WatchedProjectsPanel } from "@/components/member/WatchedProjectsPanel";
 import { YourWeekSection } from "@/components/member/YourWeekSection";
 import { ResearchContinueCard } from "@/components/member/ResearchContinueCard";
 import { TodayFocus } from "@/components/member/TodayFocus";
-import { AttentionPanel } from "@/components/member/AttentionPanel";
 import { CollectionsStrip } from "@/components/member/CollectionsStrip";
 import { ContinueReadingStrip } from "@/components/member/ContinueReadingStrip";
 import { DigestPreviewCard } from "@/components/member/DigestPreviewCard";
 import { EngagementSummaryPanel } from "@/components/member/EngagementSummary";
+import { EmptyState } from "@/components/member/ContentCard";
+import { Button } from "@/components/ui/button";
 import { FeedCard } from "@/components/member/FeedCard";
 import { LoadingState } from "@/components/member/LoadingState";
 import { MetricCard } from "@/components/member/MetricCard";
@@ -28,7 +28,6 @@ import { OnboardingChecklist } from "@/components/member/OnboardingChecklist";
 import { StaggerItem, StaggerList } from "@/components/member/PageTransition";
 import { ReadingHeatmap } from "@/components/member/ReadingHeatmap";
 import { ReadingStreakWidget } from "@/components/member/ReadingStreakWidget";
-import { QuickActions } from "@/components/member/QuickActions";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { SectionHeader } from "@/components/member/SectionHeader";
@@ -49,7 +48,7 @@ import { fetchSavedItems, savedItemHref } from "@/lib/saved";
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
   head: () => ({
-    meta: [{ title: "Dashboard — The Bu1ld" }],
+    meta: [{ title: "Dashboard — The Bu1ld" }, { name: "robots", content: "noindex, nofollow" }],
   }),
 });
 
@@ -67,7 +66,6 @@ function DashboardPage() {
 function DashboardHome() {
   const { user, profile, emailVerified } = useAuth();
   const catalogQuery = useDashboardCatalogQuery();
-  const loading = catalogQuery.isLoading;
   const events = catalogQuery.data?.events ?? [];
   const papers = catalogQuery.data?.papers ?? [];
   const newsletters = catalogQuery.data?.newsletters ?? [];
@@ -75,6 +73,8 @@ function DashboardHome() {
   const internalJobs = catalogQuery.data?.internalJobs ?? [];
   const announcements = catalogQuery.data?.announcements ?? [];
   const memberQuery = useDashboardMemberQuery(user?.id, profile, events);
+  const loading = catalogQuery.isLoading || memberQuery.isLoading;
+  const dashboardError = catalogQuery.isError || memberQuery.isError;
   const guideProgress = memberQuery.data?.guideProgress ?? {};
   const myApplications = memberQuery.data?.myApplications ?? EMPTY_APPLICATIONS;
   const activity = memberQuery.data?.activity ?? [];
@@ -103,11 +103,8 @@ function DashboardHome() {
   }, [user, profile?.interests, myApplications, forYouKey]);
 
   const displayName = profile?.full_name || user?.email || "Member";
-  const hubBio = profile?.bio?.trim()
-    ? profile.bio
-    : profile?.interests?.length
-      ? `Interests set to ${profile.interests.slice(0, 3).join(", ")}${profile.interests.length > 3 ? ` +${profile.interests.length - 3} more` : ""}. Your For You feed, digest, and directory matches are ranked from these tags.`
-      : "Your dashboard — open projects, paper reviews, reading paths, event deadlines, and saved collections. Add interests in your profile to rank the For You feed.";
+  const hubBio =
+    "Pick up your project work, respond to reviews, or find your next research thread. Everything you need to keep building, in one place.";
   const guides = getAllGuides();
   const completeness = profileCompleteness(profile);
 
@@ -166,8 +163,40 @@ function DashboardHome() {
 
       {loading ? (
         <LoadingState label="Loading dashboard…" />
+      ) : dashboardError ? (
+        <EmptyState
+          title="Your dashboard couldn't load"
+          body="Try again to see your latest member activity. You can still use the menu to open your projects and workspace."
+          action={
+            <Button
+              variant="outline"
+              onClick={() => {
+                void catalogQuery.refetch();
+                void memberQuery.refetch();
+              }}
+            >
+              Retry dashboard
+            </Button>
+          }
+        />
       ) : (
         <>
+          <TodayFocus items={attention} />
+
+          {user && profile ? (
+            <OnboardingChecklist
+              userId={user.id}
+              progress={{
+                profileComplete: !!profile.onboarding_completed && completeness.percent >= 80,
+                hasApplicationOrSave: myApplications.length > 0 || savedItems.length > 0,
+                hasReadGuide: Object.values(guideProgress).some((p) => p >= 95),
+                hasVerifiedEmail: emailVerified,
+                hasSetInterests: (profile.interests?.length ?? 0) > 0,
+                continueGuideHref: continueGuide ? `/guides/${continueGuide.slug}` : undefined,
+              }}
+            />
+          ) : null}
+
           <section className="section-gap grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
             <MetricCard
               label="Open projects"
@@ -205,13 +234,6 @@ function DashboardHome() {
             />
           </section>
 
-          {user ? (
-            <div className="section-gap grid gap-4 lg:grid-cols-2">
-              <ReadingStreakWidget userId={user.id} className="h-full" />
-              <ReadingHeatmap userId={user.id} />
-            </div>
-          ) : null}
-
           <YourWeekSection
             events={events}
             papers={papers}
@@ -221,31 +243,11 @@ function DashboardHome() {
             papersReadThisWeek={papersThisWeek}
           />
 
-          {completeness.percent < 100 ? (
-            <section className="section-gap">
-              <ProfileCompletenessMeter
-                percent={completeness.percent}
-                steps={completeness.steps}
-                compact
-              />
-            </section>
-          ) : null}
-
           {user ? <WatchedProjectsPanel userId={user.id} /> : null}
 
           {user ? <CollectionsStrip userId={user.id} /> : null}
 
-          <DigestPreviewCard />
-
-          <TodayFocus items={attention} />
-
           {user ? <ResearchContinueCard userId={user.id} /> : null}
-
-          <AttentionPanel items={attention} />
-
-          <QuickActions />
-
-          {engagement ? <EngagementSummaryPanel stats={engagement} /> : null}
 
           <ContinueReadingStrip views={recentViews} />
 
@@ -274,41 +276,6 @@ function DashboardHome() {
                 ))}
               </div>
             </section>
-          ) : null}
-
-          {user && profile ? (
-            <OnboardingChecklist
-              userId={user.id}
-              progress={{
-                profileComplete: !!profile.onboarding_completed && completeness.percent >= 80,
-                hasApplicationOrSave: myApplications.length > 0 || savedItems.length > 0,
-                hasReadGuide: Object.values(guideProgress).some((p) => p >= 95),
-                hasVerifiedEmail: emailVerified,
-                hasSetInterests: (profile.interests?.length ?? 0) > 0,
-                continueGuideHref: continueGuide ? `/guides/${continueGuide.slug}` : undefined,
-              }}
-            />
-          ) : null}
-
-          {!profile?.onboarding_completed || completeness.percent < 100 ? (
-            <div className="mb-8 rounded-xl border border-border/50 panel glass px-5 py-4 flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue">
-                  {!profile?.onboarding_completed ? "Onboarding" : "Profile depth"}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xl leading-relaxed">
-                  {!profile?.onboarding_completed
-                    ? "Complete onboarding so project leads see your background, interests, and links when you apply."
-                    : `Profile is ${completeness.percent}% complete — still missing ${completeness.missing.slice(0, 3).join(", ")}${completeness.missing.length > 3 ? "…" : ""}. Project leads and the member directory weight complete profiles higher in search and application review.`}
-                </p>
-              </div>
-              <Link
-                to={!profile?.onboarding_completed ? "/onboarding" : "/profile"}
-                className="font-mono text-[10px] tracking-[0.25em] uppercase text-accent-blue hover:text-bone shrink-0"
-              >
-                {!profile?.onboarding_completed ? "Complete onboarding →" : "Finish profile →"}
-              </Link>
-            </div>
           ) : null}
 
           {pinned ? (
@@ -536,6 +503,25 @@ function DashboardHome() {
             </section>
           ) : null}
 
+          <details className="section-gap rounded-xl border border-border/50 bg-bone/[0.02] p-5">
+            <summary className="cursor-pointer rounded-lg text-sm font-medium text-bone">
+              Reading activity & weekly progress
+              <span className="mt-1 block text-xs font-normal text-muted-foreground">
+                Your reading history, streak, and digest
+              </span>
+            </summary>
+            <div className="mt-5">
+              {user ? (
+                <div className="section-gap grid gap-4 lg:grid-cols-2">
+                  <ReadingStreakWidget userId={user.id} className="h-full" />
+                  <ReadingHeatmap userId={user.id} />
+                </div>
+              ) : null}
+              {engagement ? <EngagementSummaryPanel stats={engagement} /> : null}
+              <DigestPreviewCard />
+            </div>
+          </details>
+
           {activity.length > 0 ? (
             <section className="section-gap">
               <SectionHeader
@@ -631,7 +617,7 @@ function DashboardHome() {
                     ? `${myApplications.length} application${myApplications.length !== 1 ? "s" : ""} — latest: ${myApplications[0].status}.`
                     : "Join a research thread, startup build, or program cohort — pitch required."
                 }
-                to="/applications"
+                to={myApplications.length ? "/applications" : "/projects"}
                 cta={myApplications.length ? "Track applications →" : "Browse projects →"}
               />
             </StaggerItem>

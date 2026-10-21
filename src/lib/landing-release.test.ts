@@ -17,12 +17,36 @@ describe("public landing release", () => {
     expect(hero).toContain('to="/projects"');
     expect(hero).toContain("Find a project");
     expect(hero).toContain('to="/evidence"');
-    expect(hero).toContain("recruiting, active, or completed");
+    expect(hero).toContain("recruiting, active, or closed");
     expect(hero).not.toContain("experimental");
-    expect(header).toContain('to="/projects"');
-    expect(header).toContain("Find a project");
+    expect(header).toContain('to="/apply"');
+    expect(header).toContain("Apply");
     expect(contact).toContain('to="/projects"');
     expect(contact).toContain("Find a project");
+  });
+
+  test("keeps public reading and account-only actions unambiguous", () => {
+    const hero = read("src/components/landing/HeroSection.tsx");
+    const membership = read("src/components/landing/MembershipSection.tsx");
+    const landingData = read("src/data/landing.ts");
+    expect(hero).toContain("Public library · read without an account");
+    expect(membership).toContain("Reading paths are public");
+    expect(membership).toContain("An account is required to save progress");
+    expect(landingData).toContain("Open the public library");
+    expect(membership).not.toContain("Guides and contribution tools require an account");
+  });
+
+  test("exposes a concise in-page journey with real section targets", () => {
+    const route = read("src/routes/index.tsx");
+    const nav = read("src/components/landing/LandingSectionNav.tsx");
+    const data = read("src/data/landing.ts");
+    const projects = read("src/components/landing/FeaturedProjectsSection.tsx");
+    expect(route.indexOf("<LandingSectionNav />")).toBeGreaterThan(
+      route.indexOf("<HeroSection />"),
+    );
+    expect(nav).toContain('aria-label="Explore this page"');
+    expect(data).toContain('["Open work", "active-work"]');
+    expect(projects).toContain('id="active-work"');
   });
 
   test("keeps private member routes out of crawling and auth pages out of the sitemap", () => {
@@ -32,8 +56,10 @@ describe("public landing release", () => {
     const signup = read("src/routes/signup.tsx");
     expect(robots).toContain("Disallow: /account");
     expect(robots).toContain("Disallow: /profile");
+    expect(robots).toContain("Disallow: /workspace");
     expect(sitemap).not.toContain("https://thebu1ld.com/login");
     expect(sitemap).not.toContain("https://thebu1ld.com/signup");
+    expect(sitemap).not.toContain("https://thebu1ld.com/workspace");
     expect(login).toContain("privatePageHead");
     expect(signup).toContain("privatePageHead");
   });
@@ -57,9 +83,9 @@ describe("public landing release", () => {
     expect(projects).toContain('.eq("published", true)');
   });
 
-  test("status labels distinguish recruiting from completed work", () => {
+  test("status labels distinguish recruiting from closed applications", () => {
     const labels = read("src/data/seed/projects.ts");
     expect(labels).toContain('open: "Recruiting"');
-    expect(labels).toContain('closed: "Completed"');
+    expect(labels).toContain('closed: "Closed"');
   });
 });

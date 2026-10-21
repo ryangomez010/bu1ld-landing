@@ -1,0 +1,878 @@
+{
+  "prepared": "2026-10-16",
+  "state": "local-implementation",
+  "originalArticlesPreserved": 120,
+  "referenceEssaysPreserved": 6,
+  "existingLessonsDeepened": 30,
+  "newLessons": 18,
+  "structuredLessons": 48,
+  "tracks": 12,
+  "bodyWords": 21454,
+  "minLessonWords": 382,
+  "publicReading": "Public index and loader-backed SSR lesson bodies implemented; browser/no-JS runtime validation remains resource-gated.",
+  "publication": "not deployed",
+  "sourcePolicy": "Original explanations and synthetic worked examples; external sources linked, no third-party figures copied. Existing original content retained at original slugs.",
+  "inventoryScope": "All 120 local ML article bodies and six local reference essays inspected; inaccessible external course materials not claimed recovered.",
+  "lessons": [
+    {
+      "slug": "ml-python-research-functions",
+      "track": "engineering",
+      "origin": "new-original-lesson",
+      "words": 477,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-numpy-shape-contracts",
+      "track": "engineering",
+      "origin": "new-original-lesson",
+      "words": 430,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-research-environments-tests",
+      "track": "engineering",
+      "origin": "new-original-lesson",
+      "words": 440,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-data-pipeline-contracts",
+      "track": "engineering",
+      "origin": "existing-article-deepened",
+      "words": 500,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-vectors-matrices",
+      "track": "math",
+      "origin": "existing-article-deepened",
+      "words": 466,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-dot-products",
+      "track": "math",
+      "origin": "existing-article-deepened",
+      "words": 440,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-probability-conditioning",
+      "track": "math",
+      "origin": "existing-article-deepened",
+      "words": 449,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-gradient-descent",
+      "track": "math",
+      "origin": "existing-article-deepened",
+      "words": 450,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-linear-regression",
+      "track": "classical",
+      "origin": "existing-article-deepened",
+      "words": 499,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-decision-trees",
+      "track": "classical",
+      "origin": "existing-article-deepened",
+      "words": 462,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-cross-validation",
+      "track": "classical",
+      "origin": "existing-article-deepened",
+      "words": 467,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-calibration",
+      "track": "classical",
+      "origin": "existing-article-deepened",
+      "words": 453,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-backpropagation",
+      "track": "deep",
+      "origin": "existing-article-deepened",
+      "words": 483,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-adamw",
+      "track": "deep",
+      "origin": "existing-article-deepened",
+      "words": 449,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-normalization-layers",
+      "track": "deep",
+      "origin": "existing-article-deepened",
+      "words": 461,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-training-debugging",
+      "track": "deep",
+      "origin": "existing-article-deepened",
+      "words": 467,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-tokenization",
+      "track": "language",
+      "origin": "existing-article-deepened",
+      "words": 477,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-attention-masks",
+      "track": "language",
+      "origin": "existing-article-deepened",
+      "words": 465,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-language-model-objectives",
+      "track": "language",
+      "origin": "existing-article-deepened",
+      "words": 480,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-lora",
+      "track": "language",
+      "origin": "existing-article-deepened",
+      "words": 468,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-autoencoders",
+      "track": "representations",
+      "origin": "existing-article-deepened",
+      "words": 449,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-contrastive-learning",
+      "track": "representations",
+      "origin": "existing-article-deepened",
+      "words": 464,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-jepa-targets-collapse",
+      "track": "representations",
+      "origin": "new-original-lesson",
+      "words": 433,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-latent-dynamics-rollouts",
+      "track": "representations",
+      "origin": "new-original-lesson",
+      "words": 432,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-pde-boundary-contracts",
+      "track": "scientific",
+      "origin": "new-original-lesson",
+      "words": 408,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-physics-informed-networks",
+      "track": "scientific",
+      "origin": "existing-article-deepened",
+      "words": 466,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-neural-operators",
+      "track": "scientific",
+      "origin": "existing-article-deepened",
+      "words": 461,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-surrogate-stability-shift",
+      "track": "scientific",
+      "origin": "new-original-lesson",
+      "words": 438,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-retrieval-augmented-generation",
+      "track": "memory",
+      "origin": "existing-article-deepened",
+      "words": 465,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-chunking-reranking",
+      "track": "memory",
+      "origin": "existing-article-deepened",
+      "words": 461,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-causal-memory-interventions",
+      "track": "memory",
+      "origin": "new-original-lesson",
+      "words": 430,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-agent-tool-contracts",
+      "track": "memory",
+      "origin": "new-original-lesson",
+      "words": 452,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-quantization",
+      "track": "systems",
+      "origin": "existing-article-deepened",
+      "words": 460,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-kv-cache",
+      "track": "systems",
+      "origin": "existing-article-deepened",
+      "words": 448,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-inference-batching",
+      "track": "systems",
+      "origin": "existing-article-deepened",
+      "words": 427,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-distillation-speculative-decoding",
+      "track": "systems",
+      "origin": "new-original-lesson",
+      "words": 417,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-scientific-data-provenance",
+      "track": "domains",
+      "origin": "new-original-lesson",
+      "words": 409,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-astronomy-candidate-validation",
+      "track": "domains",
+      "origin": "new-original-lesson",
+      "words": 413,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-weather-time-baselines",
+      "track": "domains",
+      "origin": "new-original-lesson",
+      "words": 392,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-materials-inverse-design",
+      "track": "domains",
+      "origin": "new-original-lesson",
+      "words": 413,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-mdp-return-contracts",
+      "track": "decisions",
+      "origin": "new-original-lesson",
+      "words": 396,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-value-policy-iteration",
+      "track": "decisions",
+      "origin": "new-original-lesson",
+      "words": 382,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-exploration-offline-evaluation",
+      "track": "decisions",
+      "origin": "new-original-lesson",
+      "words": 406,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-simulation-robotics-limits",
+      "track": "decisions",
+      "origin": "new-original-lesson",
+      "words": 397,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-falsifiable-hypotheses",
+      "track": "practice",
+      "origin": "existing-article-deepened",
+      "words": 491,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-ablation-studies",
+      "track": "practice",
+      "origin": "existing-article-deepened",
+      "words": 467,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-paired-run-comparisons",
+      "track": "practice",
+      "origin": "existing-article-deepened",
+      "words": 405,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    },
+    {
+      "slug": "ml-negative-results",
+      "track": "practice",
+      "origin": "existing-article-deepened",
+      "words": 489,
+      "components": [
+        "prerequisites",
+        "objectives",
+        "explanation",
+        "worked-example",
+        "exercise",
+        "checked-solution",
+        "understanding-check",
+        "sources",
+        "next-step"
+      ]
+    }
+  ],
+  "verification": {
+    "focusedTests": {
+      "command": "bun test src/lib/guide-catalog.test.ts src/lib/guide-reader.test.ts",
+      "exitCode": 0,
+      "passed": 12,
+      "assertions": 3322
+    },
+    "catalog": {
+      "command": "bun run guides:check",
+      "exitCode": 0,
+      "originalArticles": 120,
+      "originalBodyWords": 35625
+    },
+    "lint": {
+      "command": "bunx --no-install eslint src/content/guides/curriculum.ts src/content/guides/index.ts src/routes/guides src/components/member/GuideReader.tsx src/lib/guide-catalog.ts src/lib/guide-catalog-progress.ts src/lib/guide-catalog.test.ts",
+      "exitCode": 0
+    },
+    "exerciseSmoke": {
+      "manifest": "public/learning/manifest.json",
+      "receipt": "public/learning/verification.json",
+      "passed": 12,
+      "failed": 0,
+      "environment": "CPython3.14.7 standard library; no installs or downloads"
+    },
+    "notRun": [
+      "full application typecheck",
+      "Vite build",
+      "local browser viewport/no-JS visual QA",
+      "production deploy"
+    ]
+  },
+  "catalogTotals": {
+    "originalArticles": 120,
+    "newLessons": 18,
+    "referenceEssays": 6,
+    "totalPublicEntries": 144,
+    "structuredSubset": 48
+  },
+  "limits": [
+    "No inaccessible external materials are claimed recovered.",
+    "Full application and browser validation were not run below the parent resource gate.",
+    "Links to primary references were verified through web tools where available; the Sutton/Barto author host timed out and was replaced with the publisher page, and the initially incorrect CMU chapter link was repaired.",
+    "No research training or independent paper reproduction was run."
+  ]
+}

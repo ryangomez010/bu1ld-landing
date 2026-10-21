@@ -29,7 +29,7 @@ export function isReviewer(profile: Profile | null | undefined): boolean {
 export function isMentor(profile: Profile | null | undefined): boolean {
   if (!profile) return false;
   return (
-    profile.role === "admin" ||
+    isAdministrator(profile) ||
     (profile.institutional_roles ?? []).includes("mentor") ||
     (profile.institutional_roles ?? []).includes("lab_lead")
   );

@@ -43,6 +43,7 @@ function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   useEffect(() => {
     rememberPostAuthRedirect(redirect);
@@ -56,13 +57,17 @@ function SignupForm() {
       return;
     }
     setSubmitting(true);
-    const { error } = await signUp(email, password, fullName);
+    const { error, requiresEmailConfirmation } = await signUp(email, password, fullName, redirect);
     setSubmitting(false);
     if (error) {
       toast.error(error);
       return;
     }
     rememberPostAuthRedirect(redirect);
+    if (requiresEmailConfirmation) {
+      setConfirmationSent(true);
+      return;
+    }
     toast.success("Account created — let's set up your profile.");
     void navigate({ to: "/onboarding" });
   };
@@ -72,61 +77,75 @@ function SignupForm() {
   return (
     <AuthLayout
       title="Become a member"
-      subtitle="Create your The Bu1ld account — access to open projects, six reading paths, paper reviews, event deadlines, job listings, and the member directory. Free at launch, no payment step."
+      subtitle="Create your The Bu1ld account — access open projects, learning paths, paper reviews, event deadlines, job listings, and the member directory. Free at launch, no payment step."
     >
       {!configured ? (
         <p className="rounded-sm border border-accent-red/30 bg-accent-red/5 px-4 py-3 text-sm text-accent-red">
           Account creation is temporarily unavailable. Please try again later.
         </p>
       ) : null}
-      <form onSubmit={onSubmit} className="space-y-5">
-        <div className="space-y-2">
-          <Label htmlFor="fullName">Full name</Label>
-          <Input
-            id="fullName"
-            required
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="bg-background/50"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="bg-background/50"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="bg-background/50"
-          />
-          <p className="text-xs text-muted-foreground">
-            At least 8 characters with a letter and a number.
+      {confirmationSent ? (
+        <div role="status" className="space-y-4 rounded-sm border border-accent-blue/30 p-4">
+          <h2 className="font-display text-xl">Check your email</h2>
+          <p className="text-sm text-muted-foreground">
+            If this address needs confirmation, a link has been sent to{" "}
+            <strong className="text-bone">{email.trim()}</strong>. Open it to confirm your email and
+            continue setting up your profile. Check your spam folder too.
           </p>
+          <Button type="button" variant="outline" onClick={() => setConfirmationSent(false)}>
+            Use another email
+          </Button>
         </div>
-        <Button
-          type="submit"
-          className="w-full font-mono text-[11px] tracking-[0.2em] uppercase"
-          disabled={submitting || !configured}
-        >
-          {submitting ? "Creating account…" : "Create account"}
-        </Button>
-      </form>
-      <OAuthButtons />
+      ) : (
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Full name</Label>
+            <Input
+              id="fullName"
+              required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="bg-background/50"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-background/50"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-background/50"
+            />
+            <p className="text-xs text-muted-foreground">
+              At least 8 characters with a letter and a number.
+            </p>
+          </div>
+          <Button
+            type="submit"
+            className="w-full font-mono text-[11px] tracking-[0.2em] uppercase"
+            disabled={submitting || !configured}
+          >
+            {submitting ? "Creating account…" : "Create account"}
+          </Button>
+        </form>
+      )}
+      {!confirmationSent ? <OAuthButtons /> : null}
       <p className="mt-4 text-center text-xs text-muted-foreground">
         By creating an account you agree to our{" "}
         <Link to="/terms" className="text-accent-blue hover:text-bone">

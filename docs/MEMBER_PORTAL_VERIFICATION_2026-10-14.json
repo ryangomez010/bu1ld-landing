@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-14",
+  "scope": "Local member portal and ML library verification; not build, browser, live database, or deployment certification.",
+  "base_commit": "134f63fb10741f695cc29210e40b3ac3b5ea4e09",
+  "working_tree_has_uncommitted_changes": true,
+  "source_identity": {
+    "algorithm": "SHA-256 of sorted relative-path + NUL + lowercase file SHA-256 + newline entries",
+    "includes": "src and scripts files with .ts/.tsx/.js/.mjs/.json/.css suffixes, plus package.json, tsconfig.json, vite.config.ts, eslint.config.js, bun.lock when present",
+    "file_count": 405,
+    "manifest_sha256": "c80f3509e866e37e3c4b8e5c217f7d1cd4e325b795c2523b80224968beb4617b"
+  },
+  "tests": {
+    "command": "rtk proxy bun test src/lib/*.test.ts",
+    "exit_code": 0,
+    "summary": "\n 201 pass\n 0 fail\n 2802 expect() calls\nRan 201 tests across 41 files. [711.00ms]"
+  },
+  "lint": {
+    "command": "rtk proxy node --max-old-space-size=512 node_modules/eslint/bin/eslint.js .",
+    "exit_code": 0,
+    "output": "",
+    "final_edit": "PageBackLink.tsx lint rerun passed after its routing type correction."
+  },
+  "typecheck": {
+    "command": "rtk proxy bun run typecheck:bounded",
+    "exit_code": 0,
+    "output": "$ node scripts/typecheck-bounded.mjs\nTypecheck: 16/341 source files passed.\nTypecheck: 32/341 source files passed.\nTypecheck: 48/341 source files passed.\nTypecheck: 64/341 source files passed.\nTypecheck: 80/341 source files passed.\nTypecheck: 96/341 source files passed.\nTypecheck: 112/341 source files passed.\nTypecheck: 128/341 source files passed.\nTypecheck: 144/341 source files passed.\nTypecheck: 160/341 source files passed.\nTypecheck: 176/341 source files passed.\nTypecheck: 192/341 source files passed.\nTypecheck: 208/341 source files passed.\nTypecheck: 224/341 source files passed.\nTypecheck: 240/341 source files passed.\nTypecheck: 256/341 source files passed.\nTypecheck: 272/341 source files passed.\nTypecheck: 288/341 source files passed.\nTypecheck: 304/341 source files passed.\nTypecheck: 320/341 source files passed.\nTypecheck: 336/341 source files passed.\nTypecheck: 341/341 source files passed.\nFull-program diagnostics passed across 341 source files using sequential 512 MiB heap workers."
+  },
+  "retained_typecheck_failure": {
+    "exit_code": 1,
+    "output": "$ node scripts/typecheck-bounded.mjs\nTypecheck: 16/341 source files passed.\nTypecheck: 32/341 source files passed.\nTypecheck: 48/341 source files passed.\nTypecheck: 64/341 source files passed.\nTypecheck: 80/341 source files passed.\nTypecheck: 96/341 source files passed.\nTypecheck: 112/341 source files passed.\nTypecheck: 128/341 source files passed.\nTypecheck: 144/341 source files passed.\nTypecheck: 160/341 source files passed.\nTypecheck: 176/341 source files passed.\nTypecheck: 192/341 source files passed.\nTypecheck: 208/341 source files passed.\nsrc/components/member/PageBackLink.tsx:19:7 - error TS2322: Type 'string' is not assignable to type '\"/auth/callback\" | \"/\" | \"/announcements\" | \"/apply\" | \"/competitions\" | \"/dashboard\" | \"/evidence\" | \"/forgot-password\" | \"/invitations\" | \"/login\" | \"/network\" | \"/onboarding\" | ... 54 more ... | undefined'.\n\n19       to={to}\n         ~~\n\n  node_modules/@tanstack/router-core/dist/esm/link.d.ts:121:5\n    121     to?: ToPathOption<TRouter, TFrom, TTo> & {};\n            ~~\n    The expected type comes from property 'to' which is declared here on type 'IntrinsicAttributes & LinkComponentReactProps<\"a\"> & OptionalToOptions<RouterCore<Route<Register, any, \"/\", \"/\", string, \"__root__\", undefined, ... 10 more ..., undefined>, \"never\", false, RouterHistory, Record<...>>, string, \".\"> & ... 7 more ... & LinkPropsChildren'\n\nTypecheck worker failed (1).\nerror: script \"typecheck:bounded\" exited with code 1",
+    "resolution": "PageBackLink destination now uses the router LinkProps destination type. Focused and full-program diagnostics passed after the correction."
+  },
+  "strict_release": {
+    "command": "rtk proxy bun run release:prod",
+    "exit_code": 1,
+    "output": "$ BU1LD_RELEASE_STRICT=1 node scripts/release-readiness.mjs\n\n[public sitemap] bun run sitemap:check\n$ bun scripts/generate-sitemap.ts --check\nSitemap is synchronized with the public route registries.\n\n[public portfolio manifest] bun run manifest:check\n$ bun scripts/generate-public-portfolio-manifest.ts --check\nPublic portfolio manifest is synchronized with its typed registries.\n\n[ML article catalog] bun run guides:check\n$ bun scripts/generate-guide-catalog.ts --check\nVerified 100 articles, 10 tracks, 22233 body words: /Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/src/content/guides/article-catalog.json\n\n[route smoke] bun run smoke\n$ node scripts/smoke-routes.mjs\nRoute smoke OK \u2014 29 critical paths present.\n\nRelease configuration blockers:\n  - Set VITE_SUPABASE_URL in the deployment environment.\n  - Set VITE_SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLISHABLE_KEY.\n  - Set SUPABASE_DB_PASSWORD or SUPABASE_DB_URL so production schema and RLS can be verified.\n  - Set SUPABASE_SERVICE_ROLE_KEY only in the server runtime for email recipient lookup and account deletion.\n  - Set RESEND_API_KEY in the server runtime to enable transactional email and digests.\n  - Set DIGEST_API_SECRET for the daily digest endpoint.\n  - Set VITE_EMAIL_ENDPOINT to the deployed same-origin or trusted email handler.\nerror: script \"release:prod\" exited with code 1"
+  },
+  "article_reference_receipt": {
+    "path": "docs/ML_ARTICLE_REFERENCE_CHECK_2026-10-11.json",
+    "all_10_body_file_hashes_match": true,
+    "fresh_url_check": false
+  },
+  "not_performed": [
+    "Full Vite build",
+    "Browser interaction and responsive QA",
+    "Live Auth, database and multi-role verification",
+    "Deployment",
+    "Commit or push"
+  ]
+}

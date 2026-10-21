@@ -6,7 +6,7 @@ import { CONTACT_EMAIL, LINKEDIN_URL } from "@/data/landing";
 export function SiteFooter() {
   return (
     <footer className="relative border-t border-border/60 bg-background/90 py-14">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Wordmark className="text-lg" />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
@@ -39,6 +39,33 @@ export function SiteFooter() {
           </Link>
           <Link to="/evidence" className="hover:text-bone">
             Evidence register
+          </Link>
+          <Link to="/research-atlas" className="hover:text-bone">
+            Complete research atlas
+          </Link>
+          <Link to="/network" className="hover:text-bone">
+            Portfolio network
+          </Link>
+        </nav>
+
+        <nav
+          aria-label="Participate"
+          className="grid content-start gap-3 text-sm text-muted-foreground"
+        >
+          <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.24em] text-bone/40">
+            Participate
+          </p>
+          <Link to="/apply" className="hover:text-bone">
+            How to get involved
+          </Link>
+          <Link to="/opportunities" search={{}} className="hover:text-bone">
+            Open opportunities
+          </Link>
+          <Link to="/guides" search={{}} className="hover:text-bone">
+            Learning library
+          </Link>
+          <Link to="/login" className="hover:text-bone">
+            Member log in
           </Link>
         </nav>
 

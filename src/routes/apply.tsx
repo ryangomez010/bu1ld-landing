@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { z } from "zod";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
@@ -12,7 +13,7 @@ import {
 import { pageHead } from "@/lib/seo";
 
 const applySearchSchema = z.object({
-  program: z.string().optional(),
+  program: z.string().optional().catch(undefined),
 });
 
 export const Route = createFileRoute("/apply")({
@@ -32,20 +33,65 @@ function ApplyPage() {
   const { user, profile } = useAuth();
   const selected = programSlug ? getProgram(programSlug) : undefined;
   const destination = selected ? programApplyPath(selected.slug) : "/programs";
-  const memberReady = Boolean(user && profile?.onboarding_completed);
+  const selectedHeading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (window.location.hash === "#application-details") {
+      selectedHeading.current?.focus({ preventScroll: true });
+    }
+  }, [programSlug]);
 
   return (
     <InstitutionLayout
       eyebrow="Applications"
-      title="Start from a project, or choose a program path."
-      description="Most builders browse an open project brief first, then create an account to apply. Program paths follow the same account → profile → review → contribution loop."
+      title="Find your way into BU1LD."
+      description="Choose a project or compare the program paths below. Review the commitment first; you will only need an account when you are ready to continue."
     >
+      {!selected ? (
+        <section
+          className="mb-8 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-6"
+          aria-labelledby="project-start-title"
+        >
+          <h2 id="project-start-title" className="font-display text-2xl text-bone">
+            Have a skill you want to put to work?
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Start with a project brief. You can see the problem, required skills, and weekly
+            commitment before applying.
+          </p>
+          <Link
+            to="/projects"
+            className="mt-5 inline-flex min-h-12 items-center rounded-sm bg-bone px-5 text-sm font-medium text-background transition hover:bg-accent-blue"
+          >
+            Find a project →
+          </Link>
+        </section>
+      ) : null}
+      {programSlug && !selected ? (
+        <p
+          role="status"
+          className="mb-6 rounded-sm border border-border/60 p-4 text-sm text-muted-foreground"
+        >
+          That program path is no longer available. Choose one of the paths below to continue.
+        </p>
+      ) : null}
       {selected ? (
-        <div className="mb-10 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-5">
+        <section
+          id="application-details"
+          aria-labelledby="selected-path-title"
+          className="mb-10 scroll-mt-24 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-5 sm:p-6"
+        >
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-blue">
             Selected path · {selected.status}
           </p>
-          <h2 className="mt-2 font-display text-2xl text-bone">{selected.name}</h2>
+          <h2
+            ref={selectedHeading}
+            tabIndex={-1}
+            id="selected-path-title"
+            className="mt-2 font-display text-2xl text-bone"
+          >
+            {selected.name}
+          </h2>
           <p className="mt-2 text-sm text-muted-foreground">{selected.summary}</p>
           <dl className="mt-4 grid gap-3 sm:grid-cols-2">
             <div>
@@ -74,64 +120,69 @@ function ApplyPage() {
             </div>
           </dl>
           <div className="mt-5 flex flex-wrap gap-3">
-            {memberReady ? (
-              selected.slug === "open-competitions" ? (
-                <Link
-                  to="/competitions"
-                  className="rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-background transition hover:bg-accent-blue"
-                >
-                  Continue to competitions →
-                </Link>
-              ) : (
-                <Link
-                  to="/programs/$slug"
-                  params={{ slug: selected.slug }}
-                  className="rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-background transition hover:bg-accent-blue"
-                >
-                  Continue to application →
-                </Link>
-              )
+            {selected.slug === "open-competitions" ? (
+              <Link
+                to="/competitions"
+                className="inline-flex min-h-12 items-center rounded-sm bg-bone px-5 py-3 text-sm font-medium text-background transition hover:bg-accent-blue"
+              >
+                Continue to competitions →
+              </Link>
+            ) : user ? (
+              <Link
+                to="/programs/$slug"
+                params={{ slug: selected.slug }}
+                className="inline-flex min-h-12 items-center rounded-sm bg-bone px-5 py-3 text-sm font-medium text-background transition hover:bg-accent-blue"
+              >
+                {profile?.onboarding_completed
+                  ? "Continue to application"
+                  : "Continue with your account"}{" "}
+                →
+              </Link>
             ) : (
               <>
                 <a
                   href={signupPathWithRedirect(destination)}
-                  className="rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-background transition hover:bg-accent-blue"
+                  className="inline-flex min-h-12 items-center rounded-sm bg-bone px-5 py-3 text-sm font-medium text-background transition hover:bg-accent-blue"
                 >
                   Create account to apply →
                 </a>
                 <a
                   href={loginPathWithRedirect(destination)}
-                  className="rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition hover:text-bone"
+                  className="inline-flex min-h-12 items-center rounded-sm border border-bone/25 px-5 py-3 text-sm text-muted-foreground transition hover:text-bone"
                 >
                   Log in and continue
                 </a>
               </>
             )}
           </div>
-        </div>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            {selected.slug === "open-competitions"
+              ? "You can browse challenges without an account. Entry rules and deadlines appear with each published challenge."
+              : "Creating an account does not submit an application. You can review the live cycle and complete your profile before applying. Availability and deadlines are shown in the portal."}
+          </p>
+          <a
+            href="#program-paths"
+            className="mt-3 inline-flex min-h-11 items-center text-sm text-accent-blue hover:text-bone"
+          >
+            Compare other paths ↓
+          </a>
+        </section>
       ) : null}
 
-      <ol className="grid gap-4 md:grid-cols-2">
-        {APPLICATION_STEPS.map((step) => (
-          <li key={step.step} className="rounded-sm border border-border/50 bg-bone/[0.02] p-5">
-            <p className="font-mono text-[10px] tracking-[0.28em] text-bone/40">{step.step}</p>
-            <h3 className="mt-3 font-display text-xl text-bone">{step.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
-          </li>
-        ))}
-      </ol>
-
-      <section className="mt-12">
-        <h2 className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-          Choose a program
-        </h2>
+      <section id="program-paths" className="scroll-mt-24">
+        <h2 className="font-display text-2xl text-bone">Choose a program path</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Compare the audience and commitment. Live cycles confirm dates and available places.
+        </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {INSTITUTION_PROGRAMS.map((program) => (
             <Link
               key={program.slug}
               to="/apply"
               search={{ program: program.slug }}
-              className={`rounded-sm border p-4 transition ${
+              hash="application-details"
+              aria-current={selected?.slug === program.slug ? "true" : undefined}
+              className={`flex flex-col rounded-sm border p-5 transition ${
                 selected?.slug === program.slug
                   ? "border-accent-blue/50 bg-accent-blue/10"
                   : "border-border/40 hover:border-bone/30"
@@ -141,9 +192,32 @@ function ApplyPage() {
                 {program.kind} · {program.status}
               </p>
               <p className="mt-2 font-display text-lg text-bone">{program.name}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{program.whoFor}</p>
+              <p className="mt-4 text-sm text-bone">{program.commitment}</p>
+              <span className="mt-auto pt-5 text-sm text-accent-blue">
+                {selected?.slug === program.slug
+                  ? "Selected · review next steps"
+                  : "Review this path"}{" "}
+                →
+              </span>
             </Link>
           ))}
         </div>
+      </section>
+
+      <section className="mt-12" aria-labelledby="application-process-title">
+        <h2 id="application-process-title" className="mb-4 font-display text-2xl text-bone">
+          What happens next
+        </h2>
+        <ol className="grid gap-4 md:grid-cols-2">
+          {APPLICATION_STEPS.map((step) => (
+            <li key={step.step} className="rounded-sm border border-border/50 bg-bone/[0.02] p-5">
+              <p className="font-mono text-xs tracking-[0.2em] text-accent-blue">{step.step}</p>
+              <h3 className="mt-3 font-display text-xl text-bone">{step.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <section className="mt-12">
@@ -156,36 +230,13 @@ function ApplyPage() {
               key={lab.slug}
               to="/labs/$slug"
               params={{ slug: lab.slug }}
-              className="rounded-sm border border-bone/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition hover:text-bone"
+              className="inline-flex min-h-11 items-center rounded-sm border border-bone/20 px-3 py-2 text-sm text-muted-foreground transition hover:text-bone"
             >
               {lab.shortName}
             </Link>
           ))}
         </div>
       </section>
-
-      {!selected ? (
-        <div className="mt-12 flex flex-wrap gap-3">
-          <Link
-            to="/projects"
-            className="rounded-sm bg-bone px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-background transition hover:bg-accent-blue"
-          >
-            Browse projects →
-          </Link>
-          <a
-            href={signupPathWithRedirect("/projects")}
-            className="rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition hover:text-bone"
-          >
-            Create account to apply
-          </a>
-          <a
-            href={loginPathWithRedirect("/projects")}
-            className="rounded-sm border border-bone/25 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition hover:text-bone"
-          >
-            Log in
-          </a>
-        </div>
-      ) : null}
     </InstitutionLayout>
   );
 }

@@ -15,6 +15,7 @@ import { jobLink } from "@/lib/app-paths";
 import { getJobApplicationStatus, upsertJobApplication } from "@/lib/job-applications";
 import { fetchJobBySlug, fetchJobs } from "@/lib/projects";
 import type { Job } from "@/lib/types";
+import { safeHref } from "@/lib/urls";
 
 export const Route = createFileRoute("/jobs/$slug")({
   component: JobDetailPage,
@@ -146,9 +147,9 @@ function JobDetail() {
         <TagList tags={job.tags} linkToSearch className="mt-4" />
         <p className="mt-8 text-lg text-muted-foreground leading-relaxed">{job.description}</p>
 
-        {job.url ? (
+        {safeHref(job.url) ? (
           <a
-            href={job.url}
+            href={safeHref(job.url)}
             target="_blank"
             rel="noreferrer"
             className="mt-8 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"

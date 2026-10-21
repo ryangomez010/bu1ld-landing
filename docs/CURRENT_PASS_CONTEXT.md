@@ -1,3 +1,5 @@
+> Current status (2026-10-21): [local fixes and remaining acceptance work](COMPLETION_2026-10-21.md). Migration target: **phase40**. Production remains blocked; older phase counts and completion statements below are historical.
+
 # Current Pass Context
 
 ## Pass / Governor
@@ -17,12 +19,13 @@
 - Lead workspace: experiment status controls + deliverable accept/revision; accepted app CTA to evidence
 - Browser QA: desktop + mobile project discovery/navigation; fixed root analytics route crash
 - Route tree regenerated (`/announcements` included)
-- **127 tests**, typecheck, lint, smoke, build, `release:check` PASS
+- Public portfolio system: 20 identity profiles, 33-line research atlas, registry-generated sitemap, and deterministic downloadable JSON manifest with drift/privacy tests
+- Current local verification: **179 tests / 1,197 assertions**, typecheck, 27-route smoke, research-state validation, dependency audit, targeted lint, and development client/SSR build pass. Full lint is blocked by one Prettier formatting error in concurrent member-navigation work; `release:check` is correctly blocked by absent production Supabase configuration.
 
 ## Exact next task
 
-> Owner: apply FINAL_SETUP through **phase31**, publish/confirm live program cycles, run `release:prod` + multi-account smokes. Cursor: commit only if requested; optional credentialed Playwright E2E.
+> Owner: apply FINAL_SETUP through **phase34**, publish/confirm live program cycles, run `release:prod` + multi-account smokes. Cursor: commit only if requested; optional credentialed Playwright E2E.
 
 ## Canonical memory
 
-[PROJECT_MEMORY.md](./PROJECT_MEMORY.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [.cursor/project_state.json](../.cursor/project_state.json)
+[PROJECT_MEMORY.md](./PROJECT_MEMORY.md) · [PROJECT_STATUS.md](../PROJECT_STATUS.md) · [Portfolio persistent memory](../research/PERSISTENT_MEMORY.md) · [Next handoff](./NEXT_HANDOFF.md)

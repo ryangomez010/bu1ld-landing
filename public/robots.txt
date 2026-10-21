@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /dashboard
+Disallow: /workspace
 Disallow: /admin
 Disallow: /onboarding
 Disallow: /applications

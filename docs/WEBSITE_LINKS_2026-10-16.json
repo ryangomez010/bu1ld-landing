@@ -1,0 +1,5210 @@
+{
+  "checkedAt": "2026-10-16T06:28:07.865Z",
+  "scope": "Static public catalog bodies, sitemap, portfolio projection, research brief sources and prerequisites, participation directory, curriculum downloads, literal route/component links, and private-review related record IDs. Dynamic database records, URL fragments, other JSX expression URLs, redirects and HTTP behavior require separate runtime checks.",
+  "status": "STATIC_PASS_RUNTIME_UNVERIFIED",
+  "guideBodiesLoaded": 144,
+  "curriculumDownloads": 12,
+  "routePatterns": [
+    "/",
+    "/account/activity",
+    "/account/notifications",
+    "/account/preferences",
+    "/account/security",
+    "/admin",
+    "/announcements",
+    "/applications",
+    "/apply",
+    "/auth/callback",
+    "/competitions",
+    "/competitions/$slug",
+    "/dashboard",
+    "/events",
+    "/events/$slug",
+    "/evidence",
+    "/forgot-password",
+    "/forms",
+    "/guides",
+    "/guides/$slug",
+    "/invitations",
+    "/jobs",
+    "/jobs/$slug",
+    "/jobs/tracker",
+    "/labs",
+    "/labs/$slug",
+    "/lead/apply",
+    "/login",
+    "/members",
+    "/members/$id",
+    "/network",
+    "/newsletter",
+    "/newsletter/$slug",
+    "/notifications",
+    "/onboarding",
+    "/papers",
+    "/papers/$slug",
+    "/partnerships",
+    "/people",
+    "/portfolio/$projectId",
+    "/privacy",
+    "/profile",
+    "/programs",
+    "/programs-public",
+    "/programs/$slug",
+    "/projects",
+    "/projects/$slug",
+    "/projects/edit/$slug",
+    "/projects/manage",
+    "/projects/manage/$slug",
+    "/projects/new",
+    "/publications",
+    "/research",
+    "/research-atlas",
+    "/research-atlas/$slug",
+    "/research/$slug",
+    "/research/analyze",
+    "/research/highlights",
+    "/research/submit",
+    "/reset-password",
+    "/saved",
+    "/saved/collections",
+    "/search",
+    "/signup",
+    "/terms",
+    "/workspace"
+  ],
+  "reviewRelationsChecked": 100,
+  "relationFailures": [],
+  "counts": {
+    "STATIC_PUBLIC_RECORD_EXISTS": 284,
+    "ROUTE_EXISTS": 28,
+    "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS": 10,
+    "LOCAL_ARTIFACT_EXISTS": 15,
+    "EXTERNAL_CHECKED": 149
+  },
+  "results": [
+    {
+      "url": "/",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/__root.tsx",
+        "src/routes/terms.tsx",
+        "src/routes/privacy.tsx",
+        "src/routes/onboarding.tsx",
+        "src/components/landing/SiteHeader.tsx",
+        "src/components/landing/FeaturedProjectsSection.tsx",
+        "src/components/auth/AuthLayout.tsx",
+        "src/components/member/MemberLayout.tsx"
+      ]
+    },
+    {
+      "url": "/account/notifications",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/account/preferences.tsx",
+        "src/routes/account/security.tsx"
+      ]
+    },
+    {
+      "url": "/account/preferences",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/account/notifications.tsx",
+        "src/components/member/DigestPreviewCard.tsx",
+        "src/components/member/YourWeekSection.tsx"
+      ]
+    },
+    {
+      "url": "/account/security",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/dashboard.tsx",
+        "src/routes/profile.tsx",
+        "src/routes/account/activity.tsx"
+      ]
+    },
+    {
+      "url": "/announcements",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/dashboard.tsx"
+      ]
+    },
+    {
+      "url": "/applications",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/dashboard.tsx",
+        "src/routes/projects/index.tsx",
+        "src/routes/projects/$slug.tsx",
+        "src/components/member/ProjectMemberWorkspace.tsx"
+      ]
+    },
+    {
+      "url": "/apply",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/labs/index.tsx",
+        "src/routes/labs/$slug.tsx",
+        "src/routes/apply.tsx",
+        "src/routes/programs-public.tsx",
+        "src/routes/events/index.tsx",
+        "src/routes/forms.tsx",
+        "src/components/landing/SiteFooter.tsx",
+        "src/components/landing/SiteHeader.tsx",
+        "src/components/landing/MembershipSection.tsx"
+      ]
+    },
+    {
+      "url": "/competitions",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/competitions/$slug.tsx",
+        "src/routes/apply.tsx"
+      ]
+    },
+    {
+      "url": "/competitions/$slug",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/labs/$slug.tsx",
+        "src/routes/competitions.tsx"
+      ]
+    },
+    {
+      "url": "/dashboard",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/admin/index.tsx",
+        "src/routes/forgot-password.tsx",
+        "src/components/landing/SiteHeader.tsx"
+      ]
+    },
+    {
+      "url": "/events",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/events/index.tsx",
+        "src/routes/events/$slug.tsx",
+        "src/routes/announcements.tsx",
+        "src/routes/forms.tsx",
+        "src/components/landing/LibraryEntrySection.tsx"
+      ]
+    },
+    {
+      "url": "/events/$slug",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/events/index.tsx",
+        "src/components/landing/LibraryEntrySection.tsx"
+      ]
+    },
+    {
+      "url": "/evidence",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/partnerships.tsx",
+        "src/routes/publications.tsx",
+        "src/routes/network.tsx",
+        "src/components/landing/SiteFooter.tsx",
+        "src/components/landing/HeroSection.tsx"
+      ]
+    },
+    {
+      "url": "/forgot-password",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/login.tsx",
+        "src/routes/reset-password.tsx"
+      ]
+    },
+    {
+      "url": "/forms",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/research-atlas/$slug.tsx",
+        "src/routes/forms.tsx",
+        "src/components/landing/LibraryEntrySection.tsx"
+      ]
+    },
+    {
+      "url": "/guides",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/research/index.tsx",
+        "src/routes/research-atlas/$slug.tsx",
+        "src/routes/dashboard.tsx",
+        "src/routes/papers/index.tsx",
+        "src/routes/papers/$slug.tsx",
+        "src/routes/search/index.tsx",
+        "src/routes/guides/index.tsx",
+        "src/routes/guides/$slug.tsx",
+        "src/routes/events/index.tsx",
+        "src/routes/forms.tsx",
+        "src/components/member/YourWeekSection.tsx",
+        "src/components/member/GuideReader.tsx"
+      ]
+    },
+    {
+      "url": "/guides/$slug",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/research-atlas/$slug.tsx"
+      ]
+    },
+    {
+      "url": "/guides/how-llms-work",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/math-behind-ai",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-ablation-studies",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:counterfactual-defect-worlds",
+        "research:causal-memory-use",
+        "research:fabric-induced-memory",
+        "research:gaussian-memory-fields",
+        "research:residual-event-tokenization",
+        "research:olympus-cognitive-architecture",
+        "research:apen-synthica",
+        "research:independent-research-foundry",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-activation-functions",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-adamw",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-agent-tool-contracts",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:neurocad",
+        "research:olympus-cognitive-architecture",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-approximate-neighbor-retrieval",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-astronomy-candidate-validation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:siderea-transient-jepa",
+        "research:space-jepa",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-attention-masks",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:lam-jepa",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-autoencoders",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:colorworld",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-backpropagation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:gaussian-memory-fields",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-baselines",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-bias-variance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-bootstrap-intervals",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-calibration",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:siderea-transient-jepa",
+        "research:assumption-integrity",
+        "research:ngmt-robust-memory",
+        "research:colorworld",
+        "research:speechly",
+        "research:latent-safety-recovery",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-categorical-encoding",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-causal-confounding",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-causal-memory-interventions",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:causal-memory-use",
+        "research:fabric-induced-memory",
+        "research:ngmt-robust-memory",
+        "research:neural-predictive-memory-spectroscopy",
+        "research:latent-safety-recovery",
+        "research:iris-robust-memory",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-checkpoint-resume",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-chunking-reranking",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-class-imbalance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-clip",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-conformal-prediction",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-confusion-matrix",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-contrastive-learning",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:sapir-whorf-latent-language",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-convolutions",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-cross-validation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:adaptive-theory-geometry",
+        "research:assumption-integrity",
+        "research:eigen-jepa",
+        "research:fi-jepa",
+        "research:eigenfinance",
+        "research:ml4industry-portfolio",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-data-leakage",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-data-pipeline-contracts",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:neural-predictive-memory-spectroscopy",
+        "research:colorworld",
+        "research:speechly",
+        "research:ml4industry-portfolio",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-dbscan",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-decision-costs",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-decision-trees",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-deduplication",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-delayed-labels",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-diffusion-models",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-distillation-speculative-decoding",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-distribution-shift",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-dot-products",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:krylov-jepa",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-drift-monitoring",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-dropout",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-embedding-visualization",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-entropy-cross-entropy",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-expectation-variance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-experiment-provenance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-exploration-offline-evaluation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:mahjong",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-fair-compute-comparisons",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-falsifiable-hypotheses",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:adaptive-theory-geometry",
+        "research:project-2424",
+        "research:independent-research-foundry",
+        "research:ml4science-portfolio",
+        "research:ml4semantic-intelligence",
+        "research:ml-invention-foundry",
+        "research:spectral-jepa",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-feature-scaling",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-freezing-parameters",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-gaussian-mixtures",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-generative-adversarial-networks",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-gradient-accumulation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-gradient-boosting",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-gradient-clipping",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-gradient-descent",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:ris-bounded-hessian-study",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-grounded-answer-evaluation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-grouped-evaluation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-image-augmentation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-inference-batching",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:epu-omega",
+        "research:ml4industry-portfolio",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-inference-latency",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-intersection-over-union",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-jepa-targets-collapse",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:eigen-jepa",
+        "research:lam-jepa",
+        "research:weather-jepa",
+        "research:krylov-jepa",
+        "research:spectral-jepa",
+        "research:space-jepa",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-kmeans",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-kv-cache",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:olympus-cognitive-architecture",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-label-quality",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-language-model-objectives",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:sapir-whorf-latent-language",
+        "research:speechly",
+        "research:ml4semantic-intelligence",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-lasso-feature-selection",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-latent-dynamics-rollouts",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:counterfactual-defect-worlds",
+        "research:fabric-induced-memory",
+        "research:ripii-world-models",
+        "research:residual-event-tokenization",
+        "research:scdmit",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-learning-curves",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-likelihood-not-posterior",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-linear-regression",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:fi-jepa",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-logistic-regression",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-lora",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:quantized-adaptive-transformers",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-loss-functions",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-materials-inverse-design",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-mdp-return-contracts",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:mahjong",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-minibatch-training",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-missing-values",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-mixed-precision",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-model-cards",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-model-serving-contract",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-momentum",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-monotonic-constraints",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-multiple-comparisons",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-naive-bayes",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-nearest-neighbors",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-negative-results",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:what-survived-the-search-navier-stokes",
+        "research:scdmit",
+        "research:project-2424",
+        "research:independent-research-foundry",
+        "research:ml-invention-foundry",
+        "research:latent-safety-recovery",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-nested-validation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-neural-operators",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:pde-surrogate-phase-transitions",
+        "research:apen-synthica",
+        "research:ml4science-portfolio",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-normalization-layers",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-numpy-shape-contracts",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:ris-bounded-hessian-study",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-object-detection",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-padding-loss-masks",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-paired-run-comparisons",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:what-survived-the-search-navier-stokes",
+        "research:adaptive-theory-geometry",
+        "research:causal-memory-use",
+        "research:ngmt-robust-memory",
+        "research:neural-predictive-memory-spectroscopy",
+        "research:lam-jepa",
+        "research:epu-omega",
+        "research:eigenfinance",
+        "research:ris-bounded-hessian-study",
+        "research:sapir-whorf-latent-language",
+        "research:apen-synthica",
+        "research:ml-invention-foundry",
+        "research:krylov-jepa",
+        "research:quantized-adaptive-transformers",
+        "research:iris-robust-memory",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-pde-boundary-contracts",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:what-survived-the-search-navier-stokes",
+        "research:pde-surrogate-phase-transitions",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-permutation-importance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-perplexity",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-physics-informed-networks",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-position-encoding",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-practical-effect-size",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-precision-recall-thresholds",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-pretrained-image-preprocessing",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-principal-components",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-probability-conditioning",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-problem-framing",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-python-research-functions",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-quantile-regression",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-quantization",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:epu-omega",
+        "research:quantized-adaptive-transformers",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-random-forests",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-receptive-fields",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-regression-metrics",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-reproduction-replication",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-research-environments-tests",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:neurocad",
+        "research:ripii-world-models",
+        "research:project-2424",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-residual-connections",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-retrieval-augmented-generation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:ml4semantic-intelligence",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-ridge-regression",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-roc-pr-curves",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-scientific-data-provenance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:siderea-transient-jepa",
+        "research:assumption-integrity",
+        "research:eigen-jepa",
+        "research:fi-jepa",
+        "research:weather-jepa",
+        "research:eigenfinance",
+        "research:ml4science-portfolio",
+        "research:space-jepa",
+        "research:iris-robust-memory",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-semantic-segmentation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-shadow-canary-evaluation",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-shortcut-learning",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-simulation-robotics-limits",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:neurocad",
+        "research:counterfactual-defect-worlds",
+        "research:ripii-world-models",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-static-contextual-embeddings",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-supervised-unsupervised",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-support-vector-machines",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-surrogate-stability-shift",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:pde-surrogate-phase-transitions",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-time-aware-features",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-tokenization",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:residual-event-tokenization",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-train-validation-test",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-training-debugging",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:gaussian-memory-fields",
+        "research:scdmit",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-training-serving-parity",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-value-policy-iteration",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:mahjong",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-variational-autoencoders",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-vectors-matrices",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:krylov-jepa",
+        "research:spectral-jepa",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-vision-error-analysis",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-vision-transfer-learning",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-vision-transformer-patches",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-weather-time-baselines",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "research:weather-jepa",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-weight-initialization",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/ml-whitening",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/paper-to-prototype",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/physics-informed-nns",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/what-is-attention",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/guides/what-is-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "guide catalog",
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/invitations",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/workspace.tsx"
+      ]
+    },
+    {
+      "url": "/jobs",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/jobs/$slug.tsx",
+        "src/routes/jobs/tracker.tsx"
+      ]
+    },
+    {
+      "url": "/jobs/tracker",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/jobs/index.tsx",
+        "src/routes/jobs/$slug.tsx"
+      ]
+    },
+    {
+      "url": "/labs",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/labs/$slug.tsx",
+        "src/routes/projects/index.tsx",
+        "src/components/landing/SiteFooter.tsx",
+        "src/components/landing/FeaturedProjectsSection.tsx"
+      ]
+    },
+    {
+      "url": "/labs/$slug",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/labs/index.tsx",
+        "src/routes/competitions/$slug.tsx",
+        "src/routes/apply.tsx",
+        "src/routes/forms.tsx"
+      ]
+    },
+    {
+      "url": "/lead/apply",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/dashboard.tsx",
+        "src/routes/profile.tsx",
+        "src/components/auth/RequireProjectLead.tsx"
+      ]
+    },
+    {
+      "url": "/learning/01_engineering.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/02_mathematics.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/03_classical.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/04_deep_learning.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/05_language.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/06_representations.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/07_scientific_ml.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/08_memory_agents.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/09_efficiency.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/10_domain_ml.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/11_decision_systems.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/12_research_practice.py",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "track:undefined"
+      ]
+    },
+    {
+      "url": "/learning/README.txt",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "curriculum instructions",
+        "src/routes/guides/index.tsx",
+        "src/components/member/GuideReader.tsx"
+      ]
+    },
+    {
+      "url": "/login",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/papers/$slug.tsx",
+        "src/routes/auth/callback.tsx",
+        "src/routes/projects/$slug.tsx",
+        "src/routes/competitions/$slug.tsx",
+        "src/routes/signup.tsx",
+        "src/routes/guides/-layout.tsx",
+        "src/routes/reset-password.tsx",
+        "src/routes/forgot-password.tsx",
+        "src/routes/events/$slug.tsx",
+        "src/components/landing/SiteHeader.tsx",
+        "src/components/events/EventRegistration.tsx"
+      ]
+    },
+    {
+      "url": "/members",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/dashboard.tsx",
+        "src/routes/members/$id.tsx",
+        "src/routes/people.tsx"
+      ]
+    },
+    {
+      "url": "/members/$id",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/components/member/IdentityCard.tsx"
+      ]
+    },
+    {
+      "url": "/network",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/research-atlas/index.tsx",
+        "src/routes/portfolio/$projectId.tsx",
+        "src/components/landing/SiteFooter.tsx"
+      ]
+    },
+    {
+      "url": "/newsletter",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/newsletter/$slug.tsx"
+      ]
+    },
+    {
+      "url": "/notifications",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/dashboard.tsx",
+        "src/components/member/NotificationBell.tsx"
+      ]
+    },
+    {
+      "url": "/papers",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/research/index.tsx",
+        "src/routes/research/highlights.tsx",
+        "src/routes/papers/index.tsx",
+        "src/routes/papers/$slug.tsx",
+        "src/routes/publications.tsx",
+        "src/components/member/YourWeekSection.tsx"
+      ]
+    },
+    {
+      "url": "/papers/$slug",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/papers/index.tsx",
+        "src/routes/publications.tsx",
+        "src/components/landing/LibraryEntrySection.tsx"
+      ]
+    },
+    {
+      "url": "/partnerships",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/components/landing/SiteFooter.tsx"
+      ]
+    },
+    {
+      "url": "/people",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/components/landing/SiteFooter.tsx",
+        "src/components/landing/TeamSection.tsx"
+      ]
+    },
+    {
+      "url": "/portfolio-manifest.json",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "src/routes/research-atlas/index.tsx",
+        "src/routes/network.tsx"
+      ]
+    },
+    {
+      "url": "/portfolio/$projectId",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/research-atlas/$slug.tsx",
+        "src/routes/portfolio/$projectId.tsx",
+        "src/routes/network.tsx"
+      ]
+    },
+    {
+      "url": "/portfolio/apen-pen",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/atg",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/bu1ld-nexus",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/eigen-finance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/eigen-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/esnf",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/financemeta",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/genesis-econ",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/lgwm",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/montecarlo",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/neurocad",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/nfgm",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/npms",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/obscured-records-agent",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/olympus",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/pi-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/project-genesis",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/ripii-ipii",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/vertexed",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/portfolio/visualization-scratch",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/privacy",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/signup.tsx",
+        "src/components/landing/SiteFooter.tsx"
+      ]
+    },
+    {
+      "url": "/profile",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/dashboard.tsx",
+        "src/routes/projects/$slug.tsx",
+        "src/routes/members/index.tsx",
+        "src/routes/account/preferences.tsx",
+        "src/routes/account/security.tsx",
+        "src/components/member/DashboardHero.tsx",
+        "src/components/member/MemberLayout.tsx",
+        "src/components/member/DigestPreviewCard.tsx",
+        "src/components/member/ProfileCompletenessMeter.tsx"
+      ]
+    },
+    {
+      "url": "/programs",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/programs/$slug.tsx",
+        "src/routes/programs-public.tsx"
+      ]
+    },
+    {
+      "url": "/programs-public",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/labs/$slug.tsx",
+        "src/routes/events/index.tsx",
+        "src/routes/forms.tsx",
+        "src/components/landing/SiteFooter.tsx"
+      ]
+    },
+    {
+      "url": "/programs/$slug",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/apply.tsx",
+        "src/routes/programs/index.tsx"
+      ]
+    },
+    {
+      "url": "/projects",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/research/index.tsx",
+        "src/routes/__root.tsx",
+        "src/routes/labs/$slug.tsx",
+        "src/routes/dashboard.tsx",
+        "src/routes/projects/$slug.tsx",
+        "src/routes/apply.tsx",
+        "src/routes/workspace.tsx",
+        "src/routes/programs/$slug.tsx",
+        "src/routes/applications/index.tsx",
+        "src/routes/invitations.tsx",
+        "src/routes/members/$id.tsx",
+        "src/routes/forms.tsx",
+        "src/routes/network.tsx",
+        "src/components/landing/SiteFooter.tsx",
+        "src/components/landing/FeaturedProjectsSection.tsx",
+        "src/components/landing/WhatWeDoSection.tsx",
+        "src/components/landing/MembershipSection.tsx",
+        "src/components/landing/HeroSection.tsx",
+        "src/components/landing/ContactSection.tsx",
+        "src/components/member/DashboardHero.tsx",
+        "src/components/member/WatchedProjectsPanel.tsx",
+        "src/components/member/YourWeekSection.tsx"
+      ]
+    },
+    {
+      "url": "/projects/$slug",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/labs/$slug.tsx",
+        "src/routes/workspace.tsx",
+        "src/routes/evidence.tsx"
+      ]
+    },
+    {
+      "url": "/projects/manage",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/projects/edit/$slug.tsx",
+        "src/routes/projects/new.tsx",
+        "src/routes/projects/manage/$slug.tsx"
+      ]
+    },
+    {
+      "url": "/projects/new",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/projects/manage/index.tsx",
+        "src/routes/lead/apply.tsx"
+      ]
+    },
+    {
+      "url": "/publications",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/labs/$slug.tsx",
+        "src/routes/papers/index.tsx",
+        "src/components/landing/SiteFooter.tsx"
+      ]
+    },
+    {
+      "url": "/research",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/research/submit.tsx",
+        "src/routes/research/highlights.tsx",
+        "src/components/member/ReadingHeatmap.tsx",
+        "src/components/member/DigestPreviewCard.tsx",
+        "src/components/member/PaperReader.tsx",
+        "src/components/member/ProjectMemberWorkspace.tsx"
+      ]
+    },
+    {
+      "url": "/research-atlas",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/research-atlas/index.tsx",
+        "src/routes/research-atlas/$slug.tsx",
+        "src/routes/papers/index.tsx",
+        "src/routes/papers/$slug.tsx",
+        "src/routes/projects/index.tsx",
+        "src/routes/search/index.tsx",
+        "src/routes/guides/index.tsx",
+        "src/routes/network.tsx",
+        "src/components/landing/SiteFooter.tsx",
+        "src/components/landing/FeaturedProjectsSection.tsx",
+        "src/components/member/GuideReader.tsx"
+      ]
+    },
+    {
+      "url": "/research-atlas/$slug",
+      "status": "ROUTE_TEMPLATE_REQUIRES_RUNTIME_PARAMETERS",
+      "sources": [
+        "src/routes/research-atlas/index.tsx",
+        "src/routes/research-atlas/$slug.tsx",
+        "src/routes/portfolio/$projectId.tsx"
+      ]
+    },
+    {
+      "url": "/research-atlas/adaptive-theory-geometry",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/apen-synthica",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/assumption-integrity",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/causal-memory-use",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/colorworld",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/counterfactual-defect-worlds",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/eigen-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/eigenfinance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/epu-omega",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/fabric-induced-memory",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/fi-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/gaussian-memory-fields",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/independent-research-foundry",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/iris-robust-memory",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/krylov-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/lam-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/latent-safety-recovery",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/mahjong",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/ml-invention-foundry",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/ml4industry-portfolio",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/ml4science-portfolio",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/ml4semantic-intelligence",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/neural-predictive-memory-spectroscopy",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/neurocad",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/ngmt-robust-memory",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/olympus-cognitive-architecture",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/pde-surrogate-phase-transitions",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/project-2424",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/quantized-adaptive-transformers",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/residual-event-tokenization",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/ripii-world-models",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/ris-bounded-hessian-study",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/sapir-whorf-latent-language",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/scdmit",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/siderea-transient-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/space-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/spectral-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/speechly",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/weather-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research-atlas/what-survived-the-search-navier-stokes",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap"
+      ]
+    },
+    {
+      "url": "/research/analyze",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/research/index.tsx"
+      ]
+    },
+    {
+      "url": "/research/highlights",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/research/index.tsx"
+      ]
+    },
+    {
+      "url": "/research/submit",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/publications.tsx"
+      ]
+    },
+    {
+      "url": "/saved",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/saved/collections.tsx",
+        "src/routes/dashboard.tsx",
+        "src/components/member/EngagementSummary.tsx"
+      ]
+    },
+    {
+      "url": "/saved/collections",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/saved/index.tsx",
+        "src/components/member/AddToCollectionMenu.tsx",
+        "src/components/member/CollectionsStrip.tsx"
+      ]
+    },
+    {
+      "url": "/search",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/saved/index.tsx",
+        "src/routes/members/$id.tsx",
+        "src/components/landing/SiteHeader.tsx",
+        "src/components/member/ContentCard.tsx"
+      ]
+    },
+    {
+      "url": "/signup",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/login.tsx",
+        "src/routes/projects/index.tsx",
+        "src/routes/projects/$slug.tsx",
+        "src/routes/competitions/$slug.tsx",
+        "src/routes/competitions.tsx",
+        "src/routes/publications.tsx",
+        "src/components/landing/SiteHeader.tsx",
+        "src/components/landing/ContactSection.tsx"
+      ]
+    },
+    {
+      "url": "/terms",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "sitemap",
+        "src/routes/signup.tsx",
+        "src/components/landing/SiteFooter.tsx"
+      ]
+    },
+    {
+      "url": "/workspace",
+      "status": "ROUTE_EXISTS",
+      "sources": [
+        "src/routes/applications/index.tsx",
+        "src/components/member/DashboardHero.tsx"
+      ]
+    },
+    {
+      "url": "https://arxiv.org/abs/1103.4601",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-exploration-offline-evaluation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.236084+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1103.4601",
+        "method": "HEAD",
+        "elapsedSeconds": 0.09
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1312.6114",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-variational-autoencoders"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.236061+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1312.6114",
+        "method": "HEAD",
+        "elapsedSeconds": 0.09
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1406.2661",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-generative-adversarial-networks"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.395973+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1406.2661",
+        "method": "HEAD",
+        "elapsedSeconds": 0.16
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1503.02531",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-distillation-speculative-decoding"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.396978+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1503.02531",
+        "method": "HEAD",
+        "elapsedSeconds": 0.16
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1508.07909",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-tokenization"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.455466+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1508.07909",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1512.03385",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-residual-connections"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.489674+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1512.03385",
+        "method": "HEAD",
+        "elapsedSeconds": 0.09
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1607.06450",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-normalization-layers"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.563543+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1607.06450",
+        "method": "HEAD",
+        "elapsedSeconds": 0.11
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1703.06907",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-simulation-robotics-limits"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.595928+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1703.06907",
+        "method": "HEAD",
+        "elapsedSeconds": 0.11
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1706.03762",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-attention-masks",
+        "guide:how-llms-work",
+        "guide:what-is-attention"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.659705+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1706.03762",
+        "method": "HEAD",
+        "elapsedSeconds": 0.1
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1707.05589",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-fair-compute-comparisons"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.710884+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1707.05589",
+        "method": "HEAD",
+        "elapsedSeconds": 0.11
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1711.05101",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-adamw"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.740910+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1711.05101",
+        "method": "HEAD",
+        "elapsedSeconds": 0.08
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1711.10561",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-physics-informed-networks"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.792585+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1711.10561",
+        "method": "HEAD",
+        "elapsedSeconds": 0.08
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1803.09010",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-label-quality",
+        "guide:ml-vision-error-analysis",
+        "guide:ml-scientific-data-provenance"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.801883+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1803.09010",
+        "method": "HEAD",
+        "elapsedSeconds": 1.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1810.03993",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-model-cards"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.851784+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1810.03993",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1810.04805",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-static-contextual-embeddings",
+        "guide:ml-language-model-objectives"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:40.933756+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1810.04805",
+        "method": "HEAD",
+        "elapsedSeconds": 0.08
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1901.04085",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-chunking-reranking"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.019308+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1901.04085",
+        "method": "HEAD",
+        "elapsedSeconds": 0.09
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/1907.11692",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-ablation-studies"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.091975+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/1907.11692",
+        "method": "HEAD",
+        "elapsedSeconds": 0.07
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2002.05709",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-contrastive-learning"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.157074+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2002.05709",
+        "method": "HEAD",
+        "elapsedSeconds": 0.07
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2003.08505",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-negative-results"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.243723+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2003.08505",
+        "method": "HEAD",
+        "elapsedSeconds": 0.09
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2004.07780",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-shortcut-learning"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.309676+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2004.07780",
+        "method": "HEAD",
+        "elapsedSeconds": 0.07
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2005.00707",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-materials-inverse-design"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.687500+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2005.00707",
+        "method": "HEAD",
+        "elapsedSeconds": 0.38
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2005.11401",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-retrieval-augmented-generation",
+        "guide:ml-causal-memory-interventions"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.753513+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2005.11401",
+        "method": "HEAD",
+        "elapsedSeconds": 0.07
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2006.11239",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-diffusion-models"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.833916+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2006.11239",
+        "method": "HEAD",
+        "elapsedSeconds": 0.08
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2008.03303",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-astronomy-candidate-validation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.086169+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2008.03303",
+        "method": "HEAD",
+        "elapsedSeconds": 0.28
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2010.08895",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-neural-operators",
+        "guide:ml-surrogate-stability-shift"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.896014+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2010.08895",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2010.11929",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-vision-transformer-patches"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:41.994742+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2010.11929",
+        "method": "HEAD",
+        "elapsedSeconds": 0.1
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2012.03245",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-delayed-labels"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.056593+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2012.03245",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2012.07421",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-distribution-shift"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.158053+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2012.07421",
+        "method": "HEAD",
+        "elapsedSeconds": 0.1
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2103.00020",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-clip"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.171129+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2103.00020",
+        "method": "HEAD",
+        "elapsedSeconds": 0.08
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2104.09864",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-position-encoding"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.217721+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2104.09864",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2106.09685",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-lora"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.228137+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2106.09685",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2107.07511",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-conformal-prediction"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.285034+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2107.07511",
+        "method": "HEAD",
+        "elapsedSeconds": 0.07
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2109.08203",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-paired-run-comparisons"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.290051+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2109.08203",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2211.17192",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-distillation-speculative-decoding"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.481160+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2211.17192",
+        "method": "HEAD",
+        "elapsedSeconds": 0.2
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2301.04104",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-latent-dynamics-rollouts"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.481183+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2301.04104",
+        "method": "HEAD",
+        "elapsedSeconds": 0.19
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2301.08243",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-jepa-targets-collapse",
+        "guide:ml-latent-dynamics-rollouts",
+        "guide:what-is-jepa"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.545212+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2301.08243",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2305.14627",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-grounded-answer-evaluation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.545197+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2305.14627",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2308.15560",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-weather-time-baselines"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.624669+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://arxiv.org/abs/2308.15560",
+        "method": "HEAD",
+        "elapsedSeconds": 0.08
+      }
+    },
+    {
+      "url": "https://d2l.ai/chapter_computer-vision/bounding-box.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-object-detection"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:42.949194+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://d2l.ai/chapter_computer-vision/bounding-box.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.4
+      }
+    },
+    {
+      "url": "https://d2l.ai/chapter_computer-vision/image-augmentation.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-image-augmentation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:43.724308+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://d2l.ai/chapter_computer-vision/image-augmentation.html",
+        "method": "HEAD",
+        "elapsedSeconds": 1.1
+      }
+    },
+    {
+      "url": "https://d2l.ai/chapter_computer-vision/semantic-segmentation-and-dataset.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-semantic-segmentation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:44.550333+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://d2l.ai/chapter_computer-vision/semantic-segmentation-and-dataset.html",
+        "method": "HEAD",
+        "elapsedSeconds": 1.6
+      }
+    },
+    {
+      "url": "https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-convolutions"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:43.777598+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.05
+      }
+    },
+    {
+      "url": "https://d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-receptive-fields"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:44.358100+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.58
+      }
+    },
+    {
+      "url": "https://docs.astropy.org/en/stable/coordinates/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-astronomy-candidate-validation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:45.390809+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://docs.astropy.org/en/stable/coordinates/",
+        "method": "HEAD",
+        "elapsedSeconds": 1.03
+      }
+    },
+    {
+      "url": "https://docs.astropy.org/en/stable/table/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-scientific-data-provenance"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:44.919296+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://docs.astropy.org/en/stable/table/",
+        "method": "HEAD",
+        "elapsedSeconds": 0.37
+      }
+    },
+    {
+      "url": "https://docs.materialsproject.org/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-materials-inverse-design"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:45.184310+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.materialsproject.org/",
+        "method": "HEAD",
+        "elapsedSeconds": 0.26
+      }
+    },
+    {
+      "url": "https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/user_guide/batcher.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-inference-batching"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:46.473916+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/user_guide/batcher.html",
+        "method": "HEAD",
+        "elapsedSeconds": 1.29
+      }
+    },
+    {
+      "url": "https://docs.python.org/3.14/library/sqlite3.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-agent-tool-contracts"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:45.911402+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://docs.python.org/3.14/library/sqlite3.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.52
+      }
+    },
+    {
+      "url": "https://docs.python.org/3.14/library/unittest.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-research-environments-tests"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:46.672671+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://docs.python.org/3.14/library/unittest.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.76
+      }
+    },
+    {
+      "url": "https://docs.python.org/3.14/tutorial/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-python-research-functions"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:47.095374+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://docs.python.org/3.14/tutorial/",
+        "method": "HEAD",
+        "elapsedSeconds": 0.62
+      }
+    },
+    {
+      "url": "https://docs.python.org/3.14/tutorial/venv.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-research-environments-tests"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:47.025899+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://docs.python.org/3.14/tutorial/venv.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.36
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/docs/2.14/notes/amp_examples.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-gradient-accumulation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:47.851815+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/docs/2.14/notes/amp_examples.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.83
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/docs/main/generated/torch.nn.CrossEntropyLoss.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-padding-loss-masks"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:47.709599+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/docs/main/generated/torch.nn.CrossEntropyLoss.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.61
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/docs/main/generated/torch.nn.utils.clip_grad_norm_.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-gradient-clipping"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:48.334980+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/docs/main/generated/torch.nn.utils.clip_grad_norm_.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.63
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/docs/main/notes/autograd.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-freezing-parameters"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:48.374522+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/docs/main/notes/autograd.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.52
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/docs/main/notes/randomness.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:paper-to-prototype"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:48.744119+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/docs/main/notes/randomness.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.41
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-training-debugging"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:48.765474+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.39
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-checkpoint-resume"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:49.086332+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.34
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-vision-transfer-learning"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:49.103330+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.34
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/recipes/recipes/amp_recipe.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-mixed-precision"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:49.465496+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/tutorials/recipes/recipes/amp_recipe.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.38
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-inference-latency"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:49.463774+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.36
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/vision/main/generated/torchvision.ops.box_iou.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-intersection-over-union"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:49.871009+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/vision/main/generated/torchvision.ops.box_iou.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.41
+      }
+    },
+    {
+      "url": "https://docs.pytorch.org/vision/main/models.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-pretrained-image-preprocessing"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:49.820196+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://docs.pytorch.org/vision/main/models.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.36
+      }
+    },
+    {
+      "url": "https://finance-meta-landing.vercel.app/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:51.455984+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://finance-meta-landing.vercel.app/",
+        "method": "HEAD",
+        "elapsedSeconds": 1.64
+      }
+    },
+    {
+      "url": "https://finance4all-global-reach.vercel.app/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:54.393222+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://finance4all-global-reach.vercel.app/",
+        "method": "HEAD",
+        "elapsedSeconds": 4.52
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/finance4all-global-reach",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:52.310803+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/finance4all-global-reach",
+        "method": "HEAD",
+        "elapsedSeconds": 0.85
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/FinanceMeta-Landing",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:55.360238+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/FinanceMeta-Landing",
+        "method": "HEAD",
+        "elapsedSeconds": 3.05
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/IRIS",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest",
+        "research:iris-robust-memory"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:47:57.653477+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/IRIS",
+        "method": "HEAD",
+        "elapsedSeconds": 3.26
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/IRIS-Space",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest",
+        "research:siderea-transient-jepa"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:54:57.644206+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/IRIS-Space",
+        "method": "HEAD",
+        "elapsedSeconds": 1.85
+      },
+      "probeHistory": [
+        {
+          "checkedAt": "2026-10-16T05:48:06.670688+00:00",
+          "classification": "NETWORK_UNVERIFIED",
+          "reason": "The read operation timed out",
+          "elapsedSeconds": 11.31
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/build-the-future-11/IRIS-Space/blob/main/docs/SPACE_JEPA_2_IMPLEMENTATION_STATUS_2026-09-19.md",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "research:space-jepa"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T06:16:57.099447+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/IRIS-Space/blob/main/docs/SPACE_JEPA_2_IMPLEMENTATION_STATUS_2026-09-19.md",
+        "method": "HEAD",
+        "elapsedSeconds": 1.2
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/Iy-ERN",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:05.735059+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/Iy-ERN",
+        "method": "HEAD",
+        "elapsedSeconds": 8.03
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/Kyrlov-JEPA",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest",
+        "research:krylov-jepa"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:09.214849+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/Kyrlov-JEPA",
+        "method": "HEAD",
+        "elapsedSeconds": 3.51
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/Kyrlov-JEPA/blob/main/spectral-krylov-jepa/CLAIMS.md",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "research:krylov-jepa"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T06:16:57.139843+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/Kyrlov-JEPA/blob/main/spectral-krylov-jepa/CLAIMS.md",
+        "method": "HEAD",
+        "elapsedSeconds": 1.2
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/Obscured-Records",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:11.969646+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/Obscured-Records",
+        "method": "HEAD",
+        "elapsedSeconds": 5.3
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/olympus-cognitive-architecture",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:15.381704+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/olympus-cognitive-architecture",
+        "method": "HEAD",
+        "elapsedSeconds": 6.15
+      }
+    },
+    {
+      "url": "https://github.com/build-the-future-11/RIS",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:24.907655+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/build-the-future-11/RIS",
+        "method": "HEAD",
+        "elapsedSeconds": 12.94
+      }
+    },
+    {
+      "url": "https://github.com/facebookresearch/faiss/wiki/Faiss-indexes",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-approximate-neighbor-retrieval"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:54:57.421353+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/facebookresearch/faiss/wiki/Faiss-indexes",
+        "method": "HEAD",
+        "elapsedSeconds": 1.63
+      },
+      "probeHistory": [
+        {
+          "checkedAt": "2026-10-16T05:48:24.907532+00:00",
+          "classification": "NETWORK_UNVERIFIED",
+          "reason": "<urlopen error _ssl.c:1064: The handshake operation timed out>",
+          "elapsedSeconds": 9.52
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/Finance-Meta-Research/Eigen-JEPA",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:54:58.294634+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/Finance-Meta-Research/Eigen-JEPA",
+        "method": "HEAD",
+        "elapsedSeconds": 0.87
+      },
+      "probeHistory": [
+        {
+          "checkedAt": "2026-10-16T05:48:34.040082+00:00",
+          "classification": "NETWORK_UNVERIFIED",
+          "reason": "<urlopen error _ssl.c:1064: The handshake operation timed out>",
+          "elapsedSeconds": 9.14
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/Finance-Meta-Research/EigenFinance",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:31.136418+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/Finance-Meta-Research/EigenFinance",
+        "method": "HEAD",
+        "elapsedSeconds": 6.22
+      }
+    },
+    {
+      "url": "https://github.com/Finance-Meta-Research/FI-JEPA",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:54:58.340832+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/Finance-Meta-Research/FI-JEPA",
+        "method": "HEAD",
+        "elapsedSeconds": 0.7
+      },
+      "probeHistory": [
+        {
+          "checkedAt": "2026-10-16T05:48:44.746947+00:00",
+          "classification": "NETWORK_UNVERIFIED",
+          "reason": "The read operation timed out",
+          "elapsedSeconds": 13.59
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/ryangomez010/bu1ld-landing",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:40.221986+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/ryangomez010/bu1ld-landing",
+        "method": "HEAD",
+        "elapsedSeconds": 6.18
+      }
+    },
+    {
+      "url": "https://github.com/THE-BU1LD/EPU",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:41.283514+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/THE-BU1LD/EPU",
+        "method": "HEAD",
+        "elapsedSeconds": 1.06
+      }
+    },
+    {
+      "url": "https://github.com/THE-BU1LD/Fabric-Induced-Memory",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest",
+        "research:fabric-induced-memory"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T06:16:58.716185+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/THE-BU1LD/Fabric-Induced-Memory",
+        "method": "HEAD",
+        "elapsedSeconds": 1.62
+      }
+    },
+    {
+      "url": "https://github.com/THE-BU1LD/GaussianMemory",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:46.629462+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/THE-BU1LD/GaussianMemory",
+        "method": "HEAD",
+        "elapsedSeconds": 5.35
+      }
+    },
+    {
+      "url": "https://github.com/THE-BU1LD/NeuroCAD",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest",
+        "research:neurocad"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:53.883119+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/THE-BU1LD/NeuroCAD",
+        "method": "HEAD",
+        "elapsedSeconds": 9.14
+      }
+    },
+    {
+      "url": "https://github.com/THE-BU1LD/RIPII",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:54.211377+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/THE-BU1LD/RIPII",
+        "method": "HEAD",
+        "elapsedSeconds": 7.58
+      }
+    },
+    {
+      "url": "https://github.com/vertex-studyAI/LAM-JEPA",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest",
+        "research:lam-jepa"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:55.576861+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/vertex-studyAI/LAM-JEPA",
+        "method": "HEAD",
+        "elapsedSeconds": 1.7
+      }
+    },
+    {
+      "url": "https://github.com/vertex-studyAI/vertexED.ai",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:55.528645+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://github.com/vertex-studyAI/vertexED.ai",
+        "method": "HEAD",
+        "elapsedSeconds": 1.32
+      }
+    },
+    {
+      "url": "https://gymnasium.farama.org/introduction/basic_usage/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-mdp-return-contracts",
+        "guide:ml-simulation-robotics-limits"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:55.902625+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://gymnasium.farama.org/introduction/basic_usage/",
+        "method": "HEAD",
+        "elapsedSeconds": 0.37
+      }
+    },
+    {
+      "url": "https://huggingface.co/docs/transformers/en/cache_explanation",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-kv-cache"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:55.874282+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://huggingface.co/docs/transformers/en/cache_explanation",
+        "method": "HEAD",
+        "elapsedSeconds": 0.3
+      }
+    },
+    {
+      "url": "https://huggingface.co/docs/transformers/en/quantization/overview",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-quantization"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:56.156496+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://huggingface.co/docs/transformers/en/quantization/overview",
+        "method": "HEAD",
+        "elapsedSeconds": 0.28
+      }
+    },
+    {
+      "url": "https://huggingface.co/docs/transformers/perplexity",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-perplexity",
+        "guide:how-llms-work"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:56.197494+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://huggingface.co/docs/transformers/perplexity",
+        "method": "HEAD",
+        "elapsedSeconds": 0.29
+      }
+    },
+    {
+      "url": "https://iy-ern.vercel.app/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:03.221594+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://iy-ern.vercel.app/",
+        "method": "HEAD",
+        "elapsedSeconds": 7.06
+      }
+    },
+    {
+      "url": "https://jmlr.org/papers/v15/srivastava14a.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-dropout"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:56.570278+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://jmlr.org/papers/v15/srivastava14a.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.37
+      }
+    },
+    {
+      "url": "https://maziarraissi.github.io/PINNs/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:physics-informed-nns"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:56.937161+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://maziarraissi.github.io/PINNs/",
+        "method": "HEAD",
+        "elapsedSeconds": 0.37
+      }
+    },
+    {
+      "url": "https://miguelhernan.org/whatifbook",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-causal-confounding"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:57.956198+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://miguelhernan.org/whatifbook",
+        "method": "HEAD",
+        "elapsedSeconds": 1.02
+      }
+    },
+    {
+      "url": "https://mitpress.mit.edu/9780262039246/reinforcement-learning/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-mdp-return-contracts",
+        "guide:ml-value-policy-iteration",
+        "guide:ml-exploration-offline-evaluation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:58.204445+00:00",
+        "classification": "ACCESS_RESTRICTED",
+        "httpStatus": 403,
+        "method": "GET",
+        "finalUrl": "https://mitpress.mit.edu/9780262039246/reinforcement-learning/",
+        "elapsedSeconds": 0.25
+      }
+    },
+    {
+      "url": "https://numpy.org/doc/stable/user/basics.broadcasting.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-numpy-shape-contracts"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:58.617738+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://numpy.org/doc/stable/user/basics.broadcasting.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.41
+      }
+    },
+    {
+      "url": "https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/pages/lecture-notes/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-pde-boundary-contracts",
+        "guide:ml-surrogate-stability-shift"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:48:59.075841+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/pages/lecture-notes/",
+        "method": "HEAD",
+        "elapsedSeconds": 0.46
+      }
+    },
+    {
+      "url": "https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-experiment-provenance",
+        "guide:ml-shadow-canary-evaluation",
+        "guide:ml-model-serving-contract"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:00.375869+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/",
+        "method": "HEAD",
+        "elapsedSeconds": 1.3
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-nested-validation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:01.775817+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html",
+        "method": "HEAD",
+        "elapsedSeconds": 1.4
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-data-leakage",
+        "guide:ml-training-serving-parity"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:02.411926+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/common_pitfalls.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.64
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/calibration.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-calibration"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:02.557572+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/calibration.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.15
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/classification_threshold.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-precision-recall-thresholds",
+        "guide:ml-decision-costs"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:02.975505+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/classification_threshold.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.42
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/clustering.html#dbscan",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-dbscan"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:03.294623+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/clustering.html#dbscan",
+        "method": "HEAD",
+        "elapsedSeconds": 0.32
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/clustering.html#k-means",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-kmeans"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:03.317592+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/clustering.html#k-means",
+        "method": "HEAD",
+        "elapsedSeconds": 0.1
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-train-validation-test",
+        "guide:ml-deduplication",
+        "guide:ml-time-aware-features",
+        "guide:ml-grouped-evaluation",
+        "guide:ml-cross-validation"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:03.603542+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/cross_validation.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.31
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/decomposition.html#pca",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-principal-components",
+        "guide:ml-whitening"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:03.621818+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/decomposition.html#pca",
+        "method": "HEAD",
+        "elapsedSeconds": 0.3
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-monotonic-constraints"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:03.939506+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/ensemble.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.34
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html#gradient-boosted-trees",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-gradient-boosting"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:04.702693+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/ensemble.html#gradient-boosted-trees",
+        "method": "HEAD",
+        "elapsedSeconds": 1.08
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html#random-forests-and-other-randomized-tree-ensembles",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-random-forests"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:04.025171+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/ensemble.html#random-forests-and-other-randomized-tree-ensembles",
+        "method": "HEAD",
+        "elapsedSeconds": 0.09
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-baselines"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:04.375839+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.35
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/impute.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-missing-values"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:05.782858+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/impute.html",
+        "method": "HEAD",
+        "elapsedSeconds": 1.41
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/learning_curve.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-learning-curves"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:04.981219+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/learning_curve.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.28
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-linear-regression"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:05.304154+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/linear_model.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.32
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html#lasso",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-lasso-feature-selection"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:05.389157+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/linear_model.html#lasso",
+        "method": "HEAD",
+        "elapsedSeconds": 0.09
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-logistic-regression"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:05.463575+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression",
+        "method": "HEAD",
+        "elapsedSeconds": 0.07
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression-and-classification",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-ridge-regression"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:05.564119+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression-and-classification",
+        "method": "HEAD",
+        "elapsedSeconds": 0.1
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/manifold.html#t-distributed-stochastic-neighbor-embedding-t-sne",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-embedding-visualization"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:05.980858+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/manifold.html#t-distributed-stochastic-neighbor-embedding-t-sne",
+        "method": "HEAD",
+        "elapsedSeconds": 0.42
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/metrics.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-dot-products"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:06.082786+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/metrics.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.3
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/mixture.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-gaussian-mixtures"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:06.337838+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/mixture.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.36
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-loss-functions",
+        "guide:ml-class-imbalance",
+        "guide:ml-roc-pr-curves"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:06.535993+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.45
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-confusion-matrix"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:06.535963+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics",
+        "method": "HEAD",
+        "elapsedSeconds": 0.2
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#pinball-loss",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-quantile-regression"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:06.607523+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/model_evaluation.html#pinball-loss",
+        "method": "HEAD",
+        "elapsedSeconds": 0.07
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-regression-metrics"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:06.607644+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics",
+        "method": "HEAD",
+        "elapsedSeconds": 0.07
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/naive_bayes.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-naive-bayes"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:06.907660+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/naive_bayes.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.3
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/neighbors.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-nearest-neighbors"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:06.931678+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/neighbors.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.32
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/permutation_importance.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-permutation-importance"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:07.228454+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/permutation_importance.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.32
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/preprocessing.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-categorical-encoding",
+        "guide:ml-feature-scaling"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:07.385276+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/preprocessing.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.45
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/svm.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-support-vector-machines"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:07.612945+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/svm.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.38
+      }
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/tree.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-decision-trees"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:07.448373+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://scikit-learn.org/stable/modules/tree.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.06
+      }
+    },
+    {
+      "url": "https://sigsim.acm.org/conf/pads/2024/blog/artifact-evaluation/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-reproduction-replication"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:08.713739+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://sigsim.acm.org/conf/pads/2024/blog/artifact-evaluation/",
+        "method": "HEAD",
+        "elapsedSeconds": 1.27
+      }
+    },
+    {
+      "url": "https://tally.so/r/1AeYbO",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "src/routes/forms.tsx"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:08.063328+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://tally.so/r/1AeYbO",
+        "method": "HEAD",
+        "elapsedSeconds": 0.45
+      }
+    },
+    {
+      "url": "https://thebu1ld.com",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio-manifest.json",
+      "status": "LOCAL_ARTIFACT_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/apen-pen",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/atg",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/bu1ld-nexus",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/eigen-finance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/eigen-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/esnf",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/financemeta",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/genesis-econ",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/lgwm",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/montecarlo",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/neurocad",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/nfgm",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/npms",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/obscured-records-agent",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/olympus",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/pi-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/project-genesis",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/ripii-ipii",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/vertexed",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/portfolio/visualization-scratch",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/adaptive-theory-geometry",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/apen-synthica",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/assumption-integrity",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/causal-memory-use",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/colorworld",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/counterfactual-defect-worlds",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/eigen-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/eigenfinance",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/epu-omega",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/fabric-induced-memory",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/fi-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/gaussian-memory-fields",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/independent-research-foundry",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/iris-robust-memory",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/krylov-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/lam-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/latent-safety-recovery",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/mahjong",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/ml-invention-foundry",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/ml4industry-portfolio",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/ml4science-portfolio",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/ml4semantic-intelligence",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/neural-predictive-memory-spectroscopy",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/neurocad",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/ngmt-robust-memory",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/olympus-cognitive-architecture",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/pde-surrogate-phase-transitions",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/project-2424",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/quantized-adaptive-transformers",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/residual-event-tokenization",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/ripii-world-models",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/ris-bounded-hessian-study",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/sapir-whorf-latent-language",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/scdmit",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/siderea-transient-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/space-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/spectral-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/speechly",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/weather-jepa",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://thebu1ld.com/research-atlas/what-survived-the-search-navier-stokes",
+      "status": "STATIC_PUBLIC_RECORD_EXISTS",
+      "sources": [
+        "public portfolio manifest"
+      ]
+    },
+    {
+      "url": "https://vertex-ed-ai.vercel.app/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "public portfolio manifest"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:09.776233+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://vertex-ed-ai.vercel.app/",
+        "method": "HEAD",
+        "elapsedSeconds": 1.71
+      }
+    },
+    {
+      "url": "https://weatherbench2.readthedocs.io/en/latest/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-weather-time-baselines"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:09.100747+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://weatherbench2.readthedocs.io/en/latest/",
+        "method": "HEAD",
+        "elapsedSeconds": 0.39
+      }
+    },
+    {
+      "url": "https://www.cs.mcgill.ca/~jpineau/ReproducibilityChecklist.pdf",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:paper-to-prototype"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:10.299444+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://www.cs.mcgill.ca/~jpineau/ReproducibilityChecklist.pdf",
+        "method": "HEAD",
+        "elapsedSeconds": 1.2
+      }
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/autoencoders.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-autoencoders"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:10.124778+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.deeplearningbook.org/contents/autoencoders.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.35
+      }
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/linear_algebra.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-vectors-matrices"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:10.428014+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.deeplearningbook.org/contents/linear_algebra.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.3
+      }
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/ml.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-supervised-unsupervised",
+        "guide:ml-likelihood-not-posterior"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:10.857186+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.deeplearningbook.org/contents/ml.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.56
+      }
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/mlp.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-backpropagation",
+        "guide:ml-activation-functions",
+        "guide:math-behind-ai"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:10.809213+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.deeplearningbook.org/contents/mlp.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.38
+      }
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/numerical.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:math-behind-ai"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:11.584791+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.deeplearningbook.org/contents/numerical.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.77
+      }
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/optimization.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-gradient-descent",
+        "guide:ml-weight-initialization",
+        "guide:ml-minibatch-training",
+        "guide:ml-momentum"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:11.552524+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.deeplearningbook.org/contents/optimization.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.69
+      }
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/prob.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-probability-conditioning",
+        "guide:ml-expectation-variance",
+        "guide:ml-entropy-cross-entropy"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:12.169400+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.deeplearningbook.org/contents/prob.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.61
+      }
+    },
+    {
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-practical-effect-size"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:13.329620+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm",
+        "method": "HEAD",
+        "elapsedSeconds": 1.75
+      }
+    },
+    {
+      "url": "https://www.jmlr.org/papers/v11/cawley10a.html",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-multiple-comparisons"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:12.628875+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.jmlr.org/papers/v11/cawley10a.html",
+        "method": "HEAD",
+        "elapsedSeconds": 0.46
+      }
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9110.html#name-idempotent-methods",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-agent-tool-contracts"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:13.021839+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.rfc-editor.org/rfc/rfc9110.html#name-idempotent-methods",
+        "method": "HEAD",
+        "elapsedSeconds": 0.39
+      }
+    },
+    {
+      "url": "https://www.stat.cmu.edu/~cshalizi/uADA/16/lectures/23.pdf",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-causal-memory-interventions"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:14.570730+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://www.stat.cmu.edu/~cshalizi/uADA/16/lectures/23.pdf",
+        "method": "HEAD",
+        "elapsedSeconds": 1.55
+      }
+    },
+    {
+      "url": "https://www.statlearning.com/",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-problem-framing",
+        "guide:ml-bias-variance",
+        "guide:ml-bootstrap-intervals",
+        "guide:ml-falsifiable-hypotheses"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:13.854398+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 206,
+        "finalUrl": "https://www.statlearning.com/",
+        "method": "HEAD",
+        "elapsedSeconds": 0.53
+      }
+    },
+    {
+      "url": "https://www.tensorflow.org/tfx/guide/tfdv",
+      "status": "EXTERNAL_CHECKED",
+      "sources": [
+        "guide:ml-data-pipeline-contracts",
+        "guide:ml-drift-monitoring"
+      ],
+      "probe": {
+        "checkedAt": "2026-10-16T05:49:15.548775+00:00",
+        "classification": "REACHABLE",
+        "httpStatus": 200,
+        "finalUrl": "https://www.tensorflow.org/tfx/guide/tfdv",
+        "method": "HEAD",
+        "elapsedSeconds": 1.69
+      }
+    }
+  ],
+  "externalProbe": {
+    "checkedAt": "2026-10-16T06:16:58.716476+00:00",
+    "counts": {
+      "REACHABLE": 148,
+      "ACCESS_RESTRICTED": 1
+    },
+    "scope": "Unauthenticated bounded HEAD, GET fallback headers only; reachability does not verify content, ownership, submission, or publication permission."
+  }
+}

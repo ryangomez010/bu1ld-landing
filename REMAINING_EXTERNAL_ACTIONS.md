@@ -1,3 +1,7 @@
+> Current status (2026-10-21): [local fixes and remaining acceptance work](docs/COMPLETION_2026-10-21.md). Migration target: **phase40**. Production remains blocked; older phase counts and completion statements below are historical.
+
+> Current successor status (2026-10-16): see [the local website completion report](docs/WEBSITE_STATUS_2026-10-16.md). BU1LD-Web is the approved source; the user requested local work and waiting for connection. Older results below remain historical and do not certify this source snapshot.
+
 # Remaining External Actions
 
 Only credentialed or external-approval steps remain.

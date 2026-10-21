@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AuthLayout } from "@/components/auth/AuthLayout";
@@ -22,6 +22,12 @@ import { sendEmail, welcomeEmail } from "@/lib/email";
 import { consumePostAuthRedirect, postAuthNavigateTarget } from "@/lib/post-auth-redirect";
 import { isSafeUrl } from "@/lib/urls";
 import type { MemberBackground } from "@/lib/types";
+import {
+  clearOnboardingDraft,
+  loadOnboardingDraft,
+  saveOnboardingDraft,
+  validateOnboardingDetails,
+} from "@/lib/onboarding-draft";
 
 export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
@@ -33,47 +39,26 @@ export const Route = createFileRoute("/onboarding")({
 const STEPS = ["About you", "Background", "Links", "Timezone"] as const;
 
 function OnboardingPage() {
+  const { user } = useAuth();
   return (
     <RequireAuth>
-      <OnboardingForm />
+      <OnboardingForm key={user?.id} />
     </RequireAuth>
   );
-}
-
-const ONBOARDING_DRAFT_KEY = "build:onboarding-draft";
-
-type OnboardingDraft = {
-  step: number;
-  fullName: string;
-  bio: string;
-  background: MemberBackground;
-  interests: string[];
-  githubUrl: string;
-  linkedinUrl: string;
-  timezone: string;
-};
-
-function loadDraft(): Partial<OnboardingDraft> {
-  if (typeof window === "undefined") return {};
-  try {
-    return JSON.parse(localStorage.getItem(ONBOARDING_DRAFT_KEY) ?? "{}") as OnboardingDraft;
-  } catch {
-    return {};
-  }
-}
-
-function saveDraft(draft: OnboardingDraft) {
-  try {
-    localStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(draft));
-  } catch {
-    /* ignore */
-  }
 }
 
 function OnboardingForm() {
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
-  const draft = loadDraft();
+  const redirecting = useRef(false);
+  const finishRedirect = useCallback(() => {
+    if (redirecting.current) return;
+    redirecting.current = true;
+    const target = postAuthNavigateTarget(consumePostAuthRedirect());
+    if ("href" in target) window.location.assign(target.href);
+    else void navigate(target);
+  }, [navigate]);
+  const [draft] = useState(() => loadOnboardingDraft(user?.id ?? ""));
   const [step, setStep] = useState(draft.step ?? 0);
   const [fullName, setFullName] = useState(draft.fullName ?? "");
   const [bio, setBio] = useState(draft.bio ?? "");
@@ -82,16 +67,16 @@ function OnboardingForm() {
   const [githubUrl, setGithubUrl] = useState(draft.githubUrl ?? "");
   const [linkedinUrl, setLinkedinUrl] = useState(draft.linkedinUrl ?? "");
   const [timezone, setTimezone] = useState(draft.timezone ?? "");
-  const [availabilityHours, setAvailabilityHours] = useState("");
-  const [experienceLevel, setExperienceLevel] = useState("");
-  const [desiredRoles, setDesiredRoles] = useState("");
+  const [availabilityHours, setAvailabilityHours] = useState(draft.availabilityHours ?? "");
+  const [experienceLevel, setExperienceLevel] = useState(draft.experienceLevel ?? "");
+  const [desiredRoles, setDesiredRoles] = useState(draft.desiredRoles ?? "");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (profile?.onboarding_completed) {
-      void navigate(postAuthNavigateTarget(consumePostAuthRedirect()));
+      finishRedirect();
     }
-  }, [profile, navigate]);
+  }, [profile, finishRedirect]);
 
   useEffect(() => {
     if (!profile && !fullName && user) {
@@ -109,7 +94,7 @@ function OnboardingForm() {
   }, [profile, user, fullName, timezone]);
 
   useEffect(() => {
-    saveDraft({
+    saveOnboardingDraft(user?.id ?? "", {
       step,
       fullName,
       bio,
@@ -118,8 +103,24 @@ function OnboardingForm() {
       githubUrl,
       linkedinUrl,
       timezone,
+      availabilityHours,
+      experienceLevel,
+      desiredRoles,
     });
-  }, [step, fullName, bio, background, interests, githubUrl, linkedinUrl, timezone]);
+  }, [
+    user?.id,
+    step,
+    fullName,
+    bio,
+    background,
+    interests,
+    githubUrl,
+    linkedinUrl,
+    timezone,
+    availabilityHours,
+    experienceLevel,
+    desiredRoles,
+  ]);
 
   const toggleInterest = (interest: string) => {
     setInterests((prev) =>
@@ -129,7 +130,17 @@ function OnboardingForm() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || submitting) return;
+    if (step < STEPS.length - 1) {
+      if (canNext) setStep((current) => current + 1);
+      return;
+    }
+    const invalid = validateOnboardingDetails(fullName, interests);
+    if (invalid) {
+      setStep(invalid.step);
+      toast.error(invalid.error);
+      return;
+    }
     if (githubUrl.trim() && !isSafeUrl(githubUrl)) {
       toast.error("GitHub URL must use http:// or https://");
       return;
@@ -160,13 +171,9 @@ function OnboardingForm() {
         void sendEmail({ to: user.email, ...mail });
       }
       await refreshProfile();
-      try {
-        localStorage.removeItem(ONBOARDING_DRAFT_KEY);
-      } catch {
-        /* ignore */
-      }
+      clearOnboardingDraft(user.id);
       toast.success("You're in. Welcome to The Bu1ld.");
-      void navigate(postAuthNavigateTarget(consumePostAuthRedirect()));
+      finishRedirect();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not save profile.");
     } finally {
@@ -175,7 +182,7 @@ function OnboardingForm() {
   };
 
   const canNext =
-    step === 0 ? fullName.trim().length > 0 : step === 1 ? interests.length > 0 : true;
+    step === 0 ? fullName.trim().length >= 2 : step === 1 ? interests.length > 0 : true;
 
   return (
     <AuthLayout
@@ -399,8 +406,8 @@ function OnboardingForm() {
         </div>
       </form>
       <p className="mt-4 text-center text-xs text-muted-foreground">
-        <Link to="/dashboard" className="hover:text-bone transition">
-          Skip for now — go to your dashboard →
+        <Link to="/" className="hover:text-bone transition">
+          Finish later — return to the public site →
         </Link>
       </p>
     </AuthLayout>

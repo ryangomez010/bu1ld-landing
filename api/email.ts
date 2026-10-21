@@ -3,6 +3,7 @@
  * Env: RESEND_API_KEY, EMAIL_API_SECRET, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
 import { handleEmailRequest, type EmailEnv } from "../src/lib/email-handler";
+import { sendFetchResponse, serverRequestUrl } from "../src/lib/server-request";
 
 type VercelReq = {
   method?: string;
@@ -21,18 +22,12 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     else if (Array.isArray(value)) headers.set(key, value.join(", "));
   }
 
-  const hostHeader = req.headers["x-forwarded-host"] ?? req.headers.host;
-  const host = (Array.isArray(hostHeader) ? hostHeader[0] : hostHeader) ?? "localhost";
-  const protoHeader = req.headers["x-forwarded-proto"];
-  const proto = (Array.isArray(protoHeader) ? protoHeader[0] : protoHeader) ?? "https";
-
-  const request = new Request(`${proto}://${host}/api/email`, {
+  const request = new Request(serverRequestUrl("/api/email", req.headers, process.env), {
     method: req.method ?? "GET",
     headers,
     body: req.method === "POST" ? JSON.stringify(req.body) : undefined,
   });
 
   const response = await handleEmailRequest(request, process.env as EmailEnv);
-  const text = await response.text();
-  res.status(response.status).send(text);
+  await sendFetchResponse(response, res, request.url.startsWith("https://"));
 }

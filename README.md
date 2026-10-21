@@ -20,18 +20,18 @@ Open `http://localhost:3000`
 
 ## Environment
 
-| Variable                         | Required              | Notes                                                     |
-| -------------------------------- | --------------------- | --------------------------------------------------------- |
-| `VITE_SUPABASE_URL`              | for live auth/data    | Supabase project URL                                      |
-| `VITE_SUPABASE_ANON_KEY`         | for live auth/data    | anon/public key                                           |
-| `VITE_EMAIL_ENDPOINT`            | recommended for email | Server/edge URL that sends mail with a private Resend key |
-| `VITE_ACCOUNT_DELETION_ENDPOINT` | for account deletion  | Server/edge URL for account deletion handler              |
-| `VITE_RESEND_API_KEY`            | local only            | Do **not** use in production client builds                |
+| Variable                         | Required              | Notes                                                      |
+| -------------------------------- | --------------------- | ---------------------------------------------------------- |
+| `VITE_SUPABASE_URL`              | for live auth/data    | Supabase project URL                                       |
+| `VITE_SUPABASE_ANON_KEY`         | for live auth/data    | anon/public key                                            |
+| `VITE_EMAIL_ENDPOINT`            | recommended for email | Same-origin server/edge path that sends mail               |
+| `VITE_ACCOUNT_DELETION_ENDPOINT` | for account deletion  | Same-origin server/edge path for account deletion          |
+| `BU1LD_SITE_ORIGIN`              | server deployments    | Canonical HTTPS origin used by serverless request adapters |
 
 ## Supabase setup
 
 1. Run `bun run supabase:apply` with `SUPABASE_DB_PASSWORD`, or paste `supabase/FINAL_SETUP.sql` into the SQL editor.
-   - Existing projects: apply every missing incremental phase through `phase32.sql`. The later phases add research paths, datasets, public evidence, project brief validation, integrity RPCs, and a hard ban on contribution self-review.
+   - Existing projects: apply every missing incremental phase through `phase38.sql`. The later phases add research paths, datasets, public evidence, project brief validation, integrity RPCs, a hard ban on contribution self-review, atomic applications, member-only reads for unpublished project workspaces, event/editorial workflows, RPC privilege hardening, and database-enforced notification paths.
    - Seed/update content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_DB_PASSWORD`) or paste `supabase/seed-data.sql` in the SQL editor.
    - Apply a single phase: `bun run supabase:apply-phase -- phase12.sql`
 2. Seed demo content: `bun run supabase:seed` (needs `SUPABASE_SERVICE_ROLE_KEY` or DB password), or paste `supabase/seed-data.sql`.
@@ -69,7 +69,7 @@ Deploy `api/email.ts` on Vercel (or use `/api/email` on Cloudflare via `src/serv
 | `SUPABASE_SERVICE_ROLE_KEY` | Resolve recipient email by `userId`                |
 | `EMAIL_FROM`                | Optional sender override                           |
 
-Client: set `VITE_EMAIL_ENDPOINT`. In production, the client sends the signed-in Supabase session;
+Client: set `VITE_EMAIL_ENDPOINT` to a same-origin path or URL. In production, the client sends the signed-in Supabase session;
 do not expose any email or automation secret through a `VITE_` variable.
 
 ## Digest emails
@@ -136,7 +136,7 @@ bun run release:prod
 ```
 
 That strict gate runs type checks, tests, lint, the production build, live table verification, and
-RLS verification. It must pass after applying all schema phases through `phase32.sql`, configuring
+RLS verification. It must pass after applying all schema phases through `phase38.sql`, configuring
 Supabase site URL and redirect URLs, setting provider secrets, configuring the daily digest cron, and
 verifying the email sender domain. Then run final smoke tests with separate visitor, member,
 project lead, reviewer, and administrator accounts.

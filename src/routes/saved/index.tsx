@@ -18,7 +18,7 @@ import {
   loadSavedPagePrefs,
   saveSavedPagePrefs,
   savedItemHref,
-  toggleSaved,
+  toggleSavedWithReceipt,
 } from "@/lib/saved";
 import type { SavedItem, SavedItemType } from "@/lib/types";
 
@@ -85,7 +85,17 @@ function SavedContent() {
 
   const onUnsave = async (item: SavedItem) => {
     if (!user) return;
-    await toggleSaved(user.id, item.item_type, item.item_slug, item.item_title);
+    const result = await toggleSavedWithReceipt(
+      user.id,
+      item.item_type,
+      item.item_slug,
+      item.item_title,
+      false,
+    );
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
     toast.success("Removed from saved");
     reload();
   };
@@ -98,6 +108,7 @@ function SavedContent() {
     );
     if (error) {
       toast.error(error);
+      reload();
       return;
     }
     toast.success(`Removed ${filtered.length} item(s)`);

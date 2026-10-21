@@ -1,0 +1,92 @@
+{
+  "testedInterpreter": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "executedAt": "2026-10-16",
+  "mode": "CPU smoke; sequential; no network",
+  "runs": [
+    {
+      "file": "01_engineering.py",
+      "exitCode": 0,
+      "wallSeconds": 0.27978,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"mean_cm\": 1.0, \"missing\": 1, \"mse\": 1.0, \"observed\": 2}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "02_mathematics.py",
+      "exitCode": 0,
+      "wallSeconds": 0.12171,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"gradient\": -6, \"next_loss\": 5.76, \"next_weight\": 0.6, \"precision\": 0.15384615}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "03_classical.py",
+      "exitCode": 0,
+      "wallSeconds": 0.14421,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"all_positive_brier\": 0.5, \"brier\": 0.04, \"intercept\": 1.0, \"slope\": 2.0}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "04_deep_learning.py",
+      "exitCode": 0,
+      "wallSeconds": 0.17817,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"d_bias\": 4.0, \"d_weight\": 12.0, \"loss\": 4.0, \"prediction\": 7.0, \"updated_loss\": 2.56}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "05_language.py",
+      "exitCode": 0,
+      "wallSeconds": 0.22974,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"adapter_parameters\": 800, \"causal_mask\": [[1, 0, 0], [1, 1, 0], [1, 1, 1]], \"weights\": [0.26894142, 0.73105858, 0.0]}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "06_representations.py",
+      "exitCode": 0,
+      "wallSeconds": 0.11738,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"collapsed_variance\": 0.0, \"original_variance\": 2.66666667, \"stable_error_h10\": 0.07017746, \"unstable_error_h10\": 0.75594369}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "07_scientific_ml.py",
+      "exitCode": 0,
+      "wallSeconds": 0.23112,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"step1\": [0.0, 0.25, 0.5, 0.25, 0.0], \"step2\": [0.0, 0.25, 0.375, 0.25, 0.0], \"unstable_step\": [0.0, 0.75, -0.5, 0.75, 0.0]}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "08_memory_agents.py",
+      "exitCode": 0,
+      "wallSeconds": 0.21614,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"absent_accuracy\": 0.0, \"durable_in_fake_only\": false, \"receipt_count\": 1, \"receipt_id\": \"receipt-1\", \"relevant_accuracy\": 1.0}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "09_efficiency.py",
+      "exitCode": 0,
+      "wallSeconds": 0.13659,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"absolute_error\": 0.04, \"break_even_tokens\": 1.6, \"cache_bytes\": 25600, \"ideal_speedup\": 2.5, \"quantized\": 3, \"reconstructed\": 0.3}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "10_domain_ml.py",
+      "exitCode": 0,
+      "wallSeconds": 0.14506,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"all_candidate_confirmation_rate\": \"unknown due to selective follow-up\", \"available_labels\": [\"a\"], \"followed_up_confirmation_fraction\": 0.25, \"model_mae\": 1.0, \"paired_differences\": [-1, -1, 1], \"persistence_mae\": 1.33333333}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "11_decision_systems.py",
+      "exitCode": 0,
+      "wallSeconds": 0.13571,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"bounded_trajectory\": [3.0, 2.0, 1.0, 0.5], \"discounted_return\": 2.75, \"one_step_ips\": 1.0, \"stop_value\": 2, \"wait_value\": 2.0}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    },
+    {
+      "file": "12_research_practice.py",
+      "exitCode": 0,
+      "wallSeconds": 0.16927,
+      "stdout": "{\"mode\": \"smoke\", \"python\": \"3.14.7\", \"results\": {\"conclusion\": \"tiny illustrative fixture; no scientific validation\", \"improving_pairs\": 3, \"mean_difference\": -0.5, \"paired_differences\": [-1, -1, 1, -1], \"two_sided_sign_randomization_p\": 0.625}, \"seed\": 20261016, \"status\": \"passed\"}",
+      "stderr": ""
+    }
+  ],
+  "passed": 12
+}

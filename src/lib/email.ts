@@ -1,10 +1,8 @@
-/**
- * Email layer — prefer a server/edge path in production.
- * Client Resend via VITE_RESEND_API_KEY is for local/dev only.
- */
+/** Email layer — all delivery goes through the server/edge endpoint. */
 
 import { logClientError } from "@/lib/client-log";
 import { getSupabase } from "@/lib/supabase";
+import { resolveBearerServiceEndpoint } from "@/lib/service-endpoint";
 
 export type EmailPayload = {
   to?: string;
@@ -23,11 +21,6 @@ function escapeHtml(value: string): string {
 
 async function buildEmailHeaders(): Promise<Record<string, string>> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (!import.meta.env.PROD) {
-    const secret = import.meta.env.VITE_EMAIL_API_SECRET as string | undefined;
-    if (secret) headers.Authorization = `Bearer ${secret}`;
-    return headers;
-  }
   const supabase = getSupabase();
   const { data } = (await supabase?.auth.getSession()) ?? { data: { session: null } };
   const token = data.session?.access_token;
@@ -37,15 +30,11 @@ async function buildEmailHeaders(): Promise<Record<string, string>> {
 
 function resolveEmailEndpoint(): string | undefined {
   const edgeUrl = import.meta.env.VITE_EMAIL_ENDPOINT as string | undefined;
-  if (!edgeUrl?.trim()) return undefined;
-  try {
-    const parsed = new URL(edgeUrl.trim());
-    if (parsed.protocol !== "https:" && import.meta.env.PROD) return undefined;
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return undefined;
-    return parsed.toString();
-  } catch {
-    return undefined;
-  }
+  return resolveBearerServiceEndpoint(
+    edgeUrl,
+    import.meta.env.PROD,
+    typeof window === "undefined" ? undefined : window.location.origin,
+  );
 }
 
 export function welcomeEmail(name: string): Pick<EmailPayload, "subject" | "html"> {
@@ -105,6 +94,8 @@ export async function sendEmail(payload: EmailPayload): Promise<{ sent: boolean;
         method: "POST",
         headers: await buildEmailHeaders(),
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(15000),
+        redirect: "error",
       });
       if (!res.ok) {
         const detail = await res.text();
@@ -123,43 +114,8 @@ export async function sendEmail(payload: EmailPayload): Promise<{ sent: boolean;
     return { sent: false, error: "Set VITE_EMAIL_ENDPOINT for production email" };
   }
 
-  if (!payload.to) {
-    return { sent: false, error: "Recipient email required without edge endpoint" };
-  }
-
-  const apiKey = import.meta.env.VITE_RESEND_API_KEY as string | undefined;
-  if (!apiKey) {
-    if (import.meta.env.DEV) {
-      console.info("[email:preview]", payload.subject, "→", payload.to ?? payload.userId);
-    }
-    return { sent: false, error: "Email not configured" };
-  }
-
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "The Bu1ld <hello@thebu1ld.com>",
-        to: payload.to,
-        subject: payload.subject,
-        html: payload.html,
-      }),
-    });
-    if (!res.ok) {
-      const detail = await res.text();
-      logClientError("email:resend", detail, { subject: payload.subject });
-      return { sent: false, error: detail };
-    }
-    return { sent: true };
-  } catch (e) {
-    const message = e instanceof Error ? e.message : "Send failed";
-    logClientError("email:resend", e, { subject: payload.subject });
-    return { sent: false, error: message };
-  }
+  console.info("[email:preview]", payload.subject, "→", payload.to ?? payload.userId);
+  return { sent: false, error: "Set VITE_EMAIL_ENDPOINT to send email" };
 }
 
 /** Send email to another user via the edge endpoint (service-role lookup). */

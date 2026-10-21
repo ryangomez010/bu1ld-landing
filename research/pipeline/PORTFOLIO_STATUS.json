@@ -1,0 +1,680 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-10T17:56:42.033Z",
+  "bindings_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/SOURCE_BINDINGS.json",
+  "summary": {
+    "project_count": 20,
+    "created_count": 0,
+    "bound_source_count": 17,
+    "unresolved_source_count": 3,
+    "research_complete_count": 0
+  },
+  "projects": [
+    {
+      "id": "bu1ld-nexus",
+      "name": "The BU1LD Nexus",
+      "classification": "PRODUCT",
+      "source_exists": true,
+      "source_status": "BOUND_CURRENT_CHECKOUT",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web",
+      "source_commit": "daa80c1124b2a6d7d09b7669e04d29e50cffcbbe",
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 2,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/bu1ld-nexus/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/bu1ld-nexus/HISTORY.jsonl",
+      "next_actions": [
+        "Review whether the research pipeline applies to this product/archive and record the decision.",
+        "Preserve product release gates separately from scientific checkpoints."
+      ]
+    },
+    {
+      "id": "financemeta",
+      "name": "FinanceMeta / Finance4All Global Reach",
+      "classification": "PRODUCT",
+      "source_exists": true,
+      "source_status": "BOUND_RELOCATED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Finance4all-Web/finance4all-global-reach",
+      "source_commit": "7e5bb0ca4bba61c6fa2960b3b8ee99d7cd89c41f",
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 2,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/financemeta/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/financemeta/HISTORY.jsonl",
+      "next_actions": [
+        "Review whether the research pipeline applies to this product/archive and record the decision.",
+        "Preserve product release gates separately from scientific checkpoints."
+      ]
+    },
+    {
+      "id": "project-genesis",
+      "name": "Project Genesis",
+      "classification": "FLAGSHIP",
+      "source_exists": true,
+      "source_status": "BOUND_ARCHIVED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Genesis",
+      "source_commit": "aaca671b27b3186659caad7f06f95335469f42f1",
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/project-genesis/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/project-genesis/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "genesis-econ",
+      "name": "GenesisE / Genesis Economics Edition",
+      "classification": "CORE",
+      "source_exists": true,
+      "source_status": "BOUND_ARCHIVED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/GenesisE",
+      "source_commit": "399473ef144e5eedd393eea24b6c2ea65b12e568",
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/genesis-econ/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/genesis-econ/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "montecarlo",
+      "name": "MonteCarlo",
+      "classification": "ARCHIVE",
+      "source_exists": true,
+      "source_status": "BOUND_EMPTY_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Everything Else/MonteCarlo",
+      "source_commit": null,
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 2,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/montecarlo/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/montecarlo/HISTORY.jsonl",
+      "next_actions": [
+        "Review whether the research pipeline applies to this product/archive and record the decision.",
+        "Preserve product release gates separately from scientific checkpoints."
+      ]
+    },
+    {
+      "id": "visualization-scratch",
+      "name": "Codex visualization scratch root",
+      "classification": "ARCHIVE",
+      "source_exists": false,
+      "source_status": "UNRESOLVED_NON_PROJECT",
+      "source_path": null,
+      "source_commit": null,
+      "source_dirty": null,
+      "contract": {
+        "required": 9,
+        "complete": 2,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/visualization-scratch/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/visualization-scratch/HISTORY.jsonl",
+      "next_actions": [
+        "Resolve and verify the authoritative source identity before implementation.",
+        "Define the exact research question, falsifier, scope, and budgets."
+      ]
+    },
+    {
+      "id": "olympus",
+      "name": "Olympus",
+      "classification": "RESEARCH_PLATFORM",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/olympus-cognitive-architecture",
+      "source_commit": "88cc23517e758e4fcd48d5bf08e269973a36f125",
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/olympus/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/olympus/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "vertexed",
+      "name": "VertexED",
+      "classification": "PRODUCT",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/vertexED.ai",
+      "source_commit": "e28f24ff1c051eaa91b5443a79fe392987d0c688",
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 2,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/vertexed/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/vertexed/HISTORY.jsonl",
+      "next_actions": [
+        "Review whether the research pipeline applies to this product/archive and record the decision.",
+        "Preserve product release gates separately from scientific checkpoints."
+      ]
+    },
+    {
+      "id": "obscured-records-agent",
+      "name": "Obscured Records Agent",
+      "classification": "PRODUCT",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Obscured-Records",
+      "source_commit": "925dec375b4b5b90a7bad72cc270153b9d5d7799",
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 2,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/obscured-records-agent/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/obscured-records-agent/HISTORY.jsonl",
+      "next_actions": [
+        "Review whether the research pipeline applies to this product/archive and record the decision.",
+        "Preserve product release gates separately from scientific checkpoints."
+      ]
+    },
+    {
+      "id": "pi-jepa",
+      "name": "PI-JEPA",
+      "classification": "RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_RECOVERED_SOURCE",
+      "source_path": "/Volumes/PRO-BLADE/.portfolio/verification/jepa-source-recovery-20260924/R15-porous-source",
+      "source_commit": "bdfbe9613aecb504c1b419ec97ad5d30a1517f32",
+      "source_dirty": false,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/pi-jepa/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/pi-jepa/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "apen-pen",
+      "name": "APEN / PEN",
+      "classification": "RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/APEN-Synthica",
+      "source_commit": "3b0eb839d4164aa83abaf527a222e5c020c74f4f",
+      "source_dirty": true,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/apen-pen/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/apen-pen/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "ripii-ipii",
+      "name": "RIPII / IPII",
+      "classification": "RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_PARTIAL_IDENTITY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/RIPII",
+      "source_commit": "317a6ec4163134a56cdc56ce3fd20f5a43decfb4",
+      "source_dirty": false,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/ripii-ipii/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/ripii-ipii/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "eigen-jepa",
+      "name": "Eigen-JEPA",
+      "classification": "RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/Eigen-JEPA",
+      "source_commit": "cf3a1bd29c91c637c63dacf6813f801d8f76c337",
+      "source_dirty": false,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/eigen-jepa/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/eigen-jepa/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "eigen-finance",
+      "name": "Eigen-Finance",
+      "classification": "RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/EigenFinance",
+      "source_commit": "8c9f34947fb2c50dbb55cabc8f3759f37ab2443c",
+      "source_dirty": false,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/eigen-finance/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/eigen-finance/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "lgwm",
+      "name": "LGWM",
+      "classification": "RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/LGWM-Hedge-Fund",
+      "source_commit": "53436239bad1afc9b633e54909920bc9f1e19e53",
+      "source_dirty": false,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/lgwm/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/lgwm/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "esnf",
+      "name": "ESNF",
+      "classification": "RESEARCH",
+      "source_exists": false,
+      "source_status": "UNRESOLVED_NO_LOCAL_OR_ORG_REPOSITORY",
+      "source_path": null,
+      "source_commit": null,
+      "source_dirty": null,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/esnf/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/esnf/HISTORY.jsonl",
+      "next_actions": [
+        "Resolve and verify the authoritative source identity before implementation.",
+        "Define the exact research question, falsifier, scope, and budgets."
+      ]
+    },
+    {
+      "id": "nfgm",
+      "name": "NFGM",
+      "classification": "RESEARCH",
+      "source_exists": false,
+      "source_status": "UNRESOLVED_NO_LOCAL_OR_ORG_REPOSITORY",
+      "source_path": null,
+      "source_commit": null,
+      "source_dirty": null,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/nfgm/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/nfgm/HISTORY.jsonl",
+      "next_actions": [
+        "Resolve and verify the authoritative source identity before implementation.",
+        "Define the exact research question, falsifier, scope, and budgets."
+      ]
+    },
+    {
+      "id": "npms",
+      "name": "NPMS",
+      "classification": "RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/NPMS",
+      "source_commit": "65a4eac9a97fd20bef0fc71bfbf6475e12d23fa4",
+      "source_dirty": false,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/npms/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/npms/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "atg",
+      "name": "Adaptive Theory Geometry",
+      "classification": "RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/Adaptive-Theory-Geometry",
+      "source_commit": "d46286cc97f7978986e4456c47d4381af2db2422",
+      "source_dirty": false,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/atg/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/atg/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    },
+    {
+      "id": "neurocad",
+      "name": "NeuroCAD",
+      "classification": "PRODUCT_RESEARCH",
+      "source_exists": true,
+      "source_status": "BOUND_DISCOVERED_REPOSITORY",
+      "source_path": "/Volumes/PRO-BLADE/GitHubRepos/Personal Research/NeuroCAD",
+      "source_commit": "23c7284048512ca8d956c9a2c4c62eb1f8b8ea89",
+      "source_dirty": false,
+      "contract": {
+        "required": 9,
+        "complete": 1,
+        "missing": [
+          "exact_research_question",
+          "scientific_objective",
+          "current_hypothesis",
+          "intended_contribution",
+          "project_scope",
+          "development_budget",
+          "compute_budget",
+          "protected_evaluation_boundary"
+        ]
+      },
+      "highest_checkpoint": "INITIALIZE_ONLY",
+      "scientific_result": "NOT_EVALUATED",
+      "created": false,
+      "state_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/neurocad/STATE.json",
+      "history_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/project-states/neurocad/HISTORY.jsonl",
+      "next_actions": [
+        "Read the bound repository's existing protocol, evidence, decisions, and negative results.",
+        "Define or reconcile the exact research question, hypothesis, falsifier, scope, and budgets.",
+        "Do not open protected evaluation until Checkpoint 7 is frozen."
+      ]
+    }
+  ]
+}

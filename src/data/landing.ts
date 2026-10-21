@@ -1,68 +1,53 @@
-export const RESEARCH = [
-  {
-    id: "01",
-    name: "Counterfactual Defect Worlds",
-    color: "red",
-    href: "/labs/scientific-discovery",
-    desc: "Probing how generative world models reason about broken, perturbed, and out-of-distribution environments by injecting controlled defects and studying recovery.",
-  },
-  {
-    id: "02",
-    name: "Sapir, Whorf & the Latent Tongue",
-    color: "blue",
-    href: "/labs/mathematical-intelligence",
-    desc: "Studying how language priors shape internal representations, and what monolingual vs. multilingual models actually carve up differently.",
-  },
-  {
-    id: "03",
-    name: "Adaptive Theory Geometry in World Models",
-    color: "green",
-    href: "/labs/mathematical-intelligence",
-    desc: "Mapping curvature, intrinsic dimension, and theory-laden structure inside latent manifolds as models adapt to new physical regimes.",
-  },
-  {
-    id: "04",
-    name: "Residual Event Tokenization",
-    color: "bone",
-    href: "/labs/robotics",
-    desc: "A tokenization scheme that encodes only residual, surprise-bearing events from continuous streams, compressing video, sensor, and agent trajectories without losing causal signal.",
-  },
-  {
-    id: "05",
-    name: "Dynamical Representation Phase Transitions for PDE Surrogates",
-    color: "blue",
-    href: "/labs/scientific-discovery",
-    desc: "Tracking phase transitions in learned representations as neural PDE surrogates scale, and using them to predict where a surrogate will silently break.",
-  },
-  {
-    id: "06",
-    name: "Latent Safety and Recovery",
-    color: "green",
-    href: "/labs/robotics",
-    desc: "Studying whether a model can detect when it has become confidently wrong, then recover through self-consistency, retrieval, or replanning.",
-  },
-] as const;
+import { INSTITUTION_PROGRAMS, LABS } from "@/data/institution";
+import { getResearchPortfolioItem } from "@/data/research-portfolio";
+
+// Selection and visual treatment only; titles, claims and statuses have one source.
+export const RESEARCH = (
+  [
+    ["counterfactual-defect-worlds", "red"],
+    ["sapir-whorf-latent-language", "blue"],
+    ["adaptive-theory-geometry", "green"],
+    ["residual-event-tokenization", "bone"],
+    ["pde-surrogate-phase-transitions", "blue"],
+    ["latent-safety-recovery", "green"],
+  ] as const
+).map(([slug, color], index) => {
+  const project = getResearchPortfolioItem(slug);
+  if (!project) throw new Error(`Homepage research record missing: ${slug}`);
+  return {
+    id: String(index + 1).padStart(2, "0"),
+    slug,
+    name: project.title,
+    color,
+    href: `/research-atlas/${project.slug}`,
+    desc: project.summary,
+    status: project.publicStatus,
+  };
+});
 
 export const PROGRAMS = [
   {
     tag: "P-01",
     name: "AI Builder Cohort",
-    time: "12 weeks, rolling",
-    href: "/programs-public#ai-builder-cohort",
+    time: "12-week format · dates unconfirmed",
+    to: "/programs-public",
+    hash: "ai-builder-cohort",
     body: "A project-driven cohort for turning a scoped technical question into a reproducible prototype, clear documentation, and a final demo.",
   },
   {
     tag: "P-02",
     name: "Research Fellowship",
-    time: "6 months, selective",
-    href: "/programs-public#research-fellowship",
+    time: "6-month format · dates unconfirmed",
+    to: "/programs-public",
+    hash: "research-fellowship",
     body: "A structured research cycle for developing a question, testing it with disciplined experiments, and publishing an evidence-backed project record.",
   },
   {
     tag: "P-03",
     name: "Startup Incubation",
-    time: "ongoing",
-    href: "/programs-public#startup-incubation",
+    time: "Stage-gated format · intake unconfirmed",
+    to: "/programs-public",
+    hash: "startup-incubation",
     body: "For active builders who want to test whether a technical thread deserves a real product prototype and early user conversations.",
   },
 ] as const;
@@ -72,23 +57,26 @@ export const STARTUPS = [
     name: "Open projects",
     stage: "research",
     domain: "Member portal",
-    href: "/projects",
+    to: "/projects",
+    hash: undefined,
     thesis:
       "Browse open research and product threads, see required skills and commitment, and apply with a concrete pitch.",
   },
   {
     name: "Startup incubation",
-    stage: "prototype",
+    stage: "interest-only",
     domain: "Programs",
-    href: "/programs-public",
+    to: "/programs-public",
+    hash: "startup-incubation",
     thesis:
-      "Stage-gated builds with kill criteria — prototypes and evaluator sessions before any growth story.",
+      "A proposed format for testing prototypes with evaluators and explicit stop criteria. Dates, reviewer capacity, and open intake are unconfirmed.",
   },
   {
     name: "Evidence register",
     stage: "research",
     domain: "Credibility",
-    href: "/evidence",
+    to: "/evidence",
+    hash: undefined,
     thesis:
       "Public claims require sources. Unsupported affiliation, customer, and benchmark language is not published.",
   },
@@ -96,7 +84,8 @@ export const STARTUPS = [
     name: "Contribution records",
     stage: "research",
     domain: "Projects",
-    href: "/projects",
+    to: "/projects",
+    hash: undefined,
     thesis:
       "Milestones, assigned review, and evidence URLs make progress legible without inflating outcomes.",
   },
@@ -107,8 +96,8 @@ export const TEAM = [
 ] as const;
 
 export const STATS = [
-  ["Six labs", "published research divisions"],
-  ["Four tracks", "fellowship · incubation · cohort · competitions"],
+  [`${LABS.length} labs`, "published research divisions"],
+  [`${INSTITUTION_PROGRAMS.length} program formats`, "interest only · intake unconfirmed"],
   ["Evidence-first", "claims require sources"],
   ["Member portal", "apply, contribute, record work"],
 ] as const;
@@ -123,27 +112,35 @@ export const BENEFITS = [
 export const MEMBERSHIP_PERKS = [
   {
     id: "01",
-    title: "Join projects",
-    desc: "Browse open threads, submit a short pitch, and attach your full profile — leads see bio, background, interests, and links in one review queue.",
+    title: "Find work that fits",
     color: "blue",
+    desc: "Compare project scope, required skills, and weekly commitment before you apply. Track your applications in one place.",
+    to: "/projects",
+    action: "Explore projects",
   },
   {
     id: "02",
-    title: "Learn ML deeply",
-    desc: "Six reading paths across transformers, world models, scaling laws, and alignment — each links internal guides to member paper reviews with progress tracking.",
+    title: "Learn with a clear path",
     color: "green",
+    desc: "Follow ordered ML learning paths, save your reading progress, and return to the next article when you are ready.",
+    to: "/guides",
+    action: "Open the public library",
   },
   {
     id: "03",
-    title: "Paper insights",
-    desc: "Member-written reviews on classics and active threads — methods, reproducibility gaps, and what we would prototype next.",
+    title: "Read beyond the abstract",
     color: "red",
+    desc: "Explore paper reviews that connect methods and limitations to questions you could test in your own work.",
+    to: "/papers",
+    action: "Browse paper reviews",
   },
   {
     id: "04",
-    title: "Events & conferences",
-    desc: "Submission deadlines, workshop dates, and meetups with prep notes, RSVP tracking, and one-click .ics export.",
+    title: "Keep a record of your work",
     color: "bone",
+    desc: "Attach evidence to project contributions, follow review feedback, and export your contribution log from the member workspace.",
+    to: "/workspace",
+    action: "Open your workspace",
   },
 ] as const;
 
@@ -176,18 +173,18 @@ export const NAV_ITEMS = [
   ["Programs", "/programs-public"],
   ["Publications", "/publications"],
   ["Evidence", "/evidence"],
+  ["Research atlas", "/research-atlas"],
 ] as const;
 
 /** In-page anchors still used on the landing scroll experience. */
 export const LANDING_ANCHORS = [
-  ["What we do", "what"],
+  ["Overview", "institution"],
+  ["Library", "library"],
+  ["Open work", "active-work"],
   ["Membership", "membership"],
+  ["How it works", "what"],
   ["Research", "research"],
   ["Programs", "programs"],
-  ["Applied work", "startups"],
-  ["People", "team"],
-  ["FAQ", "faq"],
-  ["Contact", "contact"],
 ] as const;
 
 export const DISCORD_URL = "https://discord.gg/NG4QYat4P";
@@ -195,6 +192,7 @@ export const CONTACT_EMAIL = "ryan@thebu1ld.com";
 export const LINKEDIN_URL = "https://www.linkedin.com/in/ryan-gomez-03701b363/";
 
 export const stageColor: Record<string, string> = {
+  "interest-only": "text-bone border-bone/40",
   research: "text-bone border-bone/40",
   prototype: "text-accent-green border-accent-green/40",
   seed: "text-accent-blue border-accent-blue/40",

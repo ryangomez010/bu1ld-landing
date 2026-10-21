@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
+import { useState } from "react";
 
 import {
   computeOnboardingProgress,
@@ -15,7 +16,8 @@ export function OnboardingChecklist({
   userId: string;
   progress: Omit<Parameters<typeof computeOnboardingProgress>[0], never>;
 }) {
-  const dismissed = isOnboardingChecklistDismissed(userId);
+  const [dismissedFor, setDismissedFor] = useState<string | null>(null);
+  const dismissed = dismissedFor === userId || isOnboardingChecklistDismissed(userId);
   const data: OnboardingProgress = computeOnboardingProgress(progress);
 
   if (dismissed || data.complete) return null;
@@ -36,8 +38,12 @@ export function OnboardingChecklist({
         </div>
         <button
           type="button"
-          onClick={() => dismissOnboardingChecklist(userId)}
-          className="text-muted-foreground hover:text-bone"
+          onClick={() => {
+            dismissOnboardingChecklist(userId);
+            setDismissedFor(userId);
+          }}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-bone/5 hover:text-bone"
+          aria-label="Dismiss onboarding checklist"
           title="Dismiss checklist"
         >
           <X className="h-4 w-4" />

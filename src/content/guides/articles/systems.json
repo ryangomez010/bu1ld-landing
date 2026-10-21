@@ -1,0 +1,268 @@
+[
+  {
+    "slug": "ml-data-pipeline-contracts",
+    "title": "Give a Data Pipeline an Explicit Contract",
+    "description": "Define what inputs mean and detect changes before they silently reach a model.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Data pipelines"
+    ],
+    "concept": "A data pipeline contract specifies the schema, units, allowed values, missingness policy, and timing assumptions of model inputs. It connects data production to training and serving so that a syntactically valid table does not silently change meaning. Validation can check types, ranges, categories, and statistical differences, but the contract also needs semantic ownership. A field called amount is ambiguous unless its currency, aggregation window, and treatment of refunds are defined. Monitoring should identify actionable violations without pretending every distribution change is an error.",
+    "example": "Imagine an illustrative feature recording response time in milliseconds. An upstream service switches to seconds while preserving the numeric type and column name. A type check passes, but the model receives values at a different scale. A documented unit, representative range checks, and an upstream version change make this failure easier to detect and diagnose. For a concrete contract, define response_ms as a nonnegative duration measured at request completion, with timeout status stored separately. An upstream value of 0.8 seconds corresponds to 800 milliseconds. A range check alone may not detect the change if both numbers look plausible; a declared unit and a parity example can.",
+    "pitfall": "Automatically rejecting every unusual value can remove legitimate rare events. Conversely, silently clipping values can hide a broken source. Contract checks should distinguish invalid records, unexpected but possible observations, and changes requiring investigation. The response to a violation must be defined alongside the check.",
+    "exercise": "A service supplies latency = 0.25 with a new metadata field unit = seconds, while the model contract requires milliseconds. Calculate the conversion, then describe what should happen if the unit field is absent or the value is negative. Separate a documented conversion from a silent guess.",
+    "references": [
+      {
+        "label": "TensorFlow Data Validation",
+        "url": "https://www.tensorflow.org/tfx/guide/tfdv"
+      }
+    ],
+    "answer": "The converted value is 250 milliseconds. A supported, versioned conversion can produce that value and record its provenance. An absent unit should trigger the declared rejection or investigation path rather than guessing from magnitude. A negative duration violates this contract; retain diagnostic context and avoid silently clipping it into a valid-looking observation."
+  },
+  {
+    "slug": "ml-experiment-provenance",
+    "title": "Make an Experiment Reconstructable from Its Record",
+    "description": "Record code, data, configuration, and environment identities instead of relying on a run name.",
+    "level": "Beginner",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Reproducibility"
+    ],
+    "concept": "An experiment record should explain what was executed, on which inputs, under which configuration, and where its outputs can be found. Useful identifiers include the code revision, data version or digest, dependency environment, configuration, random seeds, and hardware context. Metrics need their evaluation protocol and artifact paths, not just a scalar attached to a memorable run name. Provenance does not guarantee scientific validity, but missing provenance makes both debugging and independent checking substantially harder.",
+    "example": "For an illustrative training run, save the resolved configuration rather than only the command-line overrides. Record the exact split assignment and checkpoint used for evaluation. If a source file changes during execution, a later commit identifier alone may not describe the executed code. A snapshot or explicit dirty-diff record can clarify that distinction.",
+    "pitfall": "A seed is not a complete reproducibility recipe. Parallel kernels, hardware differences, library versions, and nondeterministic operations can alter results. Logging every environment variable is also a poor substitute for a deliberate record because it can capture credentials or irrelevant machine details.",
+    "exercise": "Choose one past local experiment and attempt to reconstruct it using only its saved record. List missing inputs before rerunning anything. Define a compact manifest with safe, necessary metadata and artifact hashes, then verify that another clean process can locate the exact configuration and data split without relying on your shell history.",
+    "references": [
+      {
+        "label": "The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction",
+        "url": "https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/"
+      }
+    ],
+    "answer": "A reconstructable manifest identifies the code revision plus dirty changes, resolved configuration, data and split digests, environment versions, seeds, checkpoint identity, hardware, commands, and output hashes. First list unavailable pieces; do not silently substitute current data or dependencies. A clean process should locate and verify the same artifacts without shell-history knowledge. This checks record completeness rather than independently reproducing a scientific result. Record safe metadata deliberately and avoid secrets, raw environment dumps, or unnecessary personal data."
+  },
+  {
+    "slug": "ml-checkpoint-resume",
+    "title": "A Resumable Checkpoint Contains More than Weights",
+    "description": "Preserve optimizer and schedule state when continuing an interrupted training run.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Training"
+    ],
+    "concept": "A checkpoint for inference can often focus on model parameters and configuration. A checkpoint intended to resume training needs additional state: optimizer moments, learning-rate scheduler position, mixed-precision scaler state when used, progress counters, and relevant random-number states. Data-loader position or sampling state may also matter for exact continuation. The intended guarantee should be explicit: restarting from useful weights is different from reproducing an uninterrupted trajectory. Storage format, compatibility, and integrity checks are part of the checkpoint design.",
+    "example": "Imagine an illustrative Adam run interrupted after several thousand updates. Reloading only model weights while resetting moment estimates changes the next update even if the batch and learning rate match. Restarting the schedule from step zero introduces another change. The resumed run may still train, but it is no longer the same continuation the checkpoint name might imply.",
+    "pitfall": "Writing directly over the only checkpoint can leave it corrupted after interruption. Saving model files from untrusted sources can also involve unsafe deserialization depending on format and loader. Use supported safe-loading practices and retain a verifiable, complete checkpoint before discarding an older usable one.",
+    "exercise": "Run a short controlled training job and save a checkpoint midway. Compare an uninterrupted continuation with a resumed one under the same supported deterministic settings. Check the next loss, learning rate, and parameter update, and document any remaining differences caused by data ordering or runtime nondeterminism.",
+    "references": [
+      {
+        "label": "PyTorch: Saving and Loading Models",
+        "url": "https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html"
+      }
+    ],
+    "answer": "Compare the next batch identity, learning rate, optimizer/scaler state, loss, and parameter update after the checkpoint against the uninterrupted branch. Restore relevant random states and sampler position before consuming the next batch. Equal model weights alone are insufficient for Adam or a nontrivial schedule. Use the framework’s supported safe loading and an atomic checkpoint replacement with a verified older copy retained. Report the observed tolerance and any nondeterminism; matching a short local continuation does not prove cross-hardware bitwise reproducibility."
+  },
+  {
+    "slug": "ml-mixed-precision",
+    "title": "Mixed Precision Requires Numerical Checks",
+    "description": "Learn why lower-precision arithmetic can accelerate training without making every operation safe.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Performance"
+    ],
+    "concept": "Mixed-precision training uses different numerical formats for different operations to improve throughput or reduce memory use. Some matrix operations can run effectively in lower precision, while sensitive reductions or state may need higher precision. Float16 has a limited exponent range, so loss scaling can help prevent small gradients from underflowing. Bfloat16 has a wider exponent range but fewer mantissa bits than float32. The appropriate strategy depends on hardware, framework support, model operations, and the numerical scale of the task.",
+    "example": "For an illustrative float16 training loop, the loss may be multiplied by a scale before backpropagation, with gradients unscaled before the optimizer uses them. Dynamic scaling adjusts to detected nonfinite gradients. This changes numerical handling, not the underlying objective. The exact workflow differs by framework and precision format, so implementation should follow the supported API rather than a copied recipe with missing steps.",
+    "pitfall": "A faster step time is not a successful optimization if the model becomes unstable or quality degrades. Custom operations, large reductions, and unusual loss scales can behave poorly. Comparing only one finite batch can miss problems that emerge later in training.",
+    "exercise": "Establish a short float32 reference run and compare a supported mixed-precision configuration on the same batches. Log loss, nonfinite events, skipped updates, memory, and throughput. Inspect any divergence before scaling up, and report performance together with numerical and validation behavior rather than speed alone.",
+    "references": [
+      {
+        "label": "PyTorch: Automatic Mixed Precision",
+        "url": "https://docs.pytorch.org/tutorials/recipes/recipes/amp_recipe.html"
+      }
+    ],
+    "answer": "Use the same initial weights, batches, and update budget for the float32 reference and supported mixed-precision run. Track finite losses and gradients, scaler values, skipped updates, memory, elapsed time, and held-out behavior. Unscale before operations intended for ordinary gradients, such as norm clipping. Differences can be numerical without being failures, so predeclare tolerances and compare resulting task quality. A faster run with repeated skipped updates or degraded quality has not met the full acceptance criterion; one finite batch is only a smoke check."
+  },
+  {
+    "slug": "ml-gradient-accumulation",
+    "title": "Gradient Accumulation Is Similar to a Larger Batch, with Caveats",
+    "description": "Align loss scaling, update timing, and batch-dependent behavior across microbatches.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Optimization"
+    ],
+    "concept": "Gradient accumulation sums or averages gradients from several smaller microbatches before taking an optimizer step. It can approximate a larger effective batch when memory cannot hold all examples at once. Correct scaling depends on how each loss is reduced and on microbatch sizes. The optimizer and learning-rate scheduler should advance according to the intended update schedule. Exact equivalence to a single large batch is not guaranteed when the model includes batch-dependent operations, stochastic behavior, or other state changes during forward passes.",
+    "example": "Suppose an illustrative update uses four equally sized microbatches. If each loss is already a mean, dividing each by four before backpropagation makes their accumulated gradient correspond to the mean across all examples under suitable assumptions. If the last microbatch is smaller, equal weighting over microbatches no longer gives equal weighting over examples; sample counts must be considered.",
+    "pitfall": "Zeroing gradients after every microbatch defeats accumulation. Stepping the optimizer too early changes the intended effective batch, while clipping gradients separately can differ from clipping the combined gradient. Batch normalization also computes statistics on each microbatch, which can break equivalence even when gradient scaling is correct.",
+    "exercise": "Use a deterministic model without batch-dependent layers and compare one large-batch update with accumulated microbatches. Check parameter differences within numerical tolerance. Then introduce an uneven final microbatch and verify sample weighting. Document which operations in the real model prevent exact equivalence.",
+    "references": [
+      {
+        "label": "PyTorch: Automatic Mixed Precision Examples",
+        "url": "https://docs.pytorch.org/docs/2.14/notes/amp_examples.html"
+      }
+    ],
+    "answer": "With mean-reduced microbatch losses, weight each by its number of scored units divided by the total units in the effective batch. For microbatches of sizes two and one, the weights are 2/3 and 1/3, not 1/2 each. For token-level losses, valid-token counts may be the relevant units. Clear gradients before accumulation, step once afterward, and clip the combined unscaled gradient if that is the declared policy. Batch-dependent state and stochastic layers can still break equivalence to one large forward pass."
+  },
+  {
+    "slug": "ml-inference-latency",
+    "title": "Measure Inference Latency as a Distribution",
+    "description": "Separate model execution, queueing, and throughput when evaluating a serving system.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Serving"
+    ],
+    "concept": "Inference performance depends on more than the time spent in a model's forward pass. Requests may wait in queues, undergo preprocessing, transfer data, execute the model, and pass through postprocessing before a response is delivered. Throughput measures work completed per unit time, while latency measures how long an individual request takes. Batching can improve throughput but add waiting time. A useful benchmark reports a workload distribution and latency percentiles rather than only an average from repeated identical inputs.",
+    "example": "For an illustrative service, a batch of 32 may process efficiently on an accelerator while a single interactive request waits for the batch to fill. The system can therefore achieve higher requests per second and worse user-perceived response time simultaneously. Cold starts, varying input lengths, and concurrent requests can further widen the difference between median and tail latency.",
+    "pitfall": "Asynchronous accelerator execution can make naive wall-clock timing measure dispatch rather than completed computation. Warm caches and repeated fixed shapes can also produce unrepresentative results. A benchmark without arrival rates, concurrency, hardware, and input distributions is difficult to interpret or reproduce.",
+    "exercise": "Define a workload with realistic input sizes and request arrival patterns. Measure end-to-end median and upper-percentile latency, throughput, and failure rate after a documented warmup. Separately profile major stages, then evaluate whether a proposed batching policy meets the actual response-time requirement under load.",
+    "references": [
+      {
+        "label": "PyTorch: Benchmark",
+        "url": "https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html"
+      }
+    ],
+    "answer": "Specify request arrival pattern, concurrency, input sizes, hardware/runtime, warmup, timeout policy, and the denominator for successes and failures. End-to-end latency starts when the request enters the system, so it includes queue time rather than just model execution. Report median and tail latency beside throughput, errors, and stage profiles; account for asynchronous execution when timing completion. Test overload and sparse arrivals as well as steady load. Higher throughput is acceptable only if the stated response-time and failure requirements also hold."
+  },
+  {
+    "slug": "ml-quantization",
+    "title": "Quantization Changes Numerical Representation and Deployment Tradeoffs",
+    "description": "Assess memory savings, calibration requirements, and hardware-dependent speed effects.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Compression"
+    ],
+    "concept": "Quantization represents weights or activations using fewer bits, usually with scales and sometimes offsets that map between stored integers or low-bit values and approximate real numbers. Lower precision can reduce storage and memory traffic, but the realized speedup depends on available kernels and hardware. Weight-only quantization differs from quantizing both weights and activations. Some methods require representative calibration data; others incorporate quantization behavior during training. The deployment format and runtime support are therefore as important as the nominal bit width.",
+    "example": "For an illustrative matrix, storing each weight in eight bits instead of 32 reduces the raw weight payload by a factor of four. Actual model memory includes scales, metadata, unquantized layers, activations, and caches, so total memory savings differ. A runtime that must frequently dequantize values may also fail to achieve the expected latency improvement.",
+    "pitfall": "A small average quality change can hide severe errors on rare inputs or sensitive output ranges. Calibration data that omit important deployment conditions can lead to poor scaling choices. Comparing file sizes alone says little about end-to-end memory, latency, or behavior after conversion.",
+    "exercise": "Benchmark a baseline and one supported quantized variant on the same hardware and representative workload. Measure resident memory, startup time, latency distribution, and task metrics by important slices. Record the quantization method, excluded modules, calibration procedure, and runtime version so the result can be reproduced.",
+    "references": [
+      {
+        "label": "Transformers: Quantization Overview",
+        "url": "https://huggingface.co/docs/transformers/en/quantization/overview"
+      }
+    ],
+    "answer": "For one million weights, 32-bit payload is four million bytes and 8-bit payload is one million bytes before metadata. That fourfold payload reduction does not include activation/cache memory or imply fourfold speedup. Run both supported formats on the same workload and hardware, recording method, calibration split, scales, excluded modules, and runtime. Compare resident and peak memory, startup, tail latency, failures, and slice-level task quality. Calibration examples belong in development; final evaluation must not select the quantization settings."
+  },
+  {
+    "slug": "ml-drift-monitoring",
+    "title": "Drift Monitoring Should Trigger Investigation, Not Automatic Conclusions",
+    "description": "Distinguish input changes, prediction changes, and measured degradation in outcomes.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Monitoring"
+    ],
+    "concept": "A deployed model can encounter changes in input distributions, label relationships, or operational behavior. Monitoring may track feature statistics, missingness, prediction distributions, and eventual outcome metrics. An input shift is evidence that the data changed; it is not by itself proof that model quality declined. Conversely, performance can deteriorate without an obvious shift in simple marginal statistics. A monitoring plan should connect each signal to a hypothesis, an investigation procedure, and a response appropriate to the model's role.",
+    "example": "Imagine an illustrative classifier whose positive prediction rate doubles during a seasonal event. This might reflect a real increase in positive cases, a broken feature, or a change in the relationship between inputs and outcomes. Delayed labels prevent immediate confirmation. Comparing data-quality checks, historical seasonality, and later outcome metrics helps distinguish these explanations.",
+    "pitfall": "Alerting on every statistically detectable difference can overwhelm operators when data volume is large. Retraining automatically after every alert can reproduce a labeling problem or introduce a worse model. Thresholds should consider effect size, persistence, business context, and the cost of missed or unnecessary responses.",
+    "exercise": "Define a small monitoring table containing the signal, reference window, threshold rationale, owner, and next diagnostic action. Include missing-label and delayed-label cases. Simulate a schema error and a benign seasonal shift, then verify that the response distinguishes invalid inputs from changes requiring further evidence.",
+    "references": [
+      {
+        "label": "TensorFlow Data Validation",
+        "url": "https://www.tensorflow.org/tfx/guide/tfdv"
+      }
+    ],
+    "answer": "A missing required field or wrong unit is a contract violation with an explicit reject/fallback and owner. A seasonally higher prediction rate is initially a distribution signal: check source mix and known seasonality, then assess mature-label metrics before attributing it to degraded model quality. Each alert needs a reference window, effect-size/persistence rationale, diagnostic action, and owner. Missing labels should be monitored as missing evidence rather than interpreted as negatives. Simulated alerts verify routing logic, not actual deployment quality or a need to retrain."
+  },
+  {
+    "slug": "ml-shadow-canary-evaluation",
+    "title": "Shadow and Canary Releases Answer Different Deployment Questions",
+    "description": "Plan a limited rollout with measurable acceptance criteria and a usable rollback path.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "Deployment"
+    ],
+    "concept": "A shadow deployment sends representative inputs to a candidate model while keeping its outputs out of the primary decision path. This can reveal integration, latency, and disagreement issues under realistic traffic. A canary deployment exposes a limited portion of actual decisions to the candidate, allowing outcome and operational comparison under a controlled rollout. These approaches answer different questions and require authorization appropriate to the system. Offline quality remains relevant, but it cannot fully establish how a model behaves inside the complete production workflow.",
+    "example": "For an illustrative recommendation service, shadowing can compare candidate rankings and response times without displaying them. It cannot directly measure how users would respond to those unseen recommendations. A limited canary can observe that response, but allocation, interference, sample size, and stopping rules affect whether the comparison supports a useful conclusion.",
+    "pitfall": "A rollback plan is incomplete if it restores model weights but leaves incompatible feature transformations or schemas active. Repeatedly checking outcomes and stopping whenever a candidate looks favorable can also bias the result. Operational guardrails and statistical decision rules should be established before exposure begins.",
+    "exercise": "Write a rollout record with candidate identity, traffic scope, success metrics, failure thresholds, duration, and rollback steps. Verify that the previous serving configuration remains available. Clearly separate what shadow evidence can establish from what requires a controlled evaluation involving actual user-facing decisions.",
+    "references": [
+      {
+        "label": "The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction",
+        "url": "https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/"
+      }
+    ],
+    "answer": "A complete record identifies the candidate model and preprocessing, eligible traffic and allocation, exposure limits, outcome/latency/error metrics, stopping rules, owner, and rollback package. Shadow results can establish integration behavior and disagreements on observed traffic, but cannot estimate user response to outputs nobody saw. A canary can observe that response only under its declared allocation and analysis assumptions. Exercise rollback of model, transforms, configuration, and compatible schemas together. A prepared rollout record is not evidence that any live exposure occurred."
+  },
+  {
+    "slug": "ml-model-serving-contract",
+    "title": "Version the Prediction Contract as Carefully as the Model",
+    "description": "Make input validation, output meaning, and failure behavior explicit at the serving boundary.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "MLOps",
+      "APIs"
+    ],
+    "concept": "A serving contract defines accepted inputs, output fields, class mappings, numerical meaning, and behavior when a request cannot be processed. Model versioning alone is insufficient if preprocessing, label order, thresholds, or postprocessing can change independently. Clients need a stable interpretation of responses and a way to distinguish successful predictions from unavailable or invalid results. The contract should also state relevant limits such as maximum input size and supported modalities, with enforcement at the actual service boundary.",
+    "example": "Imagine an illustrative classifier returning a vector of three scores. If a new deployment changes the class order while a client keeps the old mapping, every request can succeed technically while displaying incorrect labels. Returning an explicit versioned label mapping or named scores helps prevent this failure, but compatibility still needs to be checked during rollout.",
+    "pitfall": "Silently substituting an all-zero score vector for an internal error makes failures look like valid predictions. An undocumented fallback model can similarly change response meaning. Logging full raw requests for debugging may expose unnecessary sensitive data, so observability should be designed around the information actually needed.",
+    "exercise": "Create contract tests for valid input, missing fields, unsupported categories, oversized requests, and unavailable dependencies. Verify that each response has an unambiguous status and version identity. Run an older client against the candidate response format, then document whether the change is compatible or requires coordinated migration.",
+    "references": [
+      {
+        "label": "The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction",
+        "url": "https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/"
+      }
+    ],
+    "answer": "Valid requests should return explicit version identity, named or version-mapped outputs, and a successful status. Missing required fields, unsupported values, and oversized requests need documented client-error responses; unavailable dependencies need a distinct unavailable/error response, not plausible zero scores. Test old clients for class-order and field-meaning compatibility, not just JSON parsing. If meanings change incompatibly, version the contract and migrate clients deliberately. An explicitly documented fallback must identify itself so consumers can distinguish it from the primary model."
+  },
+  {
+    "slug": "ml-inference-batching",
+    "title": "Batching Trades Queueing Delay for Throughput",
+    "description": "Account for waiting time when combining requests to use an accelerator efficiently.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "ML systems",
+      "Serving",
+      "Latency"
+    ],
+    "concept": "Inference batching groups compatible requests into one execution. Larger batches can amortize overhead and improve throughput, but a request may wait while the batch forms. End-to-end latency includes queueing, preprocessing, execution, and response handling. Dynamic batching uses available requests and a waiting policy rather than requiring clients to submit fixed batches. The useful operating point depends on arrival rate, input shapes, resource limits, and the latency target.",
+    "example": "In a hypothetical service, a batch of eight completes execution in 20 milliseconds. That execution stage processes 400 requests per second if continuously occupied. A request waiting 15 milliseconds before joining the batch already experiences at least 35 milliseconds before other overhead. Dividing 20 by eight estimates amortized compute time per request, not the latency seen by each request.",
+    "pitfall": "A benchmark with a permanent backlog can make a batching policy look excellent while hiding poor latency under sparse traffic. Average latency also hides the tail. Variable-length inputs may waste compute on padding, and batching incompatible requests may change semantics. Measure with representative arrival patterns and distinguish throughput from successful requests within the latency objective.",
+    "exercise": "A batch of four takes 12 milliseconds and the oldest request waited eight milliseconds. Calculate execution throughput under continuous occupancy and that request’s minimum end-to-end latency. Explain why a maximum batch size alone is insufficient to describe the policy.",
+    "answer": "The execution throughput is 4/0.012, about 333 requests per second, while the oldest request already takes at least 20 milliseconds. The policy also needs a waiting limit, compatibility rules, and behavior under overload. These arithmetic examples describe hypothetical timings; only measurements on the intended workload establish actual service performance.",
+    "references": [
+      {
+        "label": "NVIDIA Triton: Dynamic Batching",
+        "url": "https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/user_guide/batcher.html"
+      }
+    ]
+  },
+  {
+    "slug": "ml-training-serving-parity",
+    "title": "Test Training and Serving Features on the Same Raw Input",
+    "description": "Catch preprocessing skew with replayable examples and versioned transformations.",
+    "level": "Intermediate",
+    "track": "ML systems",
+    "tags": [
+      "ML systems",
+      "Features",
+      "Reproducibility"
+    ],
+    "concept": "Training-serving skew occurs when the deployed model receives features with different construction or meaning from those used during development. The cause can be a missing scaler, different categorical handling, time-window semantics, or a stale transformation. Compare both paths on the same raw records and cutoff times. Version the feature transformation with the model, and define tolerances for numerical differences instead of relying only on schema equality.",
+    "example": "Suppose training standardized a hypothetical feature using mean ten and standard deviation two. A raw value of fourteen becomes two. If serving passes fourteen directly into a fitted coefficient of three with zero intercept, the prediction is 42 instead of six. Every type and shape can remain valid while the model receives the wrong meaning. Replaying one shared record exposes the mismatch.",
+    "pitfall": "Copying training code into a second serving implementation can create two versions that drift independently. A shared pipeline reduces this risk but does not guarantee identical upstream data or timestamps. Golden examples should include missing categories, absent values, and boundary timestamps, and should avoid retaining unnecessary personal data.",
+    "exercise": "Create a parity checklist for a numerical scaler plus categorical encoder. For mean four and standard deviation two, compute the transformation of raw value eight. Describe how you would test an unseen category without quietly inventing a new category order in serving.",
+    "answer": "The standardized value is two. Load the fitted encoder and its declared unknown-category behavior rather than fitting again or sorting categories from a single request. Compare feature values, column order, dimensionality, and predictions for identical raw inputs. Test an unseen category as an explicit acceptance or rejection case according to the saved contract.",
+    "references": [
+      {
+        "label": "scikit-learn: Inconsistent Preprocessing and Pipelines",
+        "url": "https://scikit-learn.org/stable/common_pitfalls.html"
+      }
+    ]
+  }
+]

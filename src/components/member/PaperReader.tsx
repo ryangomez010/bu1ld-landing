@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { TagList } from "@/components/member/ContentCard";
 import { PaperReviewBody } from "@/components/member/PaperReviewMarkdown";
+import { PaperLearningLinks } from "@/components/member/PaperLearningLinks";
 import { ProgressRing } from "@/components/member/ProgressRing";
 import { ReportContentButton } from "@/components/member/ReportContentButton";
 import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
@@ -30,13 +31,16 @@ import {
 import { isPaperRead, markPaperRead, unmarkPaperRead } from "@/lib/paper-read";
 import { extractPullQuote, paperReadMinutes, parseReviewSections } from "@/lib/paper-review";
 import { relatedGuidesForPaper } from "@/lib/research-paths";
+import { paperLearningLinks } from "@/lib/paper-learning-links";
 import type { Paper } from "@/lib/types";
+import { safeHref } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 
 function ReaderSidebar({
   toc,
   notes,
   onNotesChange,
+  notesReady,
   relatedGuides,
   highlights,
   onSaveHighlight,
@@ -45,6 +49,7 @@ function ReaderSidebar({
   toc: ReturnType<typeof parseReviewSections>;
   notes: string;
   onNotesChange: (value: string) => void;
+  notesReady: boolean;
   relatedGuides: ReturnType<typeof relatedGuidesForPaper>;
   highlights: PaperHighlight[];
   onSaveHighlight: () => void;
@@ -86,6 +91,7 @@ function ReaderSidebar({
         </p>
         <Textarea
           value={notes}
+          disabled={!notesReady}
           onChange={(e) => onNotesChange(e.target.value)}
           rows={6}
           placeholder="Claims to verify, reproduction ideas, questions for the thread…"
@@ -152,6 +158,7 @@ function ReaderSidebar({
 
       <Link
         to="/research"
+        search={{ view: "paths" }}
         className="block font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"
       >
         All reading paths →
@@ -165,39 +172,65 @@ export function PaperReader({
   userId,
   prev,
   next,
+  embeddedHeading = false,
 }: {
-  paper: Paper;
+  paper: Paper & { relatedLessons?: string[] };
   userId: string;
   prev: Paper | null;
   next: Paper | null;
+  embeddedHeading?: boolean;
 }) {
+  const Title = embeddedHeading ? "h2" : "h1";
   const sections = useMemo(() => parseReviewSections(paper.review_body), [paper.review_body]);
   const readMinutes = paperReadMinutes(paper);
   const pullQuote = extractPullQuote(paper.summary, sections);
   const toc = sections.filter((s) => s.id !== "overview");
-  const relatedGuides = useMemo(() => relatedGuidesForPaper(paper, getAllGuides()), [paper]);
+  const relatedGuides = useMemo(
+    () =>
+      paper.relatedLessons?.length
+        ? paperLearningLinks(paper.relatedLessons)
+        : relatedGuidesForPaper(paper, getAllGuides()),
+    [paper],
+  );
 
   const [scrollProgress, setScrollProgress] = useState(0);
   const [markedRead, setMarkedRead] = useState(false);
   const [notes, setNotes] = useState("");
+  const [engagementReady, setEngagementReady] = useState(false);
+  const [engagementError, setEngagementError] = useState(false);
+  const notesEdited = useRef(false);
   const [highlights, setHighlights] = useState<PaperHighlight[]>([]);
   const progressSaveRef = useRef(0);
 
   useEffect(() => {
+    let active = true;
+    setEngagementReady(false);
+    setEngagementError(false);
+    notesEdited.current = false;
     void Promise.all([
       isPaperRead(userId, paper.slug),
       fetchPaperScrollProgress(userId, paper.slug),
       fetchPaperNotes(userId, paper.slug),
       fetchPaperHighlights(userId, paper.slug),
-    ]).then(([read, progress, savedNotes, savedHighlights]) => {
-      setMarkedRead(read);
-      setScrollProgress(progress);
-      setNotes(savedNotes);
-      setHighlights(savedHighlights);
-    });
+    ])
+      .then(([read, progress, savedNotes, savedHighlights]) => {
+        if (!active) return;
+        setMarkedRead(read);
+        setScrollProgress(progress);
+        setNotes(savedNotes);
+        setHighlights(savedHighlights);
+        setEngagementReady(true);
+      })
+      .catch(() => {
+        if (active) setEngagementError(true);
+      });
+    return () => {
+      active = false;
+    };
   }, [userId, paper.slug]);
 
   useEffect(() => {
+    if (!engagementReady) return;
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const pct = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 100;
@@ -214,12 +247,22 @@ export function PaperReader({
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, [userId, paper.slug, markedRead]);
+  }, [userId, paper.slug, markedRead, engagementReady]);
 
   useEffect(() => {
-    const t = window.setTimeout(() => savePaperNotes(userId, paper.slug, notes), 600);
+    if (!engagementReady || !notesEdited.current) return;
+    const t = window.setTimeout(() => {
+      void savePaperNotes(userId, paper.slug, notes).catch(() =>
+        toast.error("Notes could not be saved. Keep a copy before leaving."),
+      );
+    }, 600);
     return () => window.clearTimeout(t);
-  }, [notes, userId, paper.slug]);
+  }, [notes, userId, paper.slug, engagementReady]);
+
+  const editNotes = (value: string) => {
+    notesEdited.current = true;
+    setNotes(value);
+  };
 
   const onSaveHighlight = () => {
     const text = getSelectedHighlightText();
@@ -262,6 +305,16 @@ export function PaperReader({
         />
       </div>
 
+      {engagementError ? (
+        <p role="alert" className="my-4 text-sm text-muted-foreground">
+          Your saved reading state could not be loaded. Notes will not overwrite it. Refresh to try
+          again.
+        </p>
+      ) : !engagementReady ? (
+        <p role="status" className="my-4 text-sm text-muted-foreground">
+          Loading saved reading state…
+        </p>
+      ) : null}
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:gap-16">
         <article className="min-w-0 pb-28 lg:pb-24">
           <header className="mb-10 border-l-2 border-accent-blue/30 pl-6 md:pl-8 paper-hero">
@@ -295,9 +348,9 @@ export function PaperReader({
               ) : null}
             </div>
 
-            <h1 className="font-display text-3xl md:text-[2.5rem] text-bone tracking-tight leading-[1.12] max-w-3xl">
+            <Title className="font-display text-3xl md:text-[2.5rem] text-bone tracking-tight leading-[1.12] max-w-3xl">
               {paper.title}
-            </h1>
+            </Title>
             <p className="mt-4 text-sm text-muted-foreground">
               {[paper.authors, paper.year].filter(Boolean).join(" · ")}
             </p>
@@ -325,9 +378,9 @@ export function PaperReader({
               >
                 {markedRead ? "Mark unread" : "Mark read"}
               </Button>
-              {paper.arxiv_url ? (
+              {safeHref(paper.arxiv_url) ? (
                 <a
-                  href={paper.arxiv_url}
+                  href={safeHref(paper.arxiv_url)}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-sm border border-border/60 px-3 py-2 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground hover:text-bone transition"
@@ -340,6 +393,9 @@ export function PaperReader({
           </header>
 
           <PaperReviewBody sections={sections} />
+          <div className="lg:hidden">
+            <PaperLearningLinks slugs={relatedGuides.map((guide) => guide.slug)} />
+          </div>
 
           <nav className="mt-14 grid gap-3 sm:grid-cols-2 border-t border-border/50 pt-8">
             {prev ? (
@@ -372,7 +428,8 @@ export function PaperReader({
             <ReaderSidebar
               toc={toc}
               notes={notes}
-              onNotesChange={setNotes}
+              onNotesChange={editNotes}
+              notesReady={engagementReady}
               relatedGuides={relatedGuides}
               highlights={highlights}
               onSaveHighlight={onSaveHighlight}
@@ -420,6 +477,7 @@ export function PaperReader({
               </nav>
               <Link
                 to="/research"
+                search={{ view: "paths" }}
                 className="mt-4 block font-mono text-[9px] uppercase text-accent-blue"
               >
                 Reading paths →
@@ -443,7 +501,8 @@ export function PaperReader({
               </SheetHeader>
               <Textarea
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                disabled={!engagementReady}
+                onChange={(e) => editNotes(e.target.value)}
                 rows={8}
                 placeholder="Claims to verify, reproduction ideas…"
                 className="mt-4 text-sm resize-none"

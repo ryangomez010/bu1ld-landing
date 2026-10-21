@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { LoadingState } from "@/components/member/LoadingState";
 import { validatePassword } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
+import { authCallbackError, authErrorMessage, runAuthRequest } from "@/lib/auth-request";
 
 export const Route = createFileRoute("/reset-password")({
   component: ResetPasswordPage,
@@ -32,43 +33,48 @@ function ResetPasswordPage() {
     let active = true;
 
     const establishSession = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-      const errorDesc = params.get("error_description") ?? hashParams.get("error_description");
+      const errorDesc = authCallbackError(window.location.search, window.location.hash);
 
       if (errorDesc) {
-        toast.error(decodeURIComponent(errorDesc.replace(/\+/g, " ")));
+        toast.error(errorDesc);
+        setReady(false);
         setChecking(false);
         return;
       }
 
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (!active) return;
-        if (error) {
-          toast.error(error.message);
-          setChecking(false);
-          return;
-        }
+      const { error: initializationError } = await supabase.auth.initialize();
+      if (!active) return;
+      if (initializationError) {
+        toast.error(initializationError.message);
+        setReady(false);
+        setChecking(false);
+        return;
       }
 
-      const { data } = await supabase.auth.getSession();
+      const { data, error } = await supabase.auth.getSession();
       if (!active) return;
-      setReady(!!data.session);
+      if (error) toast.error(error.message);
+      setReady(!error && !!data.session);
       setChecking(false);
     };
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+      if (event === "SIGNED_OUT") setReady(false);
       if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
         setReady(!!session);
         setChecking(false);
       }
     });
 
-    void establishSession();
+    void establishSession().catch((error) => {
+      if (!active) return;
+      toast.error(authErrorMessage(error));
+      setReady(false);
+      setChecking(false);
+    });
 
     return () => {
       active = false;
@@ -78,6 +84,7 @@ function ResetPasswordPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting || !ready) return;
     if (password !== confirm) {
       toast.error("Passwords don't match.");
       return;
@@ -93,10 +100,10 @@ function ResetPasswordPage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.updateUser({ password });
+    const { error } = await runAuthRequest(() => supabase.auth.updateUser({ password }));
     setSubmitting(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(error);
       return;
     }
     toast.success("Password updated.");
@@ -114,7 +121,7 @@ function ResetPasswordPage() {
   return (
     <AuthLayout
       title="New password"
-      subtitle="Must meet the strength rules below — you will be signed out of other sessions after saving."
+      subtitle="Choose a new password that meets the strength rules below. You can review and sign out other sessions from account security."
     >
       {!ready ? (
         <div className="space-y-4">

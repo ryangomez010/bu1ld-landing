@@ -1,0 +1,396 @@
+[
+  {
+    "slug": "ml-python-research-functions",
+    "title": "Python Functions That Expose Their Assumptions",
+    "description": "Parse measurements, validate units, and separate a pure calculation from file input.",
+    "track": "Research engineering",
+    "level": "Intermediate",
+    "concept": "A research function should answer one small question. A conversion function accepts a measurement and a scale, returns a converted value, and does not secretly read a file or change a global list. This separation makes a calculation reusable and testable. Python lists keep an ordered collection; dictionaries attach names to values; a function binds these pieces into a contract. Decide what missing means before calculating. None is absence, while zero is a real measurement. Converting both to zero changes an average and can create a false scientific effect.",
+    "example": "Suppose a CSV contains lengths 10, 20, and an empty field, measured in millimetres. Parse the nonempty strings as floats, convert them to 1 and 2 centimetres, and report mean 1.5 cm with two observed values and one missing value. A pure function centimetres(mm) returns mm / 10. A separate loader decides whether an empty field is omitted, imputed, or rejected. The count belongs beside the mean so the reader can reconstruct the denominator.",
+    "pitfall": "A broad except block that returns zero makes invalid strings indistinguishable from real zeros. Catch the expected conversion error, include the row identifier in a diagnostic, and keep a rejection count. Do not print private row contents in a public log. Mutation is another risk: appending results into an input list makes the next call depend on whether the previous call already ran.",
+    "exercise": "Write a conversion function and a loader for strings [\"5\", \"\", \"15\"]. Return the converted observations, their mean, and the missing count. Then replace the last value with \"fifteen\". State which part should raise an error and why it should not be treated as another empty field.",
+    "answer": "The observations are [0.5, 1.5] cm, their mean is 1.0 cm, and missing count is one. \"fifteen\" is malformed rather than missing; the loader should raise or record a separate invalid-value error. The conversion function can remain unaware of CSV syntax. A good test checks these counts as well as the mean, and verifies that the original list is unchanged.",
+    "references": [
+      {
+        "label": "Python tutorial: functions and input/output",
+        "url": "https://docs.python.org/3.14/tutorial/"
+      }
+    ],
+    "tags": ["python", "csv", "testing"]
+  },
+  {
+    "slug": "ml-numpy-shape-contracts",
+    "title": "NumPy Shapes Are Part of the Scientific Meaning",
+    "description": "Use vectorization deliberately and catch broadcasting that turns a rowwise error into an all-pairs comparison.",
+    "track": "Research engineering",
+    "level": "Intermediate",
+    "concept": "An array shape is a contract about what each axis means. If X has shape (n, d), row i contains the d features of sample i. Multiplying X by a weight vector of shape (d,) and summing along the feature axis gives n predictions. NumPy broadcasting aligns trailing dimensions; dimensions match when they are equal or one is one. This is useful for subtracting one feature-mean vector from every row, but a mathematically legal broadcast can still implement the wrong experiment.",
+    "example": "Let X be [[1, 2], [3, 4]] and w be [2, -1]. The predictions X @ w are [0, 2]. If targets are [1, 1], residuals are [-1, 1] and mean squared error is 1. Now reshape predictions to (2, 1) while leaving targets as (2,). Their subtraction produces a (2, 2) array: every prediction is compared with every target. Here identical targets hide the bug; distinct targets reveal it.",
+    "pitfall": "Vectorized code is not automatically memory efficient. Broadcasting (n, 1, d) against (1, m, d) may materialize n*m*d differences. For n=m=10,000 and d=128, float64 differences alone would require 102.4 billion bytes before reductions. Compute distances in bounded blocks or use an algebraic formulation, then verify numerical accuracy near equal vectors.",
+    "exercise": "Use predictions [1, 3] and targets [2, 4]. Compute the intended rowwise squared error and the accidental all-pairs squared-error matrix. Find both means. Write a shape assertion that fails before the accidental subtraction and explain why checking only the final scalar shape is insufficient.",
+    "answer": "Rowwise errors are [-1, -1], giving MSE 1. The all-pairs errors are [[-1, -3], [1, -1]], their squares sum to 12, and the mean is 3. Assert predictions.shape == targets.shape == (n,). Both correct and incorrect pipelines eventually produce a scalar, so the output shape cannot reveal the lost pairing.",
+    "references": [
+      {
+        "label": "NumPy broadcasting rules",
+        "url": "https://numpy.org/doc/stable/user/basics.broadcasting.html"
+      }
+    ],
+    "tags": ["numpy", "vectorization", "shapes"]
+  },
+  {
+    "slug": "ml-research-environments-tests",
+    "title": "An Environment and a Test Make a Result Portable",
+    "description": "Record the interpreter, dependency lock, data identity, and invariant that another person needs to rerun a calculation.",
+    "track": "Research engineering",
+    "level": "Intermediate",
+    "concept": "A Git revision identifies tracked source, but a result also depends on the interpreter, installed libraries, inputs, configuration, and random choices. Record these together. A virtual environment isolates Python packages from unrelated projects; a lock or exact requirements file constrains versions. Neither guarantees bitwise identity across hardware. Declare tolerances for floating-point results and save the actual outputs. A clean reconstruction is stronger evidence than a notebook whose variables survived many out-of-order edits.",
+    "example": "Consider a mean-error function intended to return zero for identical predictions and targets. A useful test checks identical inputs, reversed ordering, a known two-point example, and mismatched lengths. Using zip without a length check can silently ignore an extra target. If predictions [1, 2] and targets [1, 2, 100] produce zero, the test has exposed sample loss rather than a minor formatting defect.",
+    "pitfall": "A test that calculates its expected answer by calling the same implementation cannot independently check the algorithm. Likewise, setting one seed does not fix data order, library versions, nondeterministic kernels, or parallel scheduling. Preserve a failing result before changing the environment so that a later success does not erase what actually happened.",
+    "exercise": "Design a minimal run receipt for a CPU script computing MSE. Specify five fields beyond the score. Add a failure test for mismatched lengths and a tolerance-based test for a known result of 0.1. Explain why an untracked local edit must be noted even when the Git revision is recorded.",
+    "answer": "Include interpreter version, dependency versions or no-dependency statement, source revision plus dirty-state indicator, data hash, configuration, seed if relevant, command, and exit code. Mismatched lengths must raise an error. Check abs(observed - 0.1) <= 1e-12 for this small double-precision example. An untracked or modified file is absent from the commit, so revision alone cannot reconstruct what ran.",
+    "references": [
+      {
+        "label": "Python virtual environments",
+        "url": "https://docs.python.org/3.14/tutorial/venv.html"
+      },
+      {
+        "label": "Python unittest documentation",
+        "url": "https://docs.python.org/3.14/library/unittest.html"
+      }
+    ],
+    "tags": ["git", "environment", "reproducibility"]
+  },
+  {
+    "slug": "ml-jepa-targets-collapse",
+    "title": "Predicting Latent Targets without Collapsing the Representation",
+    "description": "Understand the roles of context, target, predictor, and collapse checks in a joint-embedding predictive setup.",
+    "track": "Representation extensions",
+    "level": "Intermediate",
+    "concept": "A predictive embedding system maps visible context to a prediction of a target representation. A target encoder produces the representation being predicted, and a predictor maps the context representation into the target space. Unlike pixel reconstruction, this asks the system to predict selected latent information. If both sides can become the same constant, the loss may be small while the representation is useless. Architecture and training choices must therefore be accompanied by measurements that can expose collapse and information leakage.",
+    "example": "Consider target embeddings [1, 3, 5] on a one-dimensional fixture. Predicting their mean, 3, for every input gives MSE 8/3. If the target encoder also changes every target to 3, prediction MSE becomes zero although all examples are indistinguishable. Target variance falls from 8/3 to zero. Compare loss and variance together, then test whether held-out labels can be predicted by a small fixed-budget probe.",
+    "pitfall": "A nonzero variance statistic alone does not establish a useful representation. A nuisance such as camera identity can supply variance without capturing the intended object. Similarly, a target branch can leak hidden pixels or future observations through shared preprocessing. Diagram the allowed information at each branch and test context/target separation on a tiny fixture before interpreting a learning curve.",
+    "exercise": "You observe loss 0.001, mean latent variance 0.00001, and unchanged downstream accuracy relative to a constant baseline. Write a defensible conclusion and two next diagnostics. Then explain why adding a random coordinate would increase variance without necessarily improving the representation.",
+    "answer": "The training objective was optimized, but representation usefulness is not established and near-collapse is plausible. Inspect per-dimension variance and covariance, and evaluate a frozen representation with a predeclared probe and split. Audit target leakage and compare against a constant predictor. Random noise raises variance yet contains no relevant signal, so variance is a warning measurement rather than a complete success criterion.",
+    "references": [
+      {
+        "label": "I-JEPA original paper",
+        "url": "https://arxiv.org/abs/2301.08243"
+      }
+    ],
+    "tags": ["jepa", "self-supervision", "collapse"]
+  },
+  {
+    "slug": "ml-latent-dynamics-rollouts",
+    "title": "A One-Step Latent Predictor Is Not Yet a World Model",
+    "description": "Evaluate recursive predictions, interventions, and distribution change before trusting long-horizon behavior.",
+    "track": "Representation extensions",
+    "level": "Intermediate",
+    "concept": "A latent dynamics model predicts the next representation from the current representation and, when relevant, an action. Training may use true states as inputs at every step. Deployment may instead feed previous predictions back into the model. These are different input distributions. Small one-step errors can compound, move the state outside the training region, or violate a conserved property. Calling a representation a world model should not hide the actual scope of its prediction and decision tests.",
+    "example": "For a toy stable process z(t+1) = 0.9 z(t), start at z(0)=1. A learned multiplier 1.01 has only 0.11 one-step absolute error, but after ten recursive steps its output is about 1.1046 while truth is about 0.3487. The error is about 0.7559. Teacher-forced evaluation repeatedly using the true state does not reveal the same growth. Plot or tabulate both protocols at identical horizons.",
+    "pitfall": "A rollout that looks smooth can be physically or causally wrong. Smoothing may suppress all rare events, and predicting average behavior can fail under interventions. If actions were logged by one narrow policy, evaluating arbitrary actions asks the model to extrapolate. Report action coverage and limit decisions to the supported regime until additional validation exists.",
+    "exercise": "Compare predictors with multipliers 0.88 and 1.01 over horizons 1, 5, and 10 from the same initial state. Which should be preferred for long stable decay? Specify a separate check you would need before using either model to choose control actions.",
+    "answer": "The 0.88 predictor remains decaying and at horizon ten gives about 0.2785, an absolute error about 0.0702. The 1.01 predictor grows and is much worse by horizon ten. Choose using the declared horizon-weighted metric rather than a selected frame. Before control, evaluate action-conditioned transitions and policy consequences under relevant interventions; an uncontrolled decay fixture contains no evidence for action selection.",
+    "references": [
+      {
+        "label": "I-JEPA: predictive representations",
+        "url": "https://arxiv.org/abs/2301.08243"
+      },
+      {
+        "label": "DreamerV3 original paper",
+        "url": "https://arxiv.org/abs/2301.04104"
+      }
+    ],
+    "tags": ["dynamics", "world-models", "rollouts"]
+  },
+  {
+    "slug": "ml-pde-boundary-contracts",
+    "title": "A PDE Task Includes Its Initial and Boundary Conditions",
+    "description": "Define what a surrogate receives, predicts, and must respect before selecting a neural architecture.",
+    "track": "Scientific ML extensions",
+    "level": "Intermediate",
+    "concept": "A partial differential equation constrains how a field changes across space and time, but it does not usually specify a unique problem by itself. The spatial domain, initial field, coefficients, forcing, and boundary conditions complete the task. A surrogate can map an initial field to a later field or map parameters to a solution. Declare which quantities vary across examples and which are fixed. Otherwise, a model evaluated on one boundary family may be described too broadly.",
+    "example": "For a one-dimensional heat equation on five grid points, use fixed zero boundaries and initial values [0, 0, 1, 0, 0]. An explicit update is u_new[i] = u[i] + r*(u[i-1] - 2*u[i] + u[i+1]). With r=0.25, the next values are [0, 0.25, 0.5, 0.25, 0]. Compute all new interior values from the old array; in-place sequential updates would implement a different algorithm.",
+    "pitfall": "A low average error can conceal a violated boundary or a sharp local failure. Report boundary error, interior error, and relevant conserved or dissipated quantities separately. Fixed boundary values are not periodic boundaries: wrapping the final index to the first changes the mathematical problem. Grid spacing and units belong in the input contract.",
+    "exercise": "Apply one more r=0.25 update to [0, 0.25, 0.5, 0.25, 0]. Calculate all five values and explain why the sum may decrease with fixed zero boundaries. Then state what metadata you would need before comparing two solution grids.",
+    "answer": "The next values are [0, 0.25, 0.375, 0.25, 0]. The sum decreases from 1 to 0.875 because heat can leave through the fixed boundaries in this finite-domain discretization. Compare physical coordinates, spacing, timestep, units, coefficients, boundary conditions, and interpolation conventions before subtracting grids. Equal array shapes alone do not imply corresponding physical points.",
+    "references": [
+      {
+        "label": "MIT numerical PDE course materials",
+        "url": "https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/pages/lecture-notes/"
+      }
+    ],
+    "tags": ["pde", "boundary-conditions", "finite-differences"]
+  },
+  {
+    "slug": "ml-surrogate-stability-shift",
+    "title": "Surrogate Evaluation Must Include Rollout and Regime Shift",
+    "description": "Use bounded numerical examples to separate one-step accuracy, stable recursion, and generalization beyond the training regime.",
+    "track": "Scientific ML extensions",
+    "level": "Intermediate",
+    "concept": "A surrogate can approximate a solver accurately on familiar states yet fail when its predictions are recursively reused. Errors may change the distribution of future inputs, and physical constraints may be violated. Evaluation must specify horizon, timestep, norm, units, boundary conditions, and parameter regime. A test set of randomly selected snapshots from training trajectories mostly assesses interpolation among related states. It cannot alone establish transfer to new initial conditions, coefficients, or geometry.",
+    "example": "Consider the five-point diffusion step from the previous lesson. With r=0.25, a central impulse becomes [0,0.25,0.5,0.25,0]. With r=0.75, it becomes [0,0.75,-0.5,0.75,0]. The negative central value is a warning for this nonnegative heat fixture. For the standard one-dimensional explicit scheme, r <= 0.5 is the usual stability condition; changing grid spacing without adjusting timestep changes r.",
+    "pitfall": "Do not label every negative prediction as a universal physics violation: some physical variables can legitimately be negative. Define the expected property for the actual variable and conditions. Likewise, aggregate error can hide rare unstable trajectories. Report failure rates and the worst relevant slices, and retain diverged runs in the result ledger instead of excluding them as numerical inconvenience.",
+    "exercise": "You train at grid spacing h and evaluate at h/2 while keeping alpha and timestep fixed. If the original r = alpha*dt/h^2 was 0.2, compute the new r and decide whether the reference explicit step meets the same stability bound. Propose a timestep that restores the old r.",
+    "answer": "The new r is four times larger, 0.8, exceeding 0.5 for this scheme. Reducing dt by a factor of four restores r=0.2. This is a property of the chosen numerical update, not a universal neural-network stability theorem. A surrogate should be compared using a valid reference solver and a declared physical horizon, not simply the same number of unstable steps.",
+    "references": [
+      {
+        "label": "MIT numerical PDE notes",
+        "url": "https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/pages/lecture-notes/"
+      },
+      {
+        "label": "Fourier Neural Operator original paper",
+        "url": "https://arxiv.org/abs/2010.08895"
+      }
+    ],
+    "tags": ["stability", "surrogates", "distribution-shift"]
+  },
+  {
+    "slug": "ml-causal-memory-interventions",
+    "title": "Test Whether a System Uses Memory with Controlled Interventions",
+    "description": "Hold the task constant while changing memory relevance, content, and order to distinguish access from useful causal reliance.",
+    "track": "Memory and agent extensions",
+    "level": "Intermediate",
+    "concept": "A system receiving memory is not necessarily using it, and using memory is not necessarily helpful. A controlled test changes the memory while holding the question, model, decoding, and scoring rule fixed. Compare relevant memory, removed memory, irrelevant memory of matched length, and misleading memory when appropriate for an authorized synthetic task. Measure both performance and how the answer responds to the intervention. This provides bounded evidence of reliance under the tested conditions.",
+    "example": "Create four synthetic questions whose answers are random keys assigned only in the provided memory. With relevant memory the system answers four correctly; with memory removed it answers one. The paired accuracy difference is 0.75. This suggests usefulness on this fixture, but four cases give very little information about broader tasks. If irrelevant text also yields four correct answers, inspect leakage or whether keys were predictable from question wording.",
+    "pitfall": "Changing memory length, retrieval budget, prompt style, and model at the same time confounds the comparison. An improvement could come from additional computation or a simpler question. Do not exclude cases where misleading memory hurts; robustness to stale or conflicting memory is part of the system behavior. Private user memories must never be turned into a public benchmark without permission.",
+    "exercise": "A test gives 8/10 correct with relevant memory, 6/10 without it, and 5/10 with shuffled memory. Describe a valid conclusion and one missing detail needed for a paired analysis. Explain why these three aggregate rates do not show which individual cases improved or regressed.",
+    "answer": "The fixture shows a 0.2 aggregate improvement with relevant memory and worse aggregate behavior with shuffled memory under the stated settings. We need per-example outcomes to identify matched wins and losses, plus the frozen protocol and uncertainty analysis. The same totals can arise from very different overlap patterns. This supports a bounded memory-use observation, not universal causal understanding or deployment safety.",
+    "references": [
+      {
+        "label": "RAG original paper",
+        "url": "https://arxiv.org/abs/2005.11401"
+      },
+      {
+        "label": "Causal inference course materials",
+        "url": "https://www.stat.cmu.edu/~cshalizi/uADA/16/lectures/23.pdf"
+      }
+    ],
+    "tags": ["memory", "interventions", "evaluation"]
+  },
+  {
+    "slug": "ml-agent-tool-contracts",
+    "title": "Reliable Agents Need Tool Contracts and Durable Receipts",
+    "description": "Represent tool requests, permission boundaries, retries, and outcomes without confusing intent with a completed action.",
+    "track": "Memory and agent extensions",
+    "level": "Intermediate",
+    "concept": "An agent chooses actions, but the surrounding system must define which actions are permitted and what counts as success. A tool contract specifies argument types, allowed scope, preconditions, timeout, result schema, and failure behavior. A request to create a record is not proof the record exists. Durable persistence or provider confirmation is needed before showing a success state. External text returned by a tool remains data, not authority to expand the user request.",
+    "example": "Consider a synthetic registration service with states requested, persisted, and failed. A request includes idempotency key demo-001 and event e1. The first call stores one registration and returns its ID. A retry with the same key and identical payload returns that same ID without creating another row. Reusing the key with a different event must fail rather than silently attach the old receipt to a new action.",
+    "pitfall": "A timeout creates uncertainty: the provider may have completed the action before the client stopped waiting. Blindly retrying with a new key can duplicate side effects. Maintain the original key and query or retry through the documented recovery mechanism. Do not display a successful registration simply because a browser opened an external form, and do not treat an arbitrary callback parameter as confirmation.",
+    "exercise": "Design a fake tool that records a task by idempotency key. Call it twice with the same key and payload, then once with the same key and a changed payload. Specify the expected row count, returned IDs, and error. State which parts could be tested without contacting a real organizer.",
+    "answer": "The first two calls should return the same ID and leave one row. The changed payload should raise a conflict and still leave one row. An in-memory fake can verify argument validation, stable identity, retry handling, and conflict behavior. It cannot establish the real provider authentication, persistence, delivery, or callback verification; those require an authorized integration test.",
+    "references": [
+      {
+        "label": "Python sqlite3 transactions",
+        "url": "https://docs.python.org/3.14/library/sqlite3.html"
+      },
+      {
+        "label": "HTTP semantics: idempotent methods",
+        "url": "https://www.rfc-editor.org/rfc/rfc9110.html#name-idempotent-methods"
+      }
+    ],
+    "tags": ["agents", "tools", "idempotency"]
+  },
+  {
+    "slug": "ml-distillation-speculative-decoding",
+    "title": "Distillation and Speculative Decoding Solve Different Efficiency Problems",
+    "description": "Distinguish training a smaller model from accelerating sampling with a draft model and target verification.",
+    "track": "Efficient systems extensions",
+    "level": "Intermediate",
+    "concept": "Distillation trains a student to imitate selected teacher outputs or internal signals; the student is a new model whose quality must be measured. Speculative decoding instead proposes tokens with a cheaper draft and verifies them using a target model. Correct algorithms include acceptance and correction rules that preserve a defined target distribution under their assumptions. Simply accepting every plausible draft token changes the model distribution. Implementation details and decoding settings matter.",
+    "example": "Consider a simplified cost model: one target token costs 10 time units, drafting four tokens costs 4, and verifying the block costs 12. If the block yields four accepted tokens, 16 units replace 40, a 2.5x idealized speedup. If it yields only one useful token, 16 units replace 10 and performance worsens. This arithmetic omits batching, rejected-prefix work, memory, and synchronization, so it is a planning calculation rather than a benchmark.",
+    "pitfall": "A high draft acceptance rate alone is not sufficient. The draft may be too expensive, verification may not parallelize as expected, or memory limits may reduce batch size. For distillation, teacher-generated labels can also reproduce teacher mistakes and biases. Compare both quality and resources using the same task, prompts, hardware, warmup, and output-length constraints.",
+    "exercise": "Using the simplified costs, calculate the break-even average useful tokens per block. Then explain which evidence you would need to claim that a speculative implementation preserves target sampling, and which separate evidence establishes end-to-end speed.",
+    "answer": "Total block cost is 16, so it must yield more than 1.6 useful tokens to beat a 10-unit-per-token target. Correctness needs the acceptance/correction algorithm and distributional tests under declared sampling conditions. Speed needs measured wall-clock runs with workload, hardware, lengths, and variability. The arithmetic alone proves neither implementation correctness nor realized acceleration.",
+    "references": [
+      {
+        "label": "Speculative decoding original paper",
+        "url": "https://arxiv.org/abs/2211.17192"
+      },
+      {
+        "label": "Distillation original paper",
+        "url": "https://arxiv.org/abs/1503.02531"
+      }
+    ],
+    "tags": ["distillation", "speculative-decoding", "latency"]
+  },
+  {
+    "slug": "ml-scientific-data-provenance",
+    "title": "Scientific Data Need Units, Lineage, and Availability Time",
+    "description": "Build a source record that distinguishes when an event happened, when its label became available, and what the model was allowed to know.",
+    "track": "Domain ML",
+    "level": "Intermediate",
+    "concept": "A scientific observation has more than a value. Record instrument or source, units, coordinate system, observation time, processing version, quality flags, and access permission. A later correction may change a public historical value without representing what was available at the original decision time. Point-in-time evaluation requires the information actually available then. Domain-specific preprocessing may also introduce selection effects, such as keeping only objects with successful follow-up.",
+    "example": "A source is observed on day 1, added to a catalog on day 2, and assigned a confirmed class on day 20. A prediction made on day 3 may use the observation and catalog entry, but not the confirmed class. If a benchmark joins the latest catalog snapshot to day-3 features, the future label can enter a feature or selection rule. Preserve both event and availability timestamps to detect this leak.",
+    "pitfall": "A dataset hash identifies bytes but does not explain their meaning or permission. Conversely, a citation without a version or retrieval date may not recover the same bytes later. Keep source identifier, version, retrieval timestamp, transformation revision, and split policy together. Do not expose private coordinates, participant information, or restricted samples merely to make a public reproduction package convenient.",
+    "exercise": "For three synthetic records, observation days are [1,2,3] and label-availability days are [2,5,4]. At a day-3 training cutoff, identify which labels can be used. Explain whether unlabeled rows should be automatically assigned the negative class.",
+    "answer": "Only the first label is available by day 3. The second and third outcomes are still unknown at that cutoff and must not be treated as negative. They may be retained for an explicitly unlabeled-data method, but that changes the training protocol and must be documented. Evaluation should wait until the declared label-maturity rule is satisfied.",
+    "references": [
+      {
+        "label": "Datasheets for Datasets original paper",
+        "url": "https://arxiv.org/abs/1803.09010"
+      },
+      {
+        "label": "Astropy table documentation",
+        "url": "https://docs.astropy.org/en/stable/table/"
+      }
+    ],
+    "tags": ["provenance", "time-series", "availability"]
+  },
+  {
+    "slug": "ml-astronomy-candidate-validation",
+    "title": "A Ranked Astronomical Candidate Is Not a Confirmed Discovery",
+    "description": "Separate detection, ranking, follow-up, and confirmation while measuring selection and population shift.",
+    "track": "Domain ML",
+    "level": "Intermediate",
+    "concept": "An astronomical pipeline may detect a changing source, assign a score, and prioritize follow-up. Each step filters the population. A candidate can be an instrumental artifact, a known source, a duplicate alert, or a real event of another class. Confirmation requires the relevant observational evidence and domain review. A larger candidate count can reflect a lower threshold or broader survey coverage; it does not by itself show more discoveries.",
+    "example": "System A flags 100 objects and confirms 20 after complete follow-up. System B flags 300 and confirms 30 after complete follow-up under comparable rules. B has 1.5 times as many confirmations, not three times. Candidate precision is 20% for A and 10% for B. If B has only followed up its easiest 50 candidates, neither 30/300 nor 30/50 estimates the same population quantity without addressing selection.",
+    "pitfall": "A random split of alerts may put repeated observations of the same object in both training and evaluation. Group by source identity, then consider time, survey, instrument, and sky population. Real follow-up capacity is limited; evaluating top-k candidates or utility under a fixed observation budget may be more relevant than a threshold-free score. Report missing follow-up as unknown.",
+    "exercise": "A run produces 500 alerts from 200 unique objects, with 40 followed up and 10 confirmed. List three valid counts and one claim that cannot yet be made. Propose a sampling scheme for estimating confirmation rate across all 200 objects.",
+    "answer": "There are 500 alerts, 200 unique candidate objects, 40 followed-up objects, and 10 confirmed objects. It is invalid to claim 25% of all candidates are confirmed if follow-up was selective. Use a predeclared random or stratified sample of candidates for follow-up and report sampling weights and uncertainty. Preserve duplicate-alert handling and label availability in the protocol.",
+    "references": [
+      {
+        "label": "ALeRCE broker original paper",
+        "url": "https://arxiv.org/abs/2008.03303"
+      },
+      {
+        "label": "Astropy coordinates documentation",
+        "url": "https://docs.astropy.org/en/stable/coordinates/"
+      }
+    ],
+    "tags": ["astronomy", "candidate-triage", "population-shift"]
+  },
+  {
+    "slug": "ml-weather-time-baselines",
+    "title": "Weather Evaluation Needs Lead Times and Honest Baselines",
+    "description": "Compare forecasts against persistence and climatology at consistent initialization times, horizons, and physical units.",
+    "track": "Domain ML",
+    "level": "Intermediate",
+    "concept": "A forecast is indexed by when it was initialized and when it is valid. A six-hour prediction and a five-day prediction are different tasks. Inputs must be available at initialization, and preprocessing cannot use future observations. Persistence predicts that the latest observed state continues; climatology predicts a historical seasonal average. These simple baselines can be strong at different horizons and should be implemented carefully before claiming a model improvement.",
+    "example": "At three initialization times, latest observed temperatures are [10,12,14] and next-day truth is [12,13,13]. Persistence predicts [10,12,14], producing absolute errors [2,1,1] and MAE 4/3. A model predicting [11,13,15] has errors [1,0,2] and MAE 1. The average improvement is 1/3 degree, but the model is worse on the third case. Keep paired errors instead of reporting only the average.",
+    "pitfall": "Weather grids are not always equal-area. A naive average across latitude-longitude cells can overweight polar regions. Specify weighting, variable units, pressure levels, masking, and missing data. Reanalysis can be useful for development, but its production and revision process differs from real-time observations. A hindcast using revised data should not silently become an operational forecast claim.",
+    "exercise": "Compute the model minus persistence absolute-error difference for each example and their mean. Then propose a chronological test split and one regime slice that could reveal a failure hidden by overall MAE.",
+    "answer": "The paired differences are [-1,-1,1], with mean -1/3 degree; negative favors the model. Use a later period untouched by tuning and ensure no input or normalization statistics cross its boundary. Useful slices include extreme-temperature days, seasons, locations, or forecast horizons. Choose slices before interpreting outcomes and show sample counts so tiny groups do not look conclusive.",
+    "references": [
+      {
+        "label": "WeatherBench 2 benchmark paper",
+        "url": "https://arxiv.org/abs/2308.15560"
+      },
+      {
+        "label": "WeatherBench 2 documentation",
+        "url": "https://weatherbench2.readthedocs.io/en/latest/"
+      }
+    ],
+    "tags": ["weather", "forecasting", "baselines"]
+  },
+  {
+    "slug": "ml-materials-inverse-design",
+    "title": "Inverse Design Must Account for Surrogate Error and Feasibility",
+    "description": "Separate scoring a candidate, proposing a candidate, and experimentally validating a material or engineered artifact.",
+    "track": "Domain ML",
+    "level": "Intermediate",
+    "concept": "A forward model predicts a property from a composition or structure. Inverse design searches for inputs with desired predicted properties. The search may find regions where the surrogate is overconfident or unsupported by training data. A high prediction is therefore a proposal for validation, not a measured property. Constraints can include composition bounds, synthesis conditions, geometry, stability, and cost; their validity depends on the domain and available evidence.",
+    "example": "Suppose observed compositions lie between x=0 and x=1 and a fitted surrogate predicts score 2x. An unconstrained optimizer chooses x=100 and reports 200, but this extrapolation is unsupported. Constraining x to [0,1] gives x=1 and score 2, still only a prediction. A second model or uncertainty estimate may prioritize a different candidate for measurement, especially near the edge of the observed domain.",
+    "pitfall": "Random row splits can leak closely related compositions, structures, or repeated measurements across evaluation. Group by the unit of intended discovery and test transfer to genuinely new families when that is the claim. A surrogate uncertainty score is not automatically calibrated, and a geometric CAD check does not prove material performance or manufacturability.",
+    "exercise": "Candidates A, B, C have predicted scores [8,10,9], uncertainty estimates [1,5,2], and feasibility flags [true,false,true]. Under a simple conservative score mean minus uncertainty, choose among feasible candidates. Explain why the numerical rule needs validation before use in a real design process.",
+    "answer": "A has conservative score 7, B has 5 but is infeasible, and C has 7. A and C tie; use a predeclared tie rule or request additional information. The uncertainty values need calibration and the feasibility checks need domain justification. This rule is a teaching decision heuristic, not a safety guarantee or proof that either proposed material will achieve score 7.",
+    "references": [
+      {
+        "label": "Matbench benchmark paper",
+        "url": "https://arxiv.org/abs/2005.00707"
+      },
+      {
+        "label": "Materials Project documentation",
+        "url": "https://docs.materialsproject.org/"
+      }
+    ],
+    "tags": ["materials", "inverse-problems", "uncertainty"]
+  },
+  {
+    "slug": "ml-mdp-return-contracts",
+    "title": "An MDP Defines the Decision Problem before the Algorithm",
+    "description": "Specify state, action, transition, reward, termination, and discount so a policy score has a clear meaning.",
+    "track": "Decision systems",
+    "level": "Intermediate",
+    "concept": "A Markov decision process describes decisions through states, actions, transition probabilities, and rewards. The Markov assumption says the state carries the information needed for the next-step distribution; an observation may not satisfy it. A policy maps available information to actions. Define the horizon, discount, reward timing, and terminal conditions before comparing algorithms. Otherwise, two reported returns may measure different objectives even in the same simulator.",
+    "example": "For rewards [1,2,3] and discount gamma=0.5, return from the first step is 1 + 0.5*2 + 0.25*3 = 2.75. If the final state is terminal, no future value is added. A rollout stopped only because a data-collection time limit was reached may require bootstrapping from the continuing state, depending on the defined task. Gymnasium exposes termination and truncation separately to make that distinction explicit.",
+    "pitfall": "Reward is a design choice, not a complete description of human goals. A policy can exploit a loophole in the reward or simulator. If observations omit relevant hidden state, a memoryless policy may be insufficient and the evaluation should acknowledge partial observability. Never infer real-world competence from a high synthetic return without checking the task and failure modes.",
+    "exercise": "Compute return for rewards [2,0,4] with gamma=0.5. Then imagine the episode stopped at a time limit after the second reward and the estimated continuing value is 8. Compute the bootstrapped two-step return and explain why treating the cutoff as terminal changes it.",
+    "answer": "The full three-reward return is 2 + 0 + 0.25*4 = 3. For the two-step truncated trajectory, the bootstrapped estimate is 2 + 0.5*0 + 0.25*8 = 4. Treating the cutoff as terminal drops the final value term and gives 2. Which target is appropriate depends on whether the task truly ends or data collection merely stopped.",
+    "references": [
+      {
+        "label": "Sutton and Barto: Reinforcement Learning",
+        "url": "https://mitpress.mit.edu/9780262039246/reinforcement-learning/"
+      },
+      {
+        "label": "Gymnasium basic usage",
+        "url": "https://gymnasium.farama.org/introduction/basic_usage/"
+      }
+    ],
+    "tags": ["mdp", "returns", "termination"]
+  },
+  {
+    "slug": "ml-value-policy-iteration",
+    "title": "Value Functions Turn Future Consequences into Comparable Actions",
+    "description": "Solve a tiny decision problem with explicit transitions and distinguish policy evaluation from policy improvement.",
+    "track": "Decision systems",
+    "level": "Intermediate",
+    "concept": "A value function measures expected future return under a specified policy. Policy evaluation computes that value for fixed action choices; policy improvement chooses actions with higher estimated return. Value iteration combines backups that take the maximum over actions. These operations rely on known or estimated transition and reward information. A converged solution to a wrong transition model is still wrong for the real environment.",
+    "example": "In state s, action stop gives reward 2 and terminates. Action wait gives reward 0 and moves to state t. In t, the only action gives reward 4 and terminates. With gamma=0.5, V(t)=4 and the value of wait at s is 0 + 0.5*4 = 2, tying stop. With gamma=0.9, wait has value 3.6 and is preferred. The policy changes because the objective changes, not because one algorithm became smarter.",
+    "pitfall": "When using sampled estimates, taking a maximum over noisy action values can favor an overestimated action. Tie-breaking also matters for reproducibility: a stable rule avoids arbitrary changes across runs. Distinguish an exact dynamic-programming calculation on a known toy model from learning transitions through interaction or evaluating a real policy.",
+    "exercise": "Change the reward at t to 3 while retaining gamma=0.5. Compute both action values at s and choose a policy. Then write the value of s under a policy that always waits, even if waiting is suboptimal.",
+    "answer": "Stop remains 2; wait becomes 0.5*3 = 1.5. The improved policy stops. Under the fixed always-wait policy, V(s)=1.5 rather than 2. A value must be labeled by its policy or optimality assumption. Reporting the optimal value as if a deployed policy achieved it would overstate the actual behavior.",
+    "references": [
+      {
+        "label": "Sutton and Barto: dynamic programming",
+        "url": "https://mitpress.mit.edu/9780262039246/reinforcement-learning/"
+      }
+    ],
+    "tags": ["value-functions", "bellman", "policies"]
+  },
+  {
+    "slug": "ml-exploration-offline-evaluation",
+    "title": "Offline Policy Evaluation Cannot Ignore Missing Action Coverage",
+    "description": "Use logged action probabilities carefully and distinguish exploration in a simulator from justified claims about a new policy.",
+    "track": "Decision systems",
+    "level": "Intermediate",
+    "concept": "Logged data are generated by a behavior policy. A new target policy may choose different actions and visit different states. If the log never contains an action where the target would use it, the corresponding outcome is not identified by those observations alone. Importance weighting can adjust for known action probabilities under assumptions, but small behavior probabilities create large weights and high variance. Sequential problems multiply this difficulty across time.",
+    "example": "In a one-step bandit, the logging policy chooses action A with probability 0.5. Four logs are (A,1), (B,0), (A,1), (B,0). A target always choosing A gives weights 2 for A rows and 0 for B rows. The ordinary importance-sampling estimate is (2+0+2+0)/4 = 1. This tiny fixture works because propensities are known and A is covered; it is not a general guarantee for arbitrary logs.",
+    "pitfall": "If the logging policy always chose B, weighting cannot recover outcomes for A. Fitting a predictive model may extrapolate them, but its assumptions must be stated and tested. Clipping weights can reduce variance while introducing bias. Selecting a policy because it looks best on one noisy offline estimate creates another selection problem requiring a separate assessment.",
+    "exercise": "Replace the two A rewards with [1,0] in the four-log example. Compute the estimate and list two reasons to avoid treating it as a precise deployment forecast. Then explain what happens if the recorded behavior probability for A is zero.",
+    "answer": "The estimate becomes (2+0+0+0)/4 = 0.5. The sample is tiny, propensities may be misspecified, and a real deployment population may differ. If A has zero behavior probability, its importance ratio is undefined wherever the target chooses it; the data lack support for that policy. No algebraic reweighting supplies the missing outcomes.",
+    "references": [
+      {
+        "label": "Doubly Robust Policy Evaluation and Learning",
+        "url": "https://arxiv.org/abs/1103.4601"
+      },
+      {
+        "label": "Sutton and Barto: exploration and off-policy learning",
+        "url": "https://mitpress.mit.edu/9780262039246/reinforcement-learning/"
+      }
+    ],
+    "tags": ["exploration", "offline-evaluation", "coverage"]
+  },
+  {
+    "slug": "ml-simulation-robotics-limits",
+    "title": "Simulation Success Is a Bounded Result, Not a Physical Guarantee",
+    "description": "Test model mismatch, control limits, observation noise, and failure recovery before extending a simulator claim to robotics.",
+    "track": "Decision systems",
+    "level": "Intermediate",
+    "concept": "A simulator makes experimentation repeatable, but it contains assumptions about dynamics, sensors, delays, contacts, and disturbances. A policy may exploit those assumptions. Domain randomization varies selected parameters during training or testing, yet it covers only the variations chosen by the designer. A simulation result should name the environment version, initial-state distribution, control bounds, horizon, seeds, and termination rules.",
+    "example": "Consider scalar position x with dynamics x_next = x + u and a controller u = -0.5*x. Starting at x=4 gives positions 2,1,0.5,0.25. If the real actuator is limited to magnitude 1, the first move is clipped and positions become 3,2,1,0.5. If the sensor reports the wrong sign, the same feedback rule drives the system away from zero. Matching one clean trajectory does not test these failures.",
+    "pitfall": "A mean return can hide rare collisions, constraint violations, or unstable tails. Report failure counts and worst relevant conditions, not only average reward. Do not run an unverified controller on physical equipment as part of a website learning task. A synthetic controlled example can teach evaluation design without claiming hardware readiness.",
+    "exercise": "For x=4 with action bound 1 and controller u=-0.5*x, calculate four updates. Then propose two test perturbations and a stopping rule that would make the simulation evaluation more informative while keeping it bounded.",
+    "answer": "The updates are 3,2,1,0.5. Test observation delay or noise and a changed actuator response, with predeclared parameter ranges. A bounded evaluation might stop after 20 steps or when absolute position exceeds a declared failure threshold, retaining every failure. The threshold must be justified for the teaching task; it is not a transferable physical safety limit.",
+    "references": [
+      {
+        "label": "Domain Randomization for Sim-to-Real Transfer",
+        "url": "https://arxiv.org/abs/1703.06907"
+      },
+      {
+        "label": "Gymnasium environment API",
+        "url": "https://gymnasium.farama.org/introduction/basic_usage/"
+      }
+    ],
+    "tags": ["robotics", "simulation", "control"]
+  }
+]

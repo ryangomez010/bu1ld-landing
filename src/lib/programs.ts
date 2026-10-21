@@ -1,4 +1,6 @@
 import { clampText } from "@/lib/security";
+import { trackEvent } from "@/lib/analytics";
+import { applicationAnalyticsProps, applicationReceiptMatches } from "@/lib/application-analytics";
 import { slugify } from "@/data/seed/content";
 import { getSupabase } from "@/lib/supabase";
 import { createNotification } from "@/lib/notifications";
@@ -151,12 +153,24 @@ export async function applyToProgram(
   }
   const supabase = getSupabase();
   if (!supabase) return { error: "Program applications are temporarily unavailable." };
-  const { error } = await supabase.from("program_applications").insert({
-    program_id: programId,
-    user_id: userId,
-    statement: safeStatement,
-  });
-  return { error: error?.message ?? null };
+  const { data, error } = await supabase
+    .from("program_applications")
+    .insert({
+      program_id: programId,
+      user_id: userId,
+      statement: safeStatement,
+    })
+    .select("id, program_id, user_id, status, created_at")
+    .single();
+  if (error) return { error: error.message };
+  if (!applicationReceiptMatches(data, "program", userId, programId)) {
+    return {
+      error:
+        "The application receipt could not be confirmed. Check your program application before submitting again.",
+    };
+  }
+  trackEvent("application_submitted", applicationAnalyticsProps("program"));
+  return { error: null };
 }
 
 export async function withdrawProgramApplication(

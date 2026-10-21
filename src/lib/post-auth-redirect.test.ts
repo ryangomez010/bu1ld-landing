@@ -46,4 +46,36 @@ describe("post-auth redirect", () => {
     expect(postAuthNavigateTarget("/competitions")).toEqual({ to: "/competitions" });
     expect(postAuthNavigateTarget("//evil")).toEqual({ to: "/dashboard" });
   });
+
+  test("returns members to the unified work portal", () => {
+    expect(postAuthNavigateTarget("/workspace")).toEqual({ to: "/workspace" });
+  });
+
+  test("preserves member list routes, filters, and article anchors", () => {
+    expect(postAuthNavigateTarget("/guides")).toEqual({ to: "/guides" });
+    expect(postAuthNavigateTarget("/saved/collections")).toEqual({ to: "/saved/collections" });
+    expect(postAuthNavigateTarget("/account/security")).toEqual({ to: "/account/security" });
+    expect(postAuthNavigateTarget("/guides?topic=foundations&level=beginner")).toEqual({
+      href: "/guides?topic=foundations&level=beginner",
+    });
+    expect(postAuthNavigateTarget("/guides/entropy?topic=foundations#exercise")).toEqual({
+      href: "/guides/entropy?topic=foundations#exercise",
+    });
+    expect(postAuthNavigateTarget("/search?q=training")).toEqual({ href: "/search?q=training" });
+  });
+
+  test("never forwards auth loops, controls, or nested/normalized unknown routes", () => {
+    for (const path of [
+      "/login?redirect=/login",
+      "/auth/callback",
+      "/onboarding",
+      "/projects/../../login?x=1",
+      "/projects/%2e%2e?x=1",
+      "/projects/a/b",
+      "/\n/evil.test",
+      "/unknown?x=1",
+    ]) {
+      expect(postAuthNavigateTarget(path)).toEqual({ to: "/dashboard" });
+    }
+  });
 });

@@ -1,245 +1,206 @@
+import type { SearchSchemaInput } from "@tanstack/react-router";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { BookOpen, Clock } from "lucide-react";
+import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
+import { publicPapers, type PublicCatalog, type PublicPaper } from "@/lib/public-library";
+import { pageHead } from "@/lib/seo";
 
-import { RequireMember } from "@/components/auth/RequireAuth";
-import { EmptyState, TagList } from "@/components/member/ContentCard";
-import { FilterBar } from "@/components/member/FilterBar";
-import { FilterChip } from "@/components/member/FilterChip";
-import { ListSkeleton } from "@/components/member/LoadingState";
-import { MemberLayout } from "@/components/member/MemberLayout";
-import { Input } from "@/components/ui/input";
-import { useAuth } from "@/lib/auth";
-import { fetchPapers } from "@/lib/content";
-import { getAllPaperScrollProgress } from "@/lib/paper-reading-progress";
-import { getReadPaperSlugs } from "@/lib/paper-read";
-import { paperReadMinutes, pickFeaturedPaper, sortPapersForLibrary } from "@/lib/paper-review";
-import { paperLink } from "@/lib/app-paths";
-import type { Paper } from "@/lib/types";
-import { cn } from "@/lib/utils";
+type PublicPaperMetadata = Omit<PublicPaper, "review_body">;
+
+async function loadPublicPaperMetadata(): Promise<PublicCatalog<PublicPaperMetadata>> {
+  const catalog = await publicPapers();
+  const records = catalog.records.map(({ review_body: _body, ...metadata }) => metadata);
+  return { ...catalog, records };
+}
 
 export const Route = createFileRoute("/papers/")({
-  component: PapersPage,
-  head: () => ({
-    meta: [{ title: "Paper reviews — The Bu1ld" }],
+  validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
+    q: typeof search.q === "string" ? search.q.slice(0, 120) : "",
+    topic: typeof search.topic === "string" ? search.topic.slice(0, 80) : "",
+    sort: search.sort === "updated" ? "updated" : "newest",
   }),
+  loader: loadPublicPaperMetadata,
+  head: () =>
+    pageHead({
+      title: "Paper reviews — The BU1LD",
+      description:
+        "Read critical ML paper reviews with source links, methods, evidence and limitations. Public reading needs no account.",
+      path: "/papers",
+    }),
+  component: PapersPage,
 });
-
 function PapersPage() {
+  const catalog: Awaited<ReturnType<typeof loadPublicPaperMetadata>> = Route.useLoaderData();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const retryHref = `/papers?${new URLSearchParams(search).toString()}`;
+  const tags = [...new Set(catalog.records.flatMap((paper) => paper.tags))].sort();
+  const papers = catalog.records
+    .filter(
+      (paper) =>
+        (!search.topic || paper.tags.includes(search.topic)) &&
+        [paper.title, paper.authors, paper.summary, ...paper.tags]
+          .join(" ")
+          .toLowerCase()
+          .includes(search.q.toLowerCase()),
+    )
+    .sort((a, b) =>
+      search.sort === "updated"
+        ? b.updated_at.localeCompare(a.updated_at)
+        : (b.firstReleaseAt ?? "").localeCompare(a.firstReleaseAt ?? ""),
+    );
   return (
-    <RequireMember>
-      <PapersContent />
-    </RequireMember>
-  );
-}
-
-function PapersContent() {
-  const { user } = useAuth();
-  const [papers, setPapers] = useState<Paper[]>([]);
-  const [readSlugs, setReadSlugs] = useState<Set<string>>(new Set());
-  const [scrollProgress, setScrollProgress] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "classic" | "recent" | "unread" | "read">("all");
-  const [tag, setTag] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    void fetchPapers().then((data) => {
-      setPapers(sortPapersForLibrary(data));
-      setLoading(false);
-    });
-    if (!user) return;
-    void getReadPaperSlugs(user.id).then(setReadSlugs);
-    setScrollProgress(getAllPaperScrollProgress(user.id));
-  }, [user]);
-
-  const allTags = useMemo(
-    () => Array.from(new Set(papers.flatMap((p) => p.tags))).sort(),
-    [papers],
-  );
-  const featured = useMemo(() => pickFeaturedPaper(papers, readSlugs), [papers, readSlugs]);
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return papers.filter((p) => {
-      if (filter === "classic" && !p.is_classic) return false;
-      if (filter === "recent" && p.is_classic) return false;
-      if (filter === "read" && !readSlugs.has(p.slug)) return false;
-      if (filter === "unread" && readSlugs.has(p.slug)) return false;
-      if (tag && !p.tags.includes(tag)) return false;
-      if (!q) return true;
-      return [p.title, p.authors, p.summary, ...p.tags].join(" ").toLowerCase().includes(q);
-    });
-  }, [papers, filter, tag, query, readSlugs]);
-
-  const readCount = papers.filter((p) => readSlugs.has(p.slug)).length;
-  const inProgress = papers.filter(
-    (p) => !readSlugs.has(p.slug) && (scrollProgress[p.slug] ?? 0) > 5,
-  ).length;
-
-  return (
-    <MemberLayout title="Paper reviews" eyebrow="research library">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 -mt-4">
-        <p className="text-muted-foreground max-w-2xl leading-relaxed">
-          Reviews, explainers, and research notes organized around the questions that matter in
-          practice: what the method does, where evidence is thin, and what to test next.
-        </p>
-        <Link
-          to="/research"
-          className="font-mono text-[9px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone shrink-0"
-        >
-          Reading paths →
-        </Link>
-      </div>
-
-      <div className="mb-6 panel glass rounded-2xl overflow-hidden grid gap-px sm:grid-cols-4">
-        <Stat label="Reviews" value={papers.length} />
-        <Stat label="Read" value={readCount} />
-        <Stat label="In progress" value={inProgress} />
-        <Stat label="Classics" value={papers.filter((p) => p.is_classic).length} />
-      </div>
-
-      {featured && !loading ? (
-        <Link
-          {...paperLink(featured.slug)}
-          className="mb-8 block panel glass rounded-2xl p-6 md:p-8 panel-interactive group relative overflow-hidden border-l-2 border-l-bone/30"
-        >
-          <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground relative z-[1]">
-            Start here
-          </p>
-          <h2 className="font-display text-2xl md:text-3xl text-bone mt-3 group-hover:text-accent-blue transition relative z-[1]">
-            {featured.title}
-          </h2>
-          <p className="mt-3 text-muted-foreground max-w-2xl line-clamp-2">{featured.summary}</p>
-          <p className="mt-4 font-mono text-[9px] uppercase text-muted-foreground flex items-center gap-3">
-            <span className="inline-flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {paperReadMinutes(featured)} min
-            </span>
-            <span>{featured.is_classic ? "Classic" : "Active thread"}</span>
-          </p>
-        </Link>
-      ) : null}
-
-      <FilterBar
-        sticky
-        className="mb-4"
-        value={filter}
-        onChange={setFilter}
-        options={(
-          [
-            ["all", "All", papers.length],
-            ["unread", "Unread", papers.length - readCount],
-            ["read", "Read", readCount],
-            ["classic", "Classics", papers.filter((p) => p.is_classic).length],
-            ["recent", "Active", papers.filter((p) => !p.is_classic).length],
-          ] as const
-        ).map(([value, label, count]) => ({ value, label, count }))}
-      />
-
-      <Input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Title, author, tag — e.g. chinchilla, DPO, JEPA"
-        className="mb-4 max-w-md font-mono text-xs"
-      />
-
-      <div className="flex flex-wrap gap-2 mb-8">
-        <FilterChip active={!tag} onClick={() => setTag(null)}>
-          All tags
-        </FilterChip>
-        {allTags.map((t) => (
-          <FilterChip key={t} active={tag === t} onClick={() => setTag(tag === t ? null : t)}>
-            {t}
-          </FilterChip>
-        ))}
-      </div>
-
-      {loading ? (
-        <ListSkeleton rows={5} />
-      ) : filtered.length === 0 ? (
-        <EmptyState
-          title="No reviews match"
-          body="Try Classic/Recent, the unread filter, or search by author name — e.g. Vaswani, LeCun, or a tag like world-models."
-        />
-      ) : (
-        <div className="grid gap-3 md:grid-cols-2">
-          {filtered.map((paper) => (
-            <PaperLibraryCard
-              key={paper.id}
-              paper={paper}
-              isRead={readSlugs.has(paper.slug)}
-              progress={scrollProgress[paper.slug] ?? 0}
-            />
-          ))}
-        </div>
-      )}
-    </MemberLayout>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="stat-cell relative z-[1]">
-      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-        {label}
-      </p>
-      <p className="mt-2 font-display text-2xl text-bone">{value}</p>
-    </div>
-  );
-}
-
-function PaperLibraryCard({
-  paper,
-  isRead,
-  progress,
-}: {
-  paper: Paper;
-  isRead: boolean;
-  progress: number;
-}) {
-  const mins = paperReadMinutes(paper);
-  return (
-    <Link
-      {...paperLink(paper.slug)}
-      className="panel panel-interactive group block rounded-sm p-5 h-full"
+    <InstitutionLayout
+      title="Read the method. Question the evidence."
+      eyebrow="Papers"
+      description="Critical reviews of external research, separate from BU1LD’s own publications. Reading is public; sign in only to save papers and personal notes."
     >
-      <div className="flex items-start justify-between gap-2">
-        <span
-          className={cn(
-            "font-mono text-[8px] uppercase px-2 py-0.5 rounded-sm border",
-            paper.is_classic
-              ? "border-accent-violet/40 text-accent-violet"
-              : "border-accent-blue/40 text-accent-blue",
-          )}
-        >
-          {paper.content_kind ?? (paper.is_classic ? "classic" : "review")}
-        </span>
-        {isRead ? (
-          <span className="font-mono text-[8px] uppercase text-accent-green">Read ✓</span>
-        ) : progress > 5 ? (
-          <span className="font-mono text-[8px] uppercase text-muted-foreground">
-            {Math.round(progress)}%
-          </span>
-        ) : null}
-      </div>
-      <h3 className="font-display text-xl text-bone mt-3 group-hover:text-accent-blue transition line-clamp-2">
-        {paper.title}
-      </h3>
-      <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{paper.summary}</p>
-      <p className="mt-3 font-mono text-[9px] uppercase text-muted-foreground">
-        {[paper.field, paper.difficulty, paper.authors, paper.year].filter(Boolean).join(" · ")} ·{" "}
-        {mins} min
-      </p>
-      {!isRead && progress > 0 ? (
-        <div className="mt-3 h-1 rounded-full bg-border/60 overflow-hidden">
-          <div className="h-full bg-accent-blue" style={{ width: `${progress}%` }} />
+      <form
+        key={JSON.stringify(search)}
+        action="/papers"
+        method="get"
+        role="search"
+        aria-label="Find paper reviews"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const values = new FormData(event.currentTarget);
+          void navigate({
+            search: {
+              q: String(values.get("q") ?? ""),
+              topic: String(values.get("topic") ?? ""),
+              sort: String(values.get("sort") ?? "newest"),
+            },
+            resetScroll: false,
+          });
+        }}
+        className="mb-8 flex flex-wrap gap-4"
+      >
+        <label className="min-w-0 flex-1">
+          Search papers
+          <input
+            className="mt-2 w-full rounded-sm border border-border bg-background px-4 py-3"
+            name="q"
+            type="search"
+            maxLength={120}
+            defaultValue={search.q}
+            placeholder="Title, author or topic"
+          />
+        </label>
+        <label>
+          Topic
+          <select
+            className="mt-2 block max-w-full rounded-sm border border-border bg-background px-4 py-3"
+            name="topic"
+            defaultValue={search.topic}
+          >
+            <option value="">All topics</option>
+            {tags.map((tag) => (
+              <option key={tag}>{tag}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Sort
+          <select
+            className="mt-2 block rounded-sm border border-border bg-background px-4 py-3"
+            name="sort"
+            defaultValue={search.sort}
+          >
+            <option value="newest">Newest papers</option>
+            <option value="updated">Updated reviews</option>
+          </select>
+        </label>
+        <div className="flex items-end gap-4">
+          <button
+            type="submit"
+            className="min-h-12 rounded-sm border border-accent-blue px-4 text-accent-blue"
+          >
+            Apply filters
+          </button>
+          <a href="/papers" className="inline-flex min-h-12 items-center text-sm underline">
+            Clear filters
+          </a>
         </div>
-      ) : null}
-      <TagList tags={paper.tags.slice(0, 4)} linkToSearch className="mt-4" />
-      <span className="mt-4 inline-flex items-center gap-1 font-mono text-[9px] uppercase text-accent-blue group-hover:text-bone">
-        <BookOpen className="h-3 w-3" /> Read review
-      </span>
-    </Link>
+      </form>
+      {catalog.state === "unavailable" ? (
+        <section role="status" className="border border-accent-blue/40 rounded-sm p-6">
+          <h2 className="font-display text-2xl">Review catalog unavailable</h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">{catalog.message}</p>
+          <a
+            href={retryHref}
+            className="mt-4 inline-flex min-h-11 items-center border border-border px-4"
+          >
+            Retry reviews
+          </a>
+        </section>
+      ) : (
+        <>
+          {catalog.state === "partial" && (
+            <aside role="status" className="mb-6 border border-accent-blue/40 p-5">
+              <p>{catalog.message}</p>
+              <a
+                href={retryHref}
+                className="mt-3 inline-flex min-h-11 items-center border border-border px-4"
+              >
+                Retry live catalog
+              </a>
+            </aside>
+          )}
+          <p aria-live="polite" className="mb-5 text-sm text-muted-foreground">
+            {papers.length} published reviews match. Newest sorts verified first-release dates;
+            undated records follow. Review publication and revision dates do not make an older work
+            recent.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {papers.map((paper) => (
+              <Link
+                key={paper.id}
+                to="/papers/$slug"
+                params={{ slug: paper.slug }}
+                className="panel panel-interactive rounded-sm p-6"
+              >
+                <p className="text-xs uppercase tracking-wider text-accent-blue">
+                  {paper.is_classic ? "Foundational reading" : "Paper review"}
+                </p>
+                <h2 className="mt-3 font-display text-2xl">{paper.title}</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {paper.authors} · {paper.year ?? "Paper date unverified"}
+                </p>
+                <p className="mt-4 leading-relaxed text-muted-foreground">{paper.summary}</p>
+                <p className="mt-4 text-xs text-muted-foreground">
+                  Paper first release: {paper.firstReleaseAt?.slice(0, 10) ?? "not verified"} ·
+                  Review published {paper.published_at.slice(0, 10)} · updated{" "}
+                  {paper.updated_at.slice(0, 10)}
+                </p>
+              </Link>
+            ))}
+          </div>
+          {!papers.length && (
+            <p className="border border-border p-6">
+              No published reviews match. Clear the filters or explore the learning library.
+            </p>
+          )}
+        </>
+      )}
+      <section className="mt-12 border-t border-border pt-8">
+        <h2 className="font-display text-2xl">How to read a review</h2>
+        <p className="mt-3 max-w-3xl leading-relaxed text-muted-foreground">
+          A source-linked review is an interpretation of a paper, not an independent reproduction.
+          Look for the exact comparison, evaluation conditions, missing controls and evidence that
+          might change the conclusion. Drafts awaiting editorial approval are excluded from this
+          catalog.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-5">
+          <Link to="/guides" className="text-accent-blue">
+            Build the prerequisites →
+          </Link>
+          <Link to="/publications" className="text-accent-blue">
+            BU1LD publications →
+          </Link>
+          <Link to="/research-atlas" className="text-accent-blue">
+            Research atlas →
+          </Link>
+        </div>
+      </section>
+    </InstitutionLayout>
   );
 }

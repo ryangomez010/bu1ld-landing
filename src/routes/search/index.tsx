@@ -1,8 +1,13 @@
+import type { SearchSchemaInput } from "@tanstack/react-router";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { trackEvent } from "@/lib/analytics";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { RequireMember } from "@/components/auth/RequireAuth";
+import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
+import { publicSearchIndex } from "@/lib/public-search";
+import { searchIndex } from "@/lib/search";
+import { pageHead } from "@/lib/seo";
 import { EmptyState } from "@/components/member/ContentCard";
 import { FilterChip } from "@/components/member/FilterChip";
 import { ListSkeleton } from "@/components/member/LoadingState";
@@ -18,16 +23,123 @@ import type { SearchResult } from "@/lib/types";
 
 export const Route = createFileRoute("/search/")({
   component: SearchPage,
-  validateSearch: (search: Record<string, unknown>) => ({
-    q: typeof search.q === "string" ? search.q : "",
+  loader: () => publicSearchIndex(),
+  head: () =>
+    pageHead({
+      title: "Search — The BU1LD",
+      description: "Find public research, learning, papers, events and participation paths.",
+      path: "/search",
+      robots: "noindex, nofollow",
+    }),
+  validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
+    q: typeof search.q === "string" ? search.q.slice(0, 120) : "",
+    type: typeof search.type === "string" ? search.type : "all",
   }),
 });
 
 function SearchPage() {
+  const { user } = useAuth();
+  return user ? <SearchContent /> : <PublicSearch />;
+}
+function PublicSearch() {
+  const { records, unavailable }: Awaited<ReturnType<typeof publicSearchIndex>> =
+    Route.useLoaderData();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const results = (search.q.trim() ? searchIndex(records, search.q) : records).filter(
+    (record) => search.type === "all" || search.type === record.type,
+  );
   return (
-    <RequireMember>
-      <SearchContent />
-    </RequireMember>
+    <InstitutionLayout
+      title="Follow your curiosity."
+      eyebrow="Search"
+      description="Search public projects, lessons, published reviews, events and participation paths. Unpublished drafts and personal records are excluded."
+    >
+      <form
+        method="get"
+        action="/search"
+        onSubmit={(event) => {
+          event.preventDefault();
+          trackEvent("public_search", { result_count: results.length });
+        }}
+        className="mb-8 grid gap-4 sm:grid-cols-[1fr_auto]"
+      >
+        <label>
+          Search
+          <input
+            name="q"
+            className="mt-2 w-full rounded-sm border border-border bg-background px-4 py-3"
+            value={search.q}
+            onChange={(e) =>
+              void navigate({ search: { ...search, q: e.target.value }, replace: true })
+            }
+            placeholder="Try memory, evaluation or Python"
+          />
+        </label>
+        <label>
+          Content type
+          <select
+            name="type"
+            className="mt-2 block rounded-sm border border-border bg-background px-4 py-3"
+            value={search.type}
+            onChange={(e) => void navigate({ search: { ...search, type: e.target.value } })}
+          >
+            <option value="all">All public content</option>
+            {["project", "guide", "paper", "event", "job"].map((type) => (
+              <option key={type} value={type}>
+                {type === "job" ? "Participation" : TYPE_LABELS[type as SearchResult["type"]]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="submit"
+          className="min-h-11 rounded-sm border border-border px-4 py-3 sm:col-span-2"
+        >
+          Search public content
+        </button>
+      </form>
+      {!!unavailable.length && (
+        <p
+          role="status"
+          className="mb-6 rounded-sm border border-border p-4 text-sm text-muted-foreground"
+        >
+          Some live catalogs are unavailable: {unavailable.join(", ")}. The research and learning
+          results below remain available; this search is partial.
+        </p>
+      )}
+      <p aria-live="polite" className="mb-5 text-sm text-muted-foreground">
+        {results.length} matching public records
+      </p>
+      <div className="grid gap-3 md:grid-cols-2">
+        {results.map((record) => (
+          <Link
+            key={`${record.type}:${record.slug}`}
+            to={record.href}
+            className="panel panel-interactive rounded-sm p-5"
+          >
+            <p className="text-xs uppercase tracking-wider text-accent-blue">
+              {record.type === "job" ? "Participation" : TYPE_LABELS[record.type]}
+            </p>
+            <h2 className="mt-2 font-display text-2xl">{record.title}</h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">{record.summary}</p>
+          </Link>
+        ))}
+      </div>
+      {!results.length && (
+        <p>
+          No matches. Try a shorter query, choose All public content, or browse{" "}
+          <Link to="/research-atlas" className="text-accent-blue">
+            research
+          </Link>{" "}
+          and{" "}
+          <Link to="/guides" className="text-accent-blue">
+            learning
+          </Link>
+          .
+        </p>
+      )}
+    </InstitutionLayout>
   );
 }
 

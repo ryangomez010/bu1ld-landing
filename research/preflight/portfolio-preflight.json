@@ -1,44 +1,47 @@
 {
-  "generated_at": "2026-07-19T07:22:21.304Z",
-  "registry_path": "/Users/ryan/Downloads/the-bu1ld-nexus-main/research/PROJECT_REGISTRY.yaml",
+  "generated_at": "2026-10-11T11:28:37.938Z",
+  "registry_path": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/research/PROJECT_REGISTRY.yaml",
   "roots": [
-    "/Users/ryan/Downloads/the-bu1ld-nexus-main",
-    "/Users/ryan/Downloads/finance4all-global-reach-main",
-    "/Users/ryan/Documents/Genesis",
-    "/Users/ryan/Documents/GenesisE",
-    "/Users/ryan/Documents/MonteCarlo",
-    "/Users/ryan/.codex/visualizations/2026/07/12/019f558a-453d-7cb0-8943-42c7b533d6eb"
+    "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web",
+    "/Volumes/PRO-BLADE/GitHubRepos/Finance4all-Web/finance4all-global-reach",
+    "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Genesis",
+    "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/GenesisE",
+    "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Everything Else/MonteCarlo",
+    "/Volumes/PRO-BLADE/GitHubRepos/olympus-cognitive-architecture",
+    "/Volumes/PRO-BLADE/GitHubRepos/vertexED.ai",
+    "/Volumes/PRO-BLADE/GitHubRepos/Obscured-Records",
+    "/Volumes/PRO-BLADE/.portfolio/verification/jepa-source-recovery-20260924/R15-porous-source"
   ],
   "summary": {
-    "project_count": 6,
-    "dirty_project_count": 5,
-    "secret_risk_project_count": 2,
-    "broken_link_project_count": 0,
-    "release_blocker_count": 23
+    "project_count": 9,
+    "dirty_project_count": 7,
+    "secret_risk_project_count": 1,
+    "broken_link_project_count": 2,
+    "release_blocker_count": 27
   },
   "projects": [
     {
-      "root": "/Users/ryan/Downloads/the-bu1ld-nexus-main",
+      "root": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web",
       "name": "bu1ld-nexus",
       "branch": "main",
       "git": {
         "dirty": true,
-        "dirty_count": 65,
-        "deleted_count": 1,
-        "untracked_count": 23,
+        "dirty_count": 25,
+        "deleted_count": 0,
+        "untracked_count": 8,
         "sample": [
-          "M docs/ACCEPTANCE_CRITERIA.md",
-          " M docs/ARCHITECTURE.md",
+          "M docs/CHANGELOG.md",
+          " M docs/CURRENT_PASS_CONTEXT.md",
+          " M docs/NEXT_HANDOFF.md",
           " M package.json",
-          " M public/robots.txt",
           " M public/sitemap.xml",
-          " M scripts/apply-schema.mjs",
+          " M research/preflight/portfolio-preflight.json",
+          " M research/preflight/portfolio-preflight.md",
           " M scripts/release-readiness.mjs",
-          " D src/components/GenesisIntro.tsx",
-          " M src/components/NeuralField.tsx",
-          " M src/components/landing/ContactSection.tsx",
-          " M src/components/landing/HeroSection.tsx",
-          " M src/components/landing/MembershipSection.tsx"
+          " M scripts/smoke-routes.mjs",
+          " M src/components/institution/InstitutionLayout.tsx",
+          " M src/components/landing/SiteFooter.tsx",
+          " M src/data/landing.ts"
         ]
       },
       "classification": "PRODUCT",
@@ -56,7 +59,7 @@
         "release:prod": "bun run release:prod"
       },
       "migrations": {
-        "sql_count": 37,
+        "sql_count": 38,
         "sample": [
           "supabase/FINAL_SETUP.sql",
           "supabase/VERIFY_SETUP.sql",
@@ -70,129 +73,18 @@
       },
       "risks": {
         "env_files_present": [],
-        "placeholder_count": 40,
+        "placeholder_count": 20,
         "placeholder_matches": [
           {
-            "file": "src/routes/onboarding.tsx",
+            "file": "src/routes/network.tsx",
             "patterns": [
               "\\bPLACEHOLDER\\b"
             ]
           },
           {
-            "file": "src/routes/partnerships.tsx",
+            "file": "src/routes/research-atlas/index.tsx",
             "patterns": [
               "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/profile.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/search/index.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/saved/collections.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/research/analyze.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/research/submit.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/projects/$slug.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/projects/index.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/projects/new.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/projects/manage/$slug.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/projects/edit/$slug.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/programs/index.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/papers/index.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/members/index.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/lead/apply.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/jobs/tracker.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/routes/competitions/$slug.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/lib/portfolio-preflight.test.ts",
-            "patterns": [
-              "\\bTODO\\b",
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/lib/production-copy.test.ts",
-            "patterns": [
-              "\\bPLACEHOLDER\\b",
-              "\\bLOREM IPSUM\\b",
-              "\\bcoming soon\\b"
             ]
           },
           {
@@ -217,481 +109,49 @@
             "file": "src/components/ui/textarea.tsx",
             "patterns": [
               "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/member/FeedbackButton.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/member/MemberCommandPalette.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/member/PaperReader.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/member/ProjectEvidenceSection.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/member/ProjectUpdatesSection.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/member/ProjectWorkspaceExtras.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/member/ReportContentButton.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminAnnouncementsTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminEventsTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminJobsTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminLabsTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminMembersTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminModerationTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminPapersTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminProgramsTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/admin/AdminProjectsTab.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          }
-        ],
-        "secret_risk_count": 25,
-        "secret_risk_matches": [
-          {
-            "file": "DATABASE_SETUP.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "DEPLOYMENT.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "README.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "REMAINING_EXTERNAL_ACTIONS.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "SECURITY.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "TEST_REPORT.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "src/lib/account-deletion-handler.test.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "src/lib/account-deletion-handler.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "src/lib/digest-handler.test.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "src/lib/digest-handler.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "src/lib/email-handler.test.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "src/lib/email-handler.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "src/lib/portfolio-preflight.test.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
             ]
           },
           {
             "file": "scripts/release-readiness.mjs",
             "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+              "\\bLOREM IPSUM\\b",
+              "\\bcoming soon\\b",
+              "\\bnot implemented\\b"
             ]
           },
           {
-            "file": "scripts/seed-supabase.ts",
-            "patterns": [
-              "\\bservice_role\\b",
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "public/runtime-env.js",
-            "patterns": [
-              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
-            ]
-          },
-          {
-            "file": "docs/AUDIT_MASTER.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "docs/OWNER_ACTIONS.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "docs/PROJECT_MEMORY.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "docs/RELEASE_CHECKLIST.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "docs/SECURITY_AUDIT.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "docs/SECURITY_REVIEW.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "api/account-deletion.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "api/digest.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "api/email.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          }
-        ],
-        "scanned_file_count": 501
-      },
-      "broken_markdown_links": [],
-      "registry_missing_work": [
-        "resolve current dirty worktree before final release branch",
-        "run live Supabase FINAL_SETUP/VERIFY_SETUP",
-        "run role smoke tests with visitor/member/project lead/reviewer/admin accounts"
-      ],
-      "release_blockers": [
-        "65 dirty git entries require review",
-        "secret-like literals require human review",
-        "resolve current dirty worktree before final release branch",
-        "run live Supabase FINAL_SETUP/VERIFY_SETUP",
-        "run role smoke tests with visitor/member/project lead/reviewer/admin accounts"
-      ]
-    },
-    {
-      "root": "/Users/ryan/Downloads/finance4all-global-reach-main",
-      "name": "financemeta",
-      "branch": "cursor/membership-security-supabase-fix",
-      "git": {
-        "dirty": true,
-        "dirty_count": 46,
-        "deleted_count": 5,
-        "untracked_count": 17,
-        "sample": [
-          "M DEPLOYMENT.md",
-          " M docs/ACCEPTANCE_CRITERIA.md",
-          " M e2e/mobile.spec.ts",
-          " M e2e/smoke.spec.ts",
-          " M eslint.config.js",
-          " M package.json",
-          " M playwright.config.ts",
-          " M public/robots.txt",
-          " M public/sitemap.xml",
-          " M scripts/final-readiness.mjs",
-          " M scripts/release-check.mjs",
-          " M src/components/ContactSection.tsx"
-        ]
-      },
-      "classification": "PRODUCT",
-      "evidence_level": "E4",
-      "recommended_final_disposition": "PRODUCT",
-      "package_json_present": true,
-      "pyproject_present": false,
-      "commands": {
-        "install": "bun install",
-        "test": "bun run test",
-        "typecheck": "bun run typecheck",
-        "lint": "bun run lint",
-        "build": "bun run build",
-        "release:check": "bun run release:check"
-      },
-      "migrations": {
-        "sql_count": 26,
-        "sample": [
-          "supabase/FINAL_SETUP.sql",
-          "supabase/VERIFY_RLS_MATRIX.sql",
-          "supabase/VERIFY_SETUP.sql",
-          "supabase/seed.sql",
-          "supabase/verify_migration_status.sql",
-          "supabase/migrations/001_initial_schema.sql",
-          "supabase/migrations/002_google_oauth.sql",
-          "supabase/migrations/003_bookmarks_notifications.sql"
-        ]
-      },
-      "risks": {
-        "env_files_present": [],
-        "placeholder_count": 32,
-        "placeholder_matches": [
-          {
-            "file": "AGENTS.md",
-            "patterns": [
-              "\\bPLACEHOLDER\\b",
-              "\\bLOREM IPSUM\\b"
-            ]
-          },
-          {
-            "file": "PRODUCTION_READINESS_REPORT.md",
+            "file": "research/SCIENTIFIC_RISK_REVIEW.md",
             "patterns": [
               "\\bPLACEHOLDER\\b"
             ]
           },
           {
-            "file": "README.md",
+            "file": "research/project-states/montecarlo/STATE.json",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "research/preflight/portfolio-preflight.json",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "research/preflight/portfolio-preflight.md",
             "patterns": [
               "\\bPLACEHOLDER\\b"
             ]
           },
           {
-            "file": "TESTING.md",
+            "file": "docs/ACCEPTANCE_CRITERIA.md",
             "patterns": [
               "\\bPLACEHOLDER\\b"
             ]
           },
           {
-            "file": "supabase/README.md",
+            "file": "docs/ARCHITECTURE.md",
             "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/pages/portal/Admin.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/pages/portal/Settings.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/pages/portal/resources/ResourcesHub.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/pages/portal/pathways/AxiomPathways.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/pages/portal/network/Networking.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/pages/portal/labs/MetaLabs.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/pages/auth/Onboarding.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/lib/ciViteEnv.ts",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/lib/portalCopy.ts",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/ContactSection.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/ui/command.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/ui/input.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/ui/select.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/ui/textarea.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/portal/GlossarySearch.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/portal/PortalSearch.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/portal/PortalUI.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "src/components/portal/ReportContentButton.tsx",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": "scripts/final-readiness.mjs",
-            "patterns": [
-              "\\bTODO\\b",
-              "\\bFIXME\\b",
-              "\\bLOREM IPSUM\\b"
-            ]
-          },
-          {
-            "file": "scripts/portfolio-preflight.mjs",
-            "patterns": [
-              "\\bTODO\\b",
-              "\\bFIXME\\b",
               "\\bPLACEHOLDER\\b"
             ]
           },
@@ -708,188 +168,206 @@
             ]
           },
           {
-            "file": "docs/LAUNCH_CHECKLIST.md",
+            "file": "docs/DECISION_LOG.md",
             "patterns": [
               "\\bPLACEHOLDER\\b"
             ]
           },
           {
-            "file": "docs/RELEASE_CHECKLIST.md",
+            "file": "docs/EXECUTION_PLAN.md",
             "patterns": [
               "\\bPLACEHOLDER\\b"
             ]
           },
           {
-            "file": "docs/RISKS.md",
+            "file": "docs/PRODUCT_SPEC.md",
             "patterns": [
               "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": ".github/workflows/ci.yml",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          },
-          {
-            "file": ".cursor/execution_ledger.md",
-            "patterns": [
-              "\\bPLACEHOLDER\\b"
-            ]
-          }
-        ],
-        "secret_risk_count": 19,
-        "secret_risk_matches": [
-          {
-            "file": "DATABASE_SETUP.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "DEPLOYMENT.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "README.md",
-            "patterns": [
-              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
-            ]
-          },
-          {
-            "file": "REMAINING_EXTERNAL_ACTIONS.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "SECURITY.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "TESTING.md",
-            "patterns": [
-              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
-            ]
-          },
-          {
-            "file": "supabase/README.md",
-            "patterns": [
-              "\\bservice_role\\b",
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "supabase/SUPABASE_SETUP.md",
-            "patterns": [
-              "\\bservice_role\\b",
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "supabase/functions/weekly-digest/index.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "supabase/functions/delete-account/index.ts",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "src/lib/ciViteEnv.ts",
-            "patterns": [
-              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
-            ]
-          },
-          {
-            "file": "src/lib/security.ts",
-            "patterns": [
-              "\\bservice_role\\b"
-            ]
-          },
-          {
-            "file": "scripts/final-readiness.mjs",
-            "patterns": [
-              "\\bservice_role\\b",
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "scripts/portfolio-preflight.mjs",
-            "patterns": [
-              "\\bservice_role\\b",
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "scripts/release-check.mjs",
-            "patterns": [
-              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
-            ]
-          },
-          {
-            "file": "docs/OWNER_ACTIONS.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
             ]
           },
           {
             "file": "docs/SECURITY_REVIEW.md",
             "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
-            ]
-          },
-          {
-            "file": "docs/SUPABASE_CONNECTION_STATUS.md",
-            "patterns": [
-              "\\bSUPABASE_SERVICE_ROLE_KEY\\b"
+              "\\bTODO\\b"
             ]
           },
           {
             "file": ".github/workflows/ci.yml",
             "patterns": [
-              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+              "\\bPLACEHOLDER\\b"
             ]
           }
         ],
-        "scanned_file_count": 419
+        "secret_risk_count": 0,
+        "secret_risk_matches": [],
+        "scanned_file_count": 551
       },
       "broken_markdown_links": [],
+      "registry_missing_work": [
+        "resolve current dirty worktree before final release branch",
+        "run live Supabase FINAL_SETUP/VERIFY_SETUP",
+        "run role smoke tests with visitor/member/project lead/reviewer/admin accounts"
+      ],
+      "release_blockers": [
+        "25 dirty git entries require review",
+        "resolve current dirty worktree before final release branch",
+        "run live Supabase FINAL_SETUP/VERIFY_SETUP",
+        "run role smoke tests with visitor/member/project lead/reviewer/admin accounts"
+      ]
+    },
+    {
+      "root": "/Volumes/PRO-BLADE/GitHubRepos/Finance4all-Web/finance4all-global-reach",
+      "name": "financemeta",
+      "branch": "codex/finish-website-membership-portal-20261011",
+      "git": {
+        "dirty": false,
+        "dirty_count": 0,
+        "deleted_count": 0,
+        "untracked_count": 0,
+        "sample": []
+      },
+      "classification": "PRODUCT",
+      "evidence_level": "E4",
+      "recommended_final_disposition": "PRODUCT",
+      "package_json_present": true,
+      "pyproject_present": false,
+      "commands": {
+        "install": "npm ci",
+        "test": "npm run test",
+        "typecheck": "npm run typecheck",
+        "lint": "npm run lint",
+        "build": "npm run build",
+        "release:check": "npm run release:check"
+      },
+      "migrations": {
+        "sql_count": 21,
+        "sample": [
+          "supabase/seed.sql",
+          "supabase/tests/account_lifecycle_rls_certification.sql",
+          "supabase/tests/bare_postgres_bootstrap.sql",
+          "supabase/tests/collaboration_rls_certification.sql",
+          "supabase/tests/intake_rls_certification.sql",
+          "supabase/tests/two_identity_rls_certification.sql",
+          "supabase/migrations/20260709090402_initial_schema.sql",
+          "supabase/migrations/20260709104954_google_oauth.sql"
+        ]
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 11,
+        "placeholder_matches": [
+          {
+            "file": "DEPLOYMENT.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "supabase/migrations/20260924160333_project_collaboration.sql",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "src/index.css",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/types/database.ts",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/command.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/input.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/select.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/ui/textarea.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/portal/CollaborationTask.tsx",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "src/components/portal/PortalSearch.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/PRODUCT_REFRESH_2026-09-20.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b",
+              "\\bcoming soon\\b"
+            ]
+          }
+        ],
+        "secret_risk_count": 0,
+        "secret_risk_matches": [],
+        "scanned_file_count": 279
+      },
+      "broken_markdown_links": [
+        {
+          "file": "README.md",
+          "target": "FINAL_RELEASE_REPORT.md"
+        }
+      ],
       "registry_missing_work": [
         "inspect 24 dirty changes before building further",
         "run release checks after dirty branch is stabilized",
         "compare overlapping member-platform patterns with BU1LD to avoid generic duplication"
       ],
       "release_blockers": [
-        "46 dirty git entries require review",
-        "secret-like literals require human review",
+        "1 broken local Markdown links detected",
         "inspect 24 dirty changes before building further",
         "run release checks after dirty branch is stabilized",
         "compare overlapping member-platform patterns with BU1LD to avoid generic duplication"
       ]
     },
     {
-      "root": "/Users/ryan/Documents/Genesis",
+      "root": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Genesis",
       "name": "project-genesis",
       "branch": "codex/portfolio-finalization-20260715",
       "git": {
         "dirty": true,
-        "dirty_count": 5,
+        "dirty_count": 30,
         "deleted_count": 0,
-        "untracked_count": 1,
+        "untracked_count": 16,
         "sample": [
-          "M src/genesis/evaluate.py",
-          " M src/genesis/portfolio/benchmark.py",
-          " M src/genesis/portfolio/evaluate.py",
-          " M src/genesis/robustness.py",
-          "?? tests/test_checkpoint_security.py"
+          "M Dockerfile",
+          " M README.md",
+          " M docs/PORTFOLIO.md",
+          " M docs/RELEASE_STATUS.md",
+          " M docs/RESEARCH_RELEASE_PACKET.md",
+          " M docs/project/CLAIM_EVIDENCE_MAP.md",
+          " M docs/project/COMPLETION_CHECKLIST.md",
+          " M docs/project/RESEARCH_AUDIT.md",
+          " M docs/project/VERIFIED_COMMANDS.md",
+          " M pyproject.toml",
+          " M scripts/verify_installed_wheel.py",
+          " M scripts/verify_release.sh"
         ]
       },
       "classification": "FLAGSHIP",
@@ -907,11 +385,36 @@
       },
       "risks": {
         "env_files_present": [],
-        "placeholder_count": 0,
-        "placeholder_matches": [],
+        "placeholder_count": 4,
+        "placeholder_matches": [
+          {
+            "file": "KNOWN_FAILURES.md",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": "STATUS.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "TODO.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "docs/RESEARCH_RELEASE_PACKET.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          }
+        ],
         "secret_risk_count": 0,
         "secret_risk_matches": [],
-        "scanned_file_count": 1229
+        "scanned_file_count": 591
       },
       "broken_markdown_links": [],
       "registry_missing_work": [
@@ -921,7 +424,7 @@
         "independent reproduction"
       ],
       "release_blockers": [
-        "5 dirty git entries require review",
+        "30 dirty git entries require review",
         "complete declared public benchmark campaign with multiple seeds",
         "freeze model-selection protocol before held-out reporting",
         "produce final tables/figures from raw artifacts",
@@ -929,16 +432,17 @@
       ]
     },
     {
-      "root": "/Users/ryan/Documents/GenesisE",
+      "root": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/GenesisE",
       "name": "genesis-econ",
       "branch": "main",
       "git": {
         "dirty": true,
-        "dirty_count": 9,
+        "dirty_count": 16,
         "deleted_count": 0,
-        "untracked_count": 1,
+        "untracked_count": 7,
         "sample": [
-          "M CHANGELOG.md",
+          "M .gitignore",
+          " M CHANGELOG.md",
           " M README.md",
           " M docs/RESEARCH_RELEASE_PACKET.md",
           " M src/genesis_econ/__init__.py",
@@ -946,7 +450,9 @@
           " M src/genesis_econ/ventures.py",
           " M tests/test_research_programs.py",
           " M tests/test_simulation.py",
-          "?? src/genesis_econ/audit.py"
+          "?? .serena/",
+          "?? EVIDENCE.md",
+          "?? KNOWN_FAILURES.md"
         ]
       },
       "classification": "CORE",
@@ -964,11 +470,18 @@
       },
       "risks": {
         "env_files_present": [],
-        "placeholder_count": 0,
-        "placeholder_matches": [],
+        "placeholder_count": 1,
+        "placeholder_matches": [
+          {
+            "file": "TODO.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          }
+        ],
         "secret_risk_count": 0,
         "secret_risk_matches": [],
-        "scanned_file_count": 64
+        "scanned_file_count": 72
       },
       "broken_markdown_links": [],
       "registry_missing_work": [
@@ -977,23 +490,28 @@
         "strengthen nearest-baseline comparison for each of 24 programs"
       ],
       "release_blockers": [
-        "9 dirty git entries require review",
+        "16 dirty git entries require review",
         "decide whether this merges under FinanceMeta research or remains standalone",
         "add real public economics datasets only if claims expand beyond synthetic worlds",
         "strengthen nearest-baseline comparison for each of 24 programs"
       ]
     },
     {
-      "root": "/Users/ryan/Documents/MonteCarlo",
+      "root": "/Volumes/PRO-BLADE/GitHubRepos/Old-Stuff/Everything Else/MonteCarlo",
       "name": "montecarlo",
       "branch": "main",
       "git": {
         "dirty": true,
-        "dirty_count": 2,
+        "dirty_count": 7,
         "deleted_count": 0,
-        "untracked_count": 2,
+        "untracked_count": 7,
         "sample": [
+          "?? .serena/",
+          "?? EVIDENCE.md",
+          "?? KNOWN_FAILURES.md",
           "?? README.md",
+          "?? STATUS.md",
+          "?? TODO.md",
           "?? project.manifest.yaml"
         ]
       },
@@ -1009,12 +527,18 @@
       },
       "risks": {
         "env_files_present": [],
-        "placeholder_count": 2,
+        "placeholder_count": 3,
         "placeholder_matches": [
           {
             "file": "README.md",
             "patterns": [
               "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "TODO.md",
+            "patterns": [
+              "\\bTODO\\b"
             ]
           },
           {
@@ -1026,22 +550,718 @@
         ],
         "secret_risk_count": 0,
         "secret_risk_matches": [],
-        "scanned_file_count": 2
+        "scanned_file_count": 8
       },
       "broken_markdown_links": [],
       "registry_missing_work": [
         "decide whether to archive or seed with a real objective"
       ],
       "release_blockers": [
-        "2 dirty git entries require review",
+        "7 dirty git entries require review",
         "decide whether to archive or seed with a real objective",
         "evidence level E0 is below runnable release threshold"
       ]
     },
     {
-      "root": "/Users/ryan/.codex/visualizations/2026/07/12/019f558a-453d-7cb0-8943-42c7b533d6eb",
-      "name": "visualization-scratch",
-      "branch": null,
+      "root": "/Volumes/PRO-BLADE/GitHubRepos/olympus-cognitive-architecture",
+      "name": "olympus",
+      "branch": "main",
+      "git": {
+        "dirty": true,
+        "dirty_count": 38,
+        "deleted_count": 0,
+        "untracked_count": 18,
+        "sample": [
+          "M CHANGELOG.md",
+          " M OLYMPUS_MODEL_FOUNDRY_LEDGER.md",
+          " M README.md",
+          " M apps/forge-web/package-lock.json",
+          " M docs/architecture.md",
+          " M olympus/cli.py",
+          " M olympus/data/__init__.py",
+          " M olympus/foundry/sft.py",
+          " M olympus/models/__init__.py",
+          " M olympus/models/specifications.py",
+          " M olympus/upscaler/__init__.py",
+          " M olympus/upscaler/jepa.py"
+        ]
+      },
+      "classification": "RESEARCH_PLATFORM",
+      "evidence_level": "E2",
+      "recommended_final_disposition": "RESEARCH_PLATFORM",
+      "package_json_present": false,
+      "pyproject_present": true,
+      "commands": {
+        "install": "python3 -m pip install -e .",
+        "test": "python3 -m pytest -q || PYTHONPATH=src python3 -m unittest discover -s tests -v"
+      },
+      "migrations": {
+        "sql_count": 0,
+        "sample": []
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 0,
+        "placeholder_matches": [],
+        "secret_risk_count": 0,
+        "secret_risk_matches": [],
+        "scanned_file_count": 154
+      },
+      "broken_markdown_links": [],
+      "registry_missing_work": [],
+      "release_blockers": [
+        "38 dirty git entries require review"
+      ]
+    },
+    {
+      "root": "/Volumes/PRO-BLADE/GitHubRepos/vertexED.ai",
+      "name": "vertexed",
+      "branch": "main",
+      "git": {
+        "dirty": true,
+        "dirty_count": 80,
+        "deleted_count": 0,
+        "untracked_count": 47,
+        "sample": [
+          "M ci-evidence/npm-audit/attempt-1.stdout.json",
+          " M e2e/myp-learning.spec.ts",
+          " M e2e/product-rebuild.spec.ts",
+          " M e2e/study-desk.spec.ts",
+          " M package.json",
+          " M playwright.golden.config.ts",
+          " M public/sitemap.xml",
+          " M src/app/App.tsx",
+          " M src/components/ApexCompanion.tsx",
+          " M src/components/layout/SiteLayout.tsx",
+          " M src/components/myp/MypPracticeWorkspace.tsx",
+          " M src/components/portal/PortalEngagementRow.tsx"
+        ]
+      },
+      "classification": "PRODUCT",
+      "evidence_level": "E2",
+      "recommended_final_disposition": "PRODUCT",
+      "package_json_present": true,
+      "pyproject_present": false,
+      "commands": {
+        "install": "npm ci",
+        "test": "npm run test",
+        "typecheck": "npm run typecheck",
+        "lint": "npm run lint",
+        "build": "npm run build"
+      },
+      "migrations": {
+        "sql_count": 36,
+        "sample": [
+          "supabase/tests/database/conversations.test.sql",
+          "supabase/tests/database/learning_practice.test.sql",
+          "supabase/tests/database/rls.test.sql",
+          "supabase/tests/database/state_sync.test.sql",
+          "supabase/tests/database/structure.test.sql",
+          "supabase/tests/database/waitlist_invites.test.sql",
+          "supabase/migrations/20260707000000_base_schema.sql",
+          "supabase/migrations/20260708_phase3_waitlist_auth.sql"
+        ]
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 40,
+        "placeholder_matches": [
+          {
+            "file": "AUDIT_REPORT.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "EXECUTION_QUEUE.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "src/index.css",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/styles/forms.css",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/styles/navigation.css",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/styles/projects.css",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/pages/NotetakerQuiz.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/lib/notetakerAccessibility.mjs",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "src/components/chat/ApexChatInput.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "scripts/generate-study-guide-provenance.mjs",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "scripts/lint-copy.mjs",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "scripts/lint-product-copy.mjs",
+            "patterns": [
+              "\\bPLACEHOLDER\\b",
+              "\\bLOREM IPSUM\\b"
+            ]
+          },
+          {
+            "file": "public/study-guides/myp/provenance-ledger.json",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "public/study-guides/myp/geography/study_plan/study_plan_html_process.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/COMPLETION_GATE_REGISTER.json",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/EXECUTION_PLAN.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "docs/FEATURE_CHECKLIST_2026-09-09.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/LEARNING_OS_2026-09-21.md",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": "docs/LEARNING_OS_AUDIT_2026-09-27.md",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": "docs/PRODUCT_REBUILD_CHECKLIST.md",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": "docs/PUBLISHABLE_COMPLETION_CHECKLIST.md",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/QA_MATRIX.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "docs/ULTIMATE_CODE_REVIEW_2026-09-07.md",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bFIXME\\b"
+            ]
+          },
+          {
+            "file": "docs/evidence/checklist-execution-20260927.json",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "brand/QA.md",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/study-guides/myp/provenance-ledger.json",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/study-guides/myp/geography/study_plan/study_plan_html_process.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/AIChatbot-Box528Sf.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/AdaptivePracticeWorkspace-GgXUHD6N.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/AnswerReviewer-B6N7_dLF.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/ApexChatInput-HIPOLpUr.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/ApexCompanion-B23XGfNj.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/AuthCallback-DQy5al-1.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/CurriculumSelector-CGZQXlCq.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/ExamPrep-B2tSCf4N.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/Home-Bz0hWYNa.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/IBMYPHumanitiesGuide-CnCanFLG.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/Index-Ca4uml_E.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/LearningPanels-zkNaduk0.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".vertexed-test-dist/assets/Login-BbF46C6N.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          }
+        ],
+        "secret_risk_count": 1,
+        "secret_risk_matches": [
+          {
+            "file": ".vertexed-test-dist/assets/ecosystem-Bat-yu5T.js",
+            "patterns": [
+              "\\beyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+            ]
+          }
+        ],
+        "scanned_file_count": 1785
+      },
+      "broken_markdown_links": [
+        {
+          "file": "public/study-guides/myp/history/index.md",
+          "target": "CLAUDE.md"
+        },
+        {
+          "file": "public/study-guides/myp/geography/index.md",
+          "target": "CLAUDE.md"
+        },
+        {
+          "file": "public/study-guides/myp/biology/index.md",
+          "target": "CLAUDE.md"
+        },
+        {
+          "file": "docs/PUBLISHABLE_COMPLETION_CHECKLIST.md",
+          "target": "../ci-evidence/learning-os-20260921/source-manifest.json"
+        },
+        {
+          "file": "docs/PUBLISHABLE_COMPLETION_CHECKLIST.md",
+          "target": "../ci-evidence/learning-os-20260921/ci-planner-final.log"
+        },
+        {
+          "file": "docs/PUBLISHABLE_COMPLETION_CHECKLIST.md",
+          "target": "../ci-evidence/learning-os-20260921/browser-full-final.log"
+        },
+        {
+          "file": ".vertexed-test-dist/study-guides/myp/history/index.md",
+          "target": "CLAUDE.md"
+        },
+        {
+          "file": ".vertexed-test-dist/study-guides/myp/geography/index.md",
+          "target": "CLAUDE.md"
+        },
+        {
+          "file": ".vertexed-test-dist/study-guides/myp/biology/index.md",
+          "target": "CLAUDE.md"
+        }
+      ],
+      "registry_missing_work": [],
+      "release_blockers": [
+        "80 dirty git entries require review",
+        "secret-like literals require human review",
+        "9 broken local Markdown links detected"
+      ]
+    },
+    {
+      "root": "/Volumes/PRO-BLADE/GitHubRepos/Obscured-Records",
+      "name": "obscured-records-agent",
+      "branch": "main",
+      "git": {
+        "dirty": true,
+        "dirty_count": 1,
+        "deleted_count": 0,
+        "untracked_count": 1,
+        "sample": [
+          "?? verification/"
+        ]
+      },
+      "classification": "PRODUCT",
+      "evidence_level": "E2",
+      "recommended_final_disposition": "PRODUCT",
+      "package_json_present": true,
+      "pyproject_present": false,
+      "commands": {
+        "install": "npm ci",
+        "test": "npm run test",
+        "typecheck": "npm run typecheck",
+        "lint": "npm run lint",
+        "build": "npm run build"
+      },
+      "migrations": {
+        "sql_count": 0,
+        "sample": []
+      },
+      "risks": {
+        "env_files_present": [],
+        "placeholder_count": 40,
+        "placeholder_matches": [
+          {
+            "file": "ASTRA_FINAL_REPORT.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": "vite.config.ts",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/PRODUCT_AUDIT_2026-09-27.md",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bFIXME\\b",
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/RELAUNCH_OPERATING_SYSTEM.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "docs/SUBMISSION_TRIAGE.md",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": "docs/WEBSITE_UPDATE_2026-09-30.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "components/ui/command.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "components/ui/input.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "components/ui/native-select.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "components/ui/select.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "components/ui/textarea.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": "app/globals.css",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".github/ISSUE_TEMPLATE/editorial-work.yml",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/ASTRA_FINAL_REPORT.md",
+            "patterns": [
+              "\\bTODO\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/vite.config.ts",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/docs/PRODUCT_AUDIT_2026-09-27.md",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bFIXME\\b",
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/docs/RELAUNCH_OPERATING_SYSTEM.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/docs/SUBMISSION_TRIAGE.md",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/docs/WEBSITE_UPDATE_2026-09-30.md",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/components/ui/command.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/components/ui/input.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/components/ui/native-select.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/components/ui/select.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/components/ui/textarea.tsx",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/app/globals.css",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/static/css/3e029f61b18e66d9.css",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/static/chunks/532-55108d3343352016.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/static/chunks/main-4f7259bf8eb57183.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/static/chunks/app/layout-0c934668b3e8c615.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/static/chunks/app/submit/page-b38fb9441d2f05fe.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/static/chunks/app/search/page-ad379cbf56e7f247.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/static/chunks/app/contribute/page-b38fb9441d2f05fe.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/static/chunks/app/archive/page-ad379cbf56e7f247.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/server/chunks/2546.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/server/chunks/3951.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/server/chunks/4607.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/server/chunks/4874.js",
+            "patterns": [
+              "\\bTODO\\b",
+              "\\bPLACEHOLDER\\b",
+              "\\bnot implemented\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/server/chunks/6518.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/server/chunks/9633.js",
+            "patterns": [
+              "\\bPLACEHOLDER\\b"
+            ]
+          },
+          {
+            "file": ".cache/sites-release/reconciled-kUGywB/.next/server/chunks/9835.js",
+            "patterns": [
+              "\\bnot implemented\\b"
+            ]
+          }
+        ],
+        "secret_risk_count": 0,
+        "secret_risk_matches": [],
+        "scanned_file_count": 1855
+      },
+      "broken_markdown_links": [],
+      "registry_missing_work": [],
+      "release_blockers": [
+        "1 dirty git entries require review",
+        "product registry entry has no detected SQL migrations"
+      ]
+    },
+    {
+      "root": "/Volumes/PRO-BLADE/.portfolio/verification/jepa-source-recovery-20260924/R15-porous-source",
+      "name": "pi-jepa",
+      "branch": "main",
       "git": {
         "dirty": false,
         "dirty_count": 0,
@@ -1049,9 +1269,9 @@
         "untracked_count": 0,
         "sample": []
       },
-      "classification": "ARCHIVE",
-      "evidence_level": "E0",
-      "recommended_final_disposition": "ARCHIVE",
+      "classification": "RESEARCH",
+      "evidence_level": "E1",
+      "recommended_final_disposition": "RESEARCH",
       "package_json_present": false,
       "pyproject_present": false,
       "commands": {},
@@ -1065,12 +1285,12 @@
         "placeholder_matches": [],
         "secret_risk_count": 0,
         "secret_risk_matches": [],
-        "scanned_file_count": 0
+        "scanned_file_count": 5
       },
       "broken_markdown_links": [],
       "registry_missing_work": [],
       "release_blockers": [
-        "evidence level E0 is below runnable release threshold"
+        "evidence level E1 is below runnable release threshold"
       ]
     }
   ]

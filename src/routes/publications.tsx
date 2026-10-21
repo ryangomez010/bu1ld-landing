@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
+import { PublicDataNotice } from "@/components/institution/PublicDataNotice";
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { fetchPublicPapers } from "@/lib/content";
 import { pageHead } from "@/lib/seo";
-import type { Paper } from "@/lib/types";
+import { safeHref } from "@/lib/urls";
 
 export const Route = createFileRoute("/publications")({
   component: PublicationsPage,
@@ -18,15 +19,18 @@ export const Route = createFileRoute("/publications")({
 });
 
 function PublicationsPage() {
-  const [papers, setPapers] = useState<Paper[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    void fetchPublicPapers().then((rows) => {
-      setPapers(rows);
-      setLoading(false);
-    });
-  }, []);
+  const {
+    data: papers,
+    isLoading: loading,
+    isError,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["public-papers"],
+    queryFn: () => fetchPublicPapers({ throwOnUnavailable: true }),
+    staleTime: 60_000,
+    retry: false,
+  });
 
   return (
     <InstitutionLayout
@@ -34,11 +38,22 @@ function PublicationsPage() {
       title="Reviews that name failure modes."
       description="The Bu1ld publishes member paper reviews, explainers, and research notes. We do not claim peer-reviewed venue counts we cannot evidence."
     >
+      {isError ? (
+        <PublicDataNotice
+          title="Publications couldn’t be refreshed."
+          hasCachedData={papers !== undefined}
+          retrying={isFetching}
+          onRetry={() => void refetch()}
+        />
+      ) : null}
       {loading ? (
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground animate-pulse">
+        <p
+          role="status"
+          className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground animate-pulse"
+        >
           Loading publications…
         </p>
-      ) : papers.length === 0 ? (
+      ) : !papers ? null : papers.length === 0 ? (
         <div className="rounded-sm border border-border/50 bg-bone/[0.02] p-8">
           <p className="text-sm leading-relaxed text-muted-foreground">
             No public reviews are listed yet. Members can browse the full paper library after
@@ -62,7 +77,7 @@ function PublicationsPage() {
       ) : (
         <ul className="space-y-4">
           {papers.map((paper) => {
-            const href = paper.source_url || paper.arxiv_url;
+            const href = safeHref(paper.source_url || paper.arxiv_url);
             return (
               <li key={paper.id} className="rounded-sm border border-border/50 bg-bone/[0.02] p-6">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent-green">

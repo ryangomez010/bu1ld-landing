@@ -1,0 +1,122 @@
+{
+  "ml-data-pipeline-contracts": {
+    "wordCount": 500,
+    "readMinutes": 3
+  },
+  "ml-vectors-matrices": {
+    "wordCount": 466,
+    "readMinutes": 3
+  },
+  "ml-dot-products": {
+    "wordCount": 440,
+    "readMinutes": 2
+  },
+  "ml-probability-conditioning": {
+    "wordCount": 449,
+    "readMinutes": 3
+  },
+  "ml-gradient-descent": {
+    "wordCount": 450,
+    "readMinutes": 3
+  },
+  "ml-linear-regression": {
+    "wordCount": 499,
+    "readMinutes": 3
+  },
+  "ml-decision-trees": {
+    "wordCount": 462,
+    "readMinutes": 3
+  },
+  "ml-cross-validation": {
+    "wordCount": 467,
+    "readMinutes": 3
+  },
+  "ml-calibration": {
+    "wordCount": 453,
+    "readMinutes": 3
+  },
+  "ml-backpropagation": {
+    "wordCount": 483,
+    "readMinutes": 3
+  },
+  "ml-adamw": {
+    "wordCount": 449,
+    "readMinutes": 3
+  },
+  "ml-normalization-layers": {
+    "wordCount": 461,
+    "readMinutes": 3
+  },
+  "ml-training-debugging": {
+    "wordCount": 467,
+    "readMinutes": 3
+  },
+  "ml-tokenization": {
+    "wordCount": 477,
+    "readMinutes": 3
+  },
+  "ml-attention-masks": {
+    "wordCount": 465,
+    "readMinutes": 3
+  },
+  "ml-language-model-objectives": {
+    "wordCount": 480,
+    "readMinutes": 3
+  },
+  "ml-lora": {
+    "wordCount": 468,
+    "readMinutes": 3
+  },
+  "ml-autoencoders": {
+    "wordCount": 449,
+    "readMinutes": 3
+  },
+  "ml-contrastive-learning": {
+    "wordCount": 464,
+    "readMinutes": 3
+  },
+  "ml-physics-informed-networks": {
+    "wordCount": 466,
+    "readMinutes": 3
+  },
+  "ml-neural-operators": {
+    "wordCount": 461,
+    "readMinutes": 3
+  },
+  "ml-retrieval-augmented-generation": {
+    "wordCount": 465,
+    "readMinutes": 3
+  },
+  "ml-chunking-reranking": {
+    "wordCount": 461,
+    "readMinutes": 3
+  },
+  "ml-quantization": {
+    "wordCount": 460,
+    "readMinutes": 3
+  },
+  "ml-kv-cache": {
+    "wordCount": 448,
+    "readMinutes": 3
+  },
+  "ml-inference-batching": {
+    "wordCount": 427,
+    "readMinutes": 2
+  },
+  "ml-falsifiable-hypotheses": {
+    "wordCount": 491,
+    "readMinutes": 3
+  },
+  "ml-ablation-studies": {
+    "wordCount": 467,
+    "readMinutes": 3
+  },
+  "ml-paired-run-comparisons": {
+    "wordCount": 405,
+    "readMinutes": 2
+  },
+  "ml-negative-results": {
+    "wordCount": 489,
+    "readMinutes": 3
+  }
+}

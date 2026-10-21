@@ -1,0 +1,268 @@
+[
+  {
+    "slug": "ml-tokenization",
+    "title": "Tokenization Determines What a Language Model Sees",
+    "description": "Understand subword units, sequence length, and why tokens are not equivalent to words.",
+    "level": "Beginner",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Tokenization"
+    ],
+    "concept": "A tokenizer converts text into a sequence of discrete identifiers that a language model can process. Subword methods split text into reusable pieces, allowing many uncommon words to be represented without a separate vocabulary entry for each. The exact segmentation depends on the tokenizer's vocabulary, training procedure, normalization, and treatment of whitespace or bytes. Tokens are therefore model-specific units, not a universal measure of words or meaning. Tokenization affects context usage, computational cost, and representation across languages and writing styles.",
+    "example": "In an illustrative vocabulary, a common word might occupy one token while an unfamiliar technical term is divided into several pieces. Two sentences with the same number of words can consequently use very different numbers of tokens. Code, identifiers, mixed scripts, and unusual punctuation can further change sequence length even when the text looks short to a reader. If an illustrative system allows 128 total tokens and reserves 32 for generation, its complete encoded input must fit within 96 tokens. That includes role delimiters, special tokens, and any retrieved passages inserted by the template. Counting only the user-visible sentence can therefore understate actual context consumption.",
+    "pitfall": "Using a tokenizer that does not match the model checkpoint can invalidate inputs. Truncating by characters before tokenization also does not reliably enforce a token budget. Normalization can alter meaningful distinctions in specialized text, so preprocessing should not silently change identifiers or structured content.",
+    "exercise": "Under the 128-token budget above, the encoded prompt already uses 84 tokens, including special tokens. A retrieved passage adds 18 tokens after insertion. Determine whether the request fits while retaining the 32-token output reserve, and calculate the minimum input reduction needed.",
+    "references": [
+      {
+        "label": "Neural Machine Translation of Rare Words with Subword Units",
+        "url": "https://arxiv.org/abs/1508.07909"
+      }
+    ],
+    "answer": "The prompt would use 102 tokens, exceeding the 96-token input allowance by six. Remove at least six encoded input tokens or explicitly revise the output budget. Re-tokenize the final assembled prompt because boundaries and templates can change counts. Truncation should preserve the question and required evidence rather than blindly deleting arbitrary characters."
+  },
+  {
+    "slug": "ml-static-contextual-embeddings",
+    "title": "Static and Contextual Word Representations",
+    "description": "See how a token's representation can depend on the surrounding sentence.",
+    "level": "Beginner",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Embeddings"
+    ],
+    "concept": "A static embedding assigns a learned vector to a vocabulary item regardless of where it appears. A contextual model produces representations that depend on surrounding tokens and the model's attention or recurrence pattern. This distinction matters for ambiguous words and for combining information across a sentence. Token-level contextual vectors are not automatically good sentence embeddings: pooling, training objectives, and normalization affect whether distances support retrieval or clustering. Representation quality must be evaluated for the intended use rather than inferred from dimensionality.",
+    "example": "Consider the illustrative sentences “the bank approved the loan” and “the boat reached the bank.” A static vector for bank is shared across both contexts. A contextual model can produce different hidden states because the surrounding words differ. Whether those differences capture the relevant senses well is an empirical question, not guaranteed by the architecture alone.",
+    "pitfall": "Averaging arbitrary hidden states may discard word order or emphasize frequent tokens. Comparing vectors from different checkpoints or embedding spaces is also generally meaningless without an alignment procedure. Similarity can reflect topical association while missing negation, quantities, or relationships that matter to the application.",
+    "exercise": "Create pairs of sentences that vary one feature at a time: word sense, negation, entity, or number. Compare similarities under a documented pooling method. Include both related and unrelated controls, and inspect failures before selecting an embedding model for semantic search or downstream classification.",
+    "references": [
+      {
+        "label": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "url": "https://arxiv.org/abs/1810.04805"
+      }
+    ],
+    "answer": "The two bank sentences test sense changes; pairs such as “the valve is open” and “the valve is not open” test whether similarity overlooks a decision-critical negation. Record tokenizer, checkpoint, layer, pooling, and normalization, then compare task-labeled related and unrelated controls. A contextual embedding can differ across sentences without separating the intended meaning well. Similarity thresholds must be selected on development examples, and vectors from different spaces need a justified alignment before direct comparison."
+  },
+  {
+    "slug": "ml-language-model-objectives",
+    "title": "Causal and Masked Language Modeling Ask Different Questions",
+    "description": "Connect the prediction objective to the context a model is allowed to use.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Pretraining"
+    ],
+    "concept": "Causal language modeling predicts a token using earlier tokens, making it naturally suited to autoregressive generation. Masked language modeling hides selected input tokens and trains a model to recover them from available context, which can include both left and right surroundings. The objective determines an information boundary during training. Architecture and masking must enforce that boundary; otherwise the model may obtain the answer from forbidden positions. Neither objective alone specifies the full downstream capabilities or limitations of a trained system.",
+    "example": "For the illustrative sentence “the cat sat on the mat,” a causal model predicting sat may use the cat but not the later words. A masked model recovering the hidden word in “the cat [MASK] on the mat” can use both sides. These are different conditional prediction problems, so their raw loss values should not be compared as if they measured identical tasks.",
+    "pitfall": "Incorrect attention masks can leak future tokens during causal training. Padding tokens can also contaminate loss calculations if they are not handled correctly. A model that performs well at recovering masked words is not automatically configured to generate a coherent continuation using ordinary left-to-right decoding.",
+    "exercise": "Write out the visible context for every prediction position in a short sequence under both objectives. Inspect the attention and loss masks in a small implementation. Construct a deliberate future-token leak, observe why it makes training deceptively easy, and remove it before any meaningful evaluation.",
+    "references": [
+      {
+        "label": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "url": "https://arxiv.org/abs/1810.04805"
+      }
+    ],
+    "answer": "For next-token prediction of “the cat sat,” predicting cat can use the, and predicting sat can use the cat; the target itself must not be visible at the prediction position. A masked input “the [MASK] sat” may use both visible neighbors to recover cat. Inspect whether the wrapper shifts labels internally before adding another shift. Demonstrate any intentional leakage only in a clearly isolated diagnostic, then restore the mask and alignment; its easier loss must never enter the model-quality report."
+  },
+  {
+    "slug": "ml-attention-masks",
+    "title": "Attention Masks Define Which Tokens May Communicate",
+    "description": "Distinguish causal masks, padding masks, and the consequences of an incorrect convention.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Attention"
+    ],
+    "concept": "Attention uses compatibility scores to combine information from selected token positions. A mask restricts which positions are eligible to contribute. Causal masks prevent a position from accessing future tokens; padding masks exclude positions added only to make batch shapes compatible. The two constraints can apply together. Libraries differ in whether boolean true means allowed or blocked and in the expected tensor dimensions. Reading those conventions is essential because an inverted mask can produce plausible tensor shapes while changing the information available to the model.",
+    "example": "For an illustrative sequence of four real tokens, a causal attention matrix permits the first position to attend only to itself and the second to the first two positions. If two padding positions are appended, they should not become useful keys merely because the batch tensor is longer. The appropriate query handling and loss masking also depend on the implementation.",
+    "pitfall": "Masking all keys for a query can create undefined softmax behavior or numerical problems unless the implementation handles it explicitly. A correct attention mask does not replace a correct loss mask. Optimized attention APIs may also have special requirements that differ from a manually constructed score matrix.",
+    "exercise": "Draw an allowed-attention matrix for two padded sequences of different lengths. Check each row against the intended prediction task. Test that changing a future token cannot change an earlier causal output, using evaluation mode and controlled randomness to avoid confusing stochastic differences with leakage.",
+    "references": [
+      {
+        "label": "Attention Is All You Need",
+        "url": "https://arxiv.org/abs/1706.03762"
+      }
+    ],
+    "answer": "For four real tokens, allowed key sets for causal query rows are {1}, {1,2}, {1,2,3}, and {1,2,3,4}. For a length-two sequence padded to four, real queries allow {1} and {1,2}; padding positions 3 and 4 must not supply keys to those queries. Padded query rows need a supported policy that avoids undefined all-masked softmax behavior and excludes their losses. With deterministic evaluation, changing token 4 must leave outputs 1–3 unchanged. Translate this allowed-set description into the API’s actual boolean convention."
+  },
+  {
+    "slug": "ml-position-encoding",
+    "title": "Position Information Gives Token Order a Representation",
+    "description": "Compare position signals without assuming they guarantee reliable long-context behavior.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Transformers"
+    ],
+    "concept": "Self-attention needs a way to represent order because token content alone does not fully specify sequence position. Absolute position embeddings add or otherwise provide position-specific information. Relative approaches represent relationships between positions, while rotary methods transform queries and keys in a way that encodes relative positional structure in their interactions. These mechanisms change the model's inductive assumptions. Their behavior outside the training length depends on implementation and training, so a nominal context limit is not evidence that every position is used equally well.",
+    "example": "The illustrative phrases “dog bites person” and “person bites dog” contain the same words but express different relationships. Position information helps distinguish their arrangements. In a long document, the same mechanism must also support relationships spanning many tokens. Successful short-sentence ordering does not establish reliable retrieval of a detail thousands of tokens away.",
+    "pitfall": "Extending a position table or changing a rotary scaling setting can make a longer input technically acceptable without preserving quality. Padding conventions and position indices can also interact with cached decoding. A shape-correct forward pass is only an execution check, not a long-context evaluation.",
+    "exercise": "Inspect how a chosen model generates position indices, including padded and cached inputs. Evaluate a small set of controlled order-sensitive examples. For longer contexts, vary the location of relevant evidence and include distractors, reporting performance by position instead of relying only on one aggregate score.",
+    "references": [
+      {
+        "label": "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+        "url": "https://arxiv.org/abs/2104.09864"
+      }
+    ],
+    "answer": "Check that real-token position IDs match the model’s documented padding convention and continue correctly when a cached prefix is extended. Compare order-sensitive minimal pairs while keeping words otherwise fixed, then move the same evidence across early, middle, and late positions with controlled distractors. Report results by position and context length. A successful forward pass or valid index range proves only that the input is accepted. It does not establish that the extended positions preserve retrieval or reasoning quality."
+  },
+  {
+    "slug": "ml-kv-cache",
+    "title": "Key-Value Caching Trades Memory for Faster Decoding",
+    "description": "Understand what autoregressive decoding reuses and why long conversations consume memory.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Inference"
+    ],
+    "concept": "During autoregressive generation, earlier tokens' attention keys and values can be reused rather than recomputed at every new token. A key-value cache stores those tensors for each relevant layer. This reduces repeated work during decoding but increases memory use as context grows. The precise cost depends on layer count, key-value heads, head dimension, numerical format, batch size, and caching strategy. Prefill, which processes the prompt, and decode, which generates subsequent tokens, therefore have different performance characteristics.",
+    "example": "For an illustrative model using full attention, doubling the retained context roughly doubles the stored key and value elements when other dimensions stay fixed. Grouped-query or multi-query attention can reduce the number of key-value heads relative to query heads. This changes cache size without implying that every architecture has the same latency or quality tradeoff.",
+    "pitfall": "A cache must correspond to the exact earlier tokens, positions, model state, and relevant attention configuration. Reusing it after changing the prefix can produce incorrect outputs. Batched serving adds complications from different sequence lengths, cancellation, and memory allocation. Cache quantization or eviction introduces additional choices that need evaluation.",
+    "exercise": "Estimate raw KV-cache memory for 12 layers, batch one, 1,024 retained tokens, eight key-value heads, head dimension 64, and two bytes per element, storing both keys and values. Identify omitted memory costs. Design a comparison against uncached decoding that checks output behavior as well as prefill and decode timing.",
+    "references": [
+      {
+        "label": "Transformers: Caching",
+        "url": "https://huggingface.co/docs/transformers/en/cache_explanation"
+      }
+    ],
+    "answer": "For a simple uncompressed cache, bytes=2×layers×batch×cached_tokens×KV_heads×head_dim×bytes_per_element; the factor two counts keys and values. With 12 layers, batch one, 1,024 tokens, eight KV heads, head dimension 64, and two-byte elements, this is 25,165,824 bytes, or 24 MiB. Exclude weights and allocator overhead from that estimate and compare them separately with measured allocation. Time prefill and decode separately, and compare cached versus uncached outputs under supported deterministic settings."
+  },
+  {
+    "slug": "ml-retrieval-augmented-generation",
+    "title": "Retrieval-Augmented Generation Needs Evidence Selection and Verification",
+    "description": "Separate retrieving relevant material from producing an answer supported by that material.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "RAG"
+    ],
+    "concept": "Retrieval-augmented generation supplies a language model with documents or passages selected for a query. The system has at least two distinct quality problems: finding useful evidence and using it faithfully. Retrieval can improve access to specific or changing information, but it does not guarantee that the generated answer is correct, current, or supported. The corpus, indexing process, access controls, prompt construction, and answer verification all affect the result. Retrieved text should be treated as source content, not as trusted instructions.",
+    "example": "For an illustrative policy question, a retriever might return an old policy and a newer amendment. An answer that quotes the old passage accurately can still be wrong about the current rule. The system needs document dates, applicability information, and a way to resolve conflicts. A citation is useful only when the linked passage actually supports the associated claim.",
+    "pitfall": "Evaluating only final answer fluency can hide retrieval failures. Conversely, high retrieval recall does not prove faithful synthesis. Indexing documents that a user is not authorized to read can also expose restricted information even when the generation prompt asks the model to behave carefully.",
+    "exercise": "Build a small query set with identified supporting passages, unanswerable questions, and conflicting-document cases. Measure retrieval coverage separately from answer support. Check permissions before evidence reaches the model, and define how the interface communicates missing evidence or uncertainty instead of forcing an answer for every query.",
+    "references": [
+      {
+        "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        "url": "https://arxiv.org/abs/2005.11401"
+      }
+    ],
+    "answer": "For each query, record whether the authorized candidate set contains the required supporting span and whether every answer claim is supported by an applicable passage. An old policy retrieved without its amendment is a retrieval/versioning failure; inventing a rule despite the correct amendment being present is an answer-use failure. Unanswerable questions should receive a bounded statement of missing evidence. Enforce access controls before retrieval results reach generation, and treat embedded instructions as document content. Fluency and citation count are insufficient success measures."
+  },
+  {
+    "slug": "ml-chunking-reranking",
+    "title": "Chunking and Reranking Shape a Retrieval System",
+    "description": "Balance passage context, candidate coverage, and the cost of a second ranking stage.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Search"
+    ],
+    "concept": "A retrieval system often divides documents into chunks, retrieves an initial candidate set, and optionally reranks those candidates with a more expensive model. Chunk boundaries influence whether a passage contains a complete answer or only fragments. Smaller chunks can focus matching but lose context; larger chunks retain context while adding irrelevant material. Reranking can improve the ordering of retrieved candidates, but it cannot recover evidence that never entered the candidate set. Each stage therefore needs its own evaluation and budget.",
+    "example": "Imagine an illustrative manual where a heading defines the product and the next paragraph states a limitation. Splitting them into unrelated chunks may retrieve the limitation without identifying what it applies to. Adding heading context or adjusting boundaries could help. A reranker may then distinguish genuinely relevant passages from candidates that merely share the query's vocabulary.",
+    "pitfall": "Overlapping chunks can inflate apparent retrieval coverage if several near-identical passages count as separate successes. Tuning chunk size against the final test questions leaks information into the retrieval design. Reranker latency also grows with candidate count and passage length, so quality gains need workload-specific measurement.",
+    "exercise": "Create validation queries with known evidence spans. Compare two chunking policies while measuring evidence coverage, duplication, context length, and latency. Then add reranking to the same candidate pool. Report whether failures originate from missing candidates or incorrect ordering before deciding which stage to improve.",
+    "references": [
+      {
+        "label": "Passage Re-ranking with BERT",
+        "url": "https://arxiv.org/abs/1901.04085"
+      }
+    ],
+    "answer": "Evaluate evidence-span coverage with duplicate overlapping chunks consolidated at the source/span level. Keep the corpus snapshot and query set fixed while comparing boundaries, heading inclusion, lengths, and latency. For reranking, freeze the initial candidate pool and measure ordering separately: if the only supporting span is absent, no reranker can promote it. If it is present but ranked below the context budget, reranking may help. Tune on development queries and preserve independent questions for final evaluation."
+  },
+  {
+    "slug": "ml-lora",
+    "title": "LoRA Adapts Weight Updates through Low-Rank Factors",
+    "description": "Understand the parameter savings and the limits of low-rank adaptation.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Fine-tuning"
+    ],
+    "concept": "LoRA freezes selected pretrained weight matrices and learns an additional update represented by a product of smaller matrices. If a weight has dimensions d by k, a rank-r update can use roughly r times the sum of d and k trainable parameters instead of d times k, excluding other trainable components. This can reduce optimizer-state memory and adaptation storage. The method constrains the update, not the rank of the original pretrained weights, and its effectiveness depends on target modules, rank, scaling, and task.",
+    "example": "For an illustrative 1,024-by-1,024 matrix with rank eight, the two low-rank factors contain 16,384 parameters instead of 1,048,576 for a full update. This comparison describes trainable parameters for that matrix only. Total training memory also includes model weights, activations, gradients for other components, and implementation-specific overhead, so it should not be advertised as an equivalent whole-system reduction.",
+    "pitfall": "Low-rank adaptation does not prevent overfitting, data leakage, or forgetting of useful behavior. A checkpoint also needs the correct base model and adaptation configuration. Comparing LoRA with full fine-tuning requires a fair tuning and compute budget rather than assuming the smaller trainable count makes the comparison automatically fair.",
+    "exercise": "Record the base checkpoint, target modules, rank, scaling, dropout, and trainable parameter count. Compare a small set of ranks using a fixed validation procedure. Measure actual memory and task quality, and test a few retained capabilities before deciding whether the adaptation is suitable.",
+    "references": [
+      {
+        "label": "LoRA: Low-Rank Adaptation of Large Language Models",
+        "url": "https://arxiv.org/abs/2106.09685"
+      }
+    ],
+    "answer": "For a d-by-k weight update, factors of shapes d-by-r and r-by-k contain r(d+k) parameters. At d=k=1,024 and r=8, that is 16,384 versus 1,048,576, a 64-fold reduction for this matrix’s update parameters. Report additional trainable heads or biases separately. Save the base identity, target modules, scaling, dropout, and adapter state; verify loading reproduces the intended predictions. Compare actual memory, task metrics, and retained capabilities across the declared ranks without assuming parameter savings equal whole-system speedup."
+  },
+  {
+    "slug": "ml-grounded-answer-evaluation",
+    "title": "Evaluate Answers for Support, Completeness, and Abstention",
+    "description": "Design a rubric that distinguishes a fluent answer from a well-supported one.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "NLP",
+      "Evaluation"
+    ],
+    "concept": "A grounded-answer evaluation asks whether claims are supported by the supplied evidence, whether the answer covers the question, and whether the system declines unsupported requests appropriately. These dimensions should be scored separately. An answer can be fully supported yet incomplete, or comprehensive but contain an invented detail. Citation presence is also different from citation correctness. A useful rubric identifies claim boundaries, acceptable evidence, and how to handle ambiguity so reviewers can apply it consistently.",
+    "example": "Suppose an illustrative answer correctly states a product's published release date but invents its current availability. One accurate citation does not validate the entire paragraph. Splitting the answer into factual claims reveals which part is supported. For a question absent from the evidence, an explicit statement that the material does not establish the answer may be the correct behavior.",
+    "pitfall": "An automated judge can share the evaluated model's biases or overlook subtle unsupported claims. Human review is also imperfect, especially without clear examples and disagreement handling. Evaluating only answerable questions rewards systems that always respond and misses the important ability to recognize insufficient evidence.",
+    "exercise": "Create a balanced set of answerable, partially answerable, and unanswerable questions. Write a scoring rubric with positive and negative examples, then have two reviewers independently score a sample. Record disagreements, refine ambiguous criteria using development cases, and preserve a separate final evaluation set.",
+    "references": [
+      {
+        "label": "Enabling Large Language Models to Generate Text with Citations",
+        "url": "https://arxiv.org/abs/2305.14627"
+      }
+    ],
+    "answer": "Score support per factual claim, coverage of requested information, citation correctness, and appropriate handling of missing evidence separately. In the release-date example, credit the supported date but mark invented current availability unsupported; one correct citation cannot validate both claims. Include partially answerable and unanswerable items, let reviewers mark ambiguity, and retain their independent scores before adjudication. Refine the rubric only on development cases. Agreement on a few examples or an automated judge score alone does not certify reliability of the final answers."
+  },
+  {
+    "slug": "ml-perplexity",
+    "title": "Perplexity Depends on Tokens and Available Context",
+    "description": "Calculate perplexity from log loss and avoid invalid comparisons between language-model evaluations.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "Language models",
+      "Evaluation",
+      "Perplexity"
+    ],
+    "concept": "For a causal language model, perplexity is the exponential of average negative log probability assigned to the scored target tokens, using natural logarithms. It is therefore a transformation of token-level cross-entropy. The tokenizer, context available at each position, document boundaries, and target masking all affect the result. A model with a lower value on one carefully controlled evaluation is better at that prediction task, not necessarily better at factual answers or instruction following.",
+    "example": "If three hypothetical target tokens receive probabilities 0.5, 0.25, and 0.125, their joint probability is 1/64. Average negative log probability is log(4), so perplexity is four. This geometric calculation differs from taking the reciprocal of the arithmetic mean probability. Splitting a long document into short disjoint chunks can worsen the score by removing useful preceding context.",
+    "pitfall": "Raw perplexities from different tokenizers are generally not directly comparable. Padding and repeated targets in overlapping windows can also distort the denominator. When evaluating with sliding context, count each intended target once and document how much context it receives. A masked-language-model objective is not the same causal likelihood calculation.",
+    "exercise": "Compute perplexity for two target probabilities 0.25 and 0.25, then for 0.5 and 0.125. Explain why the answers agree despite different per-token confidence, and name two details that must match before comparing two reported scores.",
+    "answer": "Both pairs have product 1/16, so the square root of the inverse product is four. Equal perplexity can hide different token-level errors. Match at least tokenizer and scored corpus, and also document context windows, masking, and document boundaries. Aggregate agreement does not imply that the models fail on the same examples.",
+    "references": [
+      {
+        "label": "Hugging Face: Perplexity of Fixed-Length Models",
+        "url": "https://huggingface.co/docs/transformers/perplexity"
+      }
+    ]
+  },
+  {
+    "slug": "ml-padding-loss-masks",
+    "title": "Attention Masks and Loss Masks Are Different Controls",
+    "description": "Keep padding out of token losses without confusing prediction targets with allowed attention.",
+    "level": "Intermediate",
+    "track": "Language models",
+    "tags": [
+      "Language models",
+      "Masks",
+      "Training"
+    ],
+    "concept": "Batching variable-length sequences often introduces padding. An attention mask controls which positions may contribute through attention; a loss mask controls which targets are scored. They are not interchangeable. A causal mask additionally blocks future-token information. For class-index cross-entropy, an ignore index can exclude selected targets from the reduction. Check the model wrapper before shifting labels because many causal-language-model interfaces already perform the next-token alignment internally.",
+    "example": "Consider a hypothetical batch with two valid targets in one sequence and four in another. If their summed losses are two and eight, the token-weighted mean is 10/6, about 1.667. Averaging the sequence means instead gives (1+2)/2 = 1.5. Both calculations are well-defined but weight the data differently. Padding should contribute to neither the summed target loss nor the intended valid-token denominator.",
+    "pitfall": "Masking padding out of the loss does not stop valid tokens from attending to it. Conversely, an attention mask does not automatically remove padded targets from a separately implemented loss. If every target is ignored, a mean loss needs an explicit empty-batch policy. Do not silently convert an undefined reduction into evidence of successful training.",
+    "exercise": "A sequence has three valid token losses [1,2,3] followed by two padded positions. Calculate the valid-token mean and the incorrect mean obtained by adding two zeros and dividing by five. Explain what additional check you need to establish that future tokens are unavailable.",
+    "answer": "The valid-token mean is six divided by three, or two; the padded average is 1.2 and makes the batch appear easier. A separate causal-attention check is needed, along with correct next-token alignment. Loss masking only specifies which predictions are scored; it does not prove the information boundary used to make them.",
+    "references": [
+      {
+        "label": "PyTorch: CrossEntropyLoss and ignore_index",
+        "url": "https://docs.pytorch.org/docs/main/generated/torch.nn.CrossEntropyLoss.html"
+      }
+    ]
+  }
+]

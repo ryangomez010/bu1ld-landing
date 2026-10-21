@@ -5,6 +5,7 @@ import {
   hasInstitutionalRole,
   isAdministrator,
   isLabLead,
+  isMentor,
   isProjectLead,
   isReviewer,
 } from "./roles";
@@ -29,6 +30,12 @@ function profile(partial: Partial<Profile>): Profile {
 }
 
 describe("roles", () => {
+  test("mentor operations accept institutional admins, mentors and lab leads", () => {
+    for (const role of ["administrator", "mentor", "lab_lead"] as const) {
+      expect(isMentor(profile({ institutional_roles: [role] }))).toBe(true);
+    }
+    expect(isMentor(profile({ role: "member", institutional_roles: [] }))).toBe(false);
+  });
   afterEach(() => {});
 
   test("visitor has no access", () => {

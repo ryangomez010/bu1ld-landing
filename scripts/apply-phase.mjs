@@ -7,38 +7,30 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import postgres from "postgres";
+import {
+  loadDeploymentEnv,
+  databaseConnection,
+  databaseIdentityErrors,
+} from "./deployment-env.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const phaseArg = process.argv.find((a) => a.endsWith(".sql")) ?? process.argv[2] ?? "phase11.sql";
-const phaseFile = phaseArg.includes("/") ? phaseArg : `supabase/${phaseArg}`;
-
-function loadEnv() {
-  const path = resolve(root, ".env");
-  if (!existsSync(path)) return {};
-  const out = {};
-  for (const line of readFileSync(path, "utf8").split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const eq = trimmed.indexOf("=");
-    if (eq === -1) continue;
-    out[trimmed.slice(0, eq)] = trimmed.slice(eq + 1);
-  }
-  return out;
-}
-
-const env = loadEnv();
-const url = env.VITE_SUPABASE_URL ?? env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const ref = url.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1];
-const password = env.SUPABASE_DB_PASSWORD;
-
-if (!ref) {
-  console.error("Could not parse project ref from VITE_SUPABASE_URL");
+const phaseArg = process.argv.find((a) => /^phase[0-9]+\.sql$/.test(a));
+if (!phaseArg) {
+  console.error("Specify the migration explicitly: bun run supabase:apply-phase -- phase36.sql");
   process.exit(1);
 }
+const phaseFile = `supabase/${phaseArg}`;
 
-if (!password) {
-  console.error("Set SUPABASE_DB_PASSWORD in .env, then re-run.");
-  console.error(`Or paste ${phaseFile} into the Supabase SQL editor.`);
+const env = loadDeploymentEnv(root);
+let connectionString;
+try {
+  connectionString = databaseConnection(env);
+  const errors = databaseIdentityErrors(env);
+  if (errors.length) throw new Error("Project identity mismatch");
+} catch {
+  console.error(
+    "Configure VITE_SUPABASE_URL and SUPABASE_DB_URL (or database password + project ref) for the same project. No schema was changed.",
+  );
   process.exit(1);
 }
 
@@ -49,20 +41,28 @@ if (!existsSync(sqlPath)) {
 }
 
 const sql = readFileSync(sqlPath, "utf8");
-const connectionString =
-  env.SUPABASE_DB_URL ??
-  `postgresql://postgres:${encodeURIComponent(password)}@db.${ref}.supabase.co:5432/postgres`;
+console.log(`Applying ${phaseFile} to the configured Supabase project…`);
 
-console.log(`Applying ${phaseFile} to db.${ref}.supabase.co…`);
-
-const db = postgres(connectionString, { ssl: "require", max: 1 });
+const db = postgres(connectionString, {
+  ssl: {
+    rejectUnauthorized: true,
+    ...(env.SUPABASE_DB_CA_FILE
+      ? { ca: readFileSync(resolve(root, env.SUPABASE_DB_CA_FILE), "utf8") }
+      : {}),
+  },
+  max: 1,
+  prepare: false,
+  connect_timeout: 10,
+});
 
 try {
   await db.unsafe(sql);
   console.log("Phase applied successfully.");
 } catch (err) {
-  console.error("Migration failed:", err.message ?? err);
-  process.exit(1);
+  console.error(
+    "Migration failed. Inspect the database console for the failing migration before retrying; do not assume the full chain was applied.",
+  );
+  process.exitCode = 1;
 } finally {
   await db.end({ timeout: 5 });
 }

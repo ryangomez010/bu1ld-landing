@@ -1,0 +1,1689 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-16",
+  "visibility": "Internal reconciliation artifact; do not ship this ledger to the browser",
+  "canonicalRegistry": "research/PROJECT_REGISTRY.yaml",
+  "existingPublicProjection": "src/data/research-portfolio.ts",
+  "countDefinitions": {
+    "publicAtlas": {
+      "records": 40,
+      "projects": 32,
+      "subprojects": 1,
+      "collections": 6,
+      "unresolvedDirections": 1
+    },
+    "sourceIdentities": 20,
+    "overlappingAtlasSourceIdentities": 8,
+    "distinctCoverageRecords": 52,
+    "note": "Atlas page records include subprojects, foundries, proposals and a direction with unresolved identity. Canonical atlas projects exclude subprojects, collections and unresolved directions. No count implies evaluated, published, recruiting or independently reproduced work."
+  },
+  "sourceBindingIds": [
+    "bu1ld-nexus",
+    "financemeta",
+    "project-genesis",
+    "genesis-econ",
+    "montecarlo",
+    "visualization-scratch",
+    "olympus",
+    "vertexed",
+    "obscured-records-agent",
+    "pi-jepa",
+    "apen-pen",
+    "ripii-ipii",
+    "eigen-jepa",
+    "eigen-finance",
+    "lgwm",
+    "esnf",
+    "nfgm",
+    "npms",
+    "atg",
+    "neurocad"
+  ],
+  "records": [
+    {
+      "canonicalId": "what-survived-the-search-navier-stokes",
+      "name": "Navier–Stokes Extremal Search",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Executed study · negative result",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/what-survived-the-search-navier-stokes",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The completed screen promoted no candidate and does not establish blow-up or a new extreme-flow family.",
+        "Make the retained screening protocol and refinement receipts publicly reviewable before proposing a separately frozen successor."
+      ]
+    },
+    {
+      "canonicalId": "neurocad",
+      "name": "NeuroCAD",
+      "aliases": [
+        "NeuroCad"
+      ],
+      "ownerOrganization": "THE-BU1LD / NeuroCAD",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "https://github.com/THE-BU1LD/NeuroCAD"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Alpha research prototype",
+      "publicationStatus": "Public alpha v0.5.0a6; research acceptance not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/neurocad",
+      "connectedProfileUrl": "/portfolio/neurocad",
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The bounded compiler path is reproducible; open-world language, physics, and manufacturing validation remain open.",
+        "Complete independently authored prompt evaluation and physical or external validation with retained failure cases. A bounded contribution is an authorized geometry regression case with expected units, constraints, and rejection behavior."
+      ]
+    },
+    {
+      "canonicalId": "siderea-transient-jepa",
+      "name": "SIDEREA",
+      "aliases": [
+        "I SPY (precursor)",
+        "IRIS-Space (repository)"
+      ],
+      "ownerOrganization": "build-the-future-11 / IRIS-Space",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "https://github.com/build-the-future-11/IRIS-Space"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Research alpha · shadow only",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/siderea-transient-jepa",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "Core components are tested, but prospective real-sky validation and a complete broker-to-report campaign are still required.",
+        "Validate a prospective campaign using survey photometry with observation and availability times, documented population shifts, human adjudication, and separate candidate/discovery outcomes. No unattended external-report submission is implemented."
+      ]
+    },
+    {
+      "canonicalId": "counterfactual-defect-worlds",
+      "name": "Counterfactual Defect Worlds",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Executed pilots · mixed evidence",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/counterfactual-defect-worlds",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The implementation is substantial, while retained studies remain mixed or negative and do not support a blanket success claim.",
+        "Expose the permitted defect definitions and matched unmodified controls, keeping detection, localization, and recovery outcomes separate."
+      ]
+    },
+    {
+      "canonicalId": "atg",
+      "name": "Adaptive Theory Geometry",
+      "aliases": [
+        "ATG"
+      ],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Executed study · negative / mixed",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/adaptive-theory-geometry",
+      "connectedProfileUrl": "/portfolio/atg",
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The public atlas retains a negative/mixed selection result. Historical manuscript, illustration, and experiment identities still need reconciliation before quantitative claims can be reused.",
+        "Reconcile the manuscript, source revision, exact comparison policy, natural-data split, and retained outcome artifacts before making a quantitative claim."
+      ]
+    },
+    {
+      "canonicalId": "causal-memory-use",
+      "name": "Causal Memory Use",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Controlled evidence retained",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/causal-memory-use",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The controlled diagnostic is strong; a key naturalistic exchangeability assumption fails and limits transfer claims.",
+        "Document which interventions remain comparable on natural data and preserve the failed assumption as a transfer limitation."
+      ]
+    },
+    {
+      "canonicalId": "assumption-integrity",
+      "name": "Assumption Integrity Under Distribution Shift",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Executed study · adverse natural result",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/assumption-integrity",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The natural-data result is adverse and has not been independently reproduced.",
+        "Publish the permitted assumption checks and natural-data split provenance before attempting an independently specified successor."
+      ]
+    },
+    {
+      "canonicalId": "fabric-induced-memory",
+      "name": "Fabric-Induced Memory",
+      "aliases": [
+        "FIM"
+      ],
+      "ownerOrganization": "THE-BU1LD / Fabric-Induced-Memory",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "https://github.com/THE-BU1LD/Fabric-Induced-Memory"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Frozen component study · negative",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/fabric-induced-memory",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The retained study does not show blanket superiority; a baseline wins part of the compact benchmark.",
+        "Freeze explicit full/no-memory/no-retrieval semantics and matched seeds, then retain raw outcomes and exact revision/configuration provenance in an authorized reproduction."
+      ]
+    },
+    {
+      "canonicalId": "gaussian-memory-fields",
+      "name": "Gaussian Memory Fields",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Executed study · negative",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/gaussian-memory-fields",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The primary hypothesis failed correction and the original write mechanism showed zero write-token gradient.",
+        "Preserve the failed mechanism study and require an independently specified, gradient-checked successor before testing another efficacy claim."
+      ]
+    },
+    {
+      "canonicalId": "ngmt-robust-memory",
+      "name": "NGMT Robust Memory",
+      "aliases": [
+        "NGMT"
+      ],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Recovery study · null",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/ngmt-robust-memory",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The predefined improvement criterion was not met, and older overwritten mechanism artifacts remain compromised.",
+        "Retain the null recovery study and establish immutable, source-bound controls before another mechanism comparison."
+      ]
+    },
+    {
+      "canonicalId": "npms",
+      "name": "Neural Predictive Memory Spectroscopy",
+      "aliases": [
+        "NPMS"
+      ],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Controlled transfer supported",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/neural-predictive-memory-spectroscopy",
+      "connectedProfileUrl": "/portfolio/npms",
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "Synthetic transfer gates pass; accepted LoCoMo and LongMemEval confirmatory evidence is still absent.",
+        "Complete the predeclared external-evaluation provenance and acceptance checks without treating synthetic transfer as natural-language memory validation."
+      ]
+    },
+    {
+      "canonicalId": "ripii-ipii",
+      "name": "RIPII World Models",
+      "aliases": [
+        "RIPII"
+      ],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Executed pilots · no advance",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/ripii-world-models",
+      "connectedProfileUrl": "/portfolio/ripii-ipii",
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "Controlled pilots did not advance the benchmark; conditional routing remains experimental.",
+        "Keep RIPII's pilot outcomes intact while resolving IPII provenance and freezing the next routing comparison."
+      ]
+    },
+    {
+      "canonicalId": "eigen-jepa",
+      "name": "Eigen-JEPA",
+      "aliases": [],
+      "ownerOrganization": "Finance-Meta-Research · shared portfolio listing",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Real-panel study · mostly null",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/eigen-jepa",
+      "connectedProfileUrl": "/portfolio/eigen-jepa",
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The retained real-panel comparisons are mostly null and the paper-facing single-seed path fails the rigor gate.",
+        "Reconcile the time-indexed panel, comparison protocol, and independent seed evidence before changing the public conclusion."
+      ]
+    },
+    {
+      "canonicalId": "fi-jepa",
+      "name": "FI-JEPA",
+      "aliases": [],
+      "ownerOrganization": "Finance-Meta-Research · shared portfolio listing",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Development study · negative",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/fi-jepa",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The retained development study underperforms ridge and persistence baselines.",
+        "Preserve the negative baseline comparison and verify vintages, splits, and the exact forecasting target before any successor evaluation."
+      ]
+    },
+    {
+      "canonicalId": "lam-jepa",
+      "name": "LAM-JEPA",
+      "aliases": [],
+      "ownerOrganization": "vertex-studyAI · shared portfolio listing",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "https://github.com/vertex-studyAI/LAM-JEPA"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Frozen external validation · negative",
+      "publicationStatus": "Manuscript exists; venue submission and acceptance not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": "2026-09-30",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/lam-jepa",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The current ARC validation loses to the supervised baseline and shows codebook collapse.",
+        "Retain the frozen result and investigate a separately specified representation mechanism with input-dependence diagnostics before a new performance claim."
+      ]
+    },
+    {
+      "canonicalId": "weather-jepa",
+      "name": "Weather-JEPA",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Stage 0 · synthetic pipeline",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/weather-jepa",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The engineering path runs on synthetic data; ERA5 science and external validation have not started.",
+        "Define the real weather task, ERA5 provenance and split, baseline, forecast horizon, and metric before calling a later stage evaluated."
+      ]
+    },
+    {
+      "canonicalId": "pde-surrogate-phase-transitions",
+      "name": "Dynamical Representation Phase Transitions",
+      "aliases": [
+        "PDE Surrogate Phase Transitions",
+        "Dynamic Representation Phase Transition"
+      ],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Prototype · active study",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/pde-surrogate-phase-transitions",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "Finite smoke runs and phase feedback exist; a scientific phase-transition result has not been established.",
+        "Freeze a measurable warning target, time-respecting evaluation, and simple error/uncertainty baselines before a confirmatory study."
+      ]
+    },
+    {
+      "canonicalId": "residual-event-tokenization",
+      "name": "Residual Event Tokenization",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Working prototype",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/residual-event-tokenization",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "Train and evaluation paths exist, but there is no frozen paper-grade multi-seed result ledger yet.",
+        "Define the stream, event rule, token budget, and common downstream task; compare with a regular sampling/tokenization baseline using retained raw results."
+      ]
+    },
+    {
+      "canonicalId": "epu-omega",
+      "name": "EPU-Ω∞",
+      "aliases": [
+        "EPU"
+      ],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Research prototype",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/epu-omega",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "A retained benchmark exists, while hardware and deployment claims remain untested.",
+        "Document the implemented software path and exact benchmark comparator before extending any claim to hardware or deployment."
+      ]
+    },
+    {
+      "canonicalId": "eigen-finance",
+      "name": "EigenFinance",
+      "aliases": [
+        "Eigen-Finance"
+      ],
+      "ownerOrganization": "Finance-Meta-Research · shared portfolio listing",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Engineering complete · science not started",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/eigenfinance",
+      "connectedProfileUrl": "/portfolio/eigen-finance",
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The evaluator is implemented, but no retained licensed real-market result supports a performance claim.",
+        "Resolve FREM ownership and lineage independently, and establish admissible data provenance before reporting a market result."
+      ]
+    },
+    {
+      "canonicalId": "colorworld",
+      "name": "ColorWorld",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Product research prototype",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/colorworld",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The pipeline and synthetic demo run; production weights and production validation are absent.",
+        "Establish authorized evaluation assets and color/temporal consistency criteria before a production-quality comparison."
+      ]
+    },
+    {
+      "canonicalId": "olympus",
+      "name": "OLYMPUS Cognitive Architecture",
+      "aliases": [
+        "Olympus"
+      ],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Engineering foundry · science T0/T1",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/olympus-cognitive-architecture",
+      "connectedProfileUrl": "/portfolio/olympus",
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "Demos and software exist; current ledgers do not authorize model-family promotion or autonomous-agent claims.",
+        "Bind one named model path to its exact protocol, baseline, compute conditions, and retained quality results before promoting a family or systems-performance claim."
+      ]
+    },
+    {
+      "canonicalId": "ris-bounded-hessian-study",
+      "name": "RIS Bounded Hessian Study",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Numerical prototype",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/ris-bounded-hessian-study",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The current result is numerical-only and does not support the earlier broader interpretation.",
+        "Publish the numerical tolerances, step-size sensitivity, and exact model/data transformation before expanding the interpretation."
+      ]
+    },
+    {
+      "canonicalId": "scdmit",
+      "name": "SCDMIT",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Prototype · evidence ledger incomplete",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/scdmit",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The implementation surface is larger than the retained claim-bearing evidence; no broad result is public.",
+        "Select one mechanism, one falsifiable question, and one matched baseline, then connect that scope to retained artifacts."
+      ]
+    },
+    {
+      "canonicalId": "sapir-whorf-latent-language",
+      "name": "Sapir–Whorf and the Latent Tongue",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Research toolkit",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/sapir-whorf-latent-language",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "A toolkit exists, while canonical real-model evidence and a frozen result ledger remain unverified.",
+        "Specify a language contrast, representation metric, matched model conditions, and a falsifiable explanation before reporting a language effect."
+      ]
+    },
+    {
+      "canonicalId": "speechly",
+      "name": "Speechly",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Prototype / demo",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/speechly",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The pipeline runs, but there is no trained-checkpoint evidence ledger supporting performance claims.",
+        "Document the component boundary and evaluate against an authorized labeled dataset before reporting model performance."
+      ]
+    },
+    {
+      "canonicalId": "apen-pen",
+      "name": "APEN / Synthica",
+      "aliases": [
+        "APEN",
+        "PEN",
+        "APEN-Synthica"
+      ],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Portfolio · negative / partial",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/apen-synthica",
+      "connectedProfileUrl": "/portfolio/apen-pen",
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "APEN studies fail their gates and the Synthica packages are not independent submission-ready studies.",
+        "Reconcile an authorized public claim-to-artifact package with the current scientific state before reporting new metrics; preserve predecessor negatives and keep successor versions separate."
+      ]
+    },
+    {
+      "canonicalId": "project-2424",
+      "name": "Project 2424",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "collection",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Registry + selected implementations",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/project-2424",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The registry contains 2,424 records, but only a small classified subset is executable research; the portfolio remains release-rejected.",
+        "Advance individual eligible studies through their own evidence gates and retain unresolved or rejected entries without counting them as validated outputs."
+      ]
+    },
+    {
+      "canonicalId": "independent-research-foundry",
+      "name": "Independent Research Foundry",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "collection",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Stage-1 screens",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/independent-research-foundry",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The 64 names are screens and specifications, not 64 papers or submission-ready studies.",
+        "Select eligible screens by their explicit falsifiers and required evidence, preserving their parent-foundry relationship."
+      ]
+    },
+    {
+      "canonicalId": "ml4science-portfolio",
+      "name": "ML4Science Portfolio",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "collection",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Audited hypothesis portfolio",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/ml4science-portfolio",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The externally framed proposals fail advancement gates; the portfolio is not a set of validated discoveries.",
+        "Resolve each proposal's failed gate and identity before promoting it as an independent study or attributing external institutional support."
+      ]
+    },
+    {
+      "canonicalId": "ml4industry-portfolio",
+      "name": "ML4Industry Portfolio",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "collection",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Shared scaffolds + small external subset",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/ml4industry-portfolio",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "Most identities share scaffolding; synthetic demonstrations are not industrial proof.",
+        "Bind an eligible task to permitted real data, operational baselines, and an explicit deployment boundary before promoting its evidence."
+      ]
+    },
+    {
+      "canonicalId": "ml4semantic-intelligence",
+      "name": "ML4SemanticIntelligence",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "collection",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Predominantly specification-only",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/ml4semantic-intelligence",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "Most entries remain specification-only and none is currently conference-ready.",
+        "Select and freeze one eligible semantic task with a matched baseline and artifact requirements rather than promoting the whole collection."
+      ]
+    },
+    {
+      "canonicalId": "ml-invention-foundry",
+      "name": "MLInvention Foundry",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "collection",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Three promoted lanes · negative / inconclusive",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": null,
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/ml-invention-foundry",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The foundry is operational, but the promoted lanes do not support a positive research claim.",
+        "Preserve the negative/inconclusive outcomes and require independently justified successor protocols before another promotion."
+      ]
+    },
+    {
+      "canonicalId": "krylov-jepa",
+      "name": "Spectral Krylov-JEPA",
+      "aliases": [
+        "Krylov-JEPA",
+        "Kyrlov-JEPA"
+      ],
+      "ownerOrganization": "build-the-future-11 / Kyrlov-JEPA",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "https://github.com/build-the-future-11/Kyrlov-JEPA",
+        "https://github.com/build-the-future-11/Kyrlov-JEPA/blob/main/spectral-krylov-jepa/CLAIMS.md"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Public baseline audit · no advantage established",
+      "publicationStatus": "Public technical report; journal acceptance not established",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": "2026-09-27",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/krylov-jepa",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The retained audit favors simple spectral controls in important comparisons. Pipeline checks do not establish a Krylov pretraining or few-shot transfer advantage.",
+        "Reconcile the missing full experiment matrix and source-bound result package, with independent pretraining seeds and a total-resource comparison, before a transfer or superiority claim."
+      ]
+    },
+    {
+      "canonicalId": "spectral-jepa",
+      "name": "Spectral JEPA",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "unresolved direction",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Research direction · identity reconciliation open",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": "2026-10-02",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/spectral-jepa",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "This public seed record has no verified independent result. Its relationship to Spectral Krylov-JEPA is unresolved; it is not counted as another evaluated study or merged with financial Eigen-JEPA.",
+        "Resolve the canonical source and whether this is a parent direction, alias, or separate project before assigning experiments or counting another evaluated study."
+      ]
+    },
+    {
+      "canonicalId": "quantized-adaptive-transformers",
+      "name": "Quantized Adaptive Transformers",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Research brief · evaluation unverified",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": "2026-10-02",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/quantized-adaptive-transformers",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The public description establishes the question, not an implemented precision policy, benchmark result, or performance improvement.",
+        "Bind a precise task and model, define precision settings and adaptation behavior, and freeze a matched quality/memory/latency comparison."
+      ]
+    },
+    {
+      "canonicalId": "mahjong",
+      "name": "Mahjong",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Research brief · environment unverified",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": "2026-10-02",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/mahjong",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The ruleset, environment implementation, opponents, and evaluation protocol are not established by the public record. No solved-game or competitive-strength claim is made.",
+        "Confirm the ruleset, legal-action environment, seeded opponent protocol, and metric before any training or competitive-performance claim."
+      ]
+    },
+    {
+      "canonicalId": "latent-safety-recovery",
+      "name": "Latent Safety & Recovery",
+      "aliases": [],
+      "ownerOrganization": "BU1LD public portfolio · individual ownership not independently verified",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "Existing BU1LD public catalog · retained description, not independent reproduction"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Archived thread · results not independently verified",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "Archived · no verified open role",
+      "evidenceDate": "2026-01-05",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/latent-safety-recovery",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The existing public catalog marks this thread closed. A retained paper, result artifact, and reproducible comparison have not been verified for this page.",
+        "Recover the permitted final report and evaluation artifacts before proposing a bounded extension. Recruitment is not currently verified."
+      ]
+    },
+    {
+      "canonicalId": "space-jepa",
+      "name": "Space JEPA 2",
+      "aliases": [
+        "Space-JEPA",
+        "AQPM-JEPA (engine)"
+      ],
+      "ownerOrganization": "build-the-future-11 / IRIS-Space · SIDEREA subproject",
+      "classification": "subproject",
+      "parentCanonicalId": "siderea-transient-jepa",
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "https://github.com/build-the-future-11/IRIS-Space/blob/main/docs/SPACE_JEPA_2_IMPLEMENTATION_STATUS_2026-09-19.md"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "SIDEREA subproject · engineering only",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "No project-specific opening or reviewer capacity verified",
+      "evidenceDate": "2026-09-19",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/space-jepa",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The public implementation report has no genuine model-ready time-series input with point-in-time availability. Synthetic examples establish execution, not improved recall, calibration, workload, or discovery yield.",
+        "Acquire permitted survey photometry with observation and availability times, reconcile the physical-entity split and population, and satisfy the frozen comparison grid before interpreting scientific outcomes."
+      ]
+    },
+    {
+      "canonicalId": "iris-robust-memory",
+      "name": "IRIS Robust Recurrent Memory",
+      "aliases": [
+        "IRIS (robust recurrent memory)"
+      ],
+      "ownerOrganization": "build-the-future-11 / IRIS",
+      "classification": "project",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": true,
+      "sourceReferences": [
+        "src/data/research-portfolio.ts",
+        "https://github.com/build-the-future-11/IRIS"
+      ],
+      "visibilityPermission": "Existing published description or verified public source; private source details excluded",
+      "scientificStatus": "Closed evidence line · confirmation blocked",
+      "publicationStatus": "Public project description; peer-reviewed publication not verified",
+      "recruitmentStatus": "Closed evidence line · no verified open role",
+      "evidenceDate": "2026-09-30",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/research-atlas/iris-robust-memory",
+      "connectedProfileUrl": null,
+      "migrationAction": "Retain canonical slug and render expanded evidence-bounded brief",
+      "unresolvedGaps": [
+        "The learned mechanism did not clear strong-control or persistent-shift gates. Protected confirmation remains unopened while canonical raw-trajectory provenance is unresolved. This is separate from SIDEREA's astronomy work.",
+        "Recover canonical trajectory identity without regenerating approximate inputs and relabeling them original. Any successor requires a newly frozen question after the provenance boundary is resolved."
+      ]
+    },
+    {
+      "canonicalId": "bu1ld-nexus",
+      "name": "The BU1LD Nexus",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "PRODUCT",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E4; BOUND_CURRENT_CHECKOUT",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/bu1ld-nexus",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "Live Supabase checks and multi-role production journeys remain external release gates.",
+        "The paper analyzer is deterministic triage, not citation verification or scientific review."
+      ]
+    },
+    {
+      "canonicalId": "financemeta",
+      "name": "FinanceMeta / Finance4All Global Reach",
+      "aliases": [],
+      "ownerOrganization": "FinanceMeta",
+      "classification": "PRODUCT",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E4; BOUND_RELOCATED_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/financemeta",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "Finance claims must not imply investment performance without artifact-backed evidence.",
+        "Live RLS verification and full browser journeys have not been re-established for this profile."
+      ]
+    },
+    {
+      "canonicalId": "project-genesis",
+      "name": "Project Genesis",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "FLAGSHIP",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E4; BOUND_ARCHIVED_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/project-genesis",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "Smoke artifacts do not support public benchmark or novelty claims.",
+        "The declared multi-seed public benchmark campaign and independent reproduction remain incomplete."
+      ]
+    },
+    {
+      "canonicalId": "genesis-econ",
+      "name": "GenesisE / Genesis Economics Edition",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "CORE",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E4; BOUND_ARCHIVED_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/genesis-econ",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "All retained evidence is synthetic and internal; it does not establish real-market validity.",
+        "The broad program surface still needs stronger nearest-baseline comparisons."
+      ]
+    },
+    {
+      "canonicalId": "montecarlo",
+      "name": "MonteCarlo",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "ARCHIVE",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E0; BOUND_EMPTY_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/montecarlo",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "No question, code, dataset, test, license, or result has been established."
+      ]
+    },
+    {
+      "canonicalId": "visualization-scratch",
+      "name": "Codex visualization scratch root",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "ARCHIVE",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E0; UNRESOLVED_NON_PROJECT",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/visualization-scratch",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "This is retained for identity completeness and is not presented as a project."
+      ]
+    },
+    {
+      "canonicalId": "vertexed",
+      "name": "VertexED",
+      "aliases": [],
+      "ownerOrganization": "VertexED",
+      "classification": "PRODUCT",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E2; BOUND_DISCOVERED_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/vertexed",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "The custom domain is excluded until TLS is repaired.",
+        "Repository discovery and a preview URL do not establish production readiness."
+      ]
+    },
+    {
+      "canonicalId": "obscured-records-agent",
+      "name": "Obscured Records Agent",
+      "aliases": [],
+      "ownerOrganization": "Obscured Records",
+      "classification": "PRODUCT",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E2; BOUND_DISCOVERED_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/obscured-records-agent",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "The hosted reader remains owner-only and this directory does not bypass that access boundary.",
+        "Source discovery alone is not evidence of a public production release."
+      ]
+    },
+    {
+      "canonicalId": "pi-jepa",
+      "name": "PI-JEPA",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "RESEARCH",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E1; BOUND_RECOVERED_SOURCE",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/pi-jepa",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "Recovered source is specification-level evidence and does not establish a runnable result."
+      ]
+    },
+    {
+      "canonicalId": "lgwm",
+      "name": "LGWM",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "RESEARCH",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E1; BOUND_DISCOVERED_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/lgwm",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "The current scope is too thin to support implementation or result claims."
+      ]
+    },
+    {
+      "canonicalId": "esnf",
+      "name": "ESNF",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "RESEARCH",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E0; UNRESOLVED_NO_LOCAL_OR_ORG_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/esnf",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "No source, protocol, implementation, or result is currently attributable."
+      ]
+    },
+    {
+      "canonicalId": "nfgm",
+      "name": "NFGM",
+      "aliases": [],
+      "ownerOrganization": "Existing canonical registry; owner not reverified",
+      "classification": "RESEARCH",
+      "parentCanonicalId": null,
+      "includedInCanonicalAtlasProjectCount": false,
+      "sourceReferences": [
+        "research/PROJECT_REGISTRY.yaml",
+        "research/SOURCE_BINDINGS.json",
+        "src/data/portfolio.ts"
+      ],
+      "visibilityPermission": "Existing sanitized public profile only; private artifact permission not inferred",
+      "scientificStatus": "E0; UNRESOLVED_NO_LOCAL_OR_ORG_REPOSITORY",
+      "publicationStatus": "No publication status inferred from source binding",
+      "recruitmentStatus": "Unverified",
+      "evidenceDate": "2026-10-10",
+      "sourceReviewedAt": "2026-10-16",
+      "canonicalUrl": "/portfolio/nfgm",
+      "connectedProfileUrl": null,
+      "migrationAction": "Preserve existing source-identity profile without manufacturing research evidence",
+      "unresolvedGaps": [
+        "No source, protocol, implementation, or result is currently attributable."
+      ]
+    }
+  ],
+  "dispositions": [
+    {
+      "name": "PEN / APEN-Synthica / Synthica packages",
+      "classification": "alias / collection children",
+      "canonicalId": "apen-pen",
+      "action": "One APEN public project record; packages are not additional independent studies",
+      "gap": "Exact PEN version lineage remains scoped by source records; private successor details withheld"
+    },
+    {
+      "name": "Spectral JEPA",
+      "classification": "unresolved direction",
+      "canonicalId": "spectral-jepa",
+      "action": "Retain public direction page; exclude from independent canonical project count",
+      "gap": "Relationship to Spectral Krylov-JEPA unresolved; do not merge with financial Eigen-JEPA"
+    },
+    {
+      "name": "Space-JEPA / AQPM-JEPA",
+      "classification": "subproject / engine",
+      "canonicalId": "space-jepa",
+      "parentCanonicalId": "siderea-transient-jepa",
+      "action": "Dedicated subproject page; no additional independent project count",
+      "gap": "Real point-in-time model-ready inputs and scientific promotion remain absent"
+    },
+    {
+      "name": "IRIS / I SPY / SIDEREA",
+      "classification": "name collision / precursor",
+      "canonicalId": "siderea-transient-jepa",
+      "action": "I SPY is SIDEREA precursor; IRIS is conference context in that README; robust-memory IRIS has its own distinct page",
+      "gap": "No conference acceptance or candidate-yield multiplier inferred"
+    },
+    {
+      "name": "NeuroCAT",
+      "classification": "unresolved possible alias",
+      "canonicalId": null,
+      "action": "No separate public page or count",
+      "gap": "No authoritative source establishes a separate project or exact alias"
+    },
+    {
+      "name": "VeriCodeGen",
+      "classification": "unresolved proposal/identity",
+      "canonicalId": null,
+      "action": "Retain discovery lead privately; no published technical claims",
+      "gap": "Owner, source, permission and relationship to NeuroCAD not established"
+    },
+    {
+      "name": "FREM",
+      "classification": "shared-project candidate",
+      "canonicalId": null,
+      "action": "Do not merge into EigenFinance or rebrand as exclusively BU1LD",
+      "gap": "Source exists in broader portfolio context, but canonical ownership/publication relationship not established in this pass"
+    },
+    {
+      "name": "Project Genesis / GenesisE",
+      "classification": "distinct projects",
+      "canonicalIds": [
+        "project-genesis",
+        "genesis-econ"
+      ],
+      "action": "Preserve separate existing portfolio pages",
+      "gap": "Continual learning and synthetic economic simulation are separate scopes; archived activation and real-market validity remain unresolved"
+    },
+    {
+      "name": "RIPII / IPII",
+      "classification": "bound project / unresolved name",
+      "canonicalId": "ripii-ipii",
+      "action": "Retain RIPII public atlas plus existing profile; no separate IPII count",
+      "gap": "IPII independent identity unresolved; no speculative acronym expansion"
+    },
+    {
+      "name": "PDE Surrogate Phase Transitions / Dynamical Representation Phase Transitions",
+      "classification": "public label aliases",
+      "canonicalId": "pde-surrogate-phase-transitions",
+      "action": "Preserve old slug and searchable labels",
+      "gap": "No scientific phase-transition or institutional collaboration claim established"
+    },
+    {
+      "name": "BU1LD Nexus / Open Research Forum",
+      "classification": "infrastructure/product / program",
+      "canonicalId": "bu1ld-nexus",
+      "action": "Preserve platform profile and operational program routes; exclude from research-paper count",
+      "gap": "Deployment and operational readiness require separate checks"
+    },
+    {
+      "name": "LabOS",
+      "classification": "infrastructure/product",
+      "canonicalId": null,
+      "action": "Do not count as an independent scientific study",
+      "gap": "Public standalone page and publication authorization not established"
+    },
+    {
+      "name": "PublishProjects",
+      "classification": "unresolved infrastructure identity",
+      "canonicalId": null,
+      "action": "No new public research page or count",
+      "gap": "Authoritative source and permission not found in inspected sources"
+    },
+    {
+      "name": "FinanceMeta / VertexED / Obscured Records",
+      "classification": "separate products",
+      "canonicalIds": [
+        "financemeta",
+        "vertexed",
+        "obscured-records-agent"
+      ],
+      "action": "Preserve ownership and product boundaries",
+      "gap": "Cross-listing does not establish exclusive BU1LD ownership or shared accounts"
+    },
+    {
+      "name": "ESNF / NFGM",
+      "classification": "unresolved identities",
+      "canonicalIds": [
+        "esnf",
+        "nfgm"
+      ],
+      "action": "Keep existing explicitly unresolved profiles; do not fabricate study descriptions",
+      "gap": "Authoritative source still unresolved"
+    },
+    {
+      "name": "MonteCarlo / visualization scratch",
+      "classification": "empty shell / unrelated archive",
+      "canonicalIds": [
+        "montecarlo",
+        "visualization-scratch"
+      ],
+      "action": "Preserve provenance profiles; exclude from research count",
+      "gap": "No falsifiable project evidence"
+    },
+    {
+      "name": "Foundry children, applicant proposals, shadow worktrees, versions",
+      "classification": "collection children / proposals / duplicates",
+      "canonicalId": null,
+      "action": "Do not promote to standalone institutional projects from a name or scaffold",
+      "gap": "Individual identity, evidence and visibility permission required"
+    },
+    {
+      "name": "Worldcastr",
+      "classification": "explicitly out of scope",
+      "canonicalId": null,
+      "action": "No source access, execution or mutation",
+      "gap": "Excluded by owner instruction"
+    }
+  ],
+  "sourceChecks": {
+    "reviewedAt": "2026-10-16",
+    "scope": "Read-only source identity and editorial evidence review; no research execution or public upload",
+    "primarySourcesRead": [
+      {
+        "source": "research/PROJECT_REGISTRY.yaml",
+        "date": "2026-10-10",
+        "boundary": "Canonical20 source identities; snapshot is not current scientific verification"
+      },
+      {
+        "source": "research/SOURCE_BINDINGS.json",
+        "boundary": "20 bindings, including unresolved and empty records"
+      },
+      {
+        "source": "src/data/research-portfolio.ts",
+        "boundary": "Original33 public records preserved; expanded only with authorized published seeds or verified public source"
+      },
+      {
+        "source": "the-bu1ld-nexus/src/data/seed/projects.ts",
+        "date": "2026-10-02",
+        "permission": "Existing published:true seed descriptions only",
+        "boundary": "Capacity, named leads and open status not carried forward as verified operations"
+      },
+      {
+        "source": "https://github.com/build-the-future-11/Kyrlov-JEPA",
+        "permission": "GitHub API confirmed private:false; README and claim ledger fetched",
+        "date": "2026-09-27",
+        "boundary": "Negative baseline audit and engineering controls; missing full matrix"
+      },
+      {
+        "source": "https://github.com/THE-BU1LD/Fabric-Induced-Memory",
+        "permission": "GitHub API confirmed private:false; public README fetched",
+        "boundary": "Public delayed-recall and ablation warning, not unpublished ITFM successors"
+      },
+      {
+        "source": "https://github.com/vertex-studyAI/LAM-JEPA",
+        "permission": "Public README fetched",
+        "date": "2026-09-30",
+        "boundary": "Five-seed negative ARC validation; no venue acceptance inferred"
+      },
+      {
+        "source": "https://github.com/THE-BU1LD/NeuroCAD",
+        "permission": "Public README fetched",
+        "boundary": "Public alpha software checks separated from physical and independent validation"
+      },
+      {
+        "source": "https://github.com/build-the-future-11/IRIS-Space",
+        "permission": "GitHub API confirmed private:false; README and Space-JEPA implementation report fetched",
+        "date": "2026-09-19",
+        "boundary": "SIDEREA lineage and shadow-only subproject, no discovery yield"
+      },
+      {
+        "source": "https://github.com/build-the-future-11/IRIS",
+        "permission": "GitHub API confirmed private:false; README fetched",
+        "date": "2026-09-30",
+        "boundary": "Distinct robust recurrent-memory negative result, not astronomy alias"
+      },
+      {
+        "source": "Authorized APEN-Synthica local README and research state",
+        "permission": "GitHub API confirmed private:true",
+        "date": "2026-10-16",
+        "boundary": "Current engineering verification and scientific/data-admission blocks are private operational evidence; no new private results bundled publicly"
+      },
+      {
+        "source": "Authorized Adaptive-Theory-Geometry local README and FINAL_STATUS_2026-09-30",
+        "permission": "GitHub API confirmed private:true",
+        "date": "2026-09-30",
+        "boundary": "Historical numerical source mismatch found; public quantitative claims withheld pending reconciliation"
+      },
+      {
+        "source": "Authorized Olympus local README",
+        "permission": "No new public-source link verified",
+        "boundary": "Platform and separate study identities retained; no private successor metrics published"
+      }
+    ],
+    "retrievalFailures": [
+      {
+        "source": "Krylov GitHub page via web fetch",
+        "state": "Cache miss",
+        "recoveredBy": "Connected GitHub public repository and raw README fetch"
+      }
+    ],
+    "notPerformed": [
+      "Worldcastr access",
+      "Model import or training",
+      "Protected evaluation",
+      "Research mutation",
+      "Build or development server",
+      "External outreach",
+      "Production publication"
+    ]
+  }
+}

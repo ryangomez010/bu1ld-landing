@@ -1,5 +1,5 @@
 import { Bookmark, FolderPlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/auth";
 import { addToCollection, createCollection, fetchCollections } from "@/lib/saved-collections";
-import { isSaved, toggleSaved } from "@/lib/saved";
+import { loadSavedState, toggleSavedWithReceipt } from "@/lib/saved";
+import { trackPaperSave } from "@/lib/learning-analytics";
 import type { SavedItemType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -31,25 +32,54 @@ export function SaveToCollectionButton({
   const { user } = useAuth();
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const [loadedKey, setLoadedKey] = useState("");
+  const currentKey = `${user?.id}:${itemType}:${itemSlug}`;
+  const revision = useRef(0);
   const [collections, setCollections] = useState<Awaited<ReturnType<typeof fetchCollections>>>([]);
 
   useEffect(() => {
+    const generation = ++revision.current;
+    let active = true;
+    setLoadedKey("");
+    setLoading(true);
+    setLoadError(false);
+    setSaved(false);
+    setCollections([]);
     if (!user) return;
-    void isSaved(user.id, itemType, itemSlug).then((v) => {
-      setSaved(v);
+    void loadSavedState(user.id, itemType, itemSlug).then((result) => {
+      if (!active || generation !== revision.current) return;
+      setSaved(result.saved);
+      setLoadError(Boolean(result.error));
+      setLoadedKey(currentKey);
       setLoading(false);
     });
-    void fetchCollections(user.id).then(setCollections);
-  }, [user, itemType, itemSlug]);
+    void fetchCollections(user.id)
+      .then((rows) => {
+        if (active) setCollections(rows);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [user, itemType, itemSlug, currentKey, retry]);
 
   if (!user) return null;
 
   const onToggleSaved = async () => {
+    const generation = revision.current;
     setLoading(true);
-    const next = await toggleSaved(user.id, itemType, itemSlug, itemTitle);
-    setSaved(next);
+    const result = await toggleSavedWithReceipt(user.id, itemType, itemSlug, itemTitle, !saved);
+    trackPaperSave(itemType, result);
+    if (generation !== revision.current) return;
     setLoading(false);
-    toast.success(next ? "Saved to your list" : "Removed from saved");
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    setSaved(result.saved);
+    toast.success(result.saved ? "Saved to your list" : "Removed from saved");
   };
 
   const onAddToCollection = async (collectionId: string, collectionName: string) => {
@@ -83,15 +113,15 @@ export function SaveToCollectionButton({
         type="button"
         variant="ghost"
         size="sm"
-        disabled={loading}
-        onClick={() => void onToggleSaved()}
+        disabled={loading || loadedKey !== currentKey}
+        onClick={() => (loadError ? setRetry((value) => value + 1) : void onToggleSaved())}
         className={cn(
           "font-mono text-[9px] tracking-[0.15em] uppercase gap-2",
           saved ? "text-accent-blue" : "text-muted-foreground",
         )}
       >
         <Bookmark className={cn("h-3.5 w-3.5", saved && "fill-current")} />
-        {saved ? "Saved" : "Save"}
+        {loadError ? "Retry saved status" : saved ? "Saved" : "Save"}
       </Button>
 
       <DropdownMenu>
@@ -100,6 +130,7 @@ export function SaveToCollectionButton({
             type="button"
             variant="ghost"
             size="sm"
+            disabled={loading || loadError || loadedKey !== currentKey}
             className="font-mono text-[9px] tracking-[0.15em] uppercase gap-1.5 text-muted-foreground"
           >
             <FolderPlus className="h-3.5 w-3.5" />

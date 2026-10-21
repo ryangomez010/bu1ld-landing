@@ -63,7 +63,16 @@ export function isSensitiveAction(value: string): value is SensitiveAction {
 export function isTrustedSupabaseUrl(url: string): boolean {
   try {
     const parsed = new URL(url.trim());
-    return parsed.protocol === "https:" && parsed.hostname.endsWith(".supabase.co");
+    return (
+      parsed.protocol === "https:" &&
+      /^[a-z0-9-]+\.supabase\.co$/i.test(parsed.hostname) &&
+      !parsed.username &&
+      !parsed.password &&
+      (!parsed.port || parsed.port === "443") &&
+      parsed.pathname === "/" &&
+      !parsed.search &&
+      !parsed.hash
+    );
   } catch {
     return false;
   }
@@ -126,10 +135,18 @@ export function sanitizeText(value: string, max: number): string {
 
 /** Reject cross-origin form posts when Origin/Referer are present. */
 export function isSameOriginRequest(request: Request, allowedHost: string): boolean {
+  let allowedOrigin: string;
+  try {
+    allowedOrigin = allowedHost.includes("://")
+      ? new URL(allowedHost).origin
+      : new URL(`${new URL(request.url).protocol}//${allowedHost}`).origin;
+  } catch {
+    return false;
+  }
   const origin = request.headers.get("origin");
   if (origin) {
     try {
-      return new URL(origin).host === allowedHost;
+      return new URL(origin).origin === allowedOrigin;
     } catch {
       return false;
     }
@@ -137,7 +154,7 @@ export function isSameOriginRequest(request: Request, allowedHost: string): bool
   const referer = request.headers.get("referer");
   if (referer) {
     try {
-      return new URL(referer).host === allowedHost;
+      return new URL(referer).origin === allowedOrigin;
     } catch {
       return false;
     }
@@ -181,16 +198,57 @@ export function clampText(value: string, max: number): string {
   return trimmed.slice(0, max);
 }
 
+/** Compare bearer secrets without an early return on the first differing character. */
+export function secretsMatch(actual: string, expected: string): boolean {
+  const length = Math.max(actual.length, expected.length);
+  let difference = actual.length ^ expected.length;
+  for (let index = 0; index < length; index += 1) {
+    difference |= (actual.charCodeAt(index) || 0) ^ (expected.charCodeAt(index) || 0);
+  }
+  return difference === 0;
+}
+
 /** In-app router paths only — blocks open redirects and javascript: URLs. */
 export function sanitizeAppPath(path: string | null | undefined): string | undefined {
   if (!path?.trim()) return undefined;
   const trimmed = path.trim();
   if (trimmed.length > 500) return undefined;
+  if (
+    [...trimmed].some((character) => {
+      const code = character.charCodeAt(0);
+      return code < 32 || code === 127;
+    })
+  )
+    return undefined;
   if (!trimmed.startsWith("/") || trimmed.startsWith("//") || trimmed.includes("\\")) {
     return undefined;
   }
   if (/^\/[^/]*:/i.test(trimmed)) return undefined;
+  const pathname = trimmed.split(/[?#]/, 1)[0] ?? "";
+  if (/%2f|%5c/i.test(pathname)) return undefined;
+  try {
+    const decodedPathname = decodeURIComponent(pathname);
+    if (
+      decodedPathname.startsWith("//") ||
+      decodedPathname.includes("\\") ||
+      decodedPathname.split("/").some((segment) => segment === "." || segment === "..")
+    ) {
+      return undefined;
+    }
+  } catch {
+    return undefined;
+  }
   return trimmed;
+}
+
+/** Serialize JSON for an inline script without allowing a closing script tag. */
+export function serializeJsonForHtml(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
 }
 
 /** Strip common HTML injection vectors from email bodies we did not fully escape. */
@@ -244,7 +302,10 @@ export function jsonResponse(body: unknown, status = 200): Response {
   return applySecurityHeaders(
     new Response(JSON.stringify(body), {
       status,
-      headers: { "content-type": "application/json; charset=utf-8" },
+      headers: {
+        "cache-control": "no-store",
+        "content-type": "application/json; charset=utf-8",
+      },
     }),
   );
 }

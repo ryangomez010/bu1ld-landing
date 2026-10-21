@@ -4,48 +4,18 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
+import {
+  loadDeploymentEnv,
+  publicConfigErrors,
+  databaseConnection,
+  databaseIdentityErrors,
+} from "./deployment-env.mjs";
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-
-function readEnvFile() {
-  const path = resolve(root, ".env");
-  if (!existsSync(path)) return {};
-  return Object.fromEntries(
-    readFileSync(path, "utf8")
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line && !line.startsWith("#") && line.includes("="))
-      .map((line) => {
-        const index = line.indexOf("=");
-        return [
-          line.slice(0, index).trim(),
-          line
-            .slice(index + 1)
-            .trim()
-            .replace(/^['"]|['"]$/g, ""),
-        ];
-      }),
-  );
-}
-
-function readWranglerVars() {
-  const path = resolve(root, "wrangler.jsonc");
-  if (!existsSync(path)) return {};
-  const raw = readFileSync(path, "utf8");
-  const result = {};
-  for (const key of [
-    "VITE_SUPABASE_URL",
-    "VITE_SUPABASE_ANON_KEY",
-    "VITE_SUPABASE_PUBLISHABLE_KEY",
-  ]) {
-    const match = raw.match(new RegExp(`"${key}"\\s*:\\s*"([^"]+)"`));
-    if (match) result[key] = match[1];
-  }
-  return result;
-}
 
 function run(label, command, args) {
   console.log(`\n[${label}] ${command} ${args.join(" ")}`);
-  const result = spawnSync(command, args, { cwd: root, stdio: "inherit", env: process.env });
+  const result = spawnSync(command, args, { cwd: root, stdio: "inherit", env });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
@@ -78,19 +48,18 @@ function assertNoMatches(label, paths, patterns) {
   }
 }
 
-const env = { ...readWranglerVars(), ...readEnvFile(), ...process.env };
-const failures = [];
+const env = loadDeploymentEnv(root);
 const strict = env.BU1LD_RELEASE_STRICT === "1";
-
-if (!env.VITE_SUPABASE_URL) failures.push("Set VITE_SUPABASE_URL in the deployment environment.");
-if (!env.VITE_SUPABASE_ANON_KEY && !env.VITE_SUPABASE_PUBLISHABLE_KEY) {
-  failures.push("Set VITE_SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLISHABLE_KEY.");
-}
-if (!env.SUPABASE_DB_PASSWORD && !env.SUPABASE_DB_URL) {
-  if (strict) {
-    failures.push(
-      "Set SUPABASE_DB_PASSWORD or SUPABASE_DB_URL so production schema and RLS can be verified.",
-    );
+const failures = publicConfigErrors(env, strict);
+if (strict) {
+  try {
+    if (!databaseConnection(env))
+      failures.push(
+        "Set SUPABASE_DB_URL or both SUPABASE_DB_PASSWORD and SUPABASE_PROJECT_REF for schema verification.",
+      );
+    else failures.push(...databaseIdentityErrors(env));
+  } catch {
+    failures.push("Set a valid SUPABASE_DB_URL from the project's dashboard.");
   }
 }
 if (!env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -111,10 +80,33 @@ if (!env.DIGEST_API_SECRET && strict) {
 if (!env.VITE_EMAIL_ENDPOINT && strict) {
   failures.push("Set VITE_EMAIL_ENDPOINT to the deployed same-origin or trusted email handler.");
 }
+if (strict) {
+  let siteOrigin;
+  try {
+    const siteUrl = new URL(env.BU1LD_SITE_ORIGIN || "https://thebu1ld.com");
+    if (siteUrl.protocol !== "https:" || siteUrl.username || siteUrl.password) throw new Error();
+    siteOrigin = siteUrl.origin;
+  } catch {
+    failures.push("Set BU1LD_SITE_ORIGIN to a valid HTTPS origin.");
+  }
+  for (const name of ["VITE_EMAIL_ENDPOINT", "VITE_ACCOUNT_DELETION_ENDPOINT"]) {
+    const endpoint = env[name];
+    if (!endpoint || (endpoint.startsWith("/") && !endpoint.startsWith("//"))) continue;
+    try {
+      const parsed = new URL(endpoint);
+      if (parsed.protocol !== "https:" || parsed.origin !== siteOrigin) {
+        failures.push(`${name} receives bearer tokens and must use the production site origin.`);
+      }
+    } catch {
+      failures.push(`${name} must be a same-origin path or production HTTPS URL.`);
+    }
+  }
+}
 
 for (const unsafe of [
   "VITE_SUPABASE_SERVICE_ROLE_KEY",
   "VITE_RESEND_API_KEY",
+  "VITE_EMAIL_API_SECRET",
   "VITE_DIGEST_API_SECRET",
 ]) {
   if (env[unsafe]) failures.push(`Remove ${unsafe}; server secrets must never use a VITE_ prefix.`);
@@ -136,6 +128,13 @@ for (const phase of [
   "phase31.sql",
   "phase32.sql",
   "phase33.sql",
+  "phase34.sql",
+  "phase35.sql",
+  "phase36.sql",
+  "phase37.sql",
+  "phase38.sql",
+  "phase39.sql",
+  "phase40.sql",
 ]) {
   if (!existsSync(resolve(root, "supabase", phase)))
     failures.push(`Missing required migration supabase/${phase}.`);
@@ -258,6 +257,76 @@ if (existsSync(phase33)) {
   }
 }
 
+const phase34 = resolve(root, "supabase/phase34.sql");
+if (existsSync(phase34)) {
+  const sql = readFileSync(phase34, "utf8");
+  for (const invariant of [
+    "create or replace function public.is_project_collaborator",
+    "security definer",
+    "pm.user_id = (select auth.uid())",
+    "pm.status in ('active', 'paused')",
+    "or public.is_project_collaborator(id)",
+    "revoke all on function public.is_project_collaborator(uuid) from public",
+    "values ('phase34')",
+  ]) {
+    if (!sql.includes(invariant)) {
+      failures.push(`phase34.sql is missing required invariant: ${invariant}.`);
+    }
+  }
+}
+
+const phase37 = resolve(root, "supabase/phase37.sql");
+if (existsSync(phase37)) {
+  const sql = readFileSync(phase37, "utf8");
+  for (const invariant of [
+    "caller_id = (select auth.uid())",
+    "uid = (select auth.uid())",
+    "revoke all on function public.can_notify_project_subscriber(uuid, uuid, uuid)",
+    "from public, anon, authenticated",
+    "values ('phase37')",
+  ]) {
+    if (!sql.includes(invariant)) {
+      failures.push(`phase37.sql is missing required invariant: ${invariant}.`);
+    }
+  }
+}
+
+const phase38 = resolve(root, "supabase/phase38.sql");
+if (existsSync(phase38)) {
+  const sql = readFileSync(phase38, "utf8");
+  for (const invariant of [
+    "notifications_safe_href_check",
+    "href not like '//%'",
+    "revoke all on function public.handle_new_user()",
+    "values ('phase38')",
+  ]) {
+    if (!sql.includes(invariant)) {
+      failures.push(`phase38.sql is missing required invariant: ${invariant}.`);
+    }
+  }
+}
+
+const phase39 = resolve(root, "supabase/phase39.sql");
+if (existsSync(phase39)) {
+  const sql = readFileSync(phase39, "utf8");
+  for (const invariant of [
+    "create table if not exists public.mentor_profiles",
+    "alter table public.mentorship_requests enable row level security",
+    "create table if not exists public.community_channels",
+    "alter table public.community_posts enable row level security",
+    "values ('phase39')",
+  ]) {
+    if (!sql.includes(invariant))
+      failures.push(`phase39.sql is missing required invariant: ${invariant}.`);
+  }
+}
+
+run("schema bundle", "bun", ["run", "schema:check"]);
+run("public sitemap", "bun", ["run", "sitemap:check"]);
+run("public portfolio manifest", "bun", ["run", "manifest:check"]);
+run("ML article catalog", "bun", ["run", "guides:check"]);
+run("route smoke", "bun", ["run", "smoke"]);
+
 if (failures.length) {
   console.error("\nRelease configuration blockers:");
   failures.forEach((failure) => console.error(`  - ${failure}`));
@@ -269,13 +338,13 @@ run("tests", "bun", ["run", "test"]);
 run("lint", "bun", ["run", "lint"]);
 run("build", "bun", ["run", "build"]);
 if (strict) {
-  run("supabase schema", "bun", ["run", "supabase:verify"]);
-  run("supabase rls", "bun", ["run", "supabase:rls"]);
+  run("supabase API connectivity", "bun", ["run", "supabase:verify"]);
+  run("supabase schema and RLS flags", "bun", ["run", "supabase:rls"]);
 }
 
 console.log("\nCode release checks passed.");
 console.log(
   strict
-    ? "Production environment checks passed."
+    ? "Configured APIs, schema presence, and RLS flags passed. Complete live role, email, account-deletion, and browser QA before declaring production acceptance."
     : "Run BU1LD_RELEASE_STRICT=1 bun run release:check in the deployment environment before release.",
 );

@@ -1,0 +1,268 @@
+[
+  {
+    "slug": "ml-principal-components",
+    "title": "PCA Finds High-Variance Directions, Not the Best Labels",
+    "description": "Understand projection, centering, and the difference between variance and usefulness.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Representations",
+      "Linear algebra"
+    ],
+    "concept": "Principal component analysis finds orthogonal directions that capture successive amounts of variance in centered data. Projecting onto the first few directions gives a lower-dimensional linear representation. Under the usual squared reconstruction objective, this provides an optimal rank-constrained linear approximation. PCA does not look at task labels, so a high-variance direction is not necessarily useful for prediction. Feature units and centering determine the geometry on which it operates.",
+    "example": "Imagine measurements of two sensors that both track room temperature, plus a small but predictive vibration signal. The temperature variation may dominate the first principal component because it is large and shared. Keeping only that component could discard the vibration information needed to identify a mechanical fault. High explained variance would then coexist with poor downstream classification. For an explicit covariance example, suppose two already-centered features have covariance matrix diag(9,1). The first principal direction captures 90% of total variance. If the label is determined by the sign of the second feature, discarding it can remove the entire predictive signal despite that apparently strong variance-retention number.",
+    "pitfall": "Fitting PCA on all examples before validation exposes the representation to held-out inputs. Scaling also changes the answer: applying PCA to a covariance matrix and to standardized features asks different questions. Two-dimensional plots can hide important structure in discarded components and should not be treated as proof of separability.",
+    "exercise": "Use the diagonal covariance example with eigenvalues nine and one. Calculate explained variance after retaining one component and after retaining both. Suppose the target depends only on the second feature: explain what a downstream classifier loses after the one-component projection, assuming the features are independent.",
+    "references": [
+      {
+        "label": "scikit-learn: Principal Component Analysis",
+        "url": "https://scikit-learn.org/stable/modules/decomposition.html#pca"
+      }
+    ],
+    "answer": "One component retains 9/(9+1) = 90%; both retain 100%. Under the stated independence and target rule, the first coordinate contains no target information, so retaining it alone removes the useful signal. Explained variance answers a reconstruction question. Evaluate downstream predictive performance separately on validation data with training-only preprocessing."
+  },
+  {
+    "slug": "ml-kmeans",
+    "title": "K-Means Depends on What Distance Makes Meaningful",
+    "description": "Understand centroid assignments and the assumptions behind compact clusters.",
+    "level": "Beginner",
+    "track": "Representations & generation",
+    "tags": [
+      "Clustering",
+      "Representations"
+    ],
+    "concept": "K-means assigns examples to k centroids and updates those centroids to reduce within-cluster squared distance. Its objective favors compact groups under Euclidean geometry. Initialization affects the solution because the optimization can settle in different local minima. The chosen number of clusters is a modeling decision, not a hidden truth that the algorithm always recovers. Feature scaling, representation, and the intended use of the groups matter at least as much as the implementation.",
+    "example": "Suppose documents are represented by two features: length and average technical-term frequency. Without scaling, large differences in length may dominate assignments. Clusters might become short, medium, and long documents rather than meaningful topic groups. If the goal is editorial routing by topic, this partition could optimize the mathematical objective while failing the actual task.",
+    "pitfall": "An elbow in the inertia curve is a heuristic, not a proof of the correct k. K-means also struggles when desired groups are elongated, have very different densities, or include many outliers. A polished visualization can conceal unstable assignments across initializations or small data changes.",
+    "exercise": "Run several initializations for a few plausible values of k. Inspect representative and borderline examples from every cluster, and compare assignments across runs. State what action the clusters support, then judge whether that action improves a real workflow instead of reporting only reduced within-cluster distance.",
+    "references": [
+      {
+        "label": "scikit-learn: K-means",
+        "url": "https://scikit-learn.org/stable/modules/clustering.html#k-means"
+      }
+    ],
+    "answer": "Inertia cannot increase when optimizing over a more flexible number of clusters at the global optimum, so lower inertia alone does not identify a useful k. Compare multiple initializations, inspect representative and boundary documents, and compare membership after accounting for arbitrary cluster-label permutations. Record scaling and stability under resampling. A successful editorial-routing evaluation would need independently judged routing usefulness or downstream outcomes; short/medium/long clusters can fit the objective well while failing the topic-routing purpose."
+  },
+  {
+    "slug": "ml-dbscan",
+    "title": "Density Clustering Can Leave Some Points Unassigned",
+    "description": "Use neighborhood density to separate groups without forcing every point into one.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Clustering",
+      "Anomaly detection"
+    ],
+    "concept": "DBSCAN identifies dense regions using a neighborhood radius and a minimum number of nearby observations. Core points connect through dense neighborhoods; border points can attach to a cluster; other points are labeled as noise. Unlike k-means, the method does not require a fixed number of clusters in advance. It does require a meaningful distance and density scale. The noise label describes the algorithm's grouping decision, not proof that an observation is erroneous or malicious.",
+    "example": "Imagine location measurements from repeated visits to two buildings, plus scattered travel points. A suitable radius can connect observations within each building while leaving isolated travel observations unassigned. Increase the radius too much and a chain of intermediate points may merge the buildings. Decrease it too much and one building may fragment into several groups or become mostly noise.",
+    "pitfall": "A single density threshold can be unsuitable when legitimate clusters have very different densities. High-dimensional distances can also become less informative, making radius selection difficult. Standardizing inputs helps only if the resulting metric matches the notion of neighborhood required by the application.",
+    "exercise": "Inspect neighborhood-distance distributions and try a small, documented parameter range. Track the fraction of points labeled as noise and review examples from dense, border, and isolated regions. Test stability under modest changes to the data, and explain whether unassigned observations need manual review or simply represent legitimate uncommon cases.",
+    "references": [
+      {
+        "label": "scikit-learn: DBSCAN",
+        "url": "https://scikit-learn.org/stable/modules/clustering.html#dbscan"
+      }
+    ],
+    "answer": "Record the radius, distance definition, and minimum-sample convention, including whether a point counts itself. For each setting, report cluster sizes and the noise fraction, then inspect dense cores, boundary points, and unassigned cases. A travel observation labeled noise may be valid and should not be deleted merely because of that label. Stability across modest parameter changes supports operational confidence but does not reveal a unique true clustering. A single radius can fail both sparse legitimate groups and dense groups in the same dataset."
+  },
+  {
+    "slug": "ml-gaussian-mixtures",
+    "title": "Gaussian Mixtures Provide Soft Cluster Membership",
+    "description": "Model overlapping populations while respecting the assumptions of each component.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Clustering",
+      "Probability"
+    ],
+    "concept": "A Gaussian mixture represents a density as a weighted sum of Gaussian components. Each component has a mean and covariance, and each observation receives responsibilities describing its relative compatibility with the components. Expectation-maximization alternates between estimating those responsibilities and updating parameters. The components can overlap, so membership is soft rather than a forced hard assignment. Whether the components correspond to meaningful real-world groups is an additional interpretation requiring evidence.",
+    "example": "Suppose two kinds of sensor readings have overlapping ranges. A reading near the center of one component may receive responsibility 0.9 there, while a reading in the overlap may be closer to 0.5. That uncertainty can be useful when a hard cluster label would hide ambiguity. Allowing full covariance matrices lets components model elongated directions, at the cost of estimating more parameters.",
+    "pitfall": "The likelihood can behave badly when a component collapses around very few points unless covariance constraints or regularization are used. More components can also improve training fit without improving useful structure. A component's Gaussian shape may be a poor match for the actual density.",
+    "exercise": "Compare several covariance assumptions and component counts using held-out likelihood and domain inspection. Repeat initialization and check for collapsed components. If you use responsibilities downstream, document that they refer to fitted mixture components rather than automatically calibrated probabilities of human-defined categories.",
+    "references": [
+      {
+        "label": "scikit-learn: Gaussian Mixture Models",
+        "url": "https://scikit-learn.org/stable/modules/mixture.html"
+      }
+    ],
+    "answer": "Compare held-out log likelihood, component weights, covariance eigenvalues, and convergence across declared initializations. A tiny component with a nearly singular covariance can indicate collapse despite attractive training likelihood. Select covariance structure and count using development data, then freeze the model for final evaluation. Responsibilities sum to one across the fitted components for each input, but component labels can permute across runs. A responsibility of 0.9 is not a 90% probability of a human-defined category unless that interpretation is separately justified."
+  },
+  {
+    "slug": "ml-autoencoders",
+    "title": "Autoencoders Learn What Reconstruction Rewards",
+    "description": "Understand why a compact reconstruction can preserve the wrong information.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Representations",
+      "Neural networks"
+    ],
+    "concept": "An autoencoder maps an input into a latent representation and reconstructs the input from that representation. The reconstruction objective determines what information the model is rewarded for preserving. A bottleneck or other constraint prevents an unrestricted identity mapping, but a compact code is not automatically useful for every downstream task. High-variance background details may matter more to pixel-wise reconstruction than a small object or rare event relevant to the application.",
+    "example": "Consider images of instruments against a patterned wall. A reconstruction model may devote capacity to the wall because it occupies most pixels, while blurring a tiny indicator that determines the instrument's state. A low average pixel error could therefore coexist with a poor representation for state classification. Evaluating a simple downstream probe helps distinguish visual reconstruction quality from task-relevant information.",
+    "pitfall": "Low reconstruction error on training examples does not establish compression quality for new sources. Using reconstruction error as an anomaly score also assumes that unusual cases reconstruct differently; expressive decoders may reconstruct some anomalies surprisingly well and struggle with harmless distribution changes.",
+    "exercise": "Train a small autoencoder with a fixed bottleneck and compare it with PCA at the same latent dimension. Evaluate held-out reconstruction and one downstream task separately. Inspect which details disappear, and explain whether the reconstruction loss rewards the information the eventual user actually needs.",
+    "references": [
+      {
+        "label": "Deep Learning: Autoencoders",
+        "url": "https://www.deeplearningbook.org/contents/autoencoders.html"
+      }
+    ],
+    "answer": "Fit PCA and the autoencoder using the same training-only preprocessing and latent dimension. Compare held-out reconstruction in the same units and a downstream probe under the same split and tuning rules. Equal latent dimension does not equal parameter count or training compute, so disclose those costs. In the instrument example, inspect indicator pixels separately from the background. Better average reconstruction with worse state classification would show that the chosen reconstruction objective preserved information different from what the application needed."
+  },
+  {
+    "slug": "ml-variational-autoencoders",
+    "title": "VAEs Balance Reconstruction with a Structured Latent Space",
+    "description": "Understand the encoder distribution, prior, and variational objective.",
+    "level": "Advanced",
+    "track": "Representations & generation",
+    "tags": [
+      "Generative models",
+      "Probability"
+    ],
+    "concept": "A variational autoencoder uses an encoder to approximate a distribution over latent variables for each input and a decoder to model observations given those latents. Training commonly maximizes an evidence lower bound: an expected reconstruction-related log likelihood minus a divergence term encouraging the approximate posterior to stay near a chosen prior. The two terms shape both reconstruction and latent organization. The objective is a bound under the model assumptions, not a guarantee of realistic or diverse samples.",
+    "example": "For a diagonal Gaussian encoder, the network can output a mean and scale. Sampling can be expressed as mean plus scale times a standard-normal noise vector, allowing gradients through the mean and scale. After training, drawing a latent from the prior and decoding it produces a generated example. This differs from merely encoding and reconstructing a supplied input.",
+    "pitfall": "An expressive decoder may ignore latent information, a failure often called posterior collapse. Changing the weight of the divergence term changes the objective and tradeoff; it should be documented rather than presented as the same likelihood model. Attractive latent interpolations are demonstrations, not comprehensive evaluations.",
+    "exercise": "Inspect reconstruction, latent usage, and unconditional samples separately on held-out data. Compare against a simpler generative baseline and check for memorization. If a latent dimension is meant to represent a semantic factor, test that claim with controlled examples instead of inferring it from a few selected visualizations.",
+    "references": [
+      {
+        "label": "Auto-Encoding Variational Bayes",
+        "url": "https://arxiv.org/abs/1312.6114"
+      }
+    ],
+    "answer": "Report reconstruction-related likelihood, the divergence term, and total objective separately under the documented reductions and weights. Inspect latent usage and samples drawn from the prior, not just reconstructions of chosen inputs. Small KL terms can motivate a posterior-collapse investigation but are not sufficient evidence alone. Compare nearest training examples to generated samples as a memorization diagnostic and test proposed semantic factors with controlled examples. No sample panel by itself establishes distributional coverage or disentangled latent factors."
+  },
+  {
+    "slug": "ml-generative-adversarial-networks",
+    "title": "GANs Learn Through a Moving Opponent",
+    "description": "Separate sample realism, diversity, and training stability.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Generative models",
+      "Optimization"
+    ],
+    "concept": "A generative adversarial network pairs a generator with a discriminator or critic. The generator produces examples, while the opponent learns to distinguish or score generated and real observations according to a chosen objective. Both change during training, so optimization is a coupled process rather than minimization of one fixed supervised loss. Convincing individual samples are only one goal. Coverage of the data distribution, stability, and avoidance of memorization also matter.",
+    "example": "Imagine a dataset containing several styles of handwritten symbols. A generator that produces one style extremely well may fool some visual inspection while omitting other styles entirely. This illustrates mode collapse: apparent quality of selected samples does not reveal whether the generator covers the variety in the target population. Evaluation should sample broadly and inspect missing categories, not only the most attractive outputs.",
+    "pitfall": "A discriminator loss near an expected equilibrium value is not by itself proof of successful training. It can also reflect limited discriminator capacity or other failures. Metrics based on a separate embedding model inherit that model's biases and may miss domain-specific errors.",
+    "exercise": "Create a fixed, randomly drawn sample panel at several checkpoints, preserving failures rather than curating them away. Track diversity and nearest training neighbors alongside a quality metric. Explain which properties the metric can assess and which need domain judgments, especially when generated data will support another model's evaluation.",
+    "references": [
+      {
+        "label": "Generative Adversarial Nets",
+        "url": "https://arxiv.org/abs/1406.2661"
+      }
+    ],
+    "answer": "Use the same preselected latent inputs for checkpoint diagnostics, and separately draw a representative evaluation sample without discarding failures. Record class/style coverage, repeated outputs, and nearest training neighbors alongside a domain-appropriate quality measure. A model producing only one symbol style fails the coverage question even if those samples look convincing. Nearest-neighbor similarity is a diagnostic, not proof of memorization or its absence. Discriminator loss and selected attractive samples cannot replace the broader quality and diversity evaluation."
+  },
+  {
+    "slug": "ml-diffusion-models",
+    "title": "Diffusion Models Learn to Reverse Structured Corruption",
+    "description": "Connect the forward noise process to iterative generation.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Generative models",
+      "Vision"
+    ],
+    "concept": "A diffusion model is trained around a process that progressively corrupts data with noise and a learned procedure for reversing that corruption. In common formulations, the network predicts noise or an equivalent target at a sampled noise level. Generation starts from noise and follows a sequence of learned denoising updates. The noise schedule, parameterization, and sampler affect behavior and cost. A model's generation process is not equivalent to retrieving one training image, although memorization remains an evaluation concern.",
+    "example": "At an early corruption level, a noisy image still reveals much of its structure; at a high level, little of the original is visible. Training across levels teaches different denoising problems. During generation, successive updates build structure from an initially uninformative sample. Fewer sampling steps may reduce latency, but their effect on quality depends on the sampler and model rather than a universal rule.",
+    "pitfall": "A visually plausible output can still contain incorrect geometry, text, or domain constraints. Conditioning can improve relevance without guaranteeing faithfulness. Comparing systems with different sample-selection policies or compute budgets makes quality claims difficult to interpret.",
+    "exercise": "Fix prompts or conditioning inputs and random seeds for a diagnostic comparison of two sampling budgets. Save all generated outputs, latency, and failure annotations. Use this as a controlled local comparison, then evaluate on a broader independently selected set before claiming a general quality improvement.",
+    "references": [
+      {
+        "label": "Denoising Diffusion Probabilistic Models",
+        "url": "https://arxiv.org/abs/2006.11239"
+      }
+    ],
+    "answer": "Hold model, conditioning, sampler family, and initial noise fixed where supported while changing the step budget; document any coupling between the sampler and schedule. Save every output, timing method, and failure annotation. Shared seeds reduce some variation but do not make different samplers traverse identical states. Evaluate geometry, text, condition adherence, and diversity as appropriate. A faster diagnostic run with selected prompts supports only that local comparison; a general quality claim needs a separately chosen, broader evaluation set."
+  },
+  {
+    "slug": "ml-contrastive-learning",
+    "title": "Contrastive Learning Depends on What Counts as the Same",
+    "description": "Choose positive pairs and augmentations according to the information you want to retain.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Representations",
+      "Self-supervision"
+    ],
+    "concept": "Contrastive learning shapes representations by bringing designated positive pairs closer while contrasting them with other examples, depending on the objective. Positive pairs often come from two augmentations of one observation. The design encodes an invariance: changes produced by those augmentations should not substantially alter the representation. That can reduce reliance on nuisance variation, but it can also erase information required by a downstream task. The pair construction is therefore part of the scientific hypothesis.",
+    "example": "For object recognition, two crops of the same image can be useful positives if both retain the object. For reading a gauge, a crop that removes the needle may discard the target information. Treating those views as equivalent would encourage the representation to ignore the very detail needed for the task. The same augmentation can be helpful in one domain and harmful in another.",
+    "pitfall": "Examples treated as negatives may actually share the same semantic category, creating false negatives. Large batch size and augmentation changes can also affect comparisons, so an improvement cannot automatically be attributed to one loss term without controls.",
+    "exercise": "Design two augmentation policies and state which information each should preserve. Evaluate frozen representations using the same simple probe and split. Add a stress test where the supposedly irrelevant transformation changes the actual label; this reveals whether the learned invariance is too broad for the intended application.",
+    "references": [
+      {
+        "label": "A Simple Framework for Contrastive Learning of Visual Representations",
+        "url": "https://arxiv.org/abs/2002.05709"
+      }
+    ],
+    "answer": "A defensible object-recognition policy preserves enough of the object in both views; a gauge-reading policy must preserve the needle and scale. Evaluate both representations with the same frozen-encoder probe, training labels, and held-out split. If the stress transformation changes the true label, it is not a valid label-preserving augmentation for that task. Good invariance on ordinary views cannot justify erasing that information. Match batch size, compute, and negative-pair construction so an apparent gain is not automatically attributed to the augmentation alone."
+  },
+  {
+    "slug": "ml-embedding-visualization",
+    "title": "A Two-Dimensional Embedding Plot Is a Hypothesis Generator",
+    "description": "Avoid turning a compelling scatter plot into unsupported evidence.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Representations",
+      "Visualization"
+    ],
+    "concept": "Dimensionality-reduction visualizations compress relationships from a high-dimensional representation into two or three coordinates. Different methods preserve different aspects of geometry, and parameter choices can change the visible arrangement. Nearby points may suggest useful examples to inspect, but empty space, cluster size, and distances between separated groups can be misleading. The plot is an exploratory view of a transformation, not a direct map of all relationships in the original representation.",
+    "example": "A collection of document embeddings might form three apparent islands after a nonlinear projection. Those islands could correspond to topics, document length, source formatting, or optimization artifacts. Coloring the same plot by source and by length can expose competing explanations. Checking nearest neighbors in the original space provides additional evidence that does not depend entirely on the two-dimensional layout.",
+    "pitfall": "Trying many settings and publishing only the most separated plot introduces selection bias. If labels influenced the visualization choices, the image is not an independent test of label structure. A visibly separated training plot also says little about unseen examples.",
+    "exercise": "Record the projection method, parameters, seed, and input preprocessing. Compare multiple reasonable settings and include an original-space diagnostic such as neighbor consistency or held-out probe performance. Use the plot to formulate a testable question, then answer that question with an evaluation designed for it.",
+    "references": [
+      {
+        "label": "scikit-learn: Manifold Learning and t-SNE",
+        "url": "https://scikit-learn.org/stable/modules/manifold.html#t-distributed-stochastic-neighbor-embedding-t-sne"
+      }
+    ],
+    "answer": "Save the input embedding version, normalization, projection settings, and random seed, and show several justified settings rather than the best-looking plot. If islands align with publisher but not topic, test that source-style hypothesis with original-space neighbors or a held-out source-separated probe. Nonlinear layout distances between islands do not directly measure original-space separation. A useful conclusion states which independent diagnostic supports the interpretation and which structures remain only exploratory visual patterns; labels used to choose settings cannot then serve as independent confirmation."
+  },
+  {
+    "slug": "ml-whitening",
+    "title": "Whitening Changes the Geometry of a Representation",
+    "description": "Calculate variance normalization in PCA coordinates and recognize the risk of amplifying weak directions.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Representations",
+      "PCA",
+      "Whitening"
+    ],
+    "concept": "PCA rotates centered data into orthogonal directions ordered by variance. Whitening additionally rescales those coordinates so retained directions have unit variance under the fitted covariance convention. If a component has eigenvalue λ, its centered coordinate is divided by sqrt(λ). This removes relative variance information and changes distances. Whitening can be useful for a downstream method that benefits from this geometry, but it is a separate choice from dimensionality reduction and should be validated as part of the pipeline.",
+    "example": "Consider hypothetical PCA coordinates with variances nine and one. A point at (3, 1) becomes (1, 1) after whitening, so both coordinates contribute equally to its squared distance from the origin. Before whitening, the first coordinate contributed nine times as much. A direction with variance 0.0001 would instead be multiplied by 100, potentially making small measurement noise influential.",
+    "pitfall": "Unit variance is not independence except under special distributional assumptions, such as an appropriate jointly Gaussian model. Whitening near-zero eigenvalues can be unstable; truncation or regularization changes the transformation. Fit the mean, directions, and scales only on training data, then reuse them for validation and serving.",
+    "exercise": "For variances four and 0.25, whiten the coordinate (2, 1). Compare its squared distance from the origin before and after transformation. Explain why the transformed point does not prove the second feature became more informative about the target.",
+    "answer": "The square-root scales are two and 0.5, so the transformed coordinate is (1, 2). Both squared distances happen to equal five, but the contributions swap from (4, 1) to (1, 4). This coincidence does not preserve distances generally. Rescaling changes geometry; label information must be evaluated separately.",
+    "references": [
+      {
+        "label": "scikit-learn: PCA and Whitening",
+        "url": "https://scikit-learn.org/stable/modules/decomposition.html#pca"
+      }
+    ]
+  },
+  {
+    "slug": "ml-approximate-neighbor-retrieval",
+    "title": "Approximate Retrieval Needs an Exact-Search Baseline",
+    "description": "Separate index recall from semantic relevance when accelerating embedding search.",
+    "level": "Intermediate",
+    "track": "Representations & generation",
+    "tags": [
+      "Embeddings",
+      "Retrieval",
+      "Nearest neighbors"
+    ],
+    "concept": "An exact nearest-neighbor search returns the highest-scoring items under a specified metric and fixed embeddings. An approximate index trades resources and latency for the possibility of missing some of those neighbors. Evaluate index recall against exact search on representative queries before attributing answer quality to the embedding model. This is a computational comparison: even perfect agreement with exact neighbors does not establish that the neighbors are relevant to a human question.",
+    "example": "For one hypothetical query, exact top-three IDs are A, B, C, while the approximate result is A, D, C. Recall@3 against the exact set is 2/3. If B and D are duplicate passages, answer quality may barely change; if B contains the only supporting evidence, the same numerical recall can matter greatly. Evaluate both index agreement and downstream evidence coverage.",
+    "pitfall": "Comparisons break when the exact and approximate systems use different normalization, metrics, filters, or document snapshots. Cosine similarity and inner product produce the same ranking for unit-normalized vectors, but not generally for arbitrary vectors. Ties also need a declared treatment so equivalent neighbors are not counted inconsistently.",
+    "exercise": "Given exact top-four IDs [a,b,c,d] and approximate IDs [a,c,e,f], compute recall@4. Then describe a benchmark that varies one index-search parameter and records latency, memory, and recall while keeping the corpus and query set fixed.",
+    "answer": "Two of the four exact neighbors are recovered, so recall@4 is 0.5. Use identical embeddings, metric, filtering, and tie policy; warm up consistently and retain per-query timings. Report a resource–recall tradeoff rather than one best number. Add a separate human- or task-labeled relevance check because exact neighbors are only a metric baseline.",
+    "references": [
+      {
+        "label": "Faiss: Index Types and Exact Search",
+        "url": "https://github.com/facebookresearch/faiss/wiki/Faiss-indexes"
+      }
+    ]
+  }
+]

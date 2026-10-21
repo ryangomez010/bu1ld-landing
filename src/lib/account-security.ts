@@ -1,5 +1,7 @@
 import { isSensitiveAction, sanitizeText } from "@/lib/security";
 import { getSupabase } from "@/lib/supabase";
+import { finalizeAccountDeletion, type AccountDeletionResult } from "@/lib/account-deletion-client";
+import { resolveBearerServiceEndpoint } from "@/lib/service-endpoint";
 
 export type SecurityEvent = {
   id: string;
@@ -77,39 +79,37 @@ export async function fetchAdminSecurityEvents(limit = 100): Promise<SecurityEve
   return data as SecurityEvent[];
 }
 
-export async function requestAccountDeletion(userId: string): Promise<{ error: string | null }> {
+export async function requestAccountDeletion(userId: string): Promise<AccountDeletionResult> {
   const supabase = getSupabase();
-  if (!supabase) return { error: "Account security is temporarily unavailable." };
+  if (!supabase)
+    return { error: "Account security is temporarily unavailable.", status: "not_started" };
+  const configured =
+    import.meta.env.VITE_ACCOUNT_DELETION_ENDPOINT?.trim() || "/api/account-deletion";
+  const endpoint = resolveBearerServiceEndpoint(
+    configured,
+    import.meta.env.PROD,
+    typeof window === "undefined" ? undefined : window.location.origin,
+  );
 
-  const { error } = await supabase.rpc("request_account_deletion");
-  if (error) return { error: error.message };
-
-  const { data: sessionData } = await supabase.auth.getSession();
-  const token = sessionData.session?.access_token;
-  const endpoint =
-    import.meta.env.VITE_ACCOUNT_DELETION_ENDPOINT?.trim() ||
-    (typeof window !== "undefined" ? `${window.location.origin}/api/account-deletion` : null);
-
-  if (token && endpoint) {
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!res.ok) {
-        console.warn("[account-deletion] auth user removal failed:", await res.text());
-      }
-    } catch (e) {
-      console.warn("[account-deletion] finalize request failed:", e);
+  if (!endpoint)
+    return { error: "Account deletion is temporarily unavailable.", status: "not_started" };
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session?.access_token || data.session.user.id !== userId) {
+      return { error: "Sign in again before deleting your account.", status: "not_started" };
     }
+    const result = await finalizeAccountDeletion(endpoint, data.session.access_token);
+    if (result.status !== "complete") return result;
+    // Auth deletion is already confirmed. Local cleanup failure cannot undo it.
+    try {
+      await supabase.auth.signOut({ scope: "local" });
+    } catch {
+      /* best effort */
+    }
+    return result;
+  } catch {
+    return { error: "Your session could not be checked. Please try again.", status: "not_started" };
   }
-
-  await supabase.auth.signOut({ scope: "global" });
-  await logSecurityEvent(userId, "account_deletion_completed");
-  return { error: null };
 }
 
 export type SignInSession = {

@@ -4,9 +4,8 @@ import { SectionHeader } from "@/components/member/SectionHeader";
 import type { AttentionItem } from "@/lib/attention";
 
 export function TodayFocus({ items }: { items: AttentionItem[] }) {
-  const top = items.filter((i) => i.priority === "high").slice(0, 2);
-  const rest = items.filter((i) => i.priority !== "high").slice(0, 1);
-  const focus = [...top, ...rest].slice(0, 3);
+  const order = { high: 0, medium: 1, low: 2 };
+  const focus = [...items].sort((a, b) => order[a.priority] - order[b.priority]).slice(0, 3);
   if (!focus.length) return null;
 
   return (
@@ -23,9 +22,9 @@ export function TodayFocus({ items }: { items: AttentionItem[] }) {
           <li key={item.id}>
             <Link
               to={item.href}
-              className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-bone/[0.04] transition-colors duration-300"
+              className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 hover:bg-bone/[0.04] transition-colors duration-300"
             >
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1 basis-48">
                 <p className="text-sm text-bone">{item.title}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">{item.body}</p>
               </div>

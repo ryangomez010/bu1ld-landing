@@ -38,7 +38,7 @@ export type InstitutionProgram = {
   /** Schedule framing (dates may be TBA until a live cycle is published). */
   timeline: string;
   /** Honest operating status for visitors. */
-  status: "open" | "rolling" | "upcoming" | "closed";
+  status: "open" | "rolling" | "upcoming" | "closed" | "interest-only";
   outcomes: string[];
   whoFor: string;
   /** Member-portal or competitions destination after auth. */
@@ -59,8 +59,62 @@ export type InstitutionPartner = {
   name: string;
   kind: "academic" | "industry" | "community" | "infrastructure";
   summary: string;
-  status: "active" | "exploring";
+  status: "active" | "reported" | "mixed" | "exploring";
 };
+
+/**
+ * Organization-supplied institutional snapshot. Scale and relationship claims
+ * stay visibly qualified until a matching record is verified in the public
+ * evidence register.
+ */
+export const INSTITUTION_OVERVIEW = {
+  label: "Organization-reported snapshot",
+  summary:
+    "The Bu1LD is a global AI research and engineering community bringing researchers, engineers, and builders together around work that can be inspected, tested, and carried forward.",
+  metrics: [
+    { value: "5,500+", label: "community members", provenance: "organization reported" },
+    { value: "1,000+", label: "active researchers", provenance: "organization reported" },
+    { value: "Dozens", label: "research initiatives", provenance: "portfolio wide" },
+  ],
+  researchDomains: [
+    "Machine learning",
+    "Scientific computing",
+    "Neural architectures",
+    "Computational physics",
+    "AI infrastructure",
+  ],
+  contributorInstitutions: ["Stanford", "MIT", "NYU"],
+  activeInitiatives: [
+    "APEN",
+    "META-APEN",
+    "NeuroGenesis",
+    "LAM-JEPA",
+    "Space-JEPA",
+    "FIM",
+    "Olympus",
+    "NeuroCAD",
+    "NGMT",
+    "QFIM",
+    "ATG",
+  ],
+  supportOrganizations: ["Microsoft", "Lambda", "Neon", "NVIDIA startup ecosystem"],
+  collaborationNetwork: ["Microsoft", "Lambda", "Neon", "NVIDIA Inception", "NSRI", "Syntica"],
+  internationalInitiatives: ["Gulf AI Research Collective"],
+  ongoingWork: [
+    "Researcher recruitment and contributor matching",
+    "Technical evaluations and experimental validation",
+    "Conference submissions and open-source engineering",
+    "Large-scale research competitions",
+  ],
+  currentPriorities: [
+    "Resolve outstanding GitHub changes",
+    "Stabilize research and product infrastructure",
+    "Validate experimental findings against fixed protocols and fair baselines",
+    "Convert contributor assignments into reviewable, published research",
+  ],
+  qualification:
+    "Community scale, contributor institutions, support, and collaboration relationships are supplied by The Bu1LD. Contributor affiliation does not imply university endorsement. Relationship status ranges from established support to exploratory discussion, while project outcomes and individual claims remain subject to the public evidence register.",
+} as const;
 
 export const LABS: InstitutionLab[] = [
   {
@@ -245,15 +299,16 @@ export const INSTITUTION_PROGRAMS: InstitutionProgram[] = [
     slug: "ai-builder-cohort",
     name: "AI Builder Cohort",
     kind: "cohort",
-    duration: "12 weeks, rolling admission",
-    selectivity: "Open application with capacity limits per wave",
+    duration: "12-week format; next dates unconfirmed",
+    selectivity: "A new intake requires confirmed reviewer capacity",
     summary:
       "A project-driven cohort that turns a scoped technical question into a reproducible prototype, clear documentation, and a final demo.",
     objective:
       "Ship a scoped prototype with weekly demos, peer review, and a final demo-day artifact.",
     commitment: "6–10 hours per week plus demo day at the end of the wave.",
-    timeline: "12-week waves. Admission rolls until the wave is full.",
-    status: "rolling",
+    timeline:
+      "The historical Q2 2026 wave has ended. No successor dates or rolling intake are confirmed.",
+    status: "interest-only",
     outcomes: ["Weekly shipping cadence", "Peer review of demos", "Final demo day artifact"],
     whoFor:
       "Engineers, researchers, and students who want structured practice shipping ML systems.",
@@ -307,17 +362,31 @@ export const COMPETITIONS: InstitutionCompetition[] = [
 
 export const PARTNERSHIPS: InstitutionPartner[] = [
   {
-    name: "Academic collaborators",
+    name: "Infrastructure and ecosystem support",
+    kind: "infrastructure",
+    summary:
+      "The organization reports support from Microsoft, Lambda, Neon, and NVIDIA's startup ecosystem. Scope, duration, and current availability vary by relationship.",
+    status: "reported",
+  },
+  {
+    name: "Research and industry collaboration network",
+    kind: "industry",
+    summary:
+      "The reported network includes Microsoft, Lambda, Neon, NVIDIA Inception, NSRI, and Syntica. Individual relationships range from established support to exploratory discussions.",
+    status: "mixed",
+  },
+  {
+    name: "University research outreach",
     kind: "academic",
     summary:
-      "Co-advised research threads targeting strong venue submissions and clean open-source reference code. Selective — apply through the fellowship track.",
+      "Contributors report ties to Stanford, MIT, and NYU, alongside outreach to Stanford and other universities. Contributor affiliation does not imply institutional endorsement or a formal university partnership.",
     status: "exploring",
   },
   {
-    name: "Infrastructure partners",
-    kind: "infrastructure",
+    name: "Gulf AI Research Collective",
+    kind: "community",
     summary:
-      "Compute, data, and tooling relationships that remove bottlenecks for member experiments — disclosed when active and material.",
+      "An international expansion initiative intended to connect regional researchers, engineering work, and future collaboration opportunities. Operating scope and launch milestones remain in development.",
     status: "exploring",
   },
   {

@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import type { SearchSchemaInput } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowRight, Check } from "lucide-react";
 
@@ -29,6 +30,12 @@ import type { Paper, Project } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/research/")({
+  validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
+    view: search.view === "paths" ? "paths" : undefined,
+  }),
+  beforeLoad: ({ search }) => {
+    if (search.view !== "paths") throw redirect({ to: "/research-atlas" });
+  },
   component: ResearchHubPage,
   head: () => ({
     meta: [{ title: "Research library — The Bu1ld" }],

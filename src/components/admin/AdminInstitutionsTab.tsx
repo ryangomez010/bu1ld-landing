@@ -3,6 +3,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { reviewCompetitionSubmission, type CompetitionSubmission } from "@/lib/competitions";
+import { safeHref } from "@/lib/urls";
 
 type Props = {
   submissions: (CompetitionSubmission & { competition_title?: string })[];
@@ -38,51 +39,54 @@ export function AdminInstitutionsTab({ submissions, onReload }: Props) {
         </p>
       ) : (
         <ul className="space-y-3">
-          {submissions.map((row) => (
-            <li key={row.id} className="rounded-sm border border-border/50 bg-bone/[0.02] p-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-accent-blue">
-                  {row.competition_title ?? row.competition_id.slice(0, 8)}
-                </span>
-                <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
-                  {row.status}
-                </span>
-              </div>
-              <p className="mt-2 font-display text-lg text-bone">{row.title}</p>
-              <p className="mt-2 text-sm text-muted-foreground">{row.summary}</p>
-              {row.evidence_url ? (
-                <a
-                  href={row.evidence_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-block text-sm text-accent-blue hover:text-bone"
-                >
-                  Evidence →
-                </a>
-              ) : null}
-              {row.status === "submitted" ? (
-                <div className="mt-4 flex gap-2">
-                  <Button
-                    size="sm"
-                    disabled={busyId === row.id}
-                    onClick={() => void review(row.id, "accepted")}
-                    className="font-mono text-[9px] uppercase"
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={busyId === row.id}
-                    onClick={() => void review(row.id, "rejected")}
-                    className="font-mono text-[9px] uppercase"
-                  >
-                    Reject
-                  </Button>
+          {submissions.map((row) => {
+            const evidenceHref = safeHref(row.evidence_url);
+            return (
+              <li key={row.id} className="rounded-sm border border-border/50 bg-bone/[0.02] p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-accent-blue">
+                    {row.competition_title ?? row.competition_id.slice(0, 8)}
+                  </span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+                    {row.status}
+                  </span>
                 </div>
-              ) : null}
-            </li>
-          ))}
+                <p className="mt-2 font-display text-lg text-bone">{row.title}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{row.summary}</p>
+                {evidenceHref ? (
+                  <a
+                    href={evidenceHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-block text-sm text-accent-blue hover:text-bone"
+                  >
+                    Evidence →
+                  </a>
+                ) : null}
+                {row.status === "submitted" ? (
+                  <div className="mt-4 flex gap-2">
+                    <Button
+                      size="sm"
+                      disabled={busyId === row.id}
+                      onClick={() => void review(row.id, "accepted")}
+                      className="font-mono text-[9px] uppercase"
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={busyId === row.id}
+                      onClick={() => void review(row.id, "rejected")}
+                      className="font-mono text-[9px] uppercase"
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

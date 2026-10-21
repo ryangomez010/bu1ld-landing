@@ -12,13 +12,16 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
     .from("profiles")
     .select("*")
     .eq("id", userId)
+    .abortSignal(AbortSignal.timeout(8000))
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
-  const { data: roleRows } = await supabase
+  const { data: roleRows, error: rolesError } = await supabase
     .from("member_roles")
     .select("role")
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .abortSignal(AbortSignal.timeout(8000));
+  if (rolesError) throw rolesError;
   return {
     ...data,
     role: (data as Profile).role ?? "member",
@@ -31,7 +34,14 @@ export async function upsertProfile(userId: string, patch: Partial<Profile>): Pr
   if (!supabase) throw new Error("Profile updates are temporarily unavailable.");
 
   // Never allow client-side role changes — RLS trigger also enforces this.
-  const { role: _role, id: _id, created_at: _ca, updated_at: _ua, ...raw } = patch;
+  const {
+    role: _role,
+    institutional_roles: _roles,
+    id: _id,
+    created_at: _ca,
+    updated_at: _ua,
+    ...raw
+  } = patch;
 
   const safe: Partial<Profile> = { ...raw };
   if (safe.full_name != null) safe.full_name = clampText(safe.full_name, LIMITS.profileName);
@@ -113,11 +123,11 @@ export async function completeOnboarding(userId: string, data: OnboardingData): 
     onboarding_completed: true,
   });
 
-  await createNotification(userId, {
+  void createNotification(userId, {
     title: "Welcome to The Bu1ld",
     body: "Your profile is live in the member directory. Browse open projects, start a reading path, or save a paper review to revisit later.",
     href: "/dashboard",
-  });
+  }).catch((error) => console.error("[onboarding] welcome notification failed", error));
 
   return profile;
 }

@@ -9,6 +9,7 @@ import {
   jsonResponse,
   LIMITS,
   sanitizeEmailHtml,
+  secretsMatch,
 } from "@/lib/security";
 import { parseEmailRequestInput } from "@/lib/validation";
 
@@ -60,7 +61,7 @@ async function resolveEmailAuth(request: Request, env: EmailEnv): Promise<EmailA
   const auth = request.headers.get("authorization");
   const bearer = auth?.startsWith("Bearer ") ? auth.slice("Bearer ".length).trim() : "";
 
-  if (secret && bearer === secret) {
+  if (secret && secretsMatch(bearer, secret)) {
     return { mode: "secret" };
   }
 
@@ -68,17 +69,22 @@ async function resolveEmailAuth(request: Request, env: EmailEnv): Promise<EmailA
     const supabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
     const apiKey = env.VITE_SUPABASE_ANON_KEY;
     if (supabaseUrl && apiKey && isTrustedSupabaseUrl(supabaseUrl)) {
-      const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
-        headers: {
-          Authorization: `Bearer ${bearer}`,
-          apikey: apiKey,
-        },
-      });
-      if (userRes.ok) {
-        const user = (await userRes.json()) as { id?: string; email?: string };
-        if (user.id && user.email) {
-          return { mode: "session", userId: user.id, email: user.email.trim() };
+      try {
+        const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
+          headers: {
+            Authorization: `Bearer ${bearer}`,
+            apikey: apiKey,
+          },
+          signal: AbortSignal.timeout(8_000),
+        });
+        if (userRes.ok) {
+          const user = (await userRes.json()) as { id?: string; email?: string };
+          if (user.id && user.email) {
+            return { mode: "session", userId: user.id, email: user.email.trim() };
+          }
         }
+      } catch {
+        return jsonResponse({ error: "Session could not be verified" }, 502);
       }
     }
   }
@@ -215,12 +221,18 @@ export async function handleEmailRequest(request: Request, env: EmailEnv): Promi
       if (!isTrustedSupabaseUrl(supabaseUrl)) {
         return jsonResponse({ error: "Invalid Supabase configuration" }, 503);
       }
-      const userRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${body.userId}`, {
-        headers: {
-          Authorization: `Bearer ${serviceKey}`,
-          apikey: serviceKey,
-        },
-      });
+      let userRes: Response;
+      try {
+        userRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${body.userId}`, {
+          headers: {
+            Authorization: `Bearer ${serviceKey}`,
+            apikey: serviceKey,
+          },
+          signal: AbortSignal.timeout(8_000),
+        });
+      } catch {
+        return jsonResponse({ error: "Cannot resolve user email" }, 502);
+      }
       if (!userRes.ok) {
         return jsonResponse({ error: "User not found" }, 404);
       }
@@ -234,18 +246,23 @@ export async function handleEmailRequest(request: Request, env: EmailEnv): Promi
   }
 
   const from = env.EMAIL_FROM ?? "The Bu1ld <hello@thebu1ld.com>";
-  const sendRes = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ from, to, subject, html }),
-  });
+  let sendRes: Response;
+  try {
+    sendRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from, to, subject, html }),
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch {
+    return jsonResponse({ error: "Email provider unavailable" }, 502);
+  }
 
   if (!sendRes.ok) {
-    const detail = await sendRes.text();
-    console.error("[email]", sendRes.status, detail);
+    console.error("[email] provider status", sendRes.status);
     return jsonResponse({ error: "Failed to send email" }, 502);
   }
 

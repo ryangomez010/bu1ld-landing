@@ -1,4 +1,10 @@
-import { readUserJson, writeUserJson, withLocalFallback, persistLocally } from "@/lib/storage";
+import {
+  readUserJson,
+  writeUserJson,
+  withLocalFallback,
+  isLocalPersistenceEnabled,
+  userStorageKey,
+} from "@/lib/storage";
 import { getSupabase } from "@/lib/supabase";
 import type { SavedItem, SavedItemType } from "@/lib/types";
 
@@ -49,8 +55,9 @@ export async function isSaved(
   itemType: SavedItemType,
   itemSlug: string,
 ): Promise<boolean> {
-  const items = await fetchSavedItems(userId);
-  return items.some((s) => s.item_type === itemType && s.item_slug === itemSlug);
+  const result = await loadSavedState(userId, itemType, itemSlug);
+  if (result.error) throw new Error(result.error);
+  return result.saved;
 }
 
 export async function toggleSaved(
@@ -59,48 +66,151 @@ export async function toggleSaved(
   itemSlug: string,
   itemTitle: string,
 ): Promise<boolean> {
-  const supabase = getSupabase();
-  const existing = await isSaved(userId, itemType, itemSlug);
+  const result = await toggleSavedWithReceipt(userId, itemType, itemSlug, itemTitle);
+  if (result.error) throw new Error(result.error);
+  return result.saved;
+}
 
-  if (existing) {
+export type SavedToggleReceipt = {
+  saved: boolean;
+  changed: boolean;
+  source: "synced" | "local" | "unavailable";
+  error: string | null;
+};
+
+export function loadSavedState(userId: string, itemType: SavedItemType, itemSlug: string) {
+  return changeSavedWithReceipt(userId, itemType, itemSlug, "", "read");
+}
+
+export function toggleSavedWithReceipt(
+  userId: string,
+  itemType: SavedItemType,
+  itemSlug: string,
+  itemTitle: string,
+  desiredSaved?: boolean,
+) {
+  return changeSavedWithReceipt(userId, itemType, itemSlug, itemTitle, desiredSaved);
+}
+
+/** Checked reads and writes share one storage boundary; no mutation after a failed read. */
+async function changeSavedWithReceipt(
+  userId: string,
+  itemType: SavedItemType,
+  itemSlug: string,
+  itemTitle: string,
+  desiredSaved?: boolean | "read",
+): Promise<SavedToggleReceipt> {
+  let existing = false;
+  try {
+    const supabase = getSupabase();
     if (supabase) {
-      await supabase
+      const columns = "id,user_id,item_type,item_slug";
+      const matches = (
+        row: { id?: unknown; user_id?: unknown; item_type?: unknown; item_slug?: unknown } | null,
+      ) =>
+        typeof row?.id === "string" &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(row.id) &&
+        row.user_id === userId &&
+        row.item_type === itemType &&
+        row.item_slug === itemSlug;
+      const before = await supabase
         .from("saved_items")
-        .delete()
+        .select(columns)
         .eq("user_id", userId)
         .eq("item_type", itemType)
-        .eq("item_slug", itemSlug);
-    } else {
-      persistLocally(() =>
-        writeLocal(
-          userId,
-          readLocal(userId).filter((s) => !(s.item_type === itemType && s.item_slug === itemSlug)),
-        ),
-      );
+        .eq("item_slug", itemSlug)
+        .maybeSingle();
+      if (before.error || (before.data !== null && !matches(before.data)))
+        throw new Error("Read not confirmed");
+      existing = before.data !== null;
+      if (desiredSaved === "read")
+        return { saved: existing, changed: false, source: "synced", error: null };
+      const nextSaved = desiredSaved ?? !existing;
+      if (nextSaved === existing)
+        return { saved: existing, changed: false, source: "synced", error: null };
+      if (!nextSaved) {
+        const { data, error } = await supabase
+          .from("saved_items")
+          .delete()
+          .eq("user_id", userId)
+          .eq("item_type", itemType)
+          .eq("item_slug", itemSlug)
+          .eq("id", before.data!.id)
+          .select(columns)
+          .single();
+        if (error || !matches(data) || data.id !== before.data!.id)
+          throw new Error("Delete not confirmed");
+      } else {
+        const { data, error } = await supabase
+          .from("saved_items")
+          .insert({
+            user_id: userId,
+            item_type: itemType,
+            item_slug: itemSlug,
+            item_title: itemTitle,
+          })
+          .select(columns)
+          .single();
+        if (error || !matches(data)) throw new Error("Save not confirmed");
+      }
+      return { saved: nextSaved, changed: true, source: "synced", error: null };
     }
-    return false;
+    if (!isLocalPersistenceEnabled() || typeof window === "undefined")
+      throw new Error("Storage unavailable");
+    const readChecked = (): SavedItem[] => {
+      const raw = localStorage.getItem(userStorageKey(STORAGE_BASE, userId));
+      const rows: unknown = raw === null ? [] : JSON.parse(raw);
+      if (
+        !Array.isArray(rows) ||
+        rows.some(
+          (row) =>
+            !row ||
+            typeof row !== "object" ||
+            row.user_id !== userId ||
+            typeof row.id !== "string" ||
+            typeof row.item_type !== "string" ||
+            typeof row.item_slug !== "string" ||
+            typeof row.item_title !== "string" ||
+            typeof row.created_at !== "string",
+        )
+      )
+        throw new Error("Local read not confirmed");
+      return rows as SavedItem[];
+    };
+    const items = readChecked();
+    existing = items.some((item) => item.item_type === itemType && item.item_slug === itemSlug);
+    if (desiredSaved === "read")
+      return { saved: existing, changed: false, source: "local", error: null };
+    const nextSaved = desiredSaved ?? !existing;
+    if (nextSaved === existing)
+      return { saved: existing, changed: false, source: "local", error: null };
+    const next = !nextSaved
+      ? items.filter((item) => !(item.item_type === itemType && item.item_slug === itemSlug))
+      : [
+          {
+            id: `local-s-${Date.now()}`,
+            user_id: userId,
+            item_type: itemType,
+            item_slug: itemSlug,
+            item_title: itemTitle,
+            created_at: new Date().toISOString(),
+          },
+          ...items,
+        ];
+    writeLocal(userId, next);
+    const stored = readChecked().some(
+      (item) => item.item_type === itemType && item.item_slug === itemSlug,
+    );
+    if (stored !== nextSaved) throw new Error("Storage write not confirmed");
+    return { saved: stored, changed: true, source: "local", error: null };
+  } catch {
+    return {
+      saved: existing,
+      changed: false,
+      source: "unavailable",
+      error: "Your saved list could not be confirmed. Please try again.",
+    };
   }
-
-  const item: SavedItem = {
-    id: `local-s-${Date.now()}`,
-    user_id: userId,
-    item_type: itemType,
-    item_slug: itemSlug,
-    item_title: itemTitle,
-    created_at: new Date().toISOString(),
-  };
-
-  if (supabase) {
-    await supabase.from("saved_items").insert({
-      user_id: userId,
-      item_type: itemType,
-      item_slug: itemSlug,
-      item_title: itemTitle,
-    });
-  } else {
-    persistLocally(() => writeLocal(userId, [item, ...readLocal(userId)]));
-  }
-  return true;
 }
 
 /** Remove multiple saved items at once (filtered list or selection). */
@@ -109,28 +219,10 @@ export async function bulkUnsaveSavedItems(
   items: Pick<SavedItem, "item_type" | "item_slug">[],
 ): Promise<{ error: string | null }> {
   if (items.length === 0) return { error: null };
-  const supabase = getSupabase();
-
-  if (supabase) {
-    for (const item of items) {
-      const { error } = await supabase
-        .from("saved_items")
-        .delete()
-        .eq("user_id", userId)
-        .eq("item_type", item.item_type)
-        .eq("item_slug", item.item_slug);
-      if (error) return { error: error.message };
-    }
-    return { error: null };
+  for (const item of items) {
+    const result = await toggleSavedWithReceipt(userId, item.item_type, item.item_slug, "", false);
+    if (result.error) return { error: result.error };
   }
-
-  persistLocally(() => {
-    const remove = new Set(items.map((i) => `${i.item_type}:${i.item_slug}`));
-    writeLocal(
-      userId,
-      readLocal(userId).filter((s) => !remove.has(`${s.item_type}:${s.item_slug}`)),
-    );
-  });
   return { error: null };
 }
 

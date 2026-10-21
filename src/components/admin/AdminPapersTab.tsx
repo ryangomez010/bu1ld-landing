@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AdminContentRow } from "@/components/admin/AdminContentRow";
+import { PaperEditorialPanel } from "@/components/admin/PaperEditorialPanel";
 import { AdminPaginationControls } from "@/components/admin/AdminPaginationControls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,13 +18,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { slugify } from "@/data/seed/content";
 import { useAuth } from "@/lib/auth";
 import { paginateItems } from "@/lib/admin-pagination";
-import { deleteContentRow, setContentPublished, updatePaperAdmin } from "@/lib/content";
+import { deleteContentRow, updatePaperAdmin } from "@/lib/content";
 import { getSupabase } from "@/lib/supabase";
 import type { Paper } from "@/lib/types";
 
 export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: () => void }) {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
+  const [editorialId, setEditorialId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState("");
   const [review, setReview] = useState("");
@@ -92,15 +94,6 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
     onSaved();
   };
 
-  const togglePublish = async (p: Paper) => {
-    const { error } = await setContentPublished("papers", p.id, !p.published, user?.id);
-    if (error) toast.error(error);
-    else {
-      toast.success(p.published ? "Unpublished." : "Published.");
-      onSaved();
-    }
-  };
-
   const onDelete = async (p: Paper) => {
     const { error } = await deleteContentRow("papers", p.id, user?.id);
     if (error) toast.error(error);
@@ -114,6 +107,11 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
     <div className="grid lg:grid-cols-2 gap-10">
       <form onSubmit={onSubmit} className="space-y-4 rounded-sm border border-border/60 p-6">
         <h2 className="font-display text-lg text-bone">New paper review</h2>
+        <p className="text-sm text-muted-foreground">
+          Draft 700–1200 words in eight headed sections: research question, contribution, method,
+          experiments, results, analysis, reproducibility and reading guide. Record sources and
+          human approval in the editorial workflow after saving.
+        </p>
         <div className="space-y-2">
           <Label>Title</Label>
           <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -276,15 +274,26 @@ export function AdminPapersTab({ papers, onSaved }: { papers: Paper[]; onSaved: 
                 }).then(({ error }) => {
                   if (error) toast.error(error);
                   else {
-                    toast.success("Paper updated.");
+                    toast.success(
+                      "Paper updated. Material changes require a new source check and approval.",
+                    );
                     setEditingId(null);
                     onSaved();
                   }
                 });
               }}
-              onTogglePublish={() => void togglePublish(p)}
+              publicationLabel="editorial workflow"
+              onTogglePublish={() => setEditorialId((current) => (current === p.id ? null : p.id))}
               onDelete={() => void onDelete(p)}
-            />
+            >
+              {editorialId === p.id && (
+                <PaperEditorialPanel
+                  key={`${p.id}:${p.updated_at}`}
+                  paperId={p.id}
+                  onSaved={onSaved}
+                />
+              )}
+            </AdminContentRow>
           ))}
         </ul>
         <AdminPaginationControls

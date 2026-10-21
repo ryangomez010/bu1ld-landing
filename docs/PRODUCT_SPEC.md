@@ -47,25 +47,26 @@ Organized per mission brief. Code term: **lab**.
 | MEM-06 | Search portal             | `/search/`                            | **Real** — RPC + client index       |
 | MEM-07 | Notifications             | `/notifications/`                     | **Real** — notifications table      |
 | MEM-08 | Saved items / collections | `/saved/*`                            | **Real** — saved_collections        |
+| MEM-09 | Unified member work log   | `/workspace`                          | **Real** — memberships + evidence   |
 
 ### Projects and applications
 
-| ID     | Feature                  | Implementation                       | Verdict                                      |
-| ------ | ------------------------ | ------------------------------------ | -------------------------------------------- |
-| PRJ-01 | Project pages            | `/projects/$slug`                    | **Real** — Supabase                          |
-| PRJ-02 | Open roles on projects   | project fields + apply UI            | **Real**                                     |
-| PRJ-03 | Contributor applications | `project_applications`               | **Real**                                     |
-| PRJ-04 | Applicant tracking       | `/applications/`                     | **Real**                                     |
-| PRJ-05 | Lead review queue        | `/projects/manage/$slug`             | **Real** — review RPC                        |
-| PRJ-06 | Milestones               | `project_milestones`                 | **Real**                                     |
-| PRJ-07 | Contributions + evidence | `project_contributions`              | **Real**                                     |
-| PRJ-08 | Repositories (links)     | evidence URLs, project links         | **Partial** — URLs not repo registry         |
-| PRJ-09 | Datasets                 | `project_datasets` + workspace UI    | **Real** — phase26 registry                   |
-| PRJ-10 | Demos                    | contribution evidence                | **Partial**                                  |
-| PRJ-11 | Verified outputs         | verification status on contributions | **Real**                                     |
-| PRJ-12 | Project archives         | closed filter + public detail/output | **Real** — read-only alumni presentation     |
-| PRJ-13 | Experiments              | `project_experiments` (phase25)      | **Partial** — tables exist, full UX deferred |
-| PRJ-14 | Deliverables             | `project_deliverables` (phase25)     | **Partial**                                  |
+| ID     | Feature                  | Implementation                       | Verdict                                  |
+| ------ | ------------------------ | ------------------------------------ | ---------------------------------------- |
+| PRJ-01 | Project pages            | `/projects/$slug`                    | **Real** — Supabase                      |
+| PRJ-02 | Open roles on projects   | project fields + apply UI            | **Real**                                 |
+| PRJ-03 | Contributor applications | `project_applications`               | **Real**                                 |
+| PRJ-04 | Applicant tracking       | `/applications/`                     | **Real**                                 |
+| PRJ-05 | Lead review queue        | `/projects/manage/$slug`             | **Real** — review RPC                    |
+| PRJ-06 | Milestones               | `project_milestones`                 | **Real**                                 |
+| PRJ-07 | Contributions + evidence | `project_contributions`              | **Real**                                 |
+| PRJ-08 | Repositories (links)     | evidence URLs, project links         | **Partial** — URLs not repo registry     |
+| PRJ-09 | Datasets                 | `project_datasets` + workspace UI    | **Real** — phase26 registry              |
+| PRJ-10 | Demos                    | contribution evidence                | **Partial**                              |
+| PRJ-11 | Verified outputs         | verification status on contributions | **Real**                                 |
+| PRJ-12 | Project archives         | closed filter + public detail/output | **Real** — read-only alumni presentation |
+| PRJ-13 | Experiments              | `project_experiments` + workspace UI | **Real** — phase25 + project workspace   |
+| PRJ-14 | Deliverables             | `project_deliverables` + review RPC  | **Real** — phase25 + project workspace   |
 
 ### Research library
 
@@ -121,14 +122,13 @@ Referenced via project evidence URLs and institutional content. No dedicated OSS
 | Area           | Status                                                          |
 | -------------- | --------------------------------------------------------------- |
 | Mobile layouts | **Partial** — MobileTabBar, responsive; not exhaustively tested |
-| Accessibility  | **Partial** — loading states, keyboard shortcuts dialog         |
+| Accessibility  | **Partial** — loading states, labels, keyboard shortcuts dialog |
 | SEO            | **Partial** — sitemap.xml; meta per route varies                |
-| Tests          | **Real** — 95 unit tests; no E2E                                |
+| Tests          | **Real** — unit/integration suite; browser E2E remains deferred |
 | Deployment     | **Partial** — Cloudflare CI; prod secrets owner-only            |
 
 ## Out of scope (Pass 1)
 
-- Experiment immutability model completion
 - Startup CRM
 - Public paper catalog on `/publications`
 - Analytics
@@ -137,4 +137,4 @@ Referenced via project evidence URLs and institutional content. No dedicated OSS
 
 - `release:prod` passes on staging
 - Role smoke tests green
-- Member can complete: signup → onboard → apply → lead accept → contribute → verify
+- Member can complete: signup → onboard → apply → lead accept → `/workspace` contribution → independent verification → evidence export

@@ -10,7 +10,7 @@ export function ResearchSection() {
   return (
     <SectionShell
       id="research"
-      eyebrow="03"
+      eyebrow="04"
       label="research themes"
       title="Questions worth doing carefully."
       subtitle="These are areas the platform is designed to support. A theme is not a claim that a staffed project is currently open; use the project directory for confirmed opportunities."
@@ -31,8 +31,8 @@ export function ResearchSection() {
                   <span className={`h-1.5 w-1.5 rounded-full ${dotColor(r.color)}`} />
                   thread / {r.id}
                 </span>
-                <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground">
-                  theme
+                <span className="max-w-[65%] text-right font-mono text-[9px] tracking-[0.18em] uppercase text-muted-foreground">
+                  {r.status}
                 </span>
               </div>
               <h3 className="font-display text-2xl md:text-[1.85rem] mt-8 text-bone leading-[1.1] tracking-tight relative">
@@ -59,8 +59,8 @@ export function ResearchSection() {
           return (
             <motion.div
               key={r.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={false}
+              whileInView={{ y: [8, 0] }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.7 }}
             >

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { RequireMember } from "@/components/auth/RequireAuth";
@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { getProgram } from "@/data/institution";
 import { useAuth } from "@/lib/auth";
+import { trackEvent } from "@/lib/analytics";
+import { applicationAnalyticsProps } from "@/lib/application-analytics";
 import {
   applyToProgram,
   fetchMyProgramApplication,
@@ -38,6 +40,7 @@ function ProgramDetail() {
   const [statement, setStatement] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const startedProgramId = useRef<string | null>(null);
 
   useEffect(() => {
     void fetchProgramBySlug(slug).then(async (item) => {
@@ -49,14 +52,20 @@ function ProgramDetail() {
 
   const onApply = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!program || !user) return;
+    if (!program || !user || submitting) return;
     setSubmitting(true);
-    const { error } = await applyToProgram(user.id, program.id, statement);
-    setSubmitting(false);
-    if (error) return toast.error(error);
-    const next = await fetchMyProgramApplication(user.id, program.id);
-    setApplication(next);
-    toast.success("Program application submitted.");
+    try {
+      const { error } = await applyToProgram(user.id, program.id, statement);
+      if (error) return toast.error(error);
+      toast.success("Program application submitted.");
+      const next = await fetchMyProgramApplication(user.id, program.id).catch(() => null);
+      if (next) setApplication(next);
+      else toast.error("Application submitted. Refresh this program to see its status.");
+    } catch {
+      toast.error("Your application could not be confirmed. Check its status before trying again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -218,7 +227,16 @@ function ProgramDetail() {
               ) : null}
             </>
           ) : applicationState === "open" ? (
-            <form onSubmit={onApply} className="space-y-3">
+            <form
+              onSubmit={onApply}
+              onFocusCapture={() => {
+                if (startedProgramId.current !== program.id) {
+                  startedProgramId.current = program.id;
+                  trackEvent("application_started", applicationAnalyticsProps("program"));
+                }
+              }}
+              className="space-y-3"
+            >
               <Label htmlFor="program-statement">
                 Why this program, and what will you produce?
               </Label>

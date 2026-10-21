@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 import { trackPageView } from "@/lib/analytics";
 import { AuthProvider } from "@/lib/auth";
 import { ORGANIZATION_STRUCTURED_DATA } from "@/lib/seo";
+import { serializeJsonForHtml } from "@/lib/security";
 import { initTheme } from "@/lib/theme";
 
 import appCss from "../styles.css?url";
@@ -51,7 +52,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
   console.error(error);
   const router = useRouter();
 
@@ -100,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "The Bu1ld is a machine-learning research and building platform for paper reviews, scoped projects, contribution records, confirmed events, and technical profiles.",
+          "The Bu1LD is a global AI research and engineering community for scoped projects, paper reviews, open-source work, contribution records, and evidence-bound research.",
       },
       { property: "og:title", content: "The Bu1ld" },
       {
@@ -122,6 +123,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "sitemap", type: "application/xml", href: "/sitemap.xml" },
+      {
+        rel: "alternate",
+        type: "application/json",
+        href: "/portfolio-manifest.json",
+        title: "BU1LD public portfolio manifest",
+      },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -143,7 +150,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <script src="/runtime-env.js" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_STRUCTURED_DATA) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonForHtml(ORGANIZATION_STRUCTURED_DATA) }}
         />
         <HeadContent />
       </head>

@@ -1,0 +1,596 @@
+{
+  "checked_at": "2026-10-11T13:29:39.581420+00:00",
+  "scope": "HTTP reachability and page titles; fragments checked where present. This is not independent expert review of every article.",
+  "article_files_sha256": {
+    "data.json": "c966746ac72bbb01195237e67fb13b2a38de781f8082e62bd592ecbd037ffeac",
+    "evaluation.json": "51943849b38caea918ff37bcd0a91c7800bf9575e839cf925fb09c78ad87aa67",
+    "foundations.json": "01ac9897a1ad53a3af5f1f211a30b3c1fa8237bb4f3aa95ba69e47ae6b281c32",
+    "language.json": "c3322506181f291d9f4920c5a3d4c0f9ed01bb02e1a8373acffb56219bfb7466",
+    "neural.json": "e58469081e0ae17e35d4b9f336dd0731a31b8fc30ae18a23e775315a4334cc3f",
+    "representations.json": "eed49856d3fb349241a9f83c7166fbd1b78c179a88a647cfe6f10b15b2c7730d",
+    "research.json": "8c7f9042b43e387298c5cb425f9a1fa6bda7829c3d88fb35c1d299b7a3c5155a",
+    "supervised.json": "dd85ca35bdf04faaab25ddea84f87aa3a2d67591fe0415acda799055e4c5a84f",
+    "systems.json": "347e780c1bd9476c19370ed169ffa348d31d31bd009dc43d1da28c7252accd60",
+    "vision.json": "e495fd7f444c3abd1092751064a369533b551de365b144079e2c4d70b8a88776"
+  },
+  "results": [
+    {
+      "url": "https://arxiv.org/abs/1312.6114",
+      "label": "Auto-Encoding Variational Bayes",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1312.6114",
+      "title": "[1312.6114] Auto-Encoding Variational Bayes"
+    },
+    {
+      "url": "https://arxiv.org/abs/1406.2661",
+      "label": "Generative Adversarial Nets",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1406.2661",
+      "title": "[1406.2661] Generative Adversarial Networks"
+    },
+    {
+      "url": "https://arxiv.org/abs/1508.07909",
+      "label": "Neural Machine Translation of Rare Words with Subword Units",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1508.07909",
+      "title": "[1508.07909] Neural Machine Translation of Rare Words with Subword Units"
+    },
+    {
+      "url": "https://arxiv.org/abs/1512.03385",
+      "label": "Deep Residual Learning for Image Recognition",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1512.03385",
+      "title": "[1512.03385] Deep Residual Learning for Image Recognition"
+    },
+    {
+      "url": "https://arxiv.org/abs/1607.06450",
+      "label": "Layer Normalization",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1607.06450",
+      "title": "[1607.06450] Layer Normalization"
+    },
+    {
+      "url": "https://arxiv.org/abs/1706.03762",
+      "label": "Attention Is All You Need",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1706.03762",
+      "title": "[1706.03762] Attention Is All You Need"
+    },
+    {
+      "url": "https://arxiv.org/abs/1707.05589",
+      "label": "On the State of the Art of Evaluation in Neural Language Models",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1707.05589",
+      "title": "[1707.05589] On the State of the Art of Evaluation in Neural Language Models"
+    },
+    {
+      "url": "https://arxiv.org/abs/1711.05101",
+      "label": "Decoupled Weight Decay Regularization",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1711.05101",
+      "title": "[1711.05101] Decoupled Weight Decay Regularization"
+    },
+    {
+      "url": "https://arxiv.org/abs/1711.10561",
+      "label": "Physics Informed Deep Learning (Part I): Data-driven Solutions of Nonlinear Partial Differential Equations",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1711.10561",
+      "title": "[1711.10561] Physics Informed Deep Learning (Part I): Data-driven Solutions of Nonlinear Partial Differential Equations"
+    },
+    {
+      "url": "https://arxiv.org/abs/1803.09010",
+      "label": "Datasheets for Datasets",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1803.09010",
+      "title": "[1803.09010] Datasheets for Datasets"
+    },
+    {
+      "url": "https://arxiv.org/abs/1810.03993",
+      "label": "Model Cards for Model Reporting",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1810.03993",
+      "title": "[1810.03993] Model Cards for Model Reporting"
+    },
+    {
+      "url": "https://arxiv.org/abs/1810.04805",
+      "label": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1810.04805",
+      "title": "[1810.04805] BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+    },
+    {
+      "url": "https://arxiv.org/abs/1901.04085",
+      "label": "Passage Re-ranking with BERT",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1901.04085",
+      "title": "[1901.04085] Passage Re-ranking with BERT"
+    },
+    {
+      "url": "https://arxiv.org/abs/1907.11692",
+      "label": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+      "status": 200,
+      "final": "https://arxiv.org/abs/1907.11692",
+      "title": "[1907.11692] RoBERTa: A Robustly Optimized BERT Pretraining Approach"
+    },
+    {
+      "url": "https://arxiv.org/abs/2002.05709",
+      "label": "A Simple Framework for Contrastive Learning of Visual Representations",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2002.05709",
+      "title": "[2002.05709] A Simple Framework for Contrastive Learning of Visual Representations"
+    },
+    {
+      "url": "https://arxiv.org/abs/2003.08505",
+      "label": "A Metric Learning Reality Check",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2003.08505",
+      "title": "[2003.08505] A Metric Learning Reality Check"
+    },
+    {
+      "url": "https://arxiv.org/abs/2004.07780",
+      "label": "Shortcut Learning in Deep Neural Networks",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2004.07780",
+      "title": "[2004.07780] Shortcut Learning in Deep Neural Networks"
+    },
+    {
+      "url": "https://arxiv.org/abs/2005.11401",
+      "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2005.11401",
+      "title": "[2005.11401] Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"
+    },
+    {
+      "url": "https://arxiv.org/abs/2006.11239",
+      "label": "Denoising Diffusion Probabilistic Models",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2006.11239",
+      "title": "[2006.11239] Denoising Diffusion Probabilistic Models"
+    },
+    {
+      "url": "https://arxiv.org/abs/2010.08895",
+      "label": "Fourier Neural Operator for Parametric Partial Differential Equations",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2010.08895",
+      "title": "[2010.08895] Fourier Neural Operator for Parametric Partial Differential Equations"
+    },
+    {
+      "url": "https://arxiv.org/abs/2010.11929",
+      "label": "An Image is Worth 16x16 Words",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2010.11929",
+      "title": "[2010.11929] An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"
+    },
+    {
+      "url": "https://arxiv.org/abs/2012.07421",
+      "label": "WILDS: A Benchmark of in-the-Wild Distribution Shifts",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2012.07421",
+      "title": "[2012.07421] WILDS: A Benchmark of in-the-Wild Distribution Shifts"
+    },
+    {
+      "url": "https://arxiv.org/abs/2103.00020",
+      "label": "Learning Transferable Visual Models From Natural Language Supervision",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2103.00020",
+      "title": "[2103.00020] Learning Transferable Visual Models From Natural Language Supervision"
+    },
+    {
+      "url": "https://arxiv.org/abs/2104.09864",
+      "label": "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2104.09864",
+      "title": "[2104.09864] RoFormer: Enhanced Transformer with Rotary Position Embedding"
+    },
+    {
+      "url": "https://arxiv.org/abs/2106.09685",
+      "label": "LoRA: Low-Rank Adaptation of Large Language Models",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2106.09685",
+      "title": "[2106.09685] LoRA: Low-Rank Adaptation of Large Language Models"
+    },
+    {
+      "url": "https://arxiv.org/abs/2107.07511",
+      "label": "A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2107.07511",
+      "title": "[2107.07511] A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification"
+    },
+    {
+      "url": "https://arxiv.org/abs/2305.14627",
+      "label": "Enabling Large Language Models to Generate Text with Citations",
+      "status": 200,
+      "final": "https://arxiv.org/abs/2305.14627",
+      "title": "[2305.14627] Enabling Large Language Models to Generate Text with Citations"
+    },
+    {
+      "url": "https://d2l.ai/chapter_computer-vision/bounding-box.html",
+      "label": "Dive into Deep Learning: Object Detection and Bounding Boxes",
+      "status": 200,
+      "final": "https://d2l.ai/chapter_computer-vision/bounding-box.html",
+      "title": "14.3. Object Detection and Bounding Boxes — Dive into Deep Learning 1.0.3 documentation"
+    },
+    {
+      "url": "https://d2l.ai/chapter_computer-vision/image-augmentation.html",
+      "label": "Dive into Deep Learning: Image Augmentation",
+      "status": 200,
+      "final": "https://d2l.ai/chapter_computer-vision/image-augmentation.html",
+      "title": "14.1. Image Augmentation — Dive into Deep Learning 1.0.3 documentation"
+    },
+    {
+      "url": "https://d2l.ai/chapter_computer-vision/semantic-segmentation-and-dataset.html",
+      "label": "Dive into Deep Learning: Semantic Segmentation and the Dataset",
+      "status": 200,
+      "final": "https://d2l.ai/chapter_computer-vision/semantic-segmentation-and-dataset.html",
+      "title": "14.9. Semantic Segmentation and the Dataset — Dive into Deep Learning 1.0.3 documentation"
+    },
+    {
+      "url": "https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html",
+      "label": "Dive into Deep Learning: Convolutions for Images",
+      "status": 200,
+      "final": "https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html",
+      "title": "7.2. Convolutions for Images — Dive into Deep Learning 1.0.3 documentation"
+    },
+    {
+      "url": "https://d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html",
+      "label": "Dive into Deep Learning: Padding and Stride",
+      "status": 200,
+      "final": "https://d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html",
+      "title": "7.3. Padding and Stride — Dive into Deep Learning 1.0.3 documentation"
+    },
+    {
+      "url": "https://docs.pytorch.org/docs/2.14/notes/amp_examples.html",
+      "label": "PyTorch: Automatic Mixed Precision Examples",
+      "status": 200,
+      "final": "https://docs.pytorch.org/docs/2.14/notes/amp_examples.html",
+      "title": "Automatic Mixed Precision examples — PyTorch 2.14 documentation"
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html",
+      "label": "PyTorch: Optimizing Model Parameters",
+      "status": 200,
+      "final": "https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html",
+      "title": "Optimizing Model Parameters — PyTorch Tutorials 2.14.0+cu130 documentation"
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html",
+      "label": "PyTorch: Saving and Loading Models",
+      "status": 200,
+      "final": "https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html",
+      "title": "Saving and Loading Models — PyTorch Tutorials 2.14.0+cu130 documentation"
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html",
+      "label": "PyTorch: Transfer Learning for Computer Vision",
+      "status": 200,
+      "final": "https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html",
+      "title": "Transfer Learning for Computer Vision Tutorial — PyTorch Tutorials 2.14.0+cu130 documentation"
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/recipes/recipes/amp_recipe.html",
+      "label": "PyTorch: Automatic Mixed Precision",
+      "status": 200,
+      "final": "https://docs.pytorch.org/tutorials/recipes/recipes/amp_recipe.html",
+      "title": "Automatic Mixed Precision — PyTorch Tutorials 2.14.0+cu130 documentation"
+    },
+    {
+      "url": "https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html",
+      "label": "PyTorch: Benchmark",
+      "status": 200,
+      "final": "https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html",
+      "title": "PyTorch Benchmark — PyTorch Tutorials 2.14.0+cu130 documentation"
+    },
+    {
+      "url": "https://huggingface.co/docs/transformers/en/cache_explanation",
+      "label": "Transformers: Caching",
+      "status": 200,
+      "final": "https://huggingface.co/docs/transformers/en/cache_explanation",
+      "title": "How caching works · Hugging Face"
+    },
+    {
+      "url": "https://huggingface.co/docs/transformers/en/quantization/overview",
+      "label": "Transformers: Quantization Overview",
+      "status": 200,
+      "final": "https://huggingface.co/docs/transformers/en/quantization/overview",
+      "title": "Overview · Hugging Face"
+    },
+    {
+      "url": "https://jmlr.org/papers/v15/srivastava14a.html",
+      "label": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+      "status": 200,
+      "final": "https://jmlr.org/papers/v15/srivastava14a.html",
+      "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting"
+    },
+    {
+      "url": "https://miguelhernan.org/whatifbook",
+      "label": "Causal Inference: What If",
+      "status": 200,
+      "final": "https://miguelhernan.org/whatifbook",
+      "title": "Causal Inference: What If (the book) — Miguel Hernán"
+    },
+    {
+      "url": "https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/",
+      "label": "The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction",
+      "status": 200,
+      "final": "https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/",
+      "title": "The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html",
+      "label": "scikit-learn: Nested versus Non-nested Cross-validation",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html",
+      "title": "Nested versus non-nested cross-validation — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "label": "scikit-learn: Common Pitfalls",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "title": "12. Common pitfalls and recommended practices — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/calibration.html",
+      "label": "scikit-learn: Probability Calibration",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/calibration.html",
+      "title": "1.16. Probability calibration — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/classification_threshold.html",
+      "label": "scikit-learn: Tuning the Decision Threshold",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/classification_threshold.html",
+      "title": "3.3. Tuning the decision threshold for class prediction — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/clustering.html#dbscan",
+      "label": "scikit-learn: DBSCAN",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/clustering.html#dbscan",
+      "title": "2.3. Clustering — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/clustering.html#k-means",
+      "label": "scikit-learn: K-means",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/clustering.html#k-means",
+      "title": "2.3. Clustering — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "label": "scikit-learn: Cross-validation",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "title": "3.1. Cross-validation: evaluating estimator performance — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/decomposition.html#pca",
+      "label": "scikit-learn: Principal Component Analysis",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/decomposition.html#pca",
+      "title": "2.5. Decomposing signals in components (matrix factorization problems) — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html#gradient-boosted-trees",
+      "label": "scikit-learn: Gradient-boosted Trees",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/ensemble.html#gradient-boosted-trees",
+      "title": "1.11. Ensembles: Gradient boosting, random forests, bagging, voting, stacking — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html#random-forests-and-other-randomized-tree-ensembles",
+      "label": "scikit-learn: Random Forests",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/ensemble.html#random-forests-and-other-randomized-tree-ensembles",
+      "title": "1.11. Ensembles: Gradient boosting, random forests, bagging, voting, stacking — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html",
+      "label": "scikit-learn: DummyClassifier",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html",
+      "title": "DummyClassifier — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/impute.html",
+      "label": "scikit-learn: Imputation of Missing Values",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/impute.html",
+      "title": "8.4. Imputation of missing values — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "label": "scikit-learn: Linear Models",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "title": "1.1. Linear Models — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html#lasso",
+      "label": "scikit-learn: Lasso",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/linear_model.html#lasso",
+      "title": "1.1. Linear Models — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression",
+      "label": "scikit-learn: Logistic Regression",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression",
+      "title": "1.1. Linear Models — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression-and-classification",
+      "label": "scikit-learn: Ridge Regression",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression-and-classification",
+      "title": "1.1. Linear Models — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/manifold.html#t-distributed-stochastic-neighbor-embedding-t-sne",
+      "label": "scikit-learn: Manifold Learning and t-SNE",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/manifold.html#t-distributed-stochastic-neighbor-embedding-t-sne",
+      "title": "2.2. Manifold learning — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/metrics.html",
+      "label": "scikit-learn: Pairwise Metrics, Affinities and Kernels",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/metrics.html",
+      "title": "8.8. Pairwise metrics, Affinities and Kernels — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/mixture.html",
+      "label": "scikit-learn: Gaussian Mixture Models",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/mixture.html",
+      "title": "2.1. Gaussian mixture models — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+      "label": "scikit-learn: Ranking and Classification Metrics",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+      "title": "3.4. Metrics and scoring: quantifying the quality of predictions — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics",
+      "label": "scikit-learn: Classification Metrics",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics",
+      "title": "3.4. Metrics and scoring: quantifying the quality of predictions — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics",
+      "label": "scikit-learn: Regression Metrics",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics",
+      "title": "3.4. Metrics and scoring: quantifying the quality of predictions — scikit-learn 1.9.1 documentation",
+      "fragment_found": true
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/naive_bayes.html",
+      "label": "scikit-learn: Naive Bayes",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/naive_bayes.html",
+      "title": "1.9. Naive Bayes — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/neighbors.html",
+      "label": "scikit-learn: Nearest Neighbors",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/neighbors.html",
+      "title": "1.6. Nearest Neighbors — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/permutation_importance.html",
+      "label": "scikit-learn: Permutation Feature Importance",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/permutation_importance.html",
+      "title": "5.2. Permutation feature importance — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/preprocessing.html",
+      "label": "scikit-learn: Preprocessing Data",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/preprocessing.html",
+      "title": "8.3. Preprocessing data — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/svm.html",
+      "label": "scikit-learn: Support Vector Machines",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/svm.html",
+      "title": "1.4. Support Vector Machines — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://scikit-learn.org/stable/modules/tree.html",
+      "label": "scikit-learn: Decision Trees",
+      "status": 200,
+      "final": "https://scikit-learn.org/stable/modules/tree.html",
+      "title": "1.10. Decision Trees — scikit-learn 1.9.1 documentation"
+    },
+    {
+      "url": "https://sigsim.acm.org/conf/pads/2024/blog/artifact-evaluation/",
+      "label": "ACM SIGSIM PADS: Reproducibility and Artifact Evaluation",
+      "status": 200,
+      "final": "https://sigsim.acm.org/conf/pads/2024/blog/artifact-evaluation/",
+      "title": "Reproducibility and Artifact Evaluation"
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/autoencoders.html",
+      "label": "Deep Learning: Autoencoders",
+      "status": 200,
+      "final": "https://www.deeplearningbook.org/contents/autoencoders.html",
+      "title": ""
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/linear_algebra.html",
+      "label": "Deep Learning: Linear Algebra",
+      "status": 200,
+      "final": "https://www.deeplearningbook.org/contents/linear_algebra.html",
+      "title": ""
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/ml.html",
+      "label": "Deep Learning: Machine Learning Basics",
+      "status": 200,
+      "final": "https://www.deeplearningbook.org/contents/ml.html",
+      "title": ""
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/mlp.html",
+      "label": "Deep Learning: Deep Feedforward Networks",
+      "status": 200,
+      "final": "https://www.deeplearningbook.org/contents/mlp.html",
+      "title": ""
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/optimization.html",
+      "label": "Deep Learning: Optimization for Training Deep Models",
+      "status": 200,
+      "final": "https://www.deeplearningbook.org/contents/optimization.html",
+      "title": ""
+    },
+    {
+      "url": "https://www.deeplearningbook.org/contents/prob.html",
+      "label": "Deep Learning: Probability and Information Theory",
+      "status": 200,
+      "final": "https://www.deeplearningbook.org/contents/prob.html",
+      "title": ""
+    },
+    {
+      "url": "https://www.jmlr.org/papers/v11/cawley10a.html",
+      "label": "On Over-fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation",
+      "status": 200,
+      "final": "https://www.jmlr.org/papers/v11/cawley10a.html",
+      "title": "On Over-fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation"
+    },
+    {
+      "url": "https://www.statlearning.com/",
+      "label": "An Introduction to Statistical Learning: Resampling Methods",
+      "status": 200,
+      "final": "https://www.statlearning.com/",
+      "title": "An Introduction to Statistical Learning"
+    },
+    {
+      "url": "https://www.tensorflow.org/tfx/guide/tfdv",
+      "label": "TensorFlow Data Validation",
+      "status": 200,
+      "final": "https://www.tensorflow.org/tfx/guide/tfdv",
+      "title": "TensorFlow Data Validation: Checking and analyzing your data  |  TFX"
+    }
+  ]
+}
