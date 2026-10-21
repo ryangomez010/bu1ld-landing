@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import type { LucideIcon } from "lucide-react";
+import { ArrowRight, FolderKanban, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -16,48 +16,40 @@ export function DashboardHero({
   roleBadge?: React.ReactNode;
 }) {
   const reduce = useReducedMotion();
-  const hour = new Date().getHours();
-  const greeting =
-    hour < 12
-      ? "Good morning"
-      : hour < 17
-        ? "Good afternoon"
-        : hour < 22
-          ? "Good evening"
-          : "Late session";
 
   return (
     <motion.div
       initial={reduce ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduce ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-10 panel glass rounded-2xl p-6 md:p-8 relative overflow-hidden"
+      className="mb-8 panel glass rounded-2xl p-6 md:p-8 relative overflow-hidden"
     >
       <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent-blue/8 blur-3xl" />
       <div className="relative z-[1] flex flex-wrap items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
           <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-accent-green">
-            {greeting} · dashboard
+            Your member workspace
           </p>
-          <h1 className="font-display text-4xl md:text-5xl text-bone mt-3 tracking-tight flex flex-wrap items-center gap-3">
+          <h1 className="font-display text-3xl md:text-4xl text-bone mt-3 tracking-tight flex flex-wrap items-center gap-3 break-words">
             {displayName}
             {roleBadge}
           </h1>
           <p className="mt-3 max-w-2xl text-muted-foreground leading-relaxed">{bio}</p>
-          <p className="mt-4 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground/80">
-            <kbd className="kbd" aria-label="Command K">
-              ⌘K
-            </kbd>{" "}
-            quick nav ·{" "}
-            <kbd className="kbd" aria-label="Forward slash">
-              /
-            </kbd>{" "}
-            search ·{" "}
-            <kbd className="kbd" aria-label="Question mark">
-              ?
-            </kbd>{" "}
-            shortcuts
-          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              to="/workspace"
+              className="inline-flex min-h-11 items-center justify-center gap-3 rounded-lg bg-bone px-5 py-3 text-sm font-medium text-background transition hover:bg-accent-green"
+            >
+              Open my work <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link
+              to="/projects"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border/60 px-4 py-3 text-sm text-bone transition hover:bg-bone/5"
+            >
+              <FolderKanban className="h-4 w-4" aria-hidden />
+              Find a project
+            </Link>
+          </div>
         </div>
         <Link
           to="/profile"
@@ -65,7 +57,7 @@ export function DashboardHero({
           className="panel glass-subtle panel-interactive rounded-xl px-5 py-4 min-w-[160px] shrink-0"
         >
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground relative z-[1]">
-            Profile
+            Your profile
           </p>
           <p className="mt-1 font-display text-2xl text-bone relative z-[1]">
             {completenessPercent}%

@@ -1,126 +1,39 @@
 #!/usr/bin/env node
-/**
- * Verify Supabase connectivity and that expected tables exist.
- * Reads VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY from .env (no shell export needed).
- */
-import { readFileSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+// Bounded anonymous API probes. Private tables use the database verifier.
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createClient } from "@supabase/supabase-js";
+import { loadDeploymentEnv, publicConfigErrors, publicSupabaseConfig } from "./deployment-env.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-
-function loadEnv() {
-  const path = resolve(root, ".env");
-  if (!existsSync(path)) return {};
-  const out = {};
-  for (const line of readFileSync(path, "utf8").split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const eq = trimmed.indexOf("=");
-    if (eq === -1) continue;
-    out[trimmed.slice(0, eq)] = trimmed.slice(eq + 1);
-  }
-  return out;
-}
-
-const env = loadEnv();
-const url = env.VITE_SUPABASE_URL ?? env.NEXT_PUBLIC_SUPABASE_URL;
-const key =
-  env.VITE_SUPABASE_ANON_KEY ??
-  env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-  env.VITE_SUPABASE_PUBLISHABLE_KEY ??
-  env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
-if (!url || !key) {
-  console.error("Missing Supabase URL or anon key in .env");
+const env = loadDeploymentEnv(root);
+const errors = publicConfigErrors(env, env.BU1LD_RELEASE_STRICT === "1");
+if (errors.length) {
+  errors.forEach((error) => console.error(error));
   process.exit(1);
 }
-
-const TABLES = [
-  "profiles",
-  "events",
-  "papers",
-  "paper_analyses",
-  "newsletter_issues",
-  "reading_progress",
-  "projects",
-  "project_applications",
-  "lead_verification_requests",
-  "jobs",
-  "notifications",
-  "saved_items",
-  "announcements",
-  "project_updates",
-  "paper_reads",
-  "event_rsvps",
-  "newsletter_subscriptions",
-  "admin_audit_log",
-  "saved_collections",
-  "saved_collection_items",
-  "security_events",
-  "notification_preferences",
-  "reading_activity",
-  "paper_highlights",
-  "project_follows",
-  "skill_endorsements",
-  "job_applications",
-  "member_feedback",
-  "content_reports",
-  "member_preferences",
-  "member_roles",
-  "project_memberships",
-  "project_milestones",
-  "project_contributions",
-  "programs",
-  "program_applications",
-  "institutional_claims",
-  "labs",
-  "lab_memberships",
-  "competitions",
-  "competition_submissions",
-  "partnerships",
-  "invitations",
-  "project_experiments",
-  "project_deliverables",
-  "research_paths",
-  "research_path_steps",
-  "research_path_progress",
-  "project_application_questions",
-  "project_application_answers",
-  "project_datasets",
-  "schema_migrations",
-];
-
-const supabase = createClient(url, key);
-
-console.log(`Project: ${url}`);
-console.log("Checking tables…\n");
-
-let missing = 0;
-for (const table of TABLES) {
-  const { error } = await supabase.from(table).select("*", { count: "exact", head: true });
-  if (error) {
-    const code = error.code ?? error.message;
-    console.log(`  ✗ ${table} — ${code}`);
-    missing++;
-  } else {
-    console.log(`  ✓ ${table}`);
+const { url, key } = publicSupabaseConfig(env);
+for (const [label, path] of [
+  ["Auth settings API", "/auth/v1/settings"],
+  ["Public project catalog API", "/rest/v1/projects?select=id&published=eq.true&limit=0"],
+]) {
+  try {
+    const response = await fetch(new URL(path, url), {
+      headers: { apikey: key, Accept: "application/json" },
+      signal: AbortSignal.timeout(10000),
+      redirect: "error",
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    await response.json();
+    console.log(`OK ${label}`);
+  } catch (error) {
+    const status = /^HTTP [0-9]+$/.test(error.message)
+      ? error.message
+      : "network, timeout, or invalid response";
+    console.error(`FAILED ${label}: ${status}`);
+    process.exitCode = 1;
   }
 }
-
-const { error: authError } = await supabase.auth.getSession();
-if (authError) {
-  console.log(`\nAuth check failed: ${authError.message}`);
-} else {
-  console.log("\nAuth API: reachable");
-}
-
-if (missing > 0) {
-  console.log(`\n${missing} table(s) missing. Run: bun run supabase:apply`);
-  console.log("Or paste supabase/FINAL_SETUP.sql into the Supabase SQL editor.");
-  process.exit(1);
-}
-
-console.log("\nAll tables present. Supabase is ready.");
-process.exit(0);
+if (!process.exitCode)
+  console.log(
+    "Anonymous APIs reachable. Run supabase:rls for schema checks; signed-in role journeys require separate verification.",
+  );

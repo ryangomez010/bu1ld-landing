@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 import { SectionShell } from "@/components/landing/Section";
 
 import { PROGRAMS } from "@/data/landing";
@@ -6,10 +8,10 @@ export function ProgramsSection() {
   return (
     <SectionShell
       id="programs"
-      eyebrow="04"
-      label="entry tracks"
+      eyebrow="05"
+      label="program formats"
       title="Structured ways to work."
-      subtitle="Programs are published only when their scope, dates, capacity, and review process are ready. Each one is designed around a concrete technical output."
+      subtitle="Explore program formats designed around a concrete technical output. These are interest pages; dates, reviewer capacity, and open intake are unconfirmed."
     >
       <div className="grid md:grid-cols-3 gap-px bg-border/40 border border-border/40">
         {PROGRAMS.map((p, i) => (
@@ -18,7 +20,7 @@ export function ProgramsSection() {
             className="relative bg-background/80 p-10 group hover:bg-background/50 transition overflow-hidden"
           >
             <div className="absolute top-4 right-4 font-mono text-[9px] tracking-[0.3em] uppercase text-bone/30">
-              0{i + 1} / 03
+              {String(i + 1).padStart(2, "0")} / {String(PROGRAMS.length).padStart(2, "0")}
             </div>
             <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-blue">
               {p.tag}
@@ -31,15 +33,27 @@ export function ProgramsSection() {
             </p>
             <p className="mt-6 text-muted-foreground leading-relaxed text-[15px]">{p.body}</p>
             <div className="mt-10 h-px bg-gradient-to-r from-accent-blue/50 via-accent-violet/30 to-transparent" />
-            <a
-              href={p.href}
+            <Link
+              to={p.href}
               className="mt-6 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] uppercase text-bone hover:text-accent-blue transition"
             >
-              View programs{" "}
+              Read program format{" "}
               <span className="transition-transform group-hover:translate-x-1">→</span>
-            </a>
+            </Link>
           </div>
         ))}
+      </div>
+      <div className="mt-8 flex flex-col gap-4 border-l-2 border-accent-blue/40 bg-accent-blue/[0.035] p-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Compare every path by audience, commitment, selection, status, and expected output before
+          deciding whether to apply.
+        </p>
+        <Link
+          to="/programs-public"
+          className="inline-flex min-h-11 shrink-0 items-center text-sm text-bone transition hover:text-accent-blue"
+        >
+          Compare all program paths →
+        </Link>
       </div>
     </SectionShell>
   );

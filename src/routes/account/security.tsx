@@ -53,6 +53,7 @@ function AccountSecurityContent() {
   const [signingOutAll, setSigningOutAll] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deletionError, setDeletionError] = useState<string | null>(null);
   const [events, setEvents] = useState<SecurityEvent[]>([]);
   const [sessions, setSessions] = useState<SignInSession[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
@@ -111,25 +112,29 @@ function AccountSecurityContent() {
 
   const onSignOutEverywhere = async () => {
     setSigningOutAll(true);
-    if (user) void logSecurityEvent(user.id, "global_sign_out");
-    await signOut("global");
+    if (user) void logSecurityEvent(user.id, "global_sign_out", { status: "requested" });
+    const { error } = await signOut("global");
     setSigningOutAll(false);
+    if (error) {
+      toast.error(error);
+      return;
+    }
     toast.success("Signed out on all devices.");
     void navigate({ to: "/login" });
   };
 
   const onDeleteAccount = async () => {
-    if (!user) return;
+    if (!user || deleting) return;
     setDeleting(true);
+    setDeletionError(null);
     const { error } = await requestAccountDeletion(user.id);
+    setDeleting(false);
     if (error) {
-      setDeleting(false);
+      setDeletionError(error);
       toast.error(error);
       return;
     }
-    await signOut("global");
-    setDeleting(false);
-    toast.success("Account data removed. Contact support to fully delete auth credentials.");
+    toast.success("Account deletion completed.");
     void navigate({ to: "/" });
   };
 
@@ -340,12 +345,18 @@ function AccountSecurityContent() {
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Removes your profile, saved items, applications, and notifications from The Bu1ld. Your
-            sign-in credential is also removed when the deletion service is available. Contact{" "}
+            sign-in credential is removed after the member data deletion step. If either step cannot
+            be confirmed, this page will explain what remains. Contact{" "}
             <a href="mailto:hello@thebu1ld.com" className="text-accent-blue hover:text-bone">
               hello@thebu1ld.com
             </a>{" "}
             if you need confirmation or a manual erasure request.
           </p>
+          {deletionError ? (
+            <p role="alert" className="text-sm text-accent-red">
+              {deletionError}
+            </p>
+          ) : null}
           <ConfirmButton
             title="Delete your The Bu1ld account?"
             description="This anonymizes your profile and removes your data from the member area. This cannot be undone."

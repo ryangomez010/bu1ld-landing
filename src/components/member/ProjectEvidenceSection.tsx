@@ -32,6 +32,7 @@ import type {
   ProjectMembership,
   ProjectMilestone,
 } from "@/lib/types";
+import { safeHref } from "@/lib/urls";
 
 const CONTRIBUTION_TYPES: ContributionType[] = [
   "research",
@@ -390,9 +391,9 @@ export function ProjectEvidenceSection({
                   <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                     {contribution.summary}
                   </p>
-                  {contribution.evidence_url ? (
+                  {safeHref(contribution.evidence_url) ? (
                     <a
-                      href={contribution.evidence_url}
+                      href={safeHref(contribution.evidence_url)}
                       target="_blank"
                       rel="noreferrer"
                       className="mt-2 inline-flex items-center gap-1 text-xs text-accent-blue hover:text-bone"

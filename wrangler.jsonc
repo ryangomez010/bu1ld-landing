@@ -1,14 +1,16 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "bu1ld-landing",
+  "name": "the-bu1ld-nexus",
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
   // Use Vite build output — Wrangler cannot resolve TanStack virtual imports from source.
-  "main": "dist/server/server.js",
+  "main": "cloudflare-worker-entry.mjs",
   "assets": {
     "directory": "./dist/client",
     "binding": "ASSETS",
   },
+  // BU1LD-Web is the approved successor source. This changes routing only on deploy.
+  "routes": [{ "pattern": "thebu1ld.com", "custom_domain": true }],
   "observability": {
     "enabled": true,
   },

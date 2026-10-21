@@ -1,0 +1,203 @@
+{
+  "date": "2026-10-15",
+  "scope": "Local article expansion, editorial revision, and catalog integration; no production deployment or full application build certification.",
+  "base_commit": "134f63fb10741f695cc29210e40b3ac3b5ea4e09",
+  "counts": {
+    "ml_articles": 120,
+    "reference_essays": 6,
+    "learning_paths": 10,
+    "articles_per_path": 12,
+    "new_articles": 20,
+    "revised_existing_ml_articles": 10,
+    "revised_reference_essays": 6,
+    "ml_body_words": 28746,
+    "essay_body_words": 2164,
+    "ml_articles_with_answer_checks": 30
+  },
+  "checks": {
+    "tests": "210 passed, 0 failed, 3595 assertions across 43 files",
+    "focused_library_tests": "8 passed, 0 failed, 2297 assertions",
+    "lint": "Passed for index.ts, article-format.ts, generate-guide-catalog.ts, guide-catalog.test.ts with 192 MiB JS heap",
+    "format": "Changed source/content files formatted with Prettier",
+    "guide_catalog": "120 articles, 10 tracks, 28746 words; synchronized",
+    "route_smoke": "29 critical route declarations present; static only",
+    "diff_check": "Passed",
+    "focused_typecheck": "Passed for article index, formatter, loaders, catalog helpers, and generator using strict project options and a 128 MiB JS heap"
+  },
+  "focused_typecheck_config": {
+    "extends": "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/tsconfig.json",
+    "include": [
+      "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/src/content/guides/index.ts",
+      "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/src/content/guides/article-format.ts",
+      "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/src/content/guides/articles.ts",
+      "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/src/lib/guide-catalog.ts",
+      "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/scripts/generate-guide-catalog.ts"
+    ],
+    "exclude": [],
+    "compilerOptions": {
+      "types": [
+        "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/node_modules/vite/client",
+        "/Volumes/PRO-BLADE/GitHubRepos/BU1LD-Web/node_modules/@types/node"
+      ]
+    }
+  },
+  "focused_typecheck_command": "rtk proxy node --max-old-space-size=128 node_modules/typescript/bin/tsc --project /tmp/bu1ld-guide-tsconfig.json",
+  "focused_typecheck_initial_failures": [
+    "Temporary config could not resolve vite/client from /tmp; fixed by resolving the same type entry absolutely.",
+    "Generator requires Node types beyond the application config; added the installed @types/node entry to the scoped config."
+  ],
+  "editorial_checks": {
+    "unchanged_articles": 90,
+    "revised_articles": [
+      "ml-linear-regression",
+      "ml-tokenization",
+      "ml-convolutions",
+      "ml-principal-components",
+      "ml-backpropagation",
+      "ml-train-validation-test",
+      "ml-problem-framing",
+      "ml-data-pipeline-contracts",
+      "ml-falsifiable-hypotheses",
+      "ml-confusion-matrix"
+    ],
+    "new_articles": [
+      "ml-quantile-regression",
+      "ml-monotonic-constraints",
+      "ml-perplexity",
+      "ml-padding-loss-masks",
+      "ml-intersection-over-union",
+      "ml-pretrained-image-preprocessing",
+      "ml-whitening",
+      "ml-approximate-neighbor-retrieval",
+      "ml-gradient-clipping",
+      "ml-freezing-parameters",
+      "ml-grouped-evaluation",
+      "ml-delayed-labels",
+      "ml-entropy-cross-entropy",
+      "ml-likelihood-not-posterior",
+      "ml-inference-batching",
+      "ml-training-serving-parity",
+      "ml-paired-run-comparisons",
+      "ml-practical-effect-size",
+      "ml-decision-costs",
+      "ml-learning-curves"
+    ],
+    "all_original_ml_slugs_and_order_retained": true,
+    "arithmetic_checks": {
+      "entropy": {
+        "actual": 0.7219280948873623,
+        "expected": 0.7219280948873623,
+        "pass": true
+      },
+      "cross_entropy": {
+        "actual": 1.207518749639422,
+        "expected": 1.207518749639422,
+        "pass": true
+      },
+      "pinball_q2": {
+        "actual": 2.6000000000000005,
+        "expected": 2.6,
+        "pass": true
+      },
+      "pinball_q4": {
+        "actual": 1.8000000000000003,
+        "expected": 1.8,
+        "pass": true
+      },
+      "perplexity": {
+        "actual": 4.0,
+        "expected": 4,
+        "pass": true
+      },
+      "paired_gain": {
+        "actual": 0.023333333333333355,
+        "expected": 0.0233333333333333,
+        "pass": true
+      },
+      "attention": {
+        "actual": 5.0,
+        "expected": 5,
+        "pass": true
+      },
+      "clipped_norm": {
+        "actual": 2.0,
+        "expected": 2,
+        "pass": true
+      },
+      "linear_mse": {
+        "actual": 1.0,
+        "expected": 1,
+        "pass": true
+      },
+      "backprop_new_loss": {
+        "actual": 4.930380657631324e-32,
+        "expected": 0,
+        "pass": true
+      },
+      "confusion_accuracy": {
+        "actual": 0.89,
+        "expected": 0.89,
+        "pass": true
+      },
+      "vision_iou": {
+        "actual": 0.14285714285714285,
+        "expected": 0.14285714285714285,
+        "pass": true
+      },
+      "normalized_pixel": {
+        "actual": 0.007843137254901933,
+        "expected": 0.007843137254901933,
+        "pass": true
+      },
+      "pinn_residual_squared": {
+        "actual": 0.25,
+        "expected": 0.25,
+        "pass": true
+      },
+      "valid_token_mean": {
+        "actual": 2.0,
+        "expected": 2,
+        "pass": true
+      },
+      "batch_latency_ms": {
+        "actual": 20,
+        "expected": 20,
+        "pass": true
+      },
+      "cost_threshold": {
+        "actual": 0.25,
+        "expected": 0.25,
+        "pass": true
+      },
+      "whitening_norm": {
+        "actual": 5.0,
+        "expected": 5,
+        "pass": true
+      }
+    }
+  },
+  "reference_review": "Primary documentation, original papers, and author-hosted textbooks consulted. New and revised content links its sources. The Deep Learning MLP page returned an internal web-tool error on this pass; no claim that every reference was freshly reachable. Earlier reference receipts remain historical and their content hashes no longer describe revised bodies.",
+  "limits": [
+    "Full-project typecheck, Vite build, and browser QA not run; current memory remained below the 512 MiB heavy-work admission floor.",
+    "No commit, push, deployment, database migration, or account-progress mutation.",
+    "Ninety original ML article objects remain unchanged; this pass revised ten ML articles and all six essays.",
+    "Existing completion percentages stay associated with existing slugs; revised text does not reset completion."
+  ],
+  "source_sha256": {
+    "src/content/guides/articles/supervised.json": "356d343f4f1476f5e892edc7123d551e7fad264c78f487ed83b62deb83b84669",
+    "src/content/guides/articles/language.json": "43e1d846239048ed1272a4d2b0e918b86ce0b73bfa1dfe6c23a5655dab95dd72",
+    "src/content/guides/articles/vision.json": "b3a882128de6c63060b2a7be079661abd69347db84aaa1643ece4bb44dd19c46",
+    "src/content/guides/articles/representations.json": "3853ad95f6b0297c92196cdb85f8f5abf18d201e43e4d2bc18581a5170f812e1",
+    "src/content/guides/articles/neural.json": "5419de6797eaa216f95b2c69de738e865ea049db5f57296d25b8669c2298dece",
+    "src/content/guides/articles/data.json": "ac1751a7949e20b907e6642363c60df8502b181e403f77f8d36f433cf7d0b4ec",
+    "src/content/guides/articles/foundations.json": "3f0e0e69352199c89d2c3f605b5c9e4d967f2304f9d1b06e1135ea2bc6b3bf3f",
+    "src/content/guides/articles/systems.json": "dcd408a965c5087c05b817447d3ddd80bce35b7298abe3db9e1f4f36f1ab58c7",
+    "src/content/guides/articles/research.json": "f21f053d52fcc9367526997bbb10535f5e048977e2cd4a99cb5405c779133487",
+    "src/content/guides/articles/evaluation.json": "129a9f61ac5eb7cc2e5754fded6f3f4e57820952c311ced5a999f17dbe86b54d",
+    "src/content/guides/index.ts": "966725df69d97c0a626b17bc1304465dde34f380c5ba5675935f0aa05fd1c309",
+    "src/content/guides/article-format.ts": "339086e3c23a2a286d18cc6489e4ab3aa0f40906409f7e4f51d756a26f7fc1e7",
+    "src/content/guides/article-catalog.json": "916d2a72cd0e49c1497bfdb486b54db275807e7d1362983015d154537a58f5fc",
+    "scripts/generate-guide-catalog.ts": "fd48d45867167ccf8cefeea056f7391a92816a695a262f845ca802a5a21fc4d8",
+    "src/lib/guide-catalog.test.ts": "d83d3649db70a1ca4073c5a5ba0aeb13bf13784d757440c28a72a9c3a59c2f16"
+  }
+}

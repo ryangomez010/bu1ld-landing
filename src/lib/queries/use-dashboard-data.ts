@@ -42,7 +42,11 @@ export function useDashboardMemberQuery(
   events: Awaited<ReturnType<typeof fetchEvents>>,
 ) {
   return useQuery({
-    queryKey: queryKeys.dashboard.member(userId ?? ""),
+    queryKey: [
+      ...queryKeys.dashboard.member(userId ?? ""),
+      profile?.updated_at,
+      events.map((event) => `${event.id}:${event.updated_at}`),
+    ],
     enabled: Boolean(userId),
     queryFn: async () => {
       if (!userId) throw new Error("user required");

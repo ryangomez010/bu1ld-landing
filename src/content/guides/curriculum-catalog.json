@@ -1,0 +1,182 @@
+[
+  {
+    "slug": "ml-python-research-functions",
+    "title": "Python Functions That Expose Their Assumptions",
+    "description": "Parse measurements, validate units, and separate a pure calculation from file input.",
+    "track": "Research engineering",
+    "level": "Intermediate",
+    "tags": ["python", "csv", "testing"],
+    "wordCount": 477,
+    "readMinutes": 3
+  },
+  {
+    "slug": "ml-numpy-shape-contracts",
+    "title": "NumPy Shapes Are Part of the Scientific Meaning",
+    "description": "Use vectorization deliberately and catch broadcasting that turns a rowwise error into an all-pairs comparison.",
+    "track": "Research engineering",
+    "level": "Intermediate",
+    "tags": ["numpy", "vectorization", "shapes"],
+    "wordCount": 430,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-research-environments-tests",
+    "title": "An Environment and a Test Make a Result Portable",
+    "description": "Record the interpreter, dependency lock, data identity, and invariant that another person needs to rerun a calculation.",
+    "track": "Research engineering",
+    "level": "Intermediate",
+    "tags": ["git", "environment", "reproducibility"],
+    "wordCount": 440,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-jepa-targets-collapse",
+    "title": "Predicting Latent Targets without Collapsing the Representation",
+    "description": "Understand the roles of context, target, predictor, and collapse checks in a joint-embedding predictive setup.",
+    "track": "Representation extensions",
+    "level": "Intermediate",
+    "tags": ["jepa", "self-supervision", "collapse"],
+    "wordCount": 433,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-latent-dynamics-rollouts",
+    "title": "A One-Step Latent Predictor Is Not Yet a World Model",
+    "description": "Evaluate recursive predictions, interventions, and distribution change before trusting long-horizon behavior.",
+    "track": "Representation extensions",
+    "level": "Intermediate",
+    "tags": ["dynamics", "world-models", "rollouts"],
+    "wordCount": 432,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-pde-boundary-contracts",
+    "title": "A PDE Task Includes Its Initial and Boundary Conditions",
+    "description": "Define what a surrogate receives, predicts, and must respect before selecting a neural architecture.",
+    "track": "Scientific ML extensions",
+    "level": "Intermediate",
+    "tags": ["pde", "boundary-conditions", "finite-differences"],
+    "wordCount": 408,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-surrogate-stability-shift",
+    "title": "Surrogate Evaluation Must Include Rollout and Regime Shift",
+    "description": "Use bounded numerical examples to separate one-step accuracy, stable recursion, and generalization beyond the training regime.",
+    "track": "Scientific ML extensions",
+    "level": "Intermediate",
+    "tags": ["stability", "surrogates", "distribution-shift"],
+    "wordCount": 438,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-causal-memory-interventions",
+    "title": "Test Whether a System Uses Memory with Controlled Interventions",
+    "description": "Hold the task constant while changing memory relevance, content, and order to distinguish access from useful causal reliance.",
+    "track": "Memory and agent extensions",
+    "level": "Intermediate",
+    "tags": ["memory", "interventions", "evaluation"],
+    "wordCount": 430,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-agent-tool-contracts",
+    "title": "Reliable Agents Need Tool Contracts and Durable Receipts",
+    "description": "Represent tool requests, permission boundaries, retries, and outcomes without confusing intent with a completed action.",
+    "track": "Memory and agent extensions",
+    "level": "Intermediate",
+    "tags": ["agents", "tools", "idempotency"],
+    "wordCount": 452,
+    "readMinutes": 3
+  },
+  {
+    "slug": "ml-distillation-speculative-decoding",
+    "title": "Distillation and Speculative Decoding Solve Different Efficiency Problems",
+    "description": "Distinguish training a smaller model from accelerating sampling with a draft model and target verification.",
+    "track": "Efficient systems extensions",
+    "level": "Intermediate",
+    "tags": ["distillation", "speculative-decoding", "latency"],
+    "wordCount": 417,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-scientific-data-provenance",
+    "title": "Scientific Data Need Units, Lineage, and Availability Time",
+    "description": "Build a source record that distinguishes when an event happened, when its label became available, and what the model was allowed to know.",
+    "track": "Domain ML",
+    "level": "Intermediate",
+    "tags": ["provenance", "time-series", "availability"],
+    "wordCount": 409,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-astronomy-candidate-validation",
+    "title": "A Ranked Astronomical Candidate Is Not a Confirmed Discovery",
+    "description": "Separate detection, ranking, follow-up, and confirmation while measuring selection and population shift.",
+    "track": "Domain ML",
+    "level": "Intermediate",
+    "tags": ["astronomy", "candidate-triage", "population-shift"],
+    "wordCount": 413,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-weather-time-baselines",
+    "title": "Weather Evaluation Needs Lead Times and Honest Baselines",
+    "description": "Compare forecasts against persistence and climatology at consistent initialization times, horizons, and physical units.",
+    "track": "Domain ML",
+    "level": "Intermediate",
+    "tags": ["weather", "forecasting", "baselines"],
+    "wordCount": 392,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-materials-inverse-design",
+    "title": "Inverse Design Must Account for Surrogate Error and Feasibility",
+    "description": "Separate scoring a candidate, proposing a candidate, and experimentally validating a material or engineered artifact.",
+    "track": "Domain ML",
+    "level": "Intermediate",
+    "tags": ["materials", "inverse-problems", "uncertainty"],
+    "wordCount": 413,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-mdp-return-contracts",
+    "title": "An MDP Defines the Decision Problem before the Algorithm",
+    "description": "Specify state, action, transition, reward, termination, and discount so a policy score has a clear meaning.",
+    "track": "Decision systems",
+    "level": "Intermediate",
+    "tags": ["mdp", "returns", "termination"],
+    "wordCount": 396,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-value-policy-iteration",
+    "title": "Value Functions Turn Future Consequences into Comparable Actions",
+    "description": "Solve a tiny decision problem with explicit transitions and distinguish policy evaluation from policy improvement.",
+    "track": "Decision systems",
+    "level": "Intermediate",
+    "tags": ["value-functions", "bellman", "policies"],
+    "wordCount": 382,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-exploration-offline-evaluation",
+    "title": "Offline Policy Evaluation Cannot Ignore Missing Action Coverage",
+    "description": "Use logged action probabilities carefully and distinguish exploration in a simulator from justified claims about a new policy.",
+    "track": "Decision systems",
+    "level": "Intermediate",
+    "tags": ["exploration", "offline-evaluation", "coverage"],
+    "wordCount": 406,
+    "readMinutes": 2
+  },
+  {
+    "slug": "ml-simulation-robotics-limits",
+    "title": "Simulation Success Is a Bounded Result, Not a Physical Guarantee",
+    "description": "Test model mismatch, control limits, observation noise, and failure recovery before extending a simulator claim to robotics.",
+    "track": "Decision systems",
+    "level": "Intermediate",
+    "tags": ["robotics", "simulation", "control"],
+    "wordCount": 397,
+    "readMinutes": 2
+  }
+]

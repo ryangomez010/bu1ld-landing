@@ -4,6 +4,9 @@ import { ContactSection } from "@/components/landing/ContactSection";
 import { FaqSection } from "@/components/landing/FaqSection";
 import { FeaturedProjectsSection } from "@/components/landing/FeaturedProjectsSection";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { InstitutionOverviewSection } from "@/components/landing/InstitutionOverviewSection";
+import { LandingSectionNav } from "@/components/landing/LandingSectionNav";
+import { LibraryEntrySection } from "@/components/landing/LibraryEntrySection";
 import { MarqueeStrip } from "@/components/landing/MarqueeStrip";
 import { MembershipSection } from "@/components/landing/MembershipSection";
 import { ProgramsSection } from "@/components/landing/ProgramsSection";
@@ -16,19 +19,34 @@ import { WhatWeDoSection } from "@/components/landing/WhatWeDoSection";
 import { PageBackground } from "@/components/layout/PageBackground";
 import { STATS } from "@/data/landing";
 import { pageHead } from "@/lib/seo";
+import { publicEvents, publicPapers } from "@/lib/public-library";
+import { homeEventCatalog, homePaperCatalog } from "@/lib/home-library";
+import { fetchProjects } from "@/lib/projects";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    // Independent reads share a short deadline so unavailable catalogs cannot stall the homepage.
+    const [papers, events, projects] = await Promise.all([
+      publicPapers(1500),
+      publicEvents(1500),
+      fetchProjects(undefined, { throwOnUnavailable: true, timeoutMs: 1500 })
+        .then((records) => ({ state: "ready" as const, projects: records }))
+        .catch(() => ({ state: "unavailable" as const, projects: null })),
+    ]);
+    return { papers: homePaperCatalog(papers), events: homeEventCatalog(events), projects };
+  },
   component: HomePage,
   head: () =>
     pageHead({
       title: "The Bu1ld — Join machine-learning projects",
       description:
-        "Find scoped machine-learning research and builder projects, apply with a technical profile, and publish reviewed contribution evidence.",
+        "Explore The Bu1LD's global AI research and engineering community, active project portfolio, open-source work, and evidence-backed contribution paths.",
       path: "/",
     }),
 });
 
 function HomePage() {
+  const library = Route.useLoaderData();
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 });
@@ -52,8 +70,13 @@ function HomePage() {
 
       <SiteHeader />
 
-      <main id="top" className="relative z-10">
+      <main id="top" tabIndex={-1} className="relative z-10">
         <HeroSection />
+        <LandingSectionNav />
+        <InstitutionOverviewSection />
+        <LibraryEntrySection papers={library.papers} events={library.events} />
+        <MembershipSection />
+        <FeaturedProjectsSection initial={library.projects} />
         <MarqueeStrip />
         <section className="mx-auto max-w-7xl px-6 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/30 border border-border/40 backdrop-blur-md rounded-sm overflow-hidden">
@@ -72,17 +95,15 @@ function HomePage() {
             ))}
           </div>
         </section>
-        <FeaturedProjectsSection />
         <WhatWeDoSection />
-        <MembershipSection />
         <ResearchSection />
         <ProgramsSection />
         <StartupsSection />
         <TeamSection />
         <FaqSection />
         <ContactSection />
-        <SiteFooter />
       </main>
+      <SiteFooter />
     </div>
   );
 }

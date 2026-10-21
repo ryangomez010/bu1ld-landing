@@ -4,6 +4,9 @@ import type { Announcement } from "@/data/seed/announcements";
 import type {
   Job,
   LeadVerificationRequest,
+  MentorProfile,
+  MentorshipRequest,
+  MentorshipRequestStatus,
   MlEvent,
   NewsletterIssue,
   Notification,
@@ -32,10 +35,75 @@ type DbTable<Row, Insert, Update, Rels extends readonly DbRelationship[] = []> =
   Relationships: Rels;
 };
 
+type DbMentorProfile = Omit<MentorProfile, "full_name" | "bio" | "avatar_url"> & {
+  created_at: string;
+  updated_at: string;
+};
+
+type DbMentorshipRequest = Omit<MentorshipRequest, "mentor_name" | "requester_name">;
+
 export type Database = {
   public: {
     Tables: {
       profiles: DbTable<Profile, Partial<Profile> & { id: string }, Partial<Profile>>;
+      mentor_profiles: DbTable<
+        DbMentorProfile,
+        {
+          mentor_id: string;
+          headline?: string;
+          expertise?: string[];
+          availability_note?: string;
+          monthly_capacity?: number;
+          accepting_requests?: boolean;
+          visible?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        },
+        Partial<Omit<DbMentorProfile, "mentor_id" | "created_at">>,
+        [
+          {
+            foreignKeyName: "mentor_profiles_mentor_id_fkey";
+            columns: ["mentor_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
+      mentorship_requests: DbTable<
+        DbMentorshipRequest,
+        {
+          mentor_id: string;
+          requester_id: string;
+          topic: string;
+          goal: string;
+          availability_note: string;
+          status?: MentorshipRequestStatus;
+          decision_note?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        },
+        Partial<
+          Pick<
+            DbMentorshipRequest,
+            "status" | "decision_note" | "topic" | "goal" | "availability_note"
+          >
+        >,
+        [
+          {
+            foreignKeyName: "mentorship_requests_mentor_id_fkey";
+            columns: ["mentor_id"];
+            referencedRelation: "mentor_profiles";
+            referencedColumns: ["mentor_id"];
+          },
+          {
+            foreignKeyName: "mentorship_requests_requester_id_fkey";
+            columns: ["requester_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
       events: DbTable<
         MlEvent,
         Partial<MlEvent> & { slug: string; title: string },
@@ -45,6 +113,20 @@ export type Database = {
         Paper,
         Partial<Paper> & { slug: string; title: string; review_body: string },
         Partial<Paper>
+      >;
+      paper_editorial_workflows: DbTable<
+        Omit<import("@/lib/paper-editor").PaperEditorial, "paper">,
+        never,
+        never,
+        [
+          {
+            foreignKeyName: "paper_editorial_workflows_paper_id_fkey";
+            columns: ["paper_id"];
+            isOneToOne: true;
+            referencedRelation: "papers";
+            referencedColumns: ["id"];
+          },
+        ]
       >;
       paper_analyses: DbTable<
         PaperAnalysis,
@@ -468,6 +550,8 @@ export type Database = {
           user_id: string;
           event_id: string;
           created_at: string;
+          status: "legacy" | "confirmed" | "waitlisted" | "cancelled";
+          updated_at: string;
         },
         {
           user_id: string;
@@ -858,6 +942,20 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      transition_paper_editorial: {
+        Args: {
+          p_paper_id: string;
+          p_action: string;
+          p_revision_hash: string;
+          p_decision_token: string;
+          p_evidence?: Record<string, unknown>;
+        };
+        Returns: Omit<import("@/lib/paper-editor").PaperEditorial, "paper">;
+      };
+      set_event_registration: {
+        Args: { p_event_id: string; p_action: "register" | "cancel"; p_request_id: string };
+        Returns: "legacy" | "confirmed" | "waitlisted" | "cancelled";
+      };
       search_portal_content: {
         Args: { search_query: string };
         Returns: Array<{

@@ -4,6 +4,52 @@ import { readFileSync } from "node:fs";
 const read = (path: string) => readFileSync(path, "utf8");
 
 describe("release artifacts", () => {
+  test("setup bundle matches every source migration including member security", () => {
+    const files = [
+      "supabase/full-setup.sql",
+      ...Array.from({ length: 22 }, (_, i) => `supabase/phase${i + 19}.sql`),
+    ];
+    const expected = files
+      .map((file) => `-- BEGIN ${file}\n${read(file).trimEnd()}\n\n-- END ${file}\n`)
+      .join("\n");
+    expect(read("supabase/FINAL_SETUP.sql")).toBe(expected);
+    const verification = read("supabase/VERIFY_SETUP.sql");
+    for (const table of [
+      "mentor_profiles",
+      "mentorship_requests",
+      "mentorship_sessions",
+      "mentorship_feedback",
+      "community_channels",
+      "community_posts",
+      "community_comments",
+      "community_reactions",
+    ]) {
+      expect(verification.match(new RegExp(`'${table}'`, "g"))?.length).toBeGreaterThanOrEqual(3);
+    }
+    expect(verification).toContain("(39), (40)");
+    expect(read("scripts/apply-schema.mjs")).toContain('"supabase/phase40.sql"');
+    expect(read("scripts/release-readiness.mjs")).toContain('"phase40.sql"');
+    expect(read("scripts/release-readiness.mjs")).toContain('"schema:check"');
+  });
+
+  test("member schema denies anonymous grants and requires parent visibility", () => {
+    const sql = read("supabase/phase40.sql");
+    expect(sql).toContain("from public, anon, authenticated");
+    expect(sql).toContain("update (status, decision_note) on public.mentorship_requests");
+    expect(sql).toContain("Only administrators can change moderation status");
+    expect(sql).toContain("Invalid mentorship request transition");
+    expect(sql.match(/as restrictive for all to authenticated/g)?.length).toBe(3);
+    for (const guard of [
+      "guard_mentor_profile_update",
+      "guard_mentorship_decision",
+      "guard_community_post_update",
+    ]) {
+      expect(sql).toContain(
+        `revoke all on function public.${guard}() from public, anon, authenticated`,
+      );
+      expect(read("supabase/VERIFY_SETUP.sql")).toContain(`${guard}_trigger`);
+    }
+  });
   test("final setup includes the complete final migration chain", () => {
     const finalSetup = read("supabase/FINAL_SETUP.sql");
 
@@ -54,6 +100,12 @@ describe("release artifacts", () => {
     expect(finalSetup).toContain("-- BEGIN supabase/phase34.sql");
     expect(finalSetup).toContain("create or replace function public.is_project_collaborator");
     expect(finalSetup).toContain("values ('phase34')");
+    expect(finalSetup).toContain("-- BEGIN supabase/phase35.sql");
+    expect(finalSetup).toContain("values ('phase35')");
+    expect(finalSetup).toContain("-- BEGIN supabase/phase36.sql");
+    expect(finalSetup).toContain("values ('phase36')");
+    expect(finalSetup).toContain("-- BEGIN supabase/phase37.sql");
+    expect(finalSetup).toContain("values ('phase37')");
     expect(finalSetup).not.toContain("schema_migrations (version");
   });
 
@@ -185,6 +237,29 @@ describe("release artifacts", () => {
     expect(sql).toContain("values ('phase34')");
   });
 
+  test("phase 37 binds privileged helpers to the caller and closes default execution", () => {
+    const sql = read("supabase/phase37.sql");
+    expect(sql).toContain("caller_id = (select auth.uid())");
+    expect(sql).toContain("uid = (select auth.uid())");
+    expect(sql).toContain(
+      "revoke all on function public.can_notify_project_subscriber(uuid, uuid, uuid)",
+    );
+    expect(sql).toContain("from public, anon, authenticated");
+    expect(sql).toContain("grant execute on function public.notify_users");
+    expect(sql).toContain("to authenticated");
+    expect(sql).toContain("values ('phase37')");
+  });
+
+  test("phase 38 enforces internal notification destinations and private trigger helpers", () => {
+    const sql = read("supabase/phase38.sql");
+    expect(sql).toContain("notifications_safe_href_check");
+    expect(sql).toContain("href not like '//%'");
+    expect(sql).toContain("position(chr(92) in href) = 0");
+    expect(sql).toContain("revoke all on function public.handle_new_user()");
+    expect(sql).toContain("public.promote_event_waitlist(uuid)");
+    expect(sql).toContain("values ('phase38')");
+  });
+
   test("verification and release gates require final phases", () => {
     const verifySql = read("supabase/VERIFY_SETUP.sql");
     const releaseGate = read("scripts/release-readiness.mjs");
@@ -198,8 +273,11 @@ describe("release artifacts", () => {
     expect(verifySql).toContain("('review_competition_submission')");
     expect(verifySql).toContain("('submit_project_application')");
     expect(verifySql).toContain("('is_project_collaborator')");
+    expect(verifySql).toContain("definer:notification-helper-private");
+    expect(verifySql).toContain("definer:authenticated-rpcs-not-anonymous");
+    expect(verifySql).toContain("definer:trigger-functions-private");
     expect(verifySql).toContain(
-      "(19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32), (33), (34)",
+      "(19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32), (33), (34), (35), (36), (37), (38)",
     );
     expect(releaseGate).toContain('"phase23.sql"');
     expect(releaseGate).toContain('"phase24.sql"');
@@ -213,6 +291,10 @@ describe("release artifacts", () => {
     expect(releaseGate).toContain('"phase32.sql"');
     expect(releaseGate).toContain('"phase33.sql"');
     expect(releaseGate).toContain('"phase34.sql"');
+    expect(releaseGate).toContain('"phase35.sql"');
+    expect(releaseGate).toContain('"phase36.sql"');
+    expect(releaseGate).toContain('"phase37.sql"');
+    expect(releaseGate).toContain('"phase38.sql"');
     expect(schemaApply).toContain('"supabase/phase23.sql"');
     expect(schemaApply).toContain('"supabase/phase24.sql"');
     expect(schemaApply).toContain('"supabase/phase25.sql"');
@@ -225,5 +307,19 @@ describe("release artifacts", () => {
     expect(schemaApply).toContain('"supabase/phase32.sql"');
     expect(schemaApply).toContain('"supabase/phase33.sql"');
     expect(schemaApply).toContain('"supabase/phase34.sql"');
+    expect(schemaApply).toContain('"supabase/phase35.sql"');
+    expect(schemaApply).toContain('"supabase/phase36.sql"');
+    expect(schemaApply).toContain('"supabase/phase37.sql"');
+    expect(schemaApply).toContain('"supabase/phase38.sql"');
+  });
+
+  test("release checks keep public routes and the generated sitemap synchronized", () => {
+    const release = readFileSync("scripts/release-readiness.mjs", "utf8");
+    expect(release).toContain('run("public sitemap", "bun", ["run", "sitemap:check"]);');
+    expect(release).toContain(
+      'run("public portfolio manifest", "bun", ["run", "manifest:check"]);',
+    );
+    expect(release).toContain('run("route smoke", "bun", ["run", "smoke"]);');
+    expect(release).toContain('run("ML article catalog", "bun", ["run", "guides:check"]);');
   });
 });

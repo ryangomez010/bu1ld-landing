@@ -6,6 +6,7 @@ import { CtaLink } from "@/components/member/ContentCard";
 import { RoleBadge } from "@/components/member/RoleBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Profile } from "@/lib/types";
+import { safeHref } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 
 function initials(name: string): string {
@@ -29,6 +30,10 @@ export function IdentityCard({
 }) {
   const reduce = useReducedMotion();
   const Wrapper = reduce ? "div" : motion.div;
+  const github = safeHref(profile?.github_url);
+  const linkedin = safeHref(profile?.linkedin_url);
+  const website = safeHref(profile?.website_url);
+  const avatar = safeHref(profile?.avatar_url);
 
   return (
     <Wrapper
@@ -44,7 +49,7 @@ export function IdentityCard({
       <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-accent-violet/10 blur-3xl" />
       <div className="relative z-[1] flex flex-wrap items-start gap-5">
         <Avatar className="h-16 w-16 border border-border/50 shadow-lg">
-          {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt={displayName} /> : null}
+          {avatar ? <AvatarImage src={avatar} alt={displayName} /> : null}
           <AvatarFallback className="bg-accent-blue/15 font-display text-xl text-bone">
             {initials(displayName || "M")}
           </AvatarFallback>
@@ -88,9 +93,9 @@ export function IdentityCard({
       ) : null}
 
       <div className="mt-5 flex flex-wrap gap-2 relative z-[1]">
-        {profile?.github_url ? (
+        {github ? (
           <a
-            href={profile.github_url}
+            href={github}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 surface-card border border-border/40 px-3 py-1.5 label-xs text-muted-foreground hover:text-bone transition-colors"
@@ -98,9 +103,9 @@ export function IdentityCard({
             <Github className="h-3.5 w-3.5" /> GitHub
           </a>
         ) : null}
-        {profile?.linkedin_url ? (
+        {linkedin ? (
           <a
-            href={profile.linkedin_url}
+            href={linkedin}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 surface-card border border-border/40 px-3 py-1.5 label-xs text-muted-foreground hover:text-bone transition-colors"
@@ -108,9 +113,9 @@ export function IdentityCard({
             <Linkedin className="h-3.5 w-3.5" /> LinkedIn
           </a>
         ) : null}
-        {profile?.website_url ? (
+        {website ? (
           <a
-            href={profile.website_url}
+            href={website}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 surface-card border border-border/40 px-3 py-1.5 label-xs text-muted-foreground hover:text-bone transition-colors"

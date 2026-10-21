@@ -2,12 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { INSTITUTION_PROGRAMS } from "@/data/institution";
-import { useAuth } from "@/lib/auth";
-import {
-  loginPathWithRedirect,
-  programApplyPath,
-  signupPathWithRedirect,
-} from "@/lib/post-auth-redirect";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/programs-public")({
@@ -22,9 +16,6 @@ export const Route = createFileRoute("/programs-public")({
 });
 
 function ProgramsPublicPage() {
-  const { user, profile } = useAuth();
-  const memberReady = Boolean(user && profile?.onboarding_completed);
-
   return (
     <InstitutionLayout
       eyebrow="Programs"
@@ -33,7 +24,6 @@ function ProgramsPublicPage() {
     >
       <div className="space-y-6">
         {INSTITUTION_PROGRAMS.map((program) => {
-          const destination = programApplyPath(program.slug);
           return (
             <article
               key={program.slug}
@@ -102,39 +92,14 @@ function ProgramsPublicPage() {
                   </li>
                 ))}
               </ul>
-              {memberReady ? (
-                program.slug === "open-competitions" ? (
-                  <Link
-                    to="/competitions"
-                    className="mt-6 inline-flex rounded-sm border border-accent-blue/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-bone transition hover:bg-accent-blue/10"
-                  >
-                    View competitions →
-                  </Link>
-                ) : (
-                  <Link
-                    to="/programs/$slug"
-                    params={{ slug: program.slug }}
-                    className="mt-6 inline-flex rounded-sm border border-accent-blue/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-bone transition hover:bg-accent-blue/10"
-                  >
-                    Apply in member portal →
-                  </Link>
-                )
-              ) : (
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <a
-                    href={signupPathWithRedirect(destination)}
-                    className="inline-flex rounded-sm border border-accent-blue/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-bone transition hover:bg-accent-blue/10"
-                  >
-                    Create account to apply →
-                  </a>
-                  <a
-                    href={loginPathWithRedirect(destination)}
-                    className="inline-flex rounded-sm border border-bone/25 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground transition hover:text-bone"
-                  >
-                    Log in
-                  </a>
-                </div>
-              )}
+              <Link
+                to="/apply"
+                search={{ program: program.slug }}
+                hash="application-details"
+                className="mt-6 inline-flex min-h-12 items-center rounded-sm border border-accent-blue/40 px-5 text-sm text-bone transition hover:bg-accent-blue/10"
+              >
+                Review this path and next steps →
+              </Link>
             </article>
           );
         })}

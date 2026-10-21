@@ -13,6 +13,8 @@ import {
   sanitizeAppPath,
   sanitizeEmailHtml,
   sanitizeText,
+  secretsMatch,
+  serializeJsonForHtml,
   securityHeaders,
   validateImageMagicBytes,
   validatePassword,
@@ -37,6 +39,18 @@ describe("security utilities", () => {
     expect(sanitizeAppPath("//evil.com")).toBeUndefined();
     expect(sanitizeAppPath("javascript:alert(1)")).toBeUndefined();
     expect(sanitizeAppPath("https://evil.com")).toBeUndefined();
+    expect(sanitizeAppPath("/../admin")).toBeUndefined();
+    expect(sanitizeAppPath("/%2e%2e/admin")).toBeUndefined();
+    expect(sanitizeAppPath("/%2f%2fevil.com")).toBeUndefined();
+    expect(sanitizeAppPath("/dashboard\n/evil")).toBeUndefined();
+  });
+
+  test("serializeJsonForHtml cannot close its script element", () => {
+    const output = serializeJsonForHtml({ value: "</script><script>alert(1)</script>&" });
+    expect(output).not.toContain("<");
+    expect(output).not.toContain(">");
+    expect(output).not.toContain("&");
+    expect(JSON.parse(output)).toEqual({ value: "</script><script>alert(1)</script>&" });
   });
 
   test("clampText enforces max length", () => {
@@ -92,12 +106,27 @@ describe("security utilities", () => {
         "app.example.com",
       ),
     ).toBe(true);
+    expect(
+      isSameOriginRequest(
+        new Request("https://app.example.com/api/email", {
+          headers: { origin: "http://app.example.com" },
+        }),
+        "app.example.com",
+      ),
+    ).toBe(false);
   });
 
   test("isTrustedSupabaseUrl accepts only https supabase hosts", () => {
     expect(isTrustedSupabaseUrl("https://abc123.supabase.co")).toBe(true);
+    expect(isTrustedSupabaseUrl("https://abc123.supabase.co:443/")).toBe(true);
     expect(isTrustedSupabaseUrl("http://abc123.supabase.co")).toBe(false);
     expect(isTrustedSupabaseUrl("https://evil.com")).toBe(false);
+    expect(isTrustedSupabaseUrl("https://user:secret@abc123.supabase.co")).toBe(false);
+    expect(isTrustedSupabaseUrl("https://abc123.supabase.co:8443")).toBe(false);
+    expect(isTrustedSupabaseUrl("https://abc123.supabase.co/rest/v1")).toBe(false);
+    expect(isTrustedSupabaseUrl("https://abc123.supabase.co/?redirect=https://evil.example")).toBe(
+      false,
+    );
   });
 
   test("securityHeaders include baseline protections", () => {
@@ -130,6 +159,13 @@ describe("security utilities", () => {
     const res = jsonResponse({ ok: true });
     expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
     expect(res.headers.get("content-type")).toContain("application/json");
+    expect(res.headers.get("cache-control")).toBe("no-store");
+  });
+
+  test("secretsMatch requires an exact bearer secret", () => {
+    expect(secretsMatch("secret-value", "secret-value")).toBe(true);
+    expect(secretsMatch("secret-value", "secret-other")).toBe(false);
+    expect(secretsMatch("secret", "secret-longer")).toBe(false);
   });
 
   test("validateImageMagicBytes rejects mismatched content", async () => {

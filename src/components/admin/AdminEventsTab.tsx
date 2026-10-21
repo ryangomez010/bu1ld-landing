@@ -11,6 +11,7 @@ import { deleteContentRow, setContentPublished, updateEventAdmin } from "@/lib/c
 import { getSupabase } from "@/lib/supabase";
 import type { EventResource, MlEvent } from "@/lib/types";
 import { eventLink } from "@/lib/app-paths";
+import { EventOperationsEditor } from "@/components/admin/EventOperationsEditor";
 
 export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved: () => void }) {
   const [title, setTitle] = useState("");
@@ -275,6 +276,11 @@ export function AdminEventsTab({ events, onSaved }: { events: MlEvent[]; onSaved
                   delete
                 </button>
               </div>
+              <EventOperationsEditor
+                key={`${ev.id}:${ev.updated_at}`}
+                event={ev}
+                onSaved={onSaved}
+              />
             </li>
           ))}
         </ul>

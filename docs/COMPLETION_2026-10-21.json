@@ -1,0 +1,78 @@
+{
+  "checkedAt": "2026-10-21T06:52:53.034376+00:00",
+  "scope": "BU1LD-Web local continuation; no deployed or live database acceptance",
+  "status": "LOCAL_FIXES_VERIFIED_RELEASE_BLOCKED",
+  "checks": {
+    "tests": {
+      "passed": 322,
+      "failed": 0,
+      "assertions": 5554,
+      "files": 68
+    },
+    "lint": "PASS full repository, zero diagnostics",
+    "schemaBundle": "PASS 23 source files through phase40",
+    "sitemap": "PASS",
+    "manifest": "PASS",
+    "guides": "PASS 120 articles, 10 tracks, 35625 body words",
+    "routes": "PASS 34 static routes",
+    "researchState": "PASS",
+    "diffWhitespace": "PASS"
+  },
+  "retainedFailure": {
+    "tests": {
+      "passed": 321,
+      "failed": 1,
+      "assertions": 5551
+    },
+    "cause": "Generated bundle inserted an extra blank line after phase36 BEGIN marker; exact migration test rejected it. Generator corrected to preserve the existing marker convention; the test was not weakened."
+  },
+  "notExecuted": [
+    "Full semantic typecheck",
+    "Development or production build",
+    "Browser QA",
+    "SQL migration execution",
+    "Disposable database role contract",
+    "Hosted role/RLS checks",
+    "Email/provider checks",
+    "Commit",
+    "Push",
+    "Deployment"
+  ],
+  "blockers": {
+    "resources": {
+      "minimumFreePlusSpeculativeMiB": 512,
+      "observedFreePlusSpeculativeMiB": 192.3125,
+      "pageoutsInitial": 113303,
+      "pageoutsLater": 137618,
+      "systemDiskAvailableMiB": 175
+    },
+    "releaseConfiguration": [
+      "VITE_SUPABASE_URL",
+      "VITE_SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLISHABLE_KEY",
+      "SUPABASE_DB_URL or SUPABASE_DB_PASSWORD + SUPABASE_PROJECT_REF",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "RESEND_API_KEY",
+      "DIGEST_API_SECRET",
+      "VITE_EMAIL_ENDPOINT"
+    ],
+    "disposableDatabase": "BU1LD_MEMBER_TEST_DATABASE_URL and BU1LD_DISPOSABLE_DATABASE=yes absent; runner refused before connection",
+    "connectedAccount": "Only a project named vertexed25-byte's Project was exposed; no verified BU1LD target"
+  },
+  "sha256": {
+    "supabase/phase40.sql": "37557658edef3ee9916ad2bc704701eaa41cb42f4d8ca5541d51198a7d9e6f43",
+    "supabase/FINAL_SETUP.sql": "7a2a26490138f082af7eb3e66d4f11b8c7b44c4a71bf8b2de980f29d7c46104e",
+    "supabase/VERIFY_SETUP.sql": "bd651fc7cc4370a48fba4ac66b6e8e485cd3de508d083181138674352fa8bb97",
+    "supabase/TEST_MEMBER_FEATURES.sql": "69e6865f013483ff8bb6126c8cbe4d12c93f0854303c87ccc35c50ccd1629be6",
+    "scripts/generate-setup.mjs": "40d27dd26ab6376ceb60cfbe86bbee0830fb20e188c63d50a42c2170e051ef59",
+    "scripts/test-member-features.mjs": "af067a54f3e0ff8daac423d5a2348a4b5d28879cef1273a0c8505cc7453e8397",
+    "scripts/apply-schema.mjs": "3b73aaa98a498e42eba90ad023e10e0eb8836b9894dda138306dde2004897816",
+    "scripts/release-readiness.mjs": "cc027d4a4a0710b0745fd83c434bb291a7ac6c2f4a56ec829759cbc413d03049",
+    "src/lib/mentorship.ts": "b85ea1b4400ec7332e8d708916901fcf5a7d1873713e275a9ed42c793d3f06d7",
+    "src/lib/roles.ts": "14da3225f9e4b52d3675f8762b02672bfe830054f6711eab576f3dfc838fa462",
+    "src/routes/mentorship/index.tsx": "3ddee84a84a7c6096efb8e1d944e75d8b676463832b1a18c1c17e8b80b9d444e",
+    "src/routes/mentorship/manage.tsx": "61d478fdb2a08f06545f1d4de78a17205a1a10b1f8c9b7a8aa33f50c947c61d6",
+    "src/lib/mentorship-loading.test.ts": "0855ce1f46ee169895ffb2503adfac045999884f6f94d55b6e4d94772eb88793",
+    "src/lib/release-artifacts.test.ts": "bbe522e0036996ad616cfa43946c632063a9df3c76b9afa517baf0c50ac28269",
+    "src/lib/roles.test.ts": "3737c53327cde1ae6d1ee31b3684ddbd11dedf1076b9935d8854730ca9e453d7"
+  }
+}

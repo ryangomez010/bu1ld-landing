@@ -9,47 +9,46 @@ export function MembershipSection() {
       id="membership"
       eyebrow="02"
       label="membership"
-      title="Become a member."
-      subtitle="Create a profile, state the work you can do, and use the platform to move from reading to a concrete contribution. Membership access and any program requirements are stated where they apply."
+      title="Make your time here count."
+      subtitle="Start with the skill you want to build or the problem you want to solve. Your account connects learning, applications, and your contribution record."
     >
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border/40 border border-border/40">
         {MEMBERSHIP_PERKS.map((perk) => (
-          <div
+          <Link
+            to={perk.to}
             key={perk.id}
-            className={`p-8 bg-background/75 backdrop-blur-md ${hoverGlow[perk.color]} transition-all duration-300 group hover:-translate-y-px`}
+            className={`flex flex-col p-6 bg-background/75 backdrop-blur-md ${hoverGlow[perk.color]} transition-all duration-300 group hover:-translate-y-px`}
           >
             <span
               className={`font-mono text-[10px] tracking-[0.3em] uppercase ${textAccent[perk.color]} flex items-center gap-2`}
             >
               <span className={`h-1.5 w-1.5 rounded-full ${dotColor(perk.color)}`} />
-              perk / {perk.id}
+              {perk.id}
             </span>
             <h3 className="font-display text-xl mt-6 text-bone tracking-tight">{perk.title}</h3>
-            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{perk.desc}</p>
-          </div>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{perk.desc}</p>
+            <span className="mt-auto pt-6 text-sm text-accent-blue">
+              {perk.action} <span aria-hidden="true">→</span>
+            </span>
+          </Link>
         ))}
       </div>
-      <div className="mt-10 flex flex-wrap gap-4">
+      <p className="mt-5 text-sm text-muted-foreground">
+        Reading paths are public. An account is required to save progress, apply to projects, and
+        maintain a contribution record. Project and program admission is reviewed separately.
+      </p>
+      <div className="mt-8 flex flex-wrap gap-3">
         <Link
           to="/projects"
-          className="group inline-flex items-center gap-3 px-7 py-3.5 rounded-sm bg-bone text-background font-mono text-[11px] tracking-[0.3em] uppercase hover:bg-accent-blue transition"
+          className="inline-flex min-h-12 items-center gap-3 rounded-sm bg-bone px-6 py-3 text-sm font-medium text-background transition hover:bg-accent-blue"
         >
-          Browse projects first{" "}
-          <span className="transition-transform group-hover:translate-x-1">→</span>
+          Browse projects <span aria-hidden="true">→</span>
         </Link>
         <Link
-          to="/signup"
-          search={{ redirect: "/projects" }}
-          className="inline-flex items-center gap-3 px-7 py-3.5 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:border-bone hover:bg-bone/5 transition"
+          to="/apply"
+          className="inline-flex min-h-12 items-center rounded-sm border border-bone/25 px-6 py-3 text-sm text-bone transition hover:border-bone/50 hover:bg-bone/5"
         >
-          Create account to apply
-        </Link>
-        <Link
-          to="/login"
-          search={{ redirect: "/projects" }}
-          className="inline-flex items-center gap-3 px-7 py-3.5 rounded-sm border border-bone/25 font-mono text-[11px] tracking-[0.3em] uppercase hover:border-bone hover:bg-bone/5 transition"
-        >
-          Log in
+          How to get involved
         </Link>
       </div>
     </SectionShell>

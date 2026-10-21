@@ -7,7 +7,7 @@ export function TeamSection() {
   return (
     <SectionShell
       id="team"
-      eyebrow="06"
+      eyebrow="07"
       label="people and practice"
       title="A small, accountable core."
       subtitle="The Bu1ld names people only when their role is confirmed. Project teams and program contributors appear through their own records, with members controlling directory visibility."

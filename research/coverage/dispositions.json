@@ -1,0 +1,129 @@
+[
+  {
+    "name": "PEN / APEN-Synthica / Synthica packages",
+    "classification": "alias / collection children",
+    "canonicalId": "apen-pen",
+    "action": "One APEN public project record; packages are not additional independent studies",
+    "gap": "Exact PEN version lineage remains scoped by source records; private successor details withheld"
+  },
+  {
+    "name": "Spectral JEPA",
+    "classification": "unresolved direction",
+    "canonicalId": "spectral-jepa",
+    "action": "Retain public direction page; exclude from independent canonical project count",
+    "gap": "Relationship to Spectral Krylov-JEPA unresolved; do not merge with financial Eigen-JEPA"
+  },
+  {
+    "name": "Space-JEPA / AQPM-JEPA",
+    "classification": "subproject / engine",
+    "canonicalId": "space-jepa",
+    "parentCanonicalId": "siderea-transient-jepa",
+    "action": "Dedicated subproject page; no additional independent project count",
+    "gap": "Real point-in-time model-ready inputs and scientific promotion remain absent"
+  },
+  {
+    "name": "IRIS / I SPY / SIDEREA",
+    "classification": "name collision / precursor",
+    "canonicalId": "siderea-transient-jepa",
+    "action": "I SPY is SIDEREA precursor; IRIS is conference context in that README; robust-memory IRIS has its own distinct page",
+    "gap": "No conference acceptance or candidate-yield multiplier inferred"
+  },
+  {
+    "name": "NeuroCAT",
+    "classification": "unresolved possible alias",
+    "canonicalId": null,
+    "action": "No separate public page or count",
+    "gap": "No authoritative source establishes a separate project or exact alias"
+  },
+  {
+    "name": "VeriCodeGen",
+    "classification": "unresolved proposal/identity",
+    "canonicalId": null,
+    "action": "Retain discovery lead privately; no published technical claims",
+    "gap": "Owner, source, permission and relationship to NeuroCAD not established"
+  },
+  {
+    "name": "FREM",
+    "classification": "shared-project candidate",
+    "canonicalId": null,
+    "action": "Do not merge into EigenFinance or rebrand as exclusively BU1LD",
+    "gap": "Source exists in broader portfolio context, but canonical ownership/publication relationship not established in this pass"
+  },
+  {
+    "name": "Project Genesis / GenesisE",
+    "classification": "distinct projects",
+    "canonicalIds": ["project-genesis", "genesis-econ"],
+    "action": "Preserve separate existing portfolio pages",
+    "gap": "Continual learning and synthetic economic simulation are separate scopes; archived activation and real-market validity remain unresolved"
+  },
+  {
+    "name": "RIPII / IPII",
+    "classification": "bound project / unresolved name",
+    "canonicalId": "ripii-ipii",
+    "action": "Retain RIPII public atlas plus existing profile; no separate IPII count",
+    "gap": "IPII independent identity unresolved; no speculative acronym expansion"
+  },
+  {
+    "name": "PDE Surrogate Phase Transitions / Dynamical Representation Phase Transitions",
+    "classification": "public label aliases",
+    "canonicalId": "pde-surrogate-phase-transitions",
+    "action": "Preserve old slug and searchable labels",
+    "gap": "No scientific phase-transition or institutional collaboration claim established"
+  },
+  {
+    "name": "BU1LD Nexus / Open Research Forum",
+    "classification": "infrastructure/product / program",
+    "canonicalId": "bu1ld-nexus",
+    "action": "Preserve platform profile and operational program routes; exclude from research-paper count",
+    "gap": "Deployment and operational readiness require separate checks"
+  },
+  {
+    "name": "LabOS",
+    "classification": "infrastructure/product",
+    "canonicalId": null,
+    "action": "Do not count as an independent scientific study",
+    "gap": "Public standalone page and publication authorization not established"
+  },
+  {
+    "name": "PublishProjects",
+    "classification": "unresolved infrastructure identity",
+    "canonicalId": null,
+    "action": "No new public research page or count",
+    "gap": "Authoritative source and permission not found in inspected sources"
+  },
+  {
+    "name": "FinanceMeta / VertexED / Obscured Records",
+    "classification": "separate products",
+    "canonicalIds": ["financemeta", "vertexed", "obscured-records-agent"],
+    "action": "Preserve ownership and product boundaries",
+    "gap": "Cross-listing does not establish exclusive BU1LD ownership or shared accounts"
+  },
+  {
+    "name": "ESNF / NFGM",
+    "classification": "unresolved identities",
+    "canonicalIds": ["esnf", "nfgm"],
+    "action": "Keep existing explicitly unresolved profiles; do not fabricate study descriptions",
+    "gap": "Authoritative source still unresolved"
+  },
+  {
+    "name": "MonteCarlo / visualization scratch",
+    "classification": "empty shell / unrelated archive",
+    "canonicalIds": ["montecarlo", "visualization-scratch"],
+    "action": "Preserve provenance profiles; exclude from research count",
+    "gap": "No falsifiable project evidence"
+  },
+  {
+    "name": "Foundry children, applicant proposals, shadow worktrees, versions",
+    "classification": "collection children / proposals / duplicates",
+    "canonicalId": null,
+    "action": "Do not promote to standalone institutional projects from a name or scaffold",
+    "gap": "Individual identity, evidence and visibility permission required"
+  },
+  {
+    "name": "Worldcastr",
+    "classification": "explicitly out of scope",
+    "canonicalId": null,
+    "action": "No source access, execution or mutation",
+    "gap": "Excluded by owner instruction"
+  }
+]

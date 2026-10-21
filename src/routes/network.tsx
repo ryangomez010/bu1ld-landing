@@ -4,12 +4,16 @@ import {
   CheckCircle2,
   CircleDashed,
   Code2,
+  Download,
   ExternalLink,
+  Filter,
   LockKeyhole,
   Network,
+  Search,
   ShieldCheck,
+  X,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import {
@@ -20,11 +24,19 @@ import {
   type PortfolioRecord,
   type WebsiteAvailability,
 } from "@/data/portfolio";
+import {
+  parseNetworkSearch,
+  PORTFOLIO_FILTERS,
+  PUBLIC_SEARCH_MAX_LENGTH,
+  shouldFocusPublicSearch,
+  type PortfolioFilter,
+} from "@/lib/public-discovery";
 import { pageHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/network")({
   component: NetworkPage,
+  validateSearch: parseNetworkSearch,
   head: () =>
     pageHead({
       title: "Network — The Bu1ld",
@@ -33,8 +45,6 @@ export const Route = createFileRoute("/network")({
       path: "/network",
     }),
 });
-
-type PortfolioFilter = "all" | "products" | "research" | "archive" | "unresolved";
 
 const availabilityMeta: Record<
   WebsiteAvailability,
@@ -81,8 +91,70 @@ function sourceStatusLabel(status: string): string {
 }
 
 function NetworkPage() {
-  const [filter, setFilter] = useState<PortfolioFilter>("all");
-  const records = PORTFOLIO_RECORDS.filter((record) => recordMatches(record, filter));
+  const navigate = Route.useNavigate();
+  const search = Route.useSearch();
+  const { filter: searchFilter, q: searchQuery } = search;
+  const filter = searchFilter ?? "all";
+  const query = searchQuery ?? "";
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const updateSearch = useCallback(
+    (next: { filter?: PortfolioFilter; q?: string }) => {
+      const nextFilter = next.filter ?? filter;
+      const nextQuery = next.q ?? query;
+      void navigate({
+        search: {
+          filter: nextFilter === "all" ? undefined : nextFilter,
+          q: nextQuery || undefined,
+        },
+        replace: true,
+        resetScroll: false,
+      });
+    },
+    [filter, navigate, query],
+  );
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (shouldFocusPublicSearch(event, document.activeElement)) {
+        event.preventDefault();
+        document.getElementById("network-search")?.focus();
+      }
+      if (
+        !event.isComposing &&
+        event.key === "Escape" &&
+        document.activeElement?.id === "network-search"
+      ) {
+        updateSearch({ q: "" });
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [updateSearch]);
+
+  const records = useMemo(
+    () =>
+      PORTFOLIO_RECORDS.filter((record) => {
+        if (!recordMatches(record, filter)) return false;
+        if (!normalizedQuery) return true;
+        return [
+          record.name,
+          record.category,
+          record.objective,
+          record.implemented,
+          record.intendedOutput,
+          record.classification,
+          record.evidenceLevel,
+          sourceStatusLabel(record.sourceStatus),
+          ...record.limitations,
+        ].some((value) => value.toLowerCase().includes(normalizedQuery));
+      }),
+    [filter, normalizedQuery],
+  );
+
+  const filterCount = (value: PortfolioFilter) =>
+    PORTFOLIO_RECORDS.filter((record) => recordMatches(record, value)).length;
+  const hasActiveFilters = filter !== "all" || normalizedQuery.length > 0;
 
   return (
     <InstitutionLayout
@@ -111,6 +183,41 @@ function NetworkPage() {
             <p className="mt-2 font-display text-3xl text-accent-red">{UNRESOLVED_SOURCE_COUNT}</p>
           </div>
         </div>
+
+        <Link
+          to="/research-atlas"
+          className="group mt-6 flex flex-col justify-between gap-5 rounded-sm border border-accent-blue/25 bg-accent-blue/5 p-6 transition hover:border-accent-blue/60 sm:flex-row sm:items-center"
+        >
+          <div>
+            <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent-blue">
+              Complete BU1LD research atlas
+            </p>
+            <p className="mt-2 font-display text-2xl text-bone">
+              Browse all 33 public research lines
+            </p>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Active work, retained reports, null results, negative findings, prototypes, and scoped
+              foundries—each with its own evidence boundary and stable webpage.
+            </p>
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.18em] text-accent-blue group-hover:text-bone">
+            Open atlas <ArrowUpRight className="h-4 w-4" aria-hidden />
+          </span>
+        </Link>
+
+        <a
+          href="/portfolio-manifest.json"
+          download
+          className="mt-3 flex flex-col justify-between gap-3 rounded-sm border border-border px-5 py-4 transition hover:border-bone/30 hover:bg-bone/5 sm:flex-row sm:items-center"
+        >
+          <span className="inline-flex items-center gap-3 text-sm text-bone">
+            <Download className="h-4 w-4 text-accent-green" aria-hidden />
+            Download the public portfolio manifest
+          </span>
+          <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted-foreground">
+            JSON · {PORTFOLIO_RECORDS.length} identities · 33 research lines
+          </span>
+        </a>
 
         <div className="mt-16 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -199,81 +306,147 @@ function NetworkPage() {
               Canonical portfolio identities
             </h2>
           </div>
-          <div className="flex flex-wrap gap-2" aria-label="Filter portfolio records">
-            {(["all", "products", "research", "archive", "unresolved"] as const).map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => setFilter(option)}
-                aria-pressed={filter === option}
-                className={cn(
-                  "rounded-full border px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.16em] transition",
-                  filter === option
-                    ? "border-accent-blue/50 bg-accent-blue/10 text-bone"
-                    : "border-border text-muted-foreground hover:border-bone/30 hover:text-bone",
-                )}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+          <label className="relative block w-full max-w-md">
+            <span className="sr-only">Search canonical portfolio identities</span>
+            <Search
+              className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
+            <input
+              id="network-search"
+              type="search"
+              maxLength={PUBLIC_SEARCH_MAX_LENGTH}
+              value={query}
+              onChange={(event) => updateSearch({ q: event.target.value })}
+              placeholder="Search projects, fields, evidence…"
+              className="w-full rounded-sm border border-border bg-background/70 py-3 pl-11 pr-10 text-sm text-bone outline-none transition placeholder:text-muted-foreground focus:border-accent-green/60 focus:ring-1 focus:ring-accent-green/30"
+            />
+            <span className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-border px-1.5 py-0.5 font-mono text-[8px] text-muted-foreground sm:block">
+              /
+            </span>
+          </label>
         </div>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {records.map((record) => {
-            const unresolved = record.sourceStatus.startsWith("UNRESOLVED");
-            return (
-              <article key={record.id} className="panel flex min-h-44 flex-col rounded-sm p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground">
-                    {record.classification.replaceAll("_", " ")}
-                  </span>
-                  <span
+        <div
+          className="mt-5 flex flex-wrap items-center gap-2"
+          role="group"
+          aria-label="Filter portfolio records"
+        >
+          <Filter className="mr-1 h-4 w-4 text-muted-foreground" aria-hidden />
+          {PORTFOLIO_FILTERS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => updateSearch({ filter: option })}
+              aria-pressed={filter === option}
+              className={cn(
+                "min-h-11 rounded-full border px-3 py-2 font-mono text-xs uppercase tracking-[0.16em] transition",
+                filter === option
+                  ? "border-accent-blue/50 bg-accent-blue/10 text-bone"
+                  : "border-border text-muted-foreground hover:border-bone/30 hover:text-bone",
+              )}
+            >
+              {option} · {filterCount(option)}
+            </button>
+          ))}
+          {hasActiveFilters ? (
+            <button
+              type="button"
+              onClick={() => updateSearch({ filter: "all", q: "" })}
+              className="ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full border border-transparent px-3 py-2 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition hover:text-bone"
+            >
+              <X className="h-3 w-3" aria-hidden /> Clear
+            </button>
+          ) : null}
+        </div>
+
+        <p
+          className="mt-5 font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground"
+          aria-live="polite"
+        >
+          Showing {records.length} of {PORTFOLIO_RECORDS.length} canonical identities
+        </p>
+
+        {records.length ? (
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {records.map((record) => {
+              const unresolved = record.sourceStatus.startsWith("UNRESOLVED");
+              return (
+                <article key={record.id} className="panel flex min-h-44 flex-col rounded-sm p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground">
+                      {record.classification.replaceAll("_", " ")}
+                    </span>
+                    <span
+                      className={cn(
+                        "rounded-full border px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.14em]",
+                        record.evidenceLevel === "E0"
+                          ? "border-accent-red/30 text-accent-red"
+                          : "border-bone/20 text-bone/70",
+                      )}
+                    >
+                      {record.evidenceLevel}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 font-display text-xl text-bone">{record.name}</h3>
+                  <p
                     className={cn(
-                      "rounded-full border px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.14em]",
-                      record.evidenceLevel === "E0"
-                        ? "border-accent-red/30 text-accent-red"
-                        : "border-bone/20 text-bone/70",
+                      "mt-3 text-xs leading-relaxed",
+                      unresolved ? "text-accent-red" : "text-muted-foreground",
                     )}
                   >
-                    {record.evidenceLevel}
-                  </span>
-                </div>
-                <h3 className="mt-4 font-display text-xl text-bone">{record.name}</h3>
-                <p
-                  className={cn(
-                    "mt-3 text-xs leading-relaxed",
-                    unresolved ? "text-accent-red" : "text-muted-foreground",
-                  )}
-                >
-                  {sourceStatusLabel(record.sourceStatus)}
-                </p>
-                <div className="mt-auto pt-5">
-                  {record.repositoryUrl ? (
-                    <a
-                      href={record.repositoryUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-accent-blue hover:text-bone"
+                    {sourceStatusLabel(record.sourceStatus)}
+                  </p>
+                  <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-5">
+                    <Link
+                      to="/portfolio/$projectId"
+                      params={{ projectId: record.id }}
+                      search={search}
+                      className="inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-bone hover:text-accent-blue"
                     >
-                      Open source
-                      <ExternalLink className="h-3 w-3" aria-hidden />
-                    </a>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.14em] text-bone/40">
-                      {unresolved ? (
-                        <CircleDashed className="h-3 w-3" aria-hidden />
-                      ) : (
-                        <ShieldCheck className="h-3 w-3" aria-hidden />
-                      )}
-                      {unresolved ? "No source link" : "No public repository verified"}
-                    </span>
-                  )}
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                      Project webpage
+                      <ArrowUpRight className="h-3 w-3" aria-hidden />
+                    </Link>
+                    {record.repositoryUrl ? (
+                      <a
+                        href={record.repositoryUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-accent-blue hover:text-bone"
+                      >
+                        Source
+                        <ExternalLink className="h-3 w-3" aria-hidden />
+                      </a>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.14em] text-bone/40">
+                        {unresolved ? (
+                          <CircleDashed className="h-3 w-3" aria-hidden />
+                        ) : (
+                          <ShieldCheck className="h-3 w-3" aria-hidden />
+                        )}
+                        {unresolved ? "No source link" : "No public repository verified"}
+                      </span>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mt-6 rounded-sm border border-border bg-bone/5 p-8 text-center">
+            <Network className="mx-auto h-6 w-6 text-muted-foreground" aria-hidden />
+            <p className="mt-4 text-sm text-muted-foreground">
+              No canonical identity matches this search and filter combination.
+            </p>
+            <button
+              type="button"
+              onClick={() => updateSearch({ filter: "all", q: "" })}
+              className="mt-5 min-h-11 rounded-sm border border-bone/20 px-4 py-2 font-mono text-xs uppercase tracking-[0.18em] text-bone transition hover:border-accent-green/60"
+            >
+              Reset network
+            </button>
+          </div>
+        )}
 
         <div className="mt-10 grid gap-4 md:grid-cols-2">
           <div className="rounded-sm border border-accent-blue/20 bg-accent-blue/5 p-6">

@@ -10,7 +10,7 @@ export function StartupsSection() {
   return (
     <SectionShell
       id="startups"
-      eyebrow="05"
+      eyebrow="06"
       label="applied work"
       title="Research earns its next step."
       subtitle="Open projects, incubation, and evidence — not a fake portfolio of unnamed startups."
@@ -51,8 +51,8 @@ export function StartupsSection() {
           return (
             <motion.div
               key={s.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={false}
+              whileInView={{ y: [8, 0] }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6 }}
             >

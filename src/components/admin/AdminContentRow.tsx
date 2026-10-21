@@ -17,6 +17,8 @@ type AdminContentRowProps = {
   onSaveEdit: () => void;
   onTogglePublish: () => void;
   onDelete: () => void;
+  publicationLabel?: string;
+  children?: React.ReactNode;
 };
 
 export function AdminContentRow({
@@ -31,6 +33,8 @@ export function AdminContentRow({
   onSaveEdit,
   onTogglePublish,
   onDelete,
+  publicationLabel,
+  children,
 }: AdminContentRowProps) {
   return (
     <li className="border-b border-border/40 pb-3 text-bone admin-row-hover px-2 -mx-2 rounded-sm">
@@ -83,7 +87,7 @@ export function AdminContentRow({
           onClick={onTogglePublish}
           className="text-muted-foreground hover:text-bone"
         >
-          {published ? "unpublish" : "publish"}
+          {publicationLabel ?? (published ? "unpublish" : "publish")}
         </button>
         <ConfirmButton
           title={`Delete “${title}”?`}
@@ -98,6 +102,7 @@ export function AdminContentRow({
           }
         />
       </div>
+      {children}
     </li>
   );
 }

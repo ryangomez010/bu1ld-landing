@@ -17,6 +17,7 @@ export function ProjectMemberWorkspace({
   teamMembers: Array<{ name: string; userId: string }>;
 }) {
   if (application.status !== "accepted") return null;
+  const discordHref = safeHref(project.discord_url);
 
   return (
     <section className="mt-10 panel glass rounded-2xl overflow-hidden border-accent-green/20">
@@ -101,9 +102,9 @@ export function ProjectMemberWorkspace({
           </div>
         ) : null}
 
-        {project.discord_url ? (
+        {discordHref ? (
           <a
-            href={project.discord_url}
+            href={discordHref}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.2em] uppercase text-accent-blue hover:text-bone"

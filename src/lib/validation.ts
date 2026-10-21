@@ -67,6 +67,23 @@ export const leadRequestSchema = z.object({
 
 export type LeadRequestInput = z.infer<typeof leadRequestSchema>;
 
+export const mentorshipRequestSchema = z.object({
+  topic: z.string().trim().min(3, "Add a specific topic.").max(120),
+  goal: z.string().trim().min(40, "Explain your goal in at least 40 characters.").max(2000),
+  availabilityNote: z.string().trim().min(3, "Add your availability.").max(500),
+});
+
+export function parseMentorshipRequest(input: {
+  topic: string;
+  goal: string;
+  availabilityNote: string;
+}) {
+  const result = mentorshipRequestSchema.safeParse(input);
+  return result.success
+    ? { data: result.data, error: null }
+    : { data: null, error: result.error.errors[0]?.message ?? "Invalid mentorship request." };
+}
+
 export function parseCreateProjectInput(input: {
   title: string;
   description: string;
@@ -115,12 +132,14 @@ export function parseLeadRequestInput(message: string): {
   return { data: result.data, error: null };
 }
 
-export const emailRequestSchema = z.object({
-  to: z.string().trim().email().max(254).optional(),
-  userId: z.string().uuid().optional(),
-  subject: z.string().trim().min(1).max(LIMITS.emailSubject),
-  html: z.string().trim().min(1).max(LIMITS.emailHtml),
-});
+export const emailRequestSchema = z
+  .object({
+    to: z.string().trim().email().max(254).optional(),
+    userId: z.string().uuid().optional(),
+    subject: z.string().trim().min(1).max(LIMITS.emailSubject),
+    html: z.string().trim().min(1).max(LIMITS.emailHtml),
+  })
+  .strict();
 
 export type EmailRequestInput = z.infer<typeof emailRequestSchema>;
 
@@ -138,11 +157,13 @@ export function parseEmailRequestInput(raw: unknown): {
   return { data: result.data, error: null };
 }
 
-export const digestRequestSchema = z.object({
-  frequency: z.enum(["daily", "weekly"]).optional(),
-  force: z.boolean().optional(),
-  dryRun: z.boolean().optional(),
-});
+export const digestRequestSchema = z
+  .object({
+    frequency: z.enum(["daily", "weekly"]).optional(),
+    force: z.boolean().optional(),
+    dryRun: z.boolean().optional(),
+  })
+  .strict();
 
 export type DigestRequestInput = z.infer<typeof digestRequestSchema>;
 

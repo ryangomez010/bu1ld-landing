@@ -1,3 +1,7 @@
+import { getPublicSupabase } from "@/lib/public-supabase";
+import { trackEvent } from "@/lib/analytics";
+import { applicationAnalyticsProps, applicationReceiptMatches } from "@/lib/application-analytics";
+import { closeExpiredCohort } from "@/lib/participation-state";
 import { slugify } from "@/data/seed/content";
 import { SEED_JOBS, SEED_PROJECTS } from "@/data/seed/projects";
 import { notifyApplicationUpdate, notifyLeadApproved } from "@/lib/email";
@@ -59,7 +63,7 @@ function writeCustomProjects(projects: Project[]) {
 }
 
 function normalizeProject(row: Record<string, unknown>): Project {
-  return {
+  return closeExpiredCohort({
     id: String(row.id),
     slug: String(row.slug),
     title: String(row.title),
@@ -89,7 +93,7 @@ function normalizeProject(row: Record<string, unknown>): Project {
       row.weekly_commitment_hours != null ? Number(row.weekly_commitment_hours) : null,
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
-  };
+  });
 }
 
 function normalizeApplication(row: Record<string, unknown>): ProjectApplication {
@@ -149,12 +153,17 @@ export function isProjectLead(
 
 function localProjects(status?: ProjectStatus): Project[] {
   if (!isLocalPersistenceEnabled()) return [];
-  const all = [...readCustomProjects(), ...SEED_PROJECTS];
+  const all = [...readCustomProjects(), ...SEED_PROJECTS].map((project) =>
+    closeExpiredCohort(project),
+  );
   return status ? all.filter((p) => p.status === status) : all;
 }
 
-export async function fetchProjects(status?: ProjectStatus): Promise<Project[]> {
-  const supabase = getSupabase();
+export async function fetchProjects(
+  status?: ProjectStatus,
+  options: { throwOnUnavailable?: boolean; timeoutMs?: number } = {},
+): Promise<Project[]> {
+  const supabase = getPublicSupabase();
   if (supabase) {
     try {
       let query = supabase
@@ -163,17 +172,23 @@ export async function fetchProjects(status?: ProjectStatus): Promise<Project[]> 
         .eq("published", true)
         .order("created_at", { ascending: false });
       if (status) query = query.eq("status", status);
-      const { data, error } = await query.abortSignal(AbortSignal.timeout(8_000));
+      const { data, error } = await query.abortSignal(
+        AbortSignal.timeout(Math.max(250, Math.min(8000, options.timeoutMs ?? 8000))),
+      );
       if (!error) {
-        return withSeedFallback(
-          (data ?? []).map((row) => normalizeProject(row as Record<string, unknown>)),
-          localProjects(status),
-        );
+        const projects = (data ?? [])
+          .map((row) => normalizeProject(row as Record<string, unknown>))
+          .filter((project) => !status || project.status === status);
+        return options.throwOnUnavailable
+          ? projects
+          : withSeedFallback(projects, localProjects(status));
       }
     } catch {
       // Public catalog falls through to the safe environment-specific fallback.
     }
-    return isDemoMode() ? localProjects(status) : [];
+  }
+  if (options.throwOnUnavailable) {
+    throw new Error("The project directory is temporarily unavailable. Please try again.");
   }
   return isDemoMode() ? localProjects(status) : [];
 }
@@ -485,6 +500,11 @@ export async function applyToProject(
   },
   questionAnswers?: { questionId: string; answer: string }[],
 ): Promise<{ error: string | null }> {
+  if (closeExpiredCohort(project).status !== "open")
+    return {
+      error:
+        "This project is not accepting applications. Review its current status before continuing.",
+    };
   const safePitch = clampText(pitch, LIMITS.applicationPitch);
   if (safePitch.length < 20) return { error: "Pitch must be at least 20 characters." };
 
@@ -492,12 +512,20 @@ export async function applyToProject(
   const supabase = getSupabase();
 
   if (supabase) {
-    const { error } = await supabase.rpc("submit_project_application", {
+    const { data, error } = await supabase.rpc("submit_project_application", {
       p_project_id: project.id,
       p_pitch: safePitch,
       p_answers: questionAnswers ?? [],
     });
-    return { error: error?.message ?? null };
+    if (error) return { error: error.message };
+    if (!applicationReceiptMatches(data, "project", userId, project.id)) {
+      return {
+        error:
+          "The application receipt could not be confirmed. Check your applications before submitting again.",
+      };
+    }
+    trackEvent("application_submitted", applicationAnalyticsProps("project"));
+    return { error: null };
   }
 
   if (!isLocalPersistenceEnabled()) {

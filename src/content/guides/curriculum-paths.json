@@ -1,0 +1,153 @@
+[
+  {
+    "id": "engineering",
+    "title": "Python and research engineering",
+    "description": "Turn a small calculation into a readable, testable, reproducible data artifact. Begin here if you have never run a research script.",
+    "lessons": [
+      "ml-python-research-functions",
+      "ml-numpy-shape-contracts",
+      "ml-research-environments-tests",
+      "ml-data-pipeline-contracts"
+    ],
+    "projectQuery": "reproducibility",
+    "exercise": "01_engineering.py"
+  },
+  {
+    "id": "math",
+    "title": "Mathematics for ML",
+    "description": "Use shapes, geometry, probability, and gradients to reason about a model before training it.",
+    "lessons": [
+      "ml-vectors-matrices",
+      "ml-dot-products",
+      "ml-probability-conditioning",
+      "ml-gradient-descent"
+    ],
+    "projectQuery": "representation",
+    "exercise": "02_mathematics.py"
+  },
+  {
+    "id": "classical",
+    "title": "Classical ML and evaluation",
+    "description": "Fit interpretable baselines and separate model selection, probability quality, and final assessment.",
+    "lessons": [
+      "ml-linear-regression",
+      "ml-decision-trees",
+      "ml-cross-validation",
+      "ml-calibration"
+    ],
+    "projectQuery": "evaluation",
+    "exercise": "03_classical.py"
+  },
+  {
+    "id": "deep",
+    "title": "Deep learning foundations",
+    "description": "Understand gradients and optimizer state, then diagnose a tiny training problem before scaling.",
+    "lessons": [
+      "ml-backpropagation",
+      "ml-adamw",
+      "ml-normalization-layers",
+      "ml-training-debugging"
+    ],
+    "projectQuery": "neural",
+    "exercise": "04_deep_learning.py"
+  },
+  {
+    "id": "language",
+    "title": "Transformers and language models",
+    "description": "Follow text from tokens through masked objectives and parameter-efficient adaptation; evaluate the task rather than a fluent impression.",
+    "lessons": ["ml-tokenization", "ml-attention-masks", "ml-language-model-objectives", "ml-lora"],
+    "projectQuery": "JEPA",
+    "exercise": "05_language.py"
+  },
+  {
+    "id": "representations",
+    "title": "Representation learning and world models",
+    "description": "Compare reconstruction, contrastive signals, latent prediction, and multi-step dynamics with explicit collapse checks.",
+    "lessons": [
+      "ml-autoencoders",
+      "ml-contrastive-learning",
+      "ml-jepa-targets-collapse",
+      "ml-latent-dynamics-rollouts"
+    ],
+    "projectQuery": "JEPA",
+    "exercise": "06_representations.py"
+  },
+  {
+    "id": "scientific",
+    "title": "Scientific ML and neural operators",
+    "description": "Specify a PDE problem and boundary conditions, then compare operator and physics-informed approaches under rollout and resolution shift.",
+    "lessons": [
+      "ml-pde-boundary-contracts",
+      "ml-physics-informed-networks",
+      "ml-neural-operators",
+      "ml-surrogate-stability-shift"
+    ],
+    "projectQuery": "Scientific ML",
+    "exercise": "07_scientific_ml.py"
+  },
+  {
+    "id": "memory",
+    "title": "Memory, retrieval, and agents",
+    "description": "Evaluate evidence retrieval separately from answer generation, then test memory interventions and bounded tool behavior.",
+    "lessons": [
+      "ml-retrieval-augmented-generation",
+      "ml-chunking-reranking",
+      "ml-causal-memory-interventions",
+      "ml-agent-tool-contracts"
+    ],
+    "projectQuery": "Causal Memory",
+    "exercise": "08_memory_agents.py"
+  },
+  {
+    "id": "systems",
+    "title": "Efficient ML systems",
+    "description": "Measure numerical error, cache size, and queueing costs while keeping quality and latency comparisons fair.",
+    "lessons": [
+      "ml-quantization",
+      "ml-kv-cache",
+      "ml-inference-batching",
+      "ml-distillation-speculative-decoding"
+    ],
+    "projectQuery": "Olympus",
+    "exercise": "09_efficiency.py"
+  },
+  {
+    "id": "domains",
+    "title": "ML for astronomy, weather, and materials",
+    "description": "Keep provenance, availability time, scientific validation, and inverse-problem uncertainty explicit across domain applications.",
+    "lessons": [
+      "ml-scientific-data-provenance",
+      "ml-astronomy-candidate-validation",
+      "ml-weather-time-baselines",
+      "ml-materials-inverse-design"
+    ],
+    "projectQuery": "Scientific ML",
+    "exercise": "10_domain_ml.py"
+  },
+  {
+    "id": "decisions",
+    "title": "Reinforcement learning and decision systems",
+    "description": "Define transitions and returns, compute tiny value problems, then examine exploration and offline evidence limits.",
+    "lessons": [
+      "ml-mdp-return-contracts",
+      "ml-value-policy-iteration",
+      "ml-exploration-offline-evaluation",
+      "ml-simulation-robotics-limits"
+    ],
+    "projectQuery": "Mahjong",
+    "exercise": "11_decision_systems.py"
+  },
+  {
+    "id": "practice",
+    "title": "Research practice",
+    "description": "Convert a paper or idea into a falsifiable, resource-matched comparison with retained negative results and a reproducible report.",
+    "lessons": [
+      "ml-falsifiable-hypotheses",
+      "ml-ablation-studies",
+      "ml-paired-run-comparisons",
+      "ml-negative-results"
+    ],
+    "projectQuery": "research",
+    "exercise": "12_research_practice.py"
+  }
+]

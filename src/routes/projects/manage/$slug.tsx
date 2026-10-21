@@ -50,6 +50,7 @@ import type {
   ProjectApplication,
   ProjectMembership,
 } from "@/lib/types";
+import { safeHref } from "@/lib/urls";
 
 const STATUS_HELP: Record<ApplicationStatus, string> = {
   pending: "Awaiting your review — accept, waitlist, or decline.",
@@ -571,9 +572,9 @@ function ManageProject() {
                 <TagList tags={app.applicant_interests} className="mt-3" />
               ) : null}
 
-              {app.applicant_linkedin ? (
+              {safeHref(app.applicant_linkedin) ? (
                 <a
-                  href={app.applicant_linkedin}
+                  href={safeHref(app.applicant_linkedin)}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-2 inline-block text-sm text-accent-blue hover:text-bone mr-4"
@@ -581,9 +582,9 @@ function ManageProject() {
                   LinkedIn →
                 </a>
               ) : null}
-              {app.applicant_github ? (
+              {safeHref(app.applicant_github) ? (
                 <a
-                  href={app.applicant_github}
+                  href={safeHref(app.applicant_github)}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-2 inline-block text-sm text-accent-blue hover:text-bone"

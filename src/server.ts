@@ -104,13 +104,22 @@ export default {
         );
       }
       if (url.pathname === "/api/email") {
-        return handleEmailRequest(request, workerEnv);
+        return applySecurityHeaders(
+          await handleEmailRequest(request, workerEnv),
+          url.protocol === "https:",
+        );
       }
       if (url.pathname === "/api/digest") {
-        return handleDigestRequest(request, workerEnv);
+        return applySecurityHeaders(
+          await handleDigestRequest(request, workerEnv),
+          url.protocol === "https:",
+        );
       }
       if (url.pathname === "/api/account-deletion") {
-        return handleAccountDeletionRequest(request, workerEnv);
+        return applySecurityHeaders(
+          await handleAccountDeletionRequest(request, workerEnv),
+          url.protocol === "https:",
+        );
       }
 
       const handler = await getServerEntry();

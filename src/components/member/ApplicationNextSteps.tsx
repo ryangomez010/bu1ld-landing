@@ -39,12 +39,13 @@ export function ApplicationNextSteps({
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{info.body}</p>
       <div className="mt-3 flex flex-wrap gap-4">
         {status === "accepted" && projectSlug ? (
-          <a
-            href={`/projects/${projectSlug}#project-evidence`}
+          <Link
+            to="/workspace"
+            search={{ project: projectSlug }}
             className="font-mono text-[9px] uppercase tracking-[0.15em] text-accent-blue hover:text-bone"
           >
             Open contribution workspace →
-          </a>
+          </Link>
         ) : null}
         {status === "waitlist" && projectSlug ? (
           <Link

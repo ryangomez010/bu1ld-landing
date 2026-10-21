@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { FolderKanban, Home, ListChecks, Menu, Search } from "lucide-react";
 
+import { activeMemberDestination } from "@/lib/member-navigation";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -10,8 +11,20 @@ const TABS = [
   { to: "/search", label: "Search", icon: Search },
 ] as const;
 
-export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
+export function MobileTabBar({
+  onMenu,
+  menuOpen = false,
+}: {
+  onMenu: () => void;
+  menuOpen?: boolean;
+}) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  const destination = activeMemberDestination(
+    pathname,
+    TABS.map((tab) => tab.to),
+  );
+  if (menuOpen) return null;
 
   return (
     <nav
@@ -21,14 +34,14 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
       <div className="glass-dock pointer-events-auto">
         <ul className="flex items-stretch justify-around px-2 pt-1 pb-2">
           {TABS.map(({ to, label, icon: Icon }) => {
-            const active = pathname === to || (to !== "/dashboard" && pathname.startsWith(to));
+            const active = destination === to;
             return (
               <li key={to} className="flex-1 max-w-[5.5rem]">
                 <Link
                   to={to}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex flex-col items-center gap-1 rounded-xl py-2 font-mono text-[8px] tracking-[0.1em] uppercase transition-all duration-300",
+                    "relative flex flex-col items-center gap-1 rounded-xl py-2 font-mono text-[10px] tracking-[0.04em] uppercase transition-all duration-300",
                     active ? "text-accent-blue" : "text-muted-foreground hover:text-bone",
                   )}
                 >
@@ -61,7 +74,7 @@ export function MobileTabBar({ onMenu }: { onMenu: () => void }) {
               type="button"
               onClick={onMenu}
               aria-label="Open navigation menu"
-              className="flex w-full flex-col items-center gap-1 rounded-md py-2 font-mono text-[8px] tracking-[0.1em] uppercase text-muted-foreground hover:text-bone transition-colors duration-200"
+              className="flex w-full flex-col items-center gap-1 rounded-md py-2 font-mono text-[10px] tracking-[0.04em] uppercase text-muted-foreground hover:text-bone transition-colors duration-200"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-md">
                 <Menu className="h-5 w-5" aria-hidden />

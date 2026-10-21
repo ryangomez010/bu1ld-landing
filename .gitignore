@@ -20,6 +20,10 @@ dist-ssr
 !.env.example
 public/runtime-env.js
 
+# Local editorial material stays private until separately approved for publication.
+research/paper-reviews/
+.serena/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars

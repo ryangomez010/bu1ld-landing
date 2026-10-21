@@ -3,9 +3,9 @@ import { useAuth } from "@/lib/auth";
 import { isProjectLead } from "@/lib/projects";
 
 export function RequireProjectLead({ children }: { children: React.ReactNode }) {
-  const { profile, loading } = useAuth();
+  const { profile, loading, profileLoading } = useAuth();
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground animate-pulse">
         Loading…

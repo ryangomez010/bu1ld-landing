@@ -1,82 +1,71 @@
 import { getSupabase } from "@/lib/supabase";
+import { eventState } from "@/lib/event-state";
 import type { MlEvent } from "@/lib/types";
 
-export type EventRsvp = {
-  user_id: string;
-  event_id: string;
-  created_at: string;
-};
+export type RegistrationStatus = "legacy" | "confirmed" | "waitlisted" | "cancelled";
+const statuses: RegistrationStatus[] = ["legacy", "confirmed", "waitlisted", "cancelled"];
+const unavailable = "Registration could not be confirmed. Refresh your status before trying again.";
+
+export async function fetchMyRegistration(userId: string, eventId: string) {
+  const db = getSupabase();
+  if (!db) throw new Error("Event registration is temporarily unavailable.");
+  const { data, error } = await db
+    .from("event_rsvps")
+    .select("status")
+    .eq("user_id", userId)
+    .eq("event_id", eventId)
+    .abortSignal(AbortSignal.timeout(8000))
+    .maybeSingle();
+  if (error) throw new Error(unavailable);
+  if (!data) return null;
+  if (!statuses.includes(data.status)) throw new Error(unavailable);
+  return data.status;
+}
+
+/** Caller retains requestId across an uncertain retry; never toggles on repeated clicks. */
+export async function setEventRegistration(
+  eventId: string,
+  action: "register" | "cancel",
+  requestId: string,
+) {
+  const db = getSupabase();
+  if (!db) throw new Error("Event registration is temporarily unavailable.");
+  const { data, error } = await db
+    .rpc("set_event_registration", {
+      p_event_id: eventId,
+      p_action: action,
+      p_request_id: requestId,
+    })
+    .abortSignal(AbortSignal.timeout(12000));
+  if (error) {
+    const safe = [
+      "This event is full.",
+      "Registration is not open.",
+      "Sign in to register.",
+      "Event unavailable.",
+    ];
+    throw new Error(safe.includes(error.message) ? error.message : unavailable);
+  }
+  if (!data || !statuses.includes(data)) throw new Error(unavailable);
+  return data;
+}
 
 export async function fetchMyRsvpEventIds(userId: string): Promise<Set<string>> {
-  const supabase = getSupabase();
-  if (!supabase) return new Set();
-
-  const { data, error } = await supabase
-    .from("event_rsvps")
-    .select("event_id")
-    .eq("user_id", userId);
-
-  if (error || !data) return new Set();
-  return new Set(data.map((r) => String(r.event_id)));
-}
-
-export async function fetchRsvpCount(eventId: string): Promise<number> {
-  const supabase = getSupabase();
-  if (!supabase) return 0;
-
-  const { count, error } = await supabase
-    .from("event_rsvps")
-    .select("event_id", { count: "exact", head: true })
-    .eq("event_id", eventId);
-
-  if (error) return 0;
-  return count ?? 0;
-}
-
-export async function isRsvped(userId: string, eventId: string): Promise<boolean> {
-  const supabase = getSupabase();
-  if (!supabase) return false;
-
-  const { data } = await supabase
+  const db = getSupabase();
+  if (!db) throw new Error("Event registration is temporarily unavailable.");
+  const { data, error } = await db
     .from("event_rsvps")
     .select("event_id")
     .eq("user_id", userId)
-    .eq("event_id", eventId)
-    .maybeSingle();
-
-  return !!data;
-}
-
-export async function toggleEventRsvp(
-  userId: string,
-  event: MlEvent,
-): Promise<{ rsvped: boolean; error: string | null }> {
-  const supabase = getSupabase();
-  if (!supabase) return { rsvped: false, error: "Event registration is temporarily unavailable." };
-
-  const existing = await isRsvped(userId, event.id);
-  if (existing) {
-    const { error } = await supabase
-      .from("event_rsvps")
-      .delete()
-      .eq("user_id", userId)
-      .eq("event_id", event.id);
-    return { rsvped: false, error: error?.message ?? null };
-  }
-
-  const { error } = await supabase.from("event_rsvps").insert({
-    user_id: userId,
-    event_id: event.id,
-  });
-  return { rsvped: true, error: error?.message ?? null };
+    .in("status", ["confirmed", "waitlisted", "legacy"])
+    .abortSignal(AbortSignal.timeout(8000));
+  if (error || !data) throw new Error(unavailable);
+  return new Set(data.map((row) => String(row.event_id)));
 }
 
 export async function fetchMyUpcomingRsvps(userId: string, events: MlEvent[]): Promise<MlEvent[]> {
   const ids = await fetchMyRsvpEventIds(userId);
-  if (!ids.size) return [];
-  const now = new Date();
   return events
-    .filter((e) => ids.has(e.id))
-    .filter((e) => !e.end_date || new Date(e.end_date) >= now)
+    .filter((event) => ids.has(event.id) && ["upcoming", "ongoing"].includes(eventState(event)))
     .slice(0, 5);
 }

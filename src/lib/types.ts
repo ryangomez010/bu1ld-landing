@@ -152,6 +152,27 @@ export type MlEvent = {
   published: boolean;
   created_at: string;
   updated_at: string;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  timezone?: string | null;
+  operational_state?: "scheduled" | "cancelled" | "postponed";
+  archived?: boolean;
+  registration_mode?: "unavailable" | "internal" | "external";
+  registration_state?: "open" | "closed" | "waitlist";
+  registration_opens_at?: string | null;
+  registration_deadline?: string | null;
+  registration_url?: string | null;
+  capacity?: number | null;
+  waitlist_enabled?: boolean;
+  organizer?: string | null;
+  eligibility?: string | null;
+  format_details?: string | null;
+  price_details?: string | null;
+  agenda?: string | null;
+  contact_url?: string | null;
+  source_url?: string | null;
+  verified_at?: string | null;
+  public_materials?: EventResource[];
 };
 
 export type Paper = {
@@ -227,17 +248,25 @@ export type NewsletterIssue = {
 export type GuideSection =
   | { type: "h2"; text: string }
   | { type: "p"; text: string }
+  | { type: "answer"; text: string }
   | { type: "list"; items: string[] }
   | { type: "diagram"; title: string; lines: string[] }
   | { type: "callout"; text: string };
 
-export type Guide = {
+export type GuideSummary = {
   slug: string;
   title: string;
   description: string;
   readMinutes: number;
   tags: string[];
+  track?: string;
+  level?: "Beginner" | "Intermediate" | "Advanced";
+  wordCount?: number;
+};
+
+export type Guide = GuideSummary & {
   sections: GuideSection[];
+  references?: { label: string; url: string }[];
 };
 
 export type ReadingProgress = {
@@ -471,6 +500,54 @@ export type Notification = {
   href: string | null;
   read: boolean;
   created_at: string;
+};
+
+export type MentorshipRequestStatus = "pending" | "accepted" | "declined" | "closed";
+
+export type MentorProfile = {
+  mentor_id: string;
+  headline: string;
+  expertise: string[];
+  availability_note: string;
+  monthly_capacity: number;
+  accepting_requests: boolean;
+  visible: boolean;
+  full_name?: string | null;
+  bio?: string | null;
+  avatar_url?: string | null;
+};
+
+export type MentorshipRequest = {
+  id: string;
+  mentor_id: string;
+  requester_id: string;
+  topic: string;
+  goal: string;
+  availability_note: string;
+  status: MentorshipRequestStatus;
+  decision_note: string | null;
+  created_at: string;
+  updated_at: string;
+  mentor_name?: string | null;
+  requester_name?: string | null;
+};
+
+export type CommunityChannel = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  published: boolean;
+};
+
+export type CommunityPost = {
+  id: string;
+  channel_id: string;
+  author_id: string;
+  body: string;
+  status: "published" | "hidden" | "removed";
+  created_at: string;
+  author_name?: string | null;
 };
 
 export type SearchResult = {

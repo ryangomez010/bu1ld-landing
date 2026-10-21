@@ -1,13 +1,14 @@
-/** Allow only safe http(s) URLs for user-supplied links. */
-const SAFE_URL = /^https?:\/\//i;
-
 export function isSafeUrl(url: string | null | undefined): boolean {
   if (!url?.trim()) return false;
   try {
     const parsed = new URL(url.trim());
-    return parsed.protocol === "http:" || parsed.protocol === "https:";
+    return (
+      (parsed.protocol === "http:" || parsed.protocol === "https:") &&
+      !parsed.username &&
+      !parsed.password
+    );
   } catch {
-    return SAFE_URL.test(url.trim());
+    return false;
   }
 }
 

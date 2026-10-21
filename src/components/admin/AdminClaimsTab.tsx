@@ -18,7 +18,7 @@ import {
   deleteInstitutionalClaim,
   reviewInstitutionalClaim,
 } from "@/lib/institutional-claims";
-import { isSafeUrl } from "@/lib/urls";
+import { isSafeUrl, safeHref } from "@/lib/urls";
 import type { InstitutionalClaim, InstitutionalClaimType } from "@/lib/types";
 
 const CLAIM_TYPES: InstitutionalClaimType[] = [
@@ -175,15 +175,19 @@ export function AdminClaimsTab({
                   {claim.context}
                 </p>
               ) : null}
-              <a
-                href={claim.evidence_url}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 inline-flex items-center gap-1 text-sm text-accent-blue hover:text-bone"
-              >
-                {claim.evidence_label}
-                <ExternalLink className="h-3 w-3" />
-              </a>
+              {safeHref(claim.evidence_url) ? (
+                <a
+                  href={safeHref(claim.evidence_url)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex items-center gap-1 text-sm text-accent-blue hover:text-bone"
+                >
+                  {claim.evidence_label}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              ) : (
+                <p className="mt-3 text-sm text-muted-foreground">Evidence URL unavailable</p>
+              )}
               <div className="mt-4 flex flex-wrap gap-2">
                 {claim.status !== "verified" ? (
                   <Button

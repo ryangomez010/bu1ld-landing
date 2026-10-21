@@ -1,0 +1,970 @@
+{
+  "ml-python-research-functions": {
+    "prerequisites": ["Basic arithmetic; no ML background required."],
+    "objectives": [
+      "Write a function with explicit inputs and outputs.",
+      "Reject missing or malformed measurements without silently changing the sample."
+    ],
+    "extension": "When moving this example into a research repository, give the loader an explicit path argument and the output a schema version. Avoid reliance on the current working directory. A small script with a main function can be imported by tests without running the experiment. The downloadable engineering exercise uses an in-memory CSV fixture so it needs no private data or network. Extending it to a real dataset requires recording permission, units, and source identity.",
+    "check": "Would dropping every zero measurement be a safe missing-value rule?",
+    "checkAnswer": "No. Zero may be a valid observation. Missingness must be represented and documented separately from measured values.",
+    "terms": {},
+    "curriculumTrack": "engineering",
+    "next": "ml-numpy-shape-contracts",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "01_engineering.py",
+    "sourceUrls": ["https://docs.python.org/3.14/tutorial/"],
+    "origin": "new-original-lesson",
+    "wordCount": 477,
+    "readMinutes": 3
+  },
+  "ml-numpy-shape-contracts": {
+    "prerequisites": [
+      "Python lists and functions.",
+      "Read rows as samples and columns as features."
+    ],
+    "objectives": [
+      "Predict a broadcast result before executing it.",
+      "Estimate an intermediate array footprint and preserve axis meaning."
+    ],
+    "extension": "The exercise implements the arithmetic with the Python standard library to keep the smoke run dependency-free. The NumPy expressions in this lesson are illustrative equivalents; they were not benchmarked. Before timing a vectorized implementation, compare its values against the small reference loop, include nonsquare arrays, and state whether the output is a view or a copy. Speed without a matching numerical contract is not an optimization.",
+    "check": "Can an array operation succeed while comparing the wrong samples?",
+    "checkAnswer": "Yes. Broadcasting checks compatible dimensions, not the scientific identity of the observations.",
+    "terms": {},
+    "curriculumTrack": "engineering",
+    "next": "ml-research-environments-tests",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "01_engineering.py",
+    "sourceUrls": ["https://numpy.org/doc/stable/user/basics.broadcasting.html"],
+    "origin": "new-original-lesson",
+    "wordCount": 430,
+    "readMinutes": 2
+  },
+  "ml-research-environments-tests": {
+    "prerequisites": [
+      "Run a Python file from a terminal.",
+      "Understand a function returning a numeric result."
+    ],
+    "objectives": [
+      "Separate a code revision from the environment and data snapshot.",
+      "Design a test that detects a scientific failure rather than repeating code."
+    ],
+    "extension": "The exercise bundle pins Python 3.14.7 as the tested interpreter and uses only its standard library. No installation or download is needed for the smoke mode. For a real research contribution, start with a contract test on a tiny authorized fixture; ask a project maintainer which full validation is appropriate before scaling. Passing the fixture demonstrates implementation behavior, not the validity of a research claim.",
+    "check": "Does a passing smoke test prove a model generalizes?",
+    "checkAnswer": "No. It checks a bounded implementation path. Generalization requires a suitable dataset, split, baselines, and evaluation protocol.",
+    "terms": {},
+    "curriculumTrack": "engineering",
+    "next": "ml-data-pipeline-contracts",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "01_engineering.py",
+    "sourceUrls": [
+      "https://docs.python.org/3.14/tutorial/venv.html",
+      "https://docs.python.org/3.14/library/unittest.html"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 440,
+    "readMinutes": 2
+  },
+  "ml-data-pipeline-contracts": {
+    "prerequisites": ["Python functions and CSV parsing."],
+    "objectives": [
+      "Specify schema, units, missingness, and invalid-row handling.",
+      "Distinguish data absence from a valid empty result."
+    ],
+    "extension": "A contract should include the unit and time semantics of every field, not only its dtype. An integer timestamp may encode seconds or milliseconds, and a valid array can therefore be wrong by a factor of one thousand. Validate a small hand-authored fixture containing a valid row, missing value, duplicate identity, and impossible unit. Give each rejection a reason count. For a streaming input, count read, accepted, and rejected rows and require accepted plus rejected to equal read. This conservation check catches silent drops even when the output shape looks plausible. Preserve the raw immutable input and write a versioned transformation receipt.",
+    "check": "Why is a numeric temperature column insufficient as a contract?",
+    "checkAnswer": "Its unit, missing-value convention, valid range, and observation time also affect interpretation.",
+    "terms": {
+      "schema": "A declared structure and meaning for data fields."
+    },
+    "curriculumTrack": "engineering",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "01_engineering.py",
+    "sourceUrls": ["https://www.tensorflow.org/tfx/guide/tfdv"],
+    "origin": "existing-article-deepened",
+    "wordCount": 500,
+    "readMinutes": 3
+  },
+  "ml-vectors-matrices": {
+    "prerequisites": ["Arithmetic and a two-dimensional table."],
+    "objectives": [
+      "Track input and output shapes through a linear model.",
+      "Explain which axis represents a sample and which a feature."
+    ],
+    "extension": "A matrix product combines a specific inner dimension. If X has n rows and d features, and W maps d features to k outputs, XW has n rows and k columns. The dimensions are meaningful: exchanging rows and columns changes the question. For X = [[1, 2], [3, 4]] and w = [2, -1], the outputs are [0, 2]. Add an intercept after the product and state whether it is shared across rows. Test a nonsquare matrix as well as a square one, because square fixtures can conceal an accidental transpose. Sparse and dense implementations should agree on the same small fixture before comparing memory use.",
+    "check": "What shape should a batch of five samples with three class scores have?",
+    "checkAnswer": "(5, 3): each row is one sample, with three outputs.",
+    "terms": {
+      "shape": "The ordered sizes of an array axes."
+    },
+    "curriculumTrack": "math",
+    "next": "ml-dot-products",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "02_mathematics.py",
+    "sourceUrls": ["https://www.deeplearningbook.org/contents/linear_algebra.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 466,
+    "readMinutes": 3
+  },
+  "ml-dot-products": {
+    "prerequisites": ["Vectors and matrix dimensions."],
+    "objectives": [
+      "Separate magnitude from directional similarity.",
+      "Handle zero vectors before computing cosine similarity."
+    ],
+    "extension": "For a = [3, 4] and b = [6, 8], the dot product is 50 while cosine similarity is 1. Multiplying b by ten multiplies the dot product by ten but leaves cosine unchanged. This is a modeling choice: magnitude can encode useful confidence or an unwanted frequency effect. A zero vector has no direction, so dividing by its norm is undefined. Choose a documented treatment such as excluding it from retrieval or assigning a special missing-embedding status. Clamping the denominator to epsilon avoids a crash but does not create semantic meaning. Test ties explicitly when ranking neighbors so repeated runs do not reorder equal scores unpredictably.",
+    "check": "Does doubling a vector double its cosine similarity with another nonzero vector?",
+    "checkAnswer": "No. Positive rescaling cancels in the normalization; cosine depends on direction.",
+    "terms": {
+      "norm": "A measure of vector magnitude; the Euclidean norm is the square root of the sum of squared components."
+    },
+    "curriculumTrack": "math",
+    "next": "ml-probability-conditioning",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "02_mathematics.py",
+    "sourceUrls": ["https://scikit-learn.org/stable/modules/metrics.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 440,
+    "readMinutes": 2
+  },
+  "ml-probability-conditioning": {
+    "prerequisites": ["Fractions and percentages."],
+    "objectives": [
+      "Compute a posterior event probability from a base rate and error rates.",
+      "Identify when a benchmark class balance differs from deployment."
+    ],
+    "extension": "Use counts to make conditional probabilities tangible. In 10,000 objects with a 1% target rate, 100 are targets. At sensitivity 90%, 90 targets trigger an alert. A 5% false-positive rate among the 9,900 nontargets creates 495 false alerts. The probability of a real target given an alert is 90/585, approximately 15.38%, despite high sensitivity. If the target prevalence changes, this predictive value changes even with fixed conditional error rates. State the population behind every rate and avoid transferring a balanced benchmark precision directly to a rare-event population. This calculation supports candidate triage, not confirmation of an individual discovery.",
+    "check": "In this example, what is the denominator of precision?",
+    "checkAnswer": "All alerts: 90 true alerts plus 495 false alerts, giving 585.",
+    "terms": {
+      "base rate": "The prevalence of the target event before observing the test result."
+    },
+    "curriculumTrack": "math",
+    "next": "ml-gradient-descent",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "02_mathematics.py",
+    "sourceUrls": ["https://www.deeplearningbook.org/contents/prob.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 449,
+    "readMinutes": 3
+  },
+  "ml-gradient-descent": {
+    "prerequisites": ["Functions, slopes, and simple algebra."],
+    "objectives": [
+      "Calculate one gradient step and its change in loss.",
+      "Recognize overshooting and numerical scaling problems."
+    ],
+    "extension": "For L(w) = (w - 3)^2, the derivative is 2(w - 3). Starting at zero with step size 0.1 gives w = 0.6 and loss 5.76, down from 9. With step size 1, the point jumps from zero to six and back forever; the loss never decreases. A learning rate is meaningful relative to curvature and parameter scaling. Check an analytic gradient using a central finite difference on a tiny input: [L(w+h)-L(w-h)]/(2h). Avoid taking h so small that subtraction loses significant digits. Gradient agreement validates a derivative locally; it does not prove global convergence or the usefulness of the objective.",
+    "check": "Does a smaller training loss alone show that validation performance improved?",
+    "checkAnswer": "No. The optimized training objective and held-out performance are distinct measurements.",
+    "terms": {
+      "gradient": "The vector of partial derivatives describing local changes in a scalar objective."
+    },
+    "curriculumTrack": "math",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "02_mathematics.py",
+    "sourceUrls": ["https://www.deeplearningbook.org/contents/optimization.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 450,
+    "readMinutes": 3
+  },
+  "ml-linear-regression": {
+    "prerequisites": ["Vector operations and mean squared error."],
+    "objectives": [
+      "Fit a small least-squares model by hand.",
+      "Use residuals and held-out comparisons to diagnose failure."
+    ],
+    "extension": "A baseline is especially useful when its failure is interpretable. On points (0,1), (1,3), and (2,5), the line y = 1 + 2x fits exactly. That says nothing about x = 100 if the data-generating process changes outside the observed range. Plot residuals against predictions, time, and important slices; curved patterns suggest missing structure, while changing spread challenges constant-variance uncertainty estimates. Fit preprocessing on training data only. When comparing regularization, choose its strength on validation data and leave the test set for the declared final evaluation. A simple model that wins under this protocol is a result to preserve.",
+    "check": "Would an exact training fit prove that a linear relation continues outside the observed range?",
+    "checkAnswer": "No. Extrapolation is an assumption that the observed fit does not verify.",
+    "terms": {},
+    "curriculumTrack": "classical",
+    "next": "ml-decision-trees",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "03_classical.py",
+    "sourceUrls": ["https://scikit-learn.org/stable/modules/linear_model.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 499,
+    "readMinutes": 3
+  },
+  "ml-decision-trees": {
+    "prerequisites": ["Features, labels, and a train/test split."],
+    "objectives": [
+      "Calculate a simple threshold split.",
+      "Explain why leaf size and depth need validation."
+    ],
+    "extension": "For six examples with x = [1,2,3,4,5,6] and labels [0,0,0,1,1,1], splitting at 3.5 creates two pure leaves. A single mislabeled example can make a deeper tree carve out a tiny region that memorizes noise. Minimum leaf size and depth trade flexibility against stability; choose them inside the validation procedure. A threshold is meaningful only in the feature units used at serving time. If missingness is informative, decide how it is routed and measure that slice separately. Feature importance from the fitted tree reflects usage within that tree, not an intervention showing that the feature causes the outcome.",
+    "check": "Why can two equally accurate trees disagree on feature importance?",
+    "checkAnswer": "Correlated or interchangeable predictors can be selected differently, so usage in one fitted tree is not a unique causal explanation.",
+    "terms": {},
+    "curriculumTrack": "classical",
+    "next": "ml-cross-validation",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "03_classical.py",
+    "sourceUrls": ["https://scikit-learn.org/stable/modules/tree.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 462,
+    "readMinutes": 3
+  },
+  "ml-cross-validation": {
+    "prerequisites": ["Training, validation, test roles."],
+    "objectives": [
+      "Choose a split unit matching the deployment claim.",
+      "Keep preprocessing and hyperparameter selection inside training folds."
+    ],
+    "extension": "The split unit is a scientific decision. If each patient contributes ten rows, random row folds may show the model the same patient during both fitting and validation. Grouping by patient tests transfer to new patients. For time prediction, keep future observations out of training and account for overlapping label windows. A pipeline should fit scaling, imputation, and feature selection within each training fold. Report fold scores and the population each fold represents. Averaging folds does not remove leakage or make dependent rows independent. When many hyperparameters are tuned, use a separate outer assessment or untouched final test and state how often it was inspected.",
+    "check": "Can preprocessing the whole dataset before cross-validation leak information without using labels?",
+    "checkAnswer": "Yes. Statistics estimated from validation rows can influence the fitted representation and make assessment optimistic.",
+    "terms": {},
+    "curriculumTrack": "classical",
+    "next": "ml-calibration",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "03_classical.py",
+    "sourceUrls": ["https://scikit-learn.org/stable/modules/cross_validation.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 467,
+    "readMinutes": 3
+  },
+  "ml-calibration": {
+    "prerequisites": ["Probability, binary classification, and held-out evaluation."],
+    "objectives": [
+      "Distinguish ranking from probability reliability.",
+      "Calculate a Brier score and inspect calibration by slice."
+    ],
+    "extension": "For two binary labels [0,1], predictions [0.2,0.8] yield Brier score [(0.2-0)^2+(0.8-1)^2]/2 = 0.04. Predictions [0.4,0.6] have the same ranking but score 0.16. Ranking metrics alone cannot tell these probabilities apart. Reliability bins compare average probability with observed frequency, but small bins have noisy proportions and can hide subgroup failures. Fit a calibrator only on designated development data, then evaluate on untouched examples. Calibration can deteriorate under population shift; record the population and period. Good calibration is useful for threshold decisions, but the threshold still depends on the costs of false positives and false negatives.",
+    "check": "Can a perfectly ranked model be poorly calibrated?",
+    "checkAnswer": "Yes. The ordering can be correct while the numeric probabilities systematically overstate or understate event frequencies.",
+    "terms": {
+      "calibration": "Agreement between stated probabilities and observed frequencies across comparable predictions."
+    },
+    "curriculumTrack": "classical",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "03_classical.py",
+    "sourceUrls": ["https://scikit-learn.org/stable/modules/calibration.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 453,
+    "readMinutes": 3
+  },
+  "ml-backpropagation": {
+    "prerequisites": ["Chain rule and scalar derivatives."],
+    "objectives": [
+      "Differentiate a composed scalar model.",
+      "Compare an analytic derivative against finite differences."
+    ],
+    "extension": "Use a scalar model to expose every dependency: prediction = w*x + b and loss = (prediction-y)^2. With w=2, x=3, b=1, y=5, prediction is 7, loss is 4, dL/dw is 2*(7-5)*3 = 12, and dL/db is 4. The chain rule accumulates contributions when a parameter appears on multiple paths. In an automatic-differentiation library, retaining stale gradients between steps changes the update, so check the zeroing convention. A finite-difference check should use a smooth point and double precision. Agreement verifies this small graph, while model evaluation requires separate evidence.",
+    "check": "What is dL/db in the worked scalar example?",
+    "checkAnswer": "4, because the prediction derivative with respect to b is one.",
+    "terms": {},
+    "curriculumTrack": "deep",
+    "next": "ml-adamw",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "04_deep_learning.py",
+    "sourceUrls": ["https://www.deeplearningbook.org/contents/mlp.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 483,
+    "readMinutes": 3
+  },
+  "ml-adamw": {
+    "prerequisites": ["Gradient descent and minibatches."],
+    "objectives": [
+      "Distinguish optimizer moments from parameters.",
+      "Explain why checkpointing only weights cannot exactly resume training."
+    ],
+    "extension": "An optimizer is a stateful algorithm. Momentum stores a moving direction, and adaptive methods store additional statistics that scale coordinates. Restarting with the same weights but empty moments can produce a different next update. Decoupled weight decay applies a parameter shrinkage separately from gradient-based adaptation; it is not generally equivalent to adding an L2 penalty inside an adaptive optimizer. Record learning-rate schedule position, optimizer state, precision-scaler state when relevant, and random-generator state in a resume checkpoint. Compare the uninterrupted next step with a restored next step on a tiny fixed batch before trusting long-run resume behavior.",
+    "check": "Does restoring weights alone restore an adaptive optimizer trajectory?",
+    "checkAnswer": "No. Moment estimates, schedule position, and other state affect subsequent updates.",
+    "terms": {},
+    "curriculumTrack": "deep",
+    "next": "ml-normalization-layers",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "04_deep_learning.py",
+    "sourceUrls": ["https://arxiv.org/abs/1711.05101"],
+    "origin": "existing-article-deepened",
+    "wordCount": 449,
+    "readMinutes": 3
+  },
+  "ml-normalization-layers": {
+    "prerequisites": ["Means, variances, and tensor axes."],
+    "objectives": [
+      "Identify the axes used to estimate normalization statistics.",
+      "Check training and evaluation behavior on a fixed example."
+    ],
+    "extension": "Normalization defines which observations share a mean and variance. For [1,3], the population mean is 2 and variance is 1, so normalization without epsilon gives [-1,1]. Real implementations add epsilon to stabilize division near zero variance and may learn scale and offset. Batch normalization uses batch-derived statistics during training and typically running statistics during evaluation; layer normalization works over a chosen feature dimension. A mismatch between training and serving mode can alter predictions even when no weights change. Record axis choices, small-batch behavior, and epsilon. Always compare the same input in both modes when debugging unexpected inference drift.",
+    "check": "Why can evaluation mode change predictions with frozen weights?",
+    "checkAnswer": "Some layers use different statistics or disable stochastic behavior during evaluation, independently of whether gradients are enabled.",
+    "terms": {},
+    "curriculumTrack": "deep",
+    "next": "ml-training-debugging",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "04_deep_learning.py",
+    "sourceUrls": ["https://arxiv.org/abs/1607.06450"],
+    "origin": "existing-article-deepened",
+    "wordCount": 461,
+    "readMinutes": 3
+  },
+  "ml-training-debugging": {
+    "prerequisites": ["A loss function, optimizer, and train/evaluation modes."],
+    "objectives": [
+      "Use a tiny-batch overfit check to isolate implementation defects.",
+      "Differentiate data, gradient, and evaluation failures."
+    ],
+    "extension": "Start with a deliberately tiny fixture, deterministic order, and a model capable of fitting it. Inspect input ranges, label pairing, initial predictions, loss, gradient norms, parameter changes, and final predictions. If loss never changes, inspect learning rate, detached computation, and parameter inclusion in the optimizer. If training improves but evaluation on the same tiny data fails, check preprocessing and evaluation-mode differences. A successful overfit check is necessary for many supervised pipelines but not sufficient for generalization. Preserve the failing fixture and a regression test when a bug is repaired; otherwise a later refactor may reintroduce it silently.",
+    "check": "Should a tiny-batch fit be reported as a benchmark result?",
+    "checkAnswer": "No. It is a diagnostic of the training path and intentionally measures memorization on a small fixture.",
+    "terms": {},
+    "curriculumTrack": "deep",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "04_deep_learning.py",
+    "sourceUrls": ["https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 467,
+    "readMinutes": 3
+  },
+  "ml-tokenization": {
+    "prerequisites": ["Strings and sequence indices."],
+    "objectives": [
+      "Trace how token boundaries change sequence length.",
+      "Keep tokenization consistent when comparing losses."
+    ],
+    "extension": "A tokenizer is part of a model contract: vocabulary, normalization, special tokens, and truncation affect the input. Character tokens and subword tokens can assign different numbers of prediction steps to identical text. Per-token loss is therefore not directly comparable across arbitrary tokenizers. Check a fixture with accents, repeated whitespace, numbers, and an empty string. Preserve both the original text and the tokenization configuration where privacy permits. When truncating paired examples, document whether the question or the evidence is lost. A convenient maximum length can remove exactly the information needed for a correct answer.",
+    "check": "Can a lower per-token loss across different tokenizers alone prove a better language model?",
+    "checkAnswer": "No. Token definitions and prediction units differ; use a comparable evaluation protocol.",
+    "terms": {},
+    "curriculumTrack": "language",
+    "next": "ml-attention-masks",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "05_language.py",
+    "sourceUrls": ["https://arxiv.org/abs/1508.07909"],
+    "origin": "existing-article-deepened",
+    "wordCount": 477,
+    "readMinutes": 3
+  },
+  "ml-attention-masks": {
+    "prerequisites": ["Sequence positions and matrix indexing."],
+    "objectives": [
+      "Construct a causal visibility matrix.",
+      "Distinguish visible context from positions included in the loss."
+    ],
+    "extension": "For positions 0,1,2, a causal mask permits rows [1,0,0], [1,1,0], and [1,1,1]: a position can use itself and earlier positions. Padding masks remove artificial padding positions. Loss masks instead choose which target positions contribute to optimization. These controls are related but not interchangeable. In a prompt-response training example, prompt tokens can remain visible context while their prediction losses are excluded. Test the earliest and latest positions explicitly, including sequences of length one. An off-by-one error can reveal a future target and create misleadingly low training loss.",
+    "check": "Can a token be visible to attention but excluded from the loss?",
+    "checkAnswer": "Yes. Prompt tokens may provide context while only response targets contribute to the objective.",
+    "terms": {},
+    "curriculumTrack": "language",
+    "next": "ml-language-model-objectives",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "05_language.py",
+    "sourceUrls": ["https://arxiv.org/abs/1706.03762"],
+    "origin": "existing-article-deepened",
+    "wordCount": 465,
+    "readMinutes": 3
+  },
+  "ml-language-model-objectives": {
+    "prerequisites": ["Conditional probability and tokenization."],
+    "objectives": [
+      "Contrast predicting the next token with reconstructing masked tokens.",
+      "Separate pretraining objectives from deployment capabilities."
+    ],
+    "extension": "An objective specifies which information is available when predicting a target. Causal next-token learning conditions on the prefix; masked-token learning can use visible context on both sides of a hidden position. Post-training may teach instruction behavior or optimize preferences, but it does not establish truthfulness or reliable tool use by itself. Evaluate a specific task with fixed prompts, answer criteria, and failure categories. Keep prompt construction and decoding settings in the receipt. If test examples resemble training templates, inspect overlap before interpreting a high score as broad reasoning. The objective provides a learning signal, not a guarantee about every downstream behavior.",
+    "check": "Does a masked-token objective use the same conditional context as a causal objective?",
+    "checkAnswer": "No. A masked objective may access future visible tokens that a causal next-token prediction cannot.",
+    "terms": {},
+    "curriculumTrack": "language",
+    "next": "ml-lora",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "05_language.py",
+    "sourceUrls": ["https://arxiv.org/abs/1810.04805"],
+    "origin": "existing-article-deepened",
+    "wordCount": 480,
+    "readMinutes": 3
+  },
+  "ml-lora": {
+    "prerequisites": ["Matrix multiplication and model parameters."],
+    "objectives": [
+      "Count low-rank adaptation parameters.",
+      "Recognize that frozen base weights still require an inference and validation budget."
+    ],
+    "extension": "For an m by n weight matrix, a rank-r update can be parameterized by factors with mr + rn trainable entries instead of mn. With m=n=100 and r=4, that is 800 adaptation parameters rather than 10,000. The base matrix remains part of the model, and activations still consume memory during training. Initialization, target layers, rank, scaling, optimizer, and data determine behavior. Compare against a suitable full or partial fine-tuning baseline under declared resources; fewer trainable parameters do not automatically imply lower total latency or equal quality. Validate that loading and merging an adapter preserves predictions within an explicit tolerance.",
+    "check": "For a 100 by 100 matrix and rank four, how many factor entries are trainable?",
+    "checkAnswer": "800: 100*4 + 4*100.",
+    "terms": {},
+    "curriculumTrack": "language",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "05_language.py",
+    "sourceUrls": ["https://arxiv.org/abs/2106.09685"],
+    "origin": "existing-article-deepened",
+    "wordCount": 468,
+    "readMinutes": 3
+  },
+  "ml-autoencoders": {
+    "prerequisites": ["Neural network inputs, outputs, and losses."],
+    "objectives": [
+      "Explain what reconstruction rewards and what it may ignore.",
+      "Design a baseline for a compressed representation."
+    ],
+    "extension": "A reconstruction objective rewards information useful for rebuilding the input under its chosen distortion. It may preserve nuisance texture while discarding a small but task-critical signal. Compare against PCA or a simple compression baseline when appropriate, and evaluate representations on a held-out downstream task with a fixed probe budget. Reconstruction error alone is not a measure of semantic quality. An excessively flexible decoder or a bypass connection can make the bottleneck less informative than expected. Inspect latent variance, held-out reconstruction, and downstream behavior together; each measurement answers a different question.",
+    "check": "Can better reconstruction coexist with worse task accuracy?",
+    "checkAnswer": "Yes. The reconstruction loss may prioritize details that are irrelevant or harmful to the task.",
+    "terms": {},
+    "curriculumTrack": "representations",
+    "next": "ml-contrastive-learning",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "06_representations.py",
+    "sourceUrls": ["https://www.deeplearningbook.org/contents/autoencoders.html"],
+    "origin": "existing-article-deepened",
+    "wordCount": 449,
+    "readMinutes": 3
+  },
+  "ml-contrastive-learning": {
+    "prerequisites": ["Embeddings, dot products, and an optimization objective."],
+    "objectives": [
+      "Specify positive and negative pairs for a concrete task.",
+      "Identify an augmentation that destroys task-relevant information."
+    ],
+    "extension": "The definition of a positive pair encodes an invariance assumption. Crops of a photograph may be treated as the same object, but a crop can remove a rare lesion or the only transient source. Negatives can also contain two examples of the same semantic class. Before training, inspect a sample of augmented positive pairs and potential false negatives. Compare downstream performance under the same probe and split, and report the augmentation policy. A high contrastive score can reflect easy shortcuts such as source-specific borders; test whether embeddings still work when those cues change.",
+    "check": "Why inspect positive pairs before optimizing the loss?",
+    "checkAnswer": "They define what the representation is trained to treat as equivalent; an invalid pairing teaches the wrong invariance.",
+    "terms": {},
+    "curriculumTrack": "representations",
+    "next": "ml-jepa-targets-collapse",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "06_representations.py",
+    "sourceUrls": ["https://arxiv.org/abs/2002.05709"],
+    "origin": "existing-article-deepened",
+    "wordCount": 464,
+    "readMinutes": 3
+  },
+  "ml-jepa-targets-collapse": {
+    "prerequisites": ["Embeddings and self-supervised objectives.", "Means and variance."],
+    "objectives": [
+      "Identify which inputs the context encoder may observe.",
+      "Distinguish a small prediction loss from an informative representation."
+    ],
+    "extension": "I-JEPA is one concrete joint-embedding predictive method; the architecture name does not automatically verify unrelated JEPA variants. For BU1LD project reading, ask which target construction, predictor, stop-gradient or moving-target mechanism, data split, and collapse diagnostic were actually implemented. Keep any proposed mechanism separate from an executed one. The representation exercise below checks variance and constant-predictor arithmetic on synthetic values and does not train or reproduce I-JEPA.",
+    "check": "Does zero latent prediction loss rule out collapse?",
+    "checkAnswer": "No. Both representations can become constant, giving zero loss while discarding distinctions.",
+    "terms": {},
+    "curriculumTrack": "representations",
+    "next": "ml-latent-dynamics-rollouts",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "06_representations.py",
+    "sourceUrls": ["https://arxiv.org/abs/2301.08243"],
+    "origin": "new-original-lesson",
+    "wordCount": 433,
+    "readMinutes": 2
+  },
+  "ml-latent-dynamics-rollouts": {
+    "prerequisites": ["Representations and one-step prediction.", "Train/test separation."],
+    "objectives": [
+      "Explain teacher forcing versus recursive rollout.",
+      "Measure error as a function of horizon and action coverage."
+    ],
+    "extension": "Use separate splits for initial conditions, trajectories, and operating regimes when the intended use requires those forms of transfer. A random split of neighboring frames may leak nearly identical states. Record whether the model predicts observations, hidden states, or learned embeddings, because error units differ. A low latent error is meaningful only alongside evidence that the latent coordinates preserve the quantities required by the downstream task.",
+    "check": "Why can teacher-forced error underestimate recursive rollout difficulty?",
+    "checkAnswer": "Teacher forcing supplies true inputs; recursive rollout supplies the model own imperfect predictions, which can drift.",
+    "terms": {},
+    "curriculumTrack": "representations",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "06_representations.py",
+    "sourceUrls": ["https://arxiv.org/abs/2301.08243", "https://arxiv.org/abs/2301.04104"],
+    "origin": "new-original-lesson",
+    "wordCount": 432,
+    "readMinutes": 2
+  },
+  "ml-pde-boundary-contracts": {
+    "prerequisites": ["Derivatives and arrays on a grid."],
+    "objectives": [
+      "Separate the differential equation from initial and boundary data.",
+      "Construct a discrete diffusion update and check its boundary behavior."
+    ],
+    "extension": "The accompanying CPU exercise executes this finite-difference calculation as an illustrative reference. It is not a numerical convergence study or a trained surrogate. For a real model, compare against an appropriate solver at matched accuracy, account for solver data-generation cost, and separate interpolation within known parameter ranges from extrapolation to new coefficients or geometries.",
+    "check": "Why must a step read only the previous field values?",
+    "checkAnswer": "Using newly updated values during the same step changes the discretization and can invalidate its expected behavior.",
+    "terms": {},
+    "curriculumTrack": "scientific",
+    "next": "ml-physics-informed-networks",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "07_scientific_ml.py",
+    "sourceUrls": [
+      "https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/pages/lecture-notes/"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 408,
+    "readMinutes": 2
+  },
+  "ml-physics-informed-networks": {
+    "prerequisites": ["Derivatives, residuals, and initial/boundary conditions."],
+    "objectives": [
+      "Separate residual, boundary, and observation losses.",
+      "Check whether a small residual implies the required solution accuracy."
+    ],
+    "extension": "A physics-informed objective may combine differential residual, boundary mismatch, and observation error. Their units and scales differ, so changing weights changes what the optimizer prioritizes. Report the components separately. For u_t = alpha*u_xx, a constant function can have zero interior residual while failing the specified initial condition. Collocation locations matter: small residuals at sampled points do not establish accuracy everywhere. Compare against a numerical reference with documented resolution and tolerances, then test unseen points and boundary regions. Distinguish fitting one problem instance from learning a reusable operator across initial conditions.",
+    "check": "Can a constant field satisfy the heat-equation residual but fail the task?",
+    "checkAnswer": "Yes. It may violate the specified nonconstant initial condition or boundary values.",
+    "terms": {},
+    "curriculumTrack": "scientific",
+    "next": "ml-neural-operators",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "07_scientific_ml.py",
+    "sourceUrls": ["https://arxiv.org/abs/1711.10561"],
+    "origin": "existing-article-deepened",
+    "wordCount": 466,
+    "readMinutes": 3
+  },
+  "ml-neural-operators": {
+    "prerequisites": ["Functions, discretization, and matrix operations."],
+    "objectives": [
+      "Distinguish an operator mapping from fitting a single solution.",
+      "Separate architectural grid flexibility from demonstrated resolution transfer."
+    ],
+    "extension": "An operator maps an input function to an output function, such as forcing to a solution field. Training observes sampled discretizations rather than arbitrary continuous functions. Fourier layers parameterize interactions in a frequency basis, often retaining a limited number of modes. Truncating modes can omit sharp detail, while periodic assumptions and padding can affect boundaries. Test multiple resolutions with consistent physical coordinates and a numerical reference. A model that can accept another grid size is not automatically accurate there. Separate interpolation error, discretization error, and learned approximation error when interpreting results.",
+    "check": "Does accepting a finer input grid prove resolution-invariant accuracy?",
+    "checkAnswer": "No. Accuracy on that grid still needs evaluation against an appropriate reference.",
+    "terms": {
+      "operator": "A mapping whose inputs and outputs are functions, usually observed through discrete samples."
+    },
+    "curriculumTrack": "scientific",
+    "next": "ml-surrogate-stability-shift",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "07_scientific_ml.py",
+    "sourceUrls": ["https://arxiv.org/abs/2010.08895"],
+    "origin": "existing-article-deepened",
+    "wordCount": 461,
+    "readMinutes": 3
+  },
+  "ml-surrogate-stability-shift": {
+    "prerequisites": ["PDE boundary contracts.", "Held-out evaluation and recursive prediction."],
+    "objectives": [
+      "Compare physical error at multiple horizons.",
+      "Design a split across parameters or resolutions instead of adjacent snapshots."
+    ],
+    "extension": "A useful research contribution is a small evaluation table with one-step error, horizon errors, boundary error, and failure count across predeclared regimes. Keep the same initial states for each method and include a solver or persistence baseline appropriate to the task. Separate a synthetic teaching fixture from a project benchmark; neither the example nor the smoke artifact is evidence that any BU1LD model has passed these checks.",
+    "check": "Why must timestep change when refining this explicit diffusion grid?",
+    "checkAnswer": "The stability ratio scales as dt/h squared; halving spacing multiplies the ratio by four unless timestep is reduced.",
+    "terms": {},
+    "curriculumTrack": "scientific",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "07_scientific_ml.py",
+    "sourceUrls": [
+      "https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/pages/lecture-notes/",
+      "https://arxiv.org/abs/2010.08895"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 438,
+    "readMinutes": 2
+  },
+  "ml-retrieval-augmented-generation": {
+    "prerequisites": ["Embeddings and a question-answering task."],
+    "objectives": [
+      "Separate retrieval success from answer support.",
+      "Define an abstention rule when evidence is missing."
+    ],
+    "extension": "Build evaluation examples containing a question, relevant evidence identifiers, a supported answer rubric, and an explicit unanswerable category. Measure retrieval recall at k before evaluating generated answers. A correct answer can arise from prior knowledge even when retrieval fails, and retrieved evidence can be ignored. Preserve source versions and document permissions. To test grounding, remove or replace relevant evidence while holding the prompt constant, then inspect whether answers change appropriately. Treat retrieved text as untrusted data; a document that tells the system to ignore its instructions is not authorized to redefine the task.",
+    "check": "Can answer accuracy alone show that retrieval was used?",
+    "checkAnswer": "No. The model may answer from other information; intervention and evidence-support checks are needed.",
+    "terms": {},
+    "curriculumTrack": "memory",
+    "next": "ml-chunking-reranking",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "08_memory_agents.py",
+    "sourceUrls": ["https://arxiv.org/abs/2005.11401"],
+    "origin": "existing-article-deepened",
+    "wordCount": 465,
+    "readMinutes": 3
+  },
+  "ml-chunking-reranking": {
+    "prerequisites": ["Retrieval and document identifiers."],
+    "objectives": [
+      "Measure recall at a fixed retrieval budget.",
+      "Keep overlapping chunks from inflating apparent evidence coverage."
+    ],
+    "extension": "Chunk size controls both context coverage and the number of candidates. A small chunk may omit the sentence that resolves an ambiguity; a large chunk may bury it in unrelated text. Evaluate at a declared budget in tokens or latency as well as document count. If several overlapping chunks contain the same passage, count evidence at the canonical source span rather than treating duplicates as independent support. Reranking can improve ordering among retrieved candidates but cannot recover relevant documents excluded by the first stage. Retain an exact or exhaustive small-corpus baseline to identify whether misses come from retrieval, reranking, or chunk boundaries.",
+    "check": "Can reranking recover a relevant passage never returned by first-stage retrieval?",
+    "checkAnswer": "No. It can only reorder the candidate set it receives.",
+    "terms": {
+      "recall at k": "The fraction of relevant items present among the first k retrieved items under a declared relevance set."
+    },
+    "curriculumTrack": "memory",
+    "next": "ml-causal-memory-interventions",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "08_memory_agents.py",
+    "sourceUrls": ["https://arxiv.org/abs/1901.04085"],
+    "origin": "existing-article-deepened",
+    "wordCount": 461,
+    "readMinutes": 3
+  },
+  "ml-causal-memory-interventions": {
+    "prerequisites": ["Retrieval evaluation.", "Controlled comparisons and accuracy."],
+    "objectives": [
+      "Design matched memory-present and memory-removed conditions.",
+      "Interpret harmful memory and confounded comparisons."
+    ],
+    "extension": "The CPU exercise uses a deterministic dictionary lookup and synthetic keys to make intervention arithmetic transparent. It does not run an LLM or validate any project architecture. For a real BU1LD contribution, propose a small authorized intervention set, freeze scoring before comparing variants, and include a memory-free baseline with comparable resources. Preserve failures and report the limits of transfer.",
+    "check": "Is receiving a memory block enough to claim useful causal reliance?",
+    "checkAnswer": "No. Controlled interventions and task outcomes are needed to show whether the memory affects behavior usefully.",
+    "terms": {},
+    "curriculumTrack": "memory",
+    "next": "ml-agent-tool-contracts",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "08_memory_agents.py",
+    "sourceUrls": [
+      "https://arxiv.org/abs/2005.11401",
+      "https://www.stat.cmu.edu/~cshalizi/uADA/16/lectures/23.pdf"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 430,
+    "readMinutes": 2
+  },
+  "ml-agent-tool-contracts": {
+    "prerequisites": ["Functions, input validation, and basic state machines."],
+    "objectives": [
+      "Separate a requested action from a verified completed action.",
+      "Make retry behavior idempotent for a bounded operation."
+    ],
+    "extension": "Evaluate agent reliability across complete episodes with explicit failure classes: invalid arguments, unauthorized request, tool failure, unsupported success claim, and incorrect final result. Bound the number of attempts and record the exact tool trace with private content redacted. A high task score without a permission audit can hide unacceptable actions. The local exercise simulates receipt behavior only and sends no external requests.",
+    "check": "After a tool timeout, is it safe to announce failure and create a fresh request automatically?",
+    "checkAnswer": "Not necessarily. Completion may be uncertain; recover using the original operation identity before risking duplicate effects.",
+    "terms": {},
+    "curriculumTrack": "memory",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "08_memory_agents.py",
+    "sourceUrls": [
+      "https://docs.python.org/3.14/library/sqlite3.html",
+      "https://www.rfc-editor.org/rfc/rfc9110.html#name-idempotent-methods"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 452,
+    "readMinutes": 3
+  },
+  "ml-quantization": {
+    "prerequisites": ["Floating-point numbers and model weights."],
+    "objectives": [
+      "Calculate a simple quantize/dequantize error.",
+      "Separate storage reduction from measured end-to-end speed."
+    ],
+    "extension": "For symmetric signed quantization with scale 0.1, a value 0.26 rounds to integer 3 and reconstructs as 0.3, giving absolute error 0.04. Values outside the representable range clip, creating a different error pattern. Report scale granularity, zero point if used, calibration data, outlier handling, and which tensors remain higher precision. Smaller stored weights may reduce memory but do not guarantee speed on a backend without efficient kernels. Measure actual latency distributions and task quality on the intended device, with the same batch and sequence lengths. Numerical agreement on a toy vector is an implementation check rather than a model-quality result.",
+    "check": "Does a fourfold reduction in weight bytes guarantee fourfold faster inference?",
+    "checkAnswer": "No. Kernel support, memory traffic, other tensors, and workload shape determine realized speed.",
+    "terms": {},
+    "curriculumTrack": "systems",
+    "next": "ml-kv-cache",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "09_efficiency.py",
+    "sourceUrls": ["https://huggingface.co/docs/transformers/en/quantization/overview"],
+    "origin": "existing-article-deepened",
+    "wordCount": 460,
+    "readMinutes": 3
+  },
+  "ml-kv-cache": {
+    "prerequisites": ["Causal attention and sequence length."],
+    "objectives": [
+      "Estimate cached key/value storage from dimensions.",
+      "Identify cache invalidation when a prefix changes."
+    ],
+    "extension": "A simple full-attention cache stores keys and values for previous tokens. With two tensors, L layers, B sequences, T tokens, H key/value heads, D head width, and s bytes per element, storage is approximately 2*L*B*T*H*D*s before overhead. For L=2, B=1, T=100, H=4, D=8, and s=2, this is 25,600 bytes. Grouped-query designs may use fewer key/value heads than query heads. A cache is tied to the exact prefix and model state; reusing it after changing tokens or weights can corrupt results. Compare cached and uncached outputs on a small fixed prefix before timing.",
+    "check": "Which length drives cache growth during autoregressive decoding?",
+    "checkAnswer": "The accumulated context length T; each new token adds key and value entries for each relevant layer.",
+    "terms": {},
+    "curriculumTrack": "systems",
+    "next": "ml-inference-batching",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "09_efficiency.py",
+    "sourceUrls": ["https://huggingface.co/docs/transformers/en/cache_explanation"],
+    "origin": "existing-article-deepened",
+    "wordCount": 448,
+    "readMinutes": 3
+  },
+  "ml-inference-batching": {
+    "prerequisites": ["Latency, throughput, and request arrival times."],
+    "objectives": [
+      "Separate queueing delay from model execution time.",
+      "Compare batch policies at a fixed quality and latency objective."
+    ],
+    "extension": "If four requests arrive together and a batch takes 12 ms, throughput is about 333 requests per second for that isolated service interval. But if the first request waits 20 ms to fill the batch, its latency is at least 32 ms before other overhead. Report time to first token and inter-token latency for streaming systems, along with tail percentiles under a declared load. Warmup, padding, sequence lengths, and concurrent requests affect results. A throughput improvement may violate an interactive latency budget. Keep raw timings and distinguish synthetic microbenchmarks from representative traffic measurements.",
+    "check": "Why can higher throughput coexist with worse user latency?",
+    "checkAnswer": "The system may wait longer to assemble batches or queue more requests before execution.",
+    "terms": {},
+    "curriculumTrack": "systems",
+    "next": "ml-distillation-speculative-decoding",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "09_efficiency.py",
+    "sourceUrls": [
+      "https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/user_guide/batcher.html"
+    ],
+    "origin": "existing-article-deepened",
+    "wordCount": 427,
+    "readMinutes": 2
+  },
+  "ml-distillation-speculative-decoding": {
+    "prerequisites": ["Conditional probabilities and autoregressive decoding."],
+    "objectives": [
+      "Explain why a fast draft does not automatically speed up a target.",
+      "Separate approximation quality from exact-sampling verification claims."
+    ],
+    "extension": "The CPU artifact quantizes a tiny vector and evaluates this cost model without downloading a model. It is deliberately a numerical exercise. When reading Olympus or another systems project, separate proposed Full/Ghost or draft/target paths from implemented paths and measured workloads. Keep any unverified architecture description labeled as a proposal rather than transferring performance claims from another paper.",
+    "check": "Is a distilled model guaranteed to have the exact teacher output distribution?",
+    "checkAnswer": "No. Distillation learns an approximation; target-distribution preservation is a separate property of correctly implemented speculative sampling.",
+    "terms": {},
+    "curriculumTrack": "systems",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "09_efficiency.py",
+    "sourceUrls": ["https://arxiv.org/abs/2211.17192", "https://arxiv.org/abs/1503.02531"],
+    "origin": "new-original-lesson",
+    "wordCount": 417,
+    "readMinutes": 2
+  },
+  "ml-scientific-data-provenance": {
+    "prerequisites": ["Data loading and train/test splits."],
+    "objectives": [
+      "Define observation time and availability time separately.",
+      "Design a provenance record that survives dataset corrections."
+    ],
+    "extension": "A useful first contribution is a data dictionary plus a small availability audit on authorized rows. Count exclusions by reason and preserve the untouched raw snapshot. The domain exercise uses synthetic timestamps and labels only; it illustrates leakage prevention without claiming access to astronomical, weather, or materials measurements. Project-specific provenance must come from the actual project artifacts.",
+    "check": "Is the latest historical catalog necessarily suitable for a historical real-time evaluation?",
+    "checkAnswer": "No. Later corrections and labels can reveal information unavailable at the historical decision time.",
+    "terms": {},
+    "curriculumTrack": "domains",
+    "next": "ml-astronomy-candidate-validation",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "10_domain_ml.py",
+    "sourceUrls": ["https://arxiv.org/abs/1803.09010", "https://docs.astropy.org/en/stable/table/"],
+    "origin": "new-original-lesson",
+    "wordCount": 409,
+    "readMinutes": 2
+  },
+  "ml-astronomy-candidate-validation": {
+    "prerequisites": [
+      "Conditional probability and class imbalance.",
+      "Scientific data provenance."
+    ],
+    "objectives": [
+      "Define candidate yield separately from confirmed yield.",
+      "Specify follow-up and population denominators for a triage metric."
+    ],
+    "extension": "When reading SIDEREA or Space-JEPA, identify the actual source population, deduplication unit, target definition, and follow-up stage. Do not transfer a result from one survey into another without checking distribution changes. A teaching precision calculation is not an external validation of either project. The next contribution can be an evaluation checklist or provenance audit without requiring expensive observations.",
+    "check": "Can tripling the candidate list be described as tripling confirmed discoveries?",
+    "checkAnswer": "No. Confirmation counts and their comparable follow-up denominators must be measured separately.",
+    "terms": {},
+    "curriculumTrack": "domains",
+    "next": "ml-weather-time-baselines",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "10_domain_ml.py",
+    "sourceUrls": [
+      "https://arxiv.org/abs/2008.03303",
+      "https://docs.astropy.org/en/stable/coordinates/"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 413,
+    "readMinutes": 2
+  },
+  "ml-weather-time-baselines": {
+    "prerequisites": ["Time-aware splits and regression metrics."],
+    "objectives": [
+      "Compute persistence error at a fixed lead time.",
+      "Separate forecast initialization, valid time, and data availability."
+    ],
+    "extension": "For Weather-JEPA preparation, separate representation pretraining from the actual forecast head and evaluation. Compare with baselines using identical permitted inputs and valid times, and report where the model loses. The CPU exercise computes the simple paired fixture and no weather dataset is downloaded. A real contribution requires source-specific provenance, physical conventions, and an authorized evaluation budget.",
+    "check": "Why must forecast errors be compared at the same lead time?",
+    "checkAnswer": "Longer horizons are typically different prediction problems; changing the horizon changes the difficulty and interpretation.",
+    "terms": {},
+    "curriculumTrack": "domains",
+    "next": "ml-materials-inverse-design",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "10_domain_ml.py",
+    "sourceUrls": [
+      "https://arxiv.org/abs/2308.15560",
+      "https://weatherbench2.readthedocs.io/en/latest/"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 392,
+    "readMinutes": 2
+  },
+  "ml-materials-inverse-design": {
+    "prerequisites": ["Regression and held-out evaluation.", "Basic optimization."],
+    "objectives": [
+      "Explain why optimizing a surrogate can exploit its errors.",
+      "Define feasibility and uncertainty checks for proposed candidates."
+    ],
+    "extension": "A bounded contribution to a materials challenge can be a problem definition, authorized dataset description, baseline, split plan, and candidate-validation plan. It need not involve training a large model or claiming a new material. For NeuroCAD, keep editable geometry and verified geometric constraints separate from simulation, manufacturing, and physical testing. Each stage requires its own evidence.",
+    "check": "Does maximizing a model prediction establish a new material property?",
+    "checkAnswer": "No. It proposes a candidate; independent measurement or an appropriate validated evaluation is still required.",
+    "terms": {},
+    "curriculumTrack": "domains",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "10_domain_ml.py",
+    "sourceUrls": ["https://arxiv.org/abs/2005.00707", "https://docs.materialsproject.org/"],
+    "origin": "new-original-lesson",
+    "wordCount": 413,
+    "readMinutes": 2
+  },
+  "ml-mdp-return-contracts": {
+    "prerequisites": ["Probability and expected value."],
+    "objectives": [
+      "Calculate a discounted return.",
+      "Distinguish terminal states from an external time limit."
+    ],
+    "extension": "The decision exercise uses a two-state deterministic teaching environment with no external simulator dependency. Its transition table and rewards are visible in the file. Reproducing its exact values demonstrates arithmetic and update behavior. It does not establish performance in Mahjong, robotics, or another BU1LD decision project; those require their actual environment versions and evaluation protocols.",
+    "check": "Are termination and truncation always interchangeable?",
+    "checkAnswer": "No. A true terminal state and a time-limit cutoff can require different value targets.",
+    "terms": {},
+    "curriculumTrack": "decisions",
+    "next": "ml-value-policy-iteration",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "11_decision_systems.py",
+    "sourceUrls": [
+      "https://mitpress.mit.edu/9780262039246/reinforcement-learning/",
+      "https://gymnasium.farama.org/introduction/basic_usage/"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 396,
+    "readMinutes": 2
+  },
+  "ml-value-policy-iteration": {
+    "prerequisites": ["MDPs, expected value, and discounting."],
+    "objectives": [
+      "Compute a Bellman backup by hand.",
+      "Distinguish a policy value from an optimal value."
+    ],
+    "extension": "A useful implementation test verifies terminal transitions, discount placement, and known tiny values before using a larger environment. Track residual changes between iterations and stop using a declared tolerance, but also compare against a hand-solved case. The exercise provides the latter; it is a transparent unit of reasoning rather than a trained agent benchmark.",
+    "check": "Why does changing gamma change the preferred action in the example?",
+    "checkAnswer": "It changes how much future reward counts relative to immediate reward.",
+    "terms": {},
+    "curriculumTrack": "decisions",
+    "next": "ml-exploration-offline-evaluation",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "11_decision_systems.py",
+    "sourceUrls": ["https://mitpress.mit.edu/9780262039246/reinforcement-learning/"],
+    "origin": "new-original-lesson",
+    "wordCount": 382,
+    "readMinutes": 2
+  },
+  "ml-exploration-offline-evaluation": {
+    "prerequisites": ["MDPs and conditional probability."],
+    "objectives": [
+      "Recognize unsupported actions in logged data.",
+      "Calculate a one-step importance-weighted estimate and its limits."
+    ],
+    "extension": "Exploration collects information but can incur costs or risks. In a controlled teaching environment, epsilon-greedy actions illustrate the tradeoff between immediate reward and trying uncertain choices. That example must not be turned into permission to experiment on users or physical systems. Use authorized simulators and fixed seeds, and keep offline estimates separate from prospective policy evaluation.",
+    "check": "Can a deterministic log containing only action B directly evaluate a policy that always takes A?",
+    "checkAnswer": "No. It contains no observed A outcomes; additional assumptions or authorized data collection are required.",
+    "terms": {},
+    "curriculumTrack": "decisions",
+    "next": "ml-simulation-robotics-limits",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "11_decision_systems.py",
+    "sourceUrls": [
+      "https://arxiv.org/abs/1103.4601",
+      "https://mitpress.mit.edu/9780262039246/reinforcement-learning/"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 406,
+    "readMinutes": 2
+  },
+  "ml-simulation-robotics-limits": {
+    "prerequisites": ["MDPs and feedback control intuition."],
+    "objectives": [
+      "Define a controlled simulation benchmark with observable failures.",
+      "Separate simulator validation from real-world transfer."
+    ],
+    "extension": "For a robotics or game project, first reproduce a small known baseline in its authorized environment and write down the action and observation contract. Evaluate different seeds and held-out initial states, while keeping a fixed protocol. If transfer is untested, say so. Simulation can establish a controlled behavior under its assumptions; physical deployment, human safety, and real-world generalization need separate review and evidence.",
+    "check": "Does testing several randomized simulator parameters prove robustness to every real-world mismatch?",
+    "checkAnswer": "No. It covers the chosen perturbations only and may miss important dynamics or sensor failures.",
+    "terms": {},
+    "curriculumTrack": "decisions",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "11_decision_systems.py",
+    "sourceUrls": [
+      "https://arxiv.org/abs/1703.06907",
+      "https://gymnasium.farama.org/introduction/basic_usage/"
+    ],
+    "origin": "new-original-lesson",
+    "wordCount": 397,
+    "readMinutes": 2
+  },
+  "ml-falsifiable-hypotheses": {
+    "prerequisites": ["A task, metric, and baseline."],
+    "objectives": [
+      "Write a hypothesis with a measurable failure condition.",
+      "Freeze the protocol before viewing protected evaluation outcomes."
+    ],
+    "extension": "Translate a paper claim into an experiment you could fail. Instead of saying memory helps, specify the task distribution, baseline, memory budget, primary metric, minimum practically useful effect, seeds, and failure rule. Read the methods and appendices before adopting the claim; identify which table supports it and which conditions differ from your planned task. Save the protocol before evaluating protected data. If exploratory observations motivate a new hypothesis, version it as a successor rather than rewriting the original. A preregistered plan reduces flexibility but does not automatically fix poor measurements or invalid assumptions.",
+    "check": "Why preserve the original protocol after an unexpected result?",
+    "checkAnswer": "Changing it retrospectively can hide what was actually tested and turn an exploratory explanation into a false prior prediction.",
+    "terms": {},
+    "curriculumTrack": "practice",
+    "next": "ml-ablation-studies",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "12_research_practice.py",
+    "sourceUrls": ["https://www.statlearning.com/"],
+    "origin": "existing-article-deepened",
+    "wordCount": 491,
+    "readMinutes": 3
+  },
+  "ml-ablation-studies": {
+    "prerequisites": ["Controlled comparisons and a model with multiple components."],
+    "objectives": [
+      "Separate mechanism removal from resource reduction.",
+      "Interpret a simpler variant outperforming the full system."
+    ],
+    "extension": "Removing a component often also changes parameter count, compute, optimization, or access to information. A causal interpretation needs controls for these changes. Compare the full system, a removed-component variant, and a resource-matched replacement when feasible. Use identical split rules and paired seeds, and retain all prespecified variants. If the simpler model wins, the result challenges the claim that the removed component helps under those conditions. It may suggest optimization interference or redundant capacity, but these explanations need follow-up tests. Do not retune only the full model on the test set to repair the narrative.",
+    "check": "Does a full-model win over a smaller ablation isolate the proposed mechanism?",
+    "checkAnswer": "Not necessarily. Extra capacity or compute may explain the difference unless suitable controls address them.",
+    "terms": {},
+    "curriculumTrack": "practice",
+    "next": "ml-paired-run-comparisons",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "12_research_practice.py",
+    "sourceUrls": ["https://arxiv.org/abs/1907.11692"],
+    "origin": "existing-article-deepened",
+    "wordCount": 467,
+    "readMinutes": 3
+  },
+  "ml-paired-run-comparisons": {
+    "prerequisites": ["Means, variation, and repeated runs."],
+    "objectives": [
+      "Calculate per-seed differences and their average.",
+      "Distinguish paired variation from independent-run uncertainty."
+    ],
+    "extension": "Pair methods on the same split, seed policy, and evaluation examples when the design supports it. For baseline errors [10,12,9,11] and candidate errors [9,11,10,10], candidate-minus-baseline differences are [-1,-1,1,-1], averaging -0.5. The average favors the candidate, but one pair regresses. Report the paired vector or a suitable uncertainty summary rather than just two means. Shared seeds can reduce nuisance variation but do not create independent datasets. If examples are grouped or temporal, resample at the correct unit. Predeclare the practical threshold and preserve every eligible run, including crashes.",
+    "check": "How many pairs improve in the worked example?",
+    "checkAnswer": "Three improve by one unit and one worsens by one; the mean difference is -0.5.",
+    "terms": {},
+    "curriculumTrack": "practice",
+    "next": "ml-negative-results",
+    "nextStep": "Continue to the next lesson, then run this track CPU exercise and explain its output before changing the fixture.",
+    "exercise": "12_research_practice.py",
+    "sourceUrls": ["https://arxiv.org/abs/2109.08203"],
+    "origin": "existing-article-deepened",
+    "wordCount": 405,
+    "readMinutes": 2
+  },
+  "ml-negative-results": {
+    "prerequisites": ["A frozen hypothesis and evaluation protocol."],
+    "objectives": [
+      "Write a result that preserves failed or inconclusive evidence.",
+      "Separate lack of detected benefit from proof of equivalence."
+    ],
+    "extension": "A negative result becomes useful when its scope is reconstructable. Report the intended mechanism, exact comparison, resource budget, outcome distribution, exclusions, and known limitations. An interval spanning both a practically useful gain and a loss is inconclusive, not proof of no effect. Conversely, a well-bounded interval within a predeclared equivalence region can support a narrower claim if the design justifies it. Keep failed runs and original receipts alongside successors. In a review, distinguish what the authors report from your interpretation and anything independently reproduced. A clearer story should never require erasing an unfavorable ablation.",
+    "check": "If an uncertainty interval includes both meaningful benefit and harm, is no effect established?",
+    "checkAnswer": "No. The evidence is inconclusive at that precision; failing to detect an effect is not proving equivalence.",
+    "terms": {},
+    "curriculumTrack": "practice",
+    "next": null,
+    "nextStep": "Run the track CPU exercise. Save your command, output, and one limitation; then inspect a related project evidence record before proposing a bounded contribution.",
+    "exercise": "12_research_practice.py",
+    "sourceUrls": ["https://arxiv.org/abs/2003.08505"],
+    "origin": "existing-article-deepened",
+    "wordCount": 489,
+    "readMinutes": 3
+  }
+}

@@ -1,3 +1,5 @@
+> Current successor status (2026-10-16): see [the local website completion report](docs/WEBSITE_STATUS_2026-10-16.md). BU1LD-Web is the approved source; the user requested local work and waiting for connection. Older results below remain historical and do not certify this source snapshot.
+
 # The Bu1LD Test Report
 
 Generated during the final production-hardening pass.

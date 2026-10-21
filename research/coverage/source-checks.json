@@ -1,0 +1,92 @@
+{
+  "reviewedAt": "2026-10-16",
+  "scope": "Read-only source identity and editorial evidence review; no research execution or public upload",
+  "primarySourcesRead": [
+    {
+      "source": "research/PROJECT_REGISTRY.yaml",
+      "date": "2026-10-10",
+      "boundary": "Canonical20 source identities; snapshot is not current scientific verification"
+    },
+    {
+      "source": "research/SOURCE_BINDINGS.json",
+      "boundary": "20 bindings, including unresolved and empty records"
+    },
+    {
+      "source": "src/data/research-portfolio.ts",
+      "boundary": "Original33 public records preserved; expanded only with authorized published seeds or verified public source"
+    },
+    {
+      "source": "the-bu1ld-nexus/src/data/seed/projects.ts",
+      "date": "2026-10-02",
+      "permission": "Existing published:true seed descriptions only",
+      "boundary": "Capacity, named leads and open status not carried forward as verified operations"
+    },
+    {
+      "source": "https://github.com/build-the-future-11/Kyrlov-JEPA",
+      "permission": "GitHub API confirmed private:false; README and claim ledger fetched",
+      "date": "2026-09-27",
+      "boundary": "Negative baseline audit and engineering controls; missing full matrix"
+    },
+    {
+      "source": "https://github.com/THE-BU1LD/Fabric-Induced-Memory",
+      "permission": "GitHub API confirmed private:false; public README fetched",
+      "boundary": "Public delayed-recall and ablation warning, not unpublished ITFM successors"
+    },
+    {
+      "source": "https://github.com/vertex-studyAI/LAM-JEPA",
+      "permission": "Public README fetched",
+      "date": "2026-09-30",
+      "boundary": "Five-seed negative ARC validation; no venue acceptance inferred"
+    },
+    {
+      "source": "https://github.com/THE-BU1LD/NeuroCAD",
+      "permission": "Public README fetched",
+      "boundary": "Public alpha software checks separated from physical and independent validation"
+    },
+    {
+      "source": "https://github.com/build-the-future-11/IRIS-Space",
+      "permission": "GitHub API confirmed private:false; README and Space-JEPA implementation report fetched",
+      "date": "2026-09-19",
+      "boundary": "SIDEREA lineage and shadow-only subproject, no discovery yield"
+    },
+    {
+      "source": "https://github.com/build-the-future-11/IRIS",
+      "permission": "GitHub API confirmed private:false; README fetched",
+      "date": "2026-09-30",
+      "boundary": "Distinct robust recurrent-memory negative result, not astronomy alias"
+    },
+    {
+      "source": "Authorized APEN-Synthica local README and research state",
+      "permission": "GitHub API confirmed private:true",
+      "date": "2026-10-16",
+      "boundary": "Current engineering verification and scientific/data-admission blocks are private operational evidence; no new private results bundled publicly"
+    },
+    {
+      "source": "Authorized Adaptive-Theory-Geometry local README and FINAL_STATUS_2026-09-30",
+      "permission": "GitHub API confirmed private:true",
+      "date": "2026-09-30",
+      "boundary": "Historical numerical source mismatch found; public quantitative claims withheld pending reconciliation"
+    },
+    {
+      "source": "Authorized Olympus local README",
+      "permission": "No new public-source link verified",
+      "boundary": "Platform and separate study identities retained; no private successor metrics published"
+    }
+  ],
+  "retrievalFailures": [
+    {
+      "source": "Krylov GitHub page via web fetch",
+      "state": "Cache miss",
+      "recoveredBy": "Connected GitHub public repository and raw README fetch"
+    }
+  ],
+  "notPerformed": [
+    "Worldcastr access",
+    "Model import or training",
+    "Protected evaluation",
+    "Research mutation",
+    "Build or development server",
+    "External outreach",
+    "Production publication"
+  ]
+}

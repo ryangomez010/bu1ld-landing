@@ -1,0 +1,268 @@
+[
+  {
+    "slug": "ml-backpropagation",
+    "title": "Backpropagation through a Computational Graph",
+    "description": "Trace how local derivatives become a gradient for every trainable parameter.",
+    "level": "Intermediate",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Gradients"
+    ],
+    "concept": "Backpropagation applies the chain rule to a graph of intermediate calculations. A forward pass computes predictions and a scalar loss while retaining values needed for derivatives. The backward pass starts with the derivative of the loss with respect to itself, then propagates sensitivities through each operation. When a value influences the loss through multiple paths, its gradient is the sum of those contributions. Backpropagation computes gradients; an optimizer separately decides how to use them to update parameters.",
+    "example": "Consider the illustrative model z = wx + b and loss L = (z − y)². With x = 2, y = 3, w = 1, and b = 0, z is 2. The derivative with respect to z is −2, so the gradients for w and b are −4 and −2 respectively. Both depend on the same prediction error. With plain SGD at learning rate 0.1, the gradients in this example give w = 1.4 and b = 0.2. The new prediction is three and the squared loss is zero for this single observation. This convenient one-step result is specific to the chosen numbers; it is not evidence that the model generalizes or that this rate is universally stable.",
+    "pitfall": "A common debugging mistake is to blame backpropagation when a tensor was detached earlier or a parameter never reached the optimizer. Another is overwriting intermediate values in place. A correct derivative also does not guarantee that the learning rate or objective is appropriate.",
+    "exercise": "For z = wx+b and L = (z−y)², use x = 3, y = 1, w = 1, and b = 0. Calculate the loss and both gradients, then take one SGD step with learning rate 0.05. Recompute the prediction and loss without updating parameters a second time.",
+    "references": [
+      {
+        "label": "Deep Learning: Deep Feedforward Networks",
+        "url": "https://www.deeplearningbook.org/contents/mlp.html"
+      }
+    ],
+    "answer": "The initial prediction is three and loss is four. The derivative with respect to z is four, so dL/dw = 12 and dL/db = 4. Updating gives w = 0.4 and b = −0.2, making the prediction one and loss zero. A mean over several observations would require combining their gradient contributions."
+  },
+  {
+    "slug": "ml-activation-functions",
+    "title": "Why Neural Networks Need Nonlinear Activations",
+    "description": "Understand what nonlinearities change and why activation choice affects optimization.",
+    "level": "Beginner",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Activations"
+    ],
+    "concept": "Stacking affine layers without nonlinear activations produces another affine transformation, regardless of how many layers are used. An activation changes that limitation by transforming intermediate values nonlinearly. ReLU outputs the larger of zero and its input; sigmoid maps inputs into a bounded interval; tanh is bounded and centered around zero. Their shapes influence both representational capacity and the derivatives that carry training signals. Output activations should also match the loss and interpretation of predictions, rather than simply copying hidden-layer choices.",
+    "example": "As an illustrative example, imagine a hidden unit computing ReLU(x − 2). It stays at zero until x passes 2, then grows linearly. Combining several such units with different thresholds can represent a piecewise linear function. The bends arise from the activations, not from a single linear layer becoming more expressive by itself.",
+    "pitfall": "Sigmoid can saturate for large positive or negative inputs, producing small gradients. ReLU units can remain inactive across the training data. Neither observation makes one activation universally best. Initialization, normalization, architecture, and input scale all interact with the activation choice.",
+    "exercise": "Plot ReLU, sigmoid, and tanh across the same input range and annotate their derivatives. Train a small network with each while keeping the split, optimizer budget, and seeds fixed. Inspect activation distributions and gradient norms alongside validation error before drawing a conclusion about the change.",
+    "references": [
+      {
+        "label": "Deep Learning: Deep Feedforward Networks",
+        "url": "https://www.deeplearningbook.org/contents/mlp.html"
+      }
+    ],
+    "answer": "Away from zero, ReLU has derivative zero for negative inputs and one for positive inputs; at zero it is nondifferentiable and implementations choose a convention. Sigmoid’s derivative is s(1−s), reaching 0.25 at zero input, while tanh’s derivative is 1−tanh²(x), reaching one there. Both saturate in the tails. Compare activation distributions, gradient norms, failures, and held-out errors across planned runs; the curves alone do not identify the best activation for a particular architecture."
+  },
+  {
+    "slug": "ml-weight-initialization",
+    "title": "Initialize Weights to Keep Signals Usable",
+    "description": "Connect initial weight scale to activation and gradient behavior across layers.",
+    "level": "Intermediate",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Initialization"
+    ],
+    "concept": "Initialization determines the network's starting computations before learning has occurred. If every hidden unit begins with identical weights, symmetry can prevent units from learning distinct features. If weights are too large or too small, repeated transformations can amplify or suppress signals across depth. Variance-aware schemes choose scales based on layer width and assumptions about activations. Xavier and He initialization address related signal-propagation problems under different assumptions; neither removes the need to inspect the actual architecture and data.",
+    "example": "Suppose, illustratively, a layer sums 100 roughly independent zero-mean inputs of variance one. If every weight has variance one, the preactivation variance can be around 100 under simplifying assumptions. Reducing weight variance relative to the number of inputs can keep the output scale more manageable. Correlated inputs or different nonlinearities change this reasoning.",
+    "pitfall": "A training run that produces finite losses is not proof that initialization is healthy. Some layers may carry almost no useful gradient while the final layer still learns. Comparing initialization methods with one lucky seed also confuses stochastic variation with a reliable optimization advantage.",
+    "exercise": "Before training, pass a representative batch through a multilayer model and record activation means, variances, and fractions of inactive units. Backpropagate once and inspect gradient norms by layer. Repeat with two initialization schemes across several seeds, documenting any numerical failures rather than silently excluding them.",
+    "references": [
+      {
+        "label": "Deep Learning: Optimization for Training Deep Models",
+        "url": "https://www.deeplearningbook.org/contents/optimization.html"
+      }
+    ],
+    "answer": "Under the stated independence and zero-mean assumptions, 100 products with input variance one and weight variance one give preactivation variance about 100. Weight variance 1/100 makes that preactivation variance about one; activation-aware schemes may choose a different value, such as 2/fan-in for common ReLU assumptions. Inspect layer-by-layer activations and gradients rather than only the final loss. Record every seed and numerical failure. Zero biases can be acceptable; identical hidden weight vectors create the symmetry problem described here."
+  },
+  {
+    "slug": "ml-minibatch-training",
+    "title": "What a Minibatch Changes about Learning",
+    "description": "Separate batch size, update count, and data exposure when comparing training runs.",
+    "level": "Beginner",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Optimization"
+    ],
+    "concept": "A minibatch gradient averages information from a subset of training examples. Compared with a full-dataset gradient, it is cheaper per update and introduces sampling variation. Batch size therefore influences memory use, throughput, gradient noise, and the number of parameter updates in an epoch. An epoch measures data exposure, not a fixed amount of optimization. Larger batches can exploit hardware efficiently, but their effect on generalization and suitable learning rates depends on the training setup.",
+    "example": "For an illustrative dataset of 1,024 examples, batches of 32 give 32 updates per epoch; batches of 256 give four. Training both models for ten epochs exposes them to the same number of examples but produces very different update counts. Reporting only the epoch count hides a meaningful difference in the optimization process.",
+    "pitfall": "Shuffling does not make correlated examples independent. If adjacent windows come from the same person or recording, random minibatches can still contain highly redundant information. Small batches can also destabilize batch-dependent normalization, while large batches may require a retuned schedule to achieve a fair comparison.",
+    "exercise": "Compare two batch sizes while recording examples processed, optimizer steps, elapsed time, and peak memory. State which budget you hold fixed. Plot validation performance against both updates and wall-clock time, and examine whether the apparent winner changes when the horizontal axis changes.",
+    "references": [
+      {
+        "label": "Deep Learning: Optimization for Training Deep Models",
+        "url": "https://www.deeplearningbook.org/contents/optimization.html"
+      }
+    ],
+    "answer": "For 1,024 examples without dropped batches, ten epochs give 320 updates at batch size 32 and 40 updates at batch size 256, with 10,240 example presentations in both. A fixed-epoch comparison therefore matches exposure, not update count. A fixed-step comparison changes exposure, and a fixed-time comparison changes both according to throughput. Report which budget answers the question and plot the corresponding axes. Correlated rows, normalization behavior, and retuned learning rates can still affect the comparison."
+  },
+  {
+    "slug": "ml-momentum",
+    "title": "Momentum as a Running Direction of Travel",
+    "description": "See how gradient history can reduce oscillation without removing learning-rate risk.",
+    "level": "Intermediate",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Optimization"
+    ],
+    "concept": "Momentum maintains a moving direction based on recent gradients and uses it to update parameters. Consistent gradients reinforce one another, while alternating components can partly cancel. This can help optimization move through narrow valleys where ordinary gradient descent oscillates across steep directions. Implementations differ in their exact scaling and sign conventions, so equations should be read alongside optimizer documentation. Momentum is an optimization mechanism, not a guarantee that the resulting model will generalize well.",
+    "example": "Imagine an illustrative sequence of two-dimensional gradients: (1, 5), (1, −5), and (1, 5). The first coordinate points consistently in one direction while the second oscillates. A decayed running average emphasizes the consistent component relative to the alternating one. The actual trajectory still depends on the decay factor, learning rate, and changing local geometry.",
+    "pitfall": "Momentum can overshoot when the objective changes sharply or the learning rate is too large. A long memory of earlier gradients can be unhelpful after a sudden schedule change. Comparing momentum against plain SGD without giving both reasonable learning-rate searches can produce a misleading result.",
+    "exercise": "Use v_t=0.9v_(t−1)+g_t, v_0=(0,0), and gradients (1,5), (1,−5), (1,5). Calculate all three velocities and describe the updates with learning rate 0.1. Then outline a fair trajectory comparison against plain SGD on an elongated quadratic, including unstable learning rates.",
+    "references": [
+      {
+        "label": "Deep Learning: Optimization for Training Deep Models",
+        "url": "https://www.deeplearningbook.org/contents/optimization.html"
+      }
+    ],
+    "answer": "With v_t=0.9v_(t−1)+g_t and v_0=(0,0), the example gradients give v_1=(1,5), v_2=(1.9,−0.5), and v_3=(2.71,4.55). Updates are −ηv_t. The consistent first coordinate accumulates while the alternating coordinate partly cancels, but it does not disappear. A convention using (1−β)g instead changes the scale. Compare quadratic trajectories across learning rates and retain unstable runs; the numerical example does not establish that momentum wins at every rate or on every objective."
+  },
+  {
+    "slug": "ml-adamw",
+    "title": "Adam, Weight Decay, and the Meaning of Regularization",
+    "description": "Understand why adding an L2 loss and decaying weights differ under adaptive optimization.",
+    "level": "Intermediate",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Regularization"
+    ],
+    "concept": "Adam uses running estimates of first and second gradient moments to adjust parameter updates. In adaptive optimizers, adding an L2 penalty to the loss generally does not produce the same update as directly shrinking weights. The penalty's gradient is also transformed by the adaptive scaling. AdamW separates weight decay from the gradient-based update, making the shrinkage mechanism explicit. This distinction concerns the optimizer's mathematics; it does not establish a universally best regularization value or remove the need for validation.",
+    "example": "Consider two illustrative parameters with equal values but very different historical gradient magnitudes. An L2 gradient contributes equally before adaptive scaling, yet its effective updates can differ after that scaling. Decoupled decay applies a direct shrinkage rule outside that transformation. This is why identical numeric settings for L2 and weight decay need not produce equivalent trajectories.",
+    "pitfall": "Biases and normalization parameters are often assigned separate decay policies, but that is a design choice to document rather than a rule to copy blindly. Changing optimizer, learning-rate schedule, and decay simultaneously makes it difficult to identify which change caused an improvement.",
+    "exercise": "Write down the update equations for your framework's Adam and AdamW implementations. Run a small controlled comparison with the same architecture, split, and tuning budget. Log parameter norms and validation loss, and report the exact parameter groups to which decay was applied.",
+    "references": [
+      {
+        "label": "Decoupled Weight Decay Regularization",
+        "url": "https://arxiv.org/abs/1711.05101"
+      }
+    ],
+    "answer": "With learning rate η, decay λ, and parameter θ, decoupled decay contributes −ηλθ outside the adaptive gradient transformation. If the gradient-based update is zero, θ=2, η=0.1, and λ=0.01 give θ_next=1.998. An L2 term instead adds a term proportional to θ to the gradient and affects its moment estimates. State the penalty normalization, moment bias corrections, parameter groups, and schedule. Compare validation loss and norms under equal tuning budgets; numerical decay values alone do not establish comparable regularization."
+  },
+  {
+    "slug": "ml-normalization-layers",
+    "title": "Batch Normalization and Layer Normalization",
+    "description": "Compare the axes being normalized and the implications for training and inference.",
+    "level": "Intermediate",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Normalization"
+    ],
+    "concept": "Normalization layers transform intermediate activations using statistics computed over selected dimensions, usually followed by learned scale and offset parameters. Batch normalization typically depends on minibatch statistics during training and running estimates during evaluation. Layer normalization instead normalizes within each example over designated feature dimensions. The choice changes how examples interact and how behavior depends on batch composition. These layers are distinct from fitting an input scaler on training data, even though both involve centering and scaling values.",
+    "example": "Imagine an illustrative model processing sequences with a hidden vector at each token. Layer normalization can normalize each token's feature vector independently of other examples in the batch. A batch-dependent operation may behave differently when the batch becomes very small or its composition changes. Exact axes depend on tensor layout and the framework's layer configuration.",
+    "pitfall": "Forgetting to switch a model to evaluation mode can make batch normalization and dropout behave incorrectly during validation. Conversely, freezing all normalization statistics during fine-tuning may not suit a new domain. Neither setting should be changed without considering how inference will actually run.",
+    "exercise": "Inspect the tensor dimensions used by two normalization layers and identify precisely which elements share statistics. Compare one example's output when evaluated alone and with other examples. Repeat in training and evaluation modes, then explain which differences are expected from each layer's definition.",
+    "references": [
+      {
+        "label": "Layer Normalization",
+        "url": "https://arxiv.org/abs/1607.06450"
+      }
+    ],
+    "answer": "For tokenwise LayerNorm on a B-by-T-by-D tensor normalized over D, statistics are per token across its D features. A typical BatchNorm operation pools over batch and specified spatial dimensions for each channel. In training, changing the batch can therefore alter a sample’s BatchNorm output; ordinary LayerNorm is independent of other batch members. With tracked running statistics, BatchNorm in evaluation uses those stored statistics. Check the actual axes and configuration: BatchNorm without tracked statistics can remain batch-dependent at evaluation."
+  },
+  {
+    "slug": "ml-dropout",
+    "title": "Dropout and the Difference between Training and Evaluation",
+    "description": "Learn how randomly removing activations changes training and why mode switches matter.",
+    "level": "Beginner",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Regularization"
+    ],
+    "concept": "Dropout randomly suppresses selected activations during training, discouraging a network from relying too heavily on particular intermediate features. A common implementation rescales retained activations so their expected magnitude remains comparable, then disables random dropping during ordinary evaluation. The drop probability controls the strength of this perturbation. Dropout can reduce overfitting in some settings, but its usefulness depends on architecture, data volume, other regularizers, and where it is placed in the model.",
+    "example": "With an illustrative drop probability of 0.5, each activation is independently retained with probability 0.5 in standard elementwise dropout. In inverted dropout, retained values are multiplied by two. This preserves each activation's expectation, not the exact output of the full nonlinear network. Different dropout variants can share masks across channels or time instead of sampling every element independently.",
+    "pitfall": "Leaving dropout active unintentionally makes evaluation noisy and can degrade predictions. Turning it on deliberately for uncertainty estimation is a different procedure that requires a defined sampling and calibration protocol. A low validation score from one random evaluation pass should not be interpreted as a stable measurement.",
+    "exercise": "Pass the same input through a small model several times in training mode and then evaluation mode. Record the variability and inspect the dropout configuration. Next, compare multiple drop probabilities with a fixed validation protocol, including zero dropout as a baseline rather than assuming regularization is necessary.",
+    "references": [
+      {
+        "label": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+        "url": "https://jmlr.org/papers/v15/srivastava14a.html"
+      }
+    ],
+    "answer": "For a fixed activation a with drop probability 0.5, inverted dropout outputs zero or 2a, each with probability 0.5, so its expectation is a. Repeated training-mode passes can differ; ordinary evaluation-mode dropout returns the activation unchanged. Other stochastic or nondeterministic operations can still affect the full model. Compare zero dropout with candidate probabilities under the same validation procedure and planned seeds. An expectation-preserving activation transform does not imply identical expected predictions after subsequent nonlinear layers."
+  },
+  {
+    "slug": "ml-residual-connections",
+    "title": "Residual Connections Make Identity an Easy Starting Point",
+    "description": "Understand the role of shortcut paths and the constraints imposed by tensor shapes.",
+    "level": "Intermediate",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Architecture"
+    ],
+    "concept": "A residual block adds a learned transformation to a shortcut: its output is x + F(x) when shapes match. Instead of requiring the block to learn an entire mapping, it can learn a correction to its input. Shortcut paths also change how information and gradients travel through a deep network. When dimensions change, a projection or another explicit shape transformation is needed. Residual connections make many deep architectures easier to optimize, but they do not make arbitrary depth free or guarantee useful representations.",
+    "example": "Suppose an illustrative block initially produces F(x) near zero. Its output remains close to x, so adding the block need not immediately destroy the incoming representation. If the number of channels doubles, direct addition is invalid: the shortcut and residual branch must first be brought into compatible shapes through a deliberate architectural choice.",
+    "pitfall": "A residual network can still fail because of poor normalization, excessive learning rates, bad data, or unsuitable objectives. Counting layers alone is not an explanation for an improvement. Added width, parameter count, and compute can confound comparisons between a plain network and a residual one.",
+    "exercise": "Implement a small residual block and assert that both branches have matching shapes before addition. Compare its behavior with F set to zero and with learned weights. For a training comparison, report parameter counts and compute budgets alongside validation results and gradient statistics by depth.",
+    "references": [
+      {
+        "label": "Deep Residual Learning for Image Recognition",
+        "url": "https://arxiv.org/abs/1512.03385"
+      }
+    ],
+    "answer": "For x=(2,−1) and F(x)=(0,0), a block defined exactly as x+F(x) returns (2,−1). Its derivative is I+J_F, supplying an identity contribution but not guaranteeing a nonzero total gradient. With an extra activation after addition, the block’s output may no longer equal x when F is zero. Assert full shape equality before adding; broadcasting can hide a mismatch. Compare trained variants with parameter count, compute, and validation boundaries disclosed rather than crediting depth alone."
+  },
+  {
+    "slug": "ml-training-debugging",
+    "title": "Debug a Training Loop by Overfitting a Tiny Batch",
+    "description": "Use a bounded diagnostic to distinguish implementation failures from generalization problems.",
+    "level": "Beginner",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Debugging"
+    ],
+    "concept": "A tiny-batch overfitting check asks whether a model and training loop can memorize a small, fixed set of examples. It is a diagnostic of execution and capacity, not a meaningful evaluation of generalization. By removing data variation and reducing the task, the check can reveal disconnected gradients, wrong labels, an unsuitable loss, or an optimizer that never updates the intended parameters. Its usefulness depends on choosing a model and sample where near-memorization should actually be feasible.",
+    "example": "For an illustrative classifier, select 16 correctly labeled examples and repeatedly train on that same batch. Log loss, predictions, gradient norms, and a checksum or norm of selected parameters before and after updates. If parameters remain unchanged, investigate the update path before spending time on larger datasets or more complicated architectures.",
+    "pitfall": "Some settings should not achieve zero loss, including contradictory labels, strong regularization, restricted model capacity, and objectives with nonzero lower bounds. Disabling augmentation and dropout may clarify a diagnostic, but remember to restore the intended training configuration afterward. Never report this memorization result as held-out performance.",
+    "exercise": "Create a separate diagnostic configuration with a fixed seed, fixed batch, short step budget, and explicit stopping criterion. Verify the loss's expected input format and inspect one batch manually. Record whether the check passes, then return to a proper validation split before making any model-quality claim.",
+    "references": [
+      {
+        "label": "PyTorch: Optimizing Model Parameters",
+        "url": "https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html"
+      }
+    ],
+    "answer": "A diagnostic record should include the fixed example IDs, labels, seed, expected attainable loss, step budget, and pass criterion. Confirm that predictions enter the loss in its required form, gradients are finite and connected, and intended parameters actually change. If the loop cannot fit a feasible tiny batch, inspect labels, reduction, gradient clearing, optimizer membership, and step order before scaling up. A passing check establishes only that this constrained optimization can execute; it supplies no held-out quality estimate."
+  },
+  {
+    "slug": "ml-gradient-clipping",
+    "title": "Gradient Clipping Limits a Step Signal, Not Every Update",
+    "description": "Compute global norm clipping and distinguish gradient control from optimizer behavior.",
+    "level": "Intermediate",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Optimization",
+      "Gradients"
+    ],
+    "concept": "Global norm clipping treats all selected parameter gradients as one vector g and rescales it when its norm exceeds a threshold c. Ignoring numerical stabilizers, the result is g multiplied by min(1, c/||g||). This preserves direction while limiting magnitude. Elementwise clipping is a different operation and can change direction. For plain SGD without momentum or weight decay, a clipped gradient bounds the update norm by learning rate times c; adaptive optimizers need separate reasoning.",
+    "example": "For an illustrative gradient (3, 4), the Euclidean norm is five. Clipping to c = 2 gives (1.2, 1.6), still pointing in the same direction. With plain SGD and learning rate 0.1, the parameter update has norm 0.2. Adam can rescale coordinates using its running statistics, so the same gradient norm does not imply this exact update bound.",
+    "pitfall": "Clipping should not conceal nonfinite gradients or a consistently broken loss scale. Log the pre-clipping norm and how often clipping occurs. With scaled mixed-precision gradients, unscale before applying the intended threshold. With gradient accumulation, decide whether to clip the final accumulated gradient; clipping each microbatch defines a different procedure.",
+    "exercise": "Clip gradient (6, 8) to norm five, then compute the plain-SGD update for learning rate 0.02. Compare this with independently clipping each coordinate to magnitude five. State which operation preserves direction and what happens if the original norm is already below five.",
+    "answer": "Global clipping gives (3, 4), followed by an update of (−0.06, −0.08) with norm 0.1. Coordinate clipping gives (5, 5), whose norm exceeds five and whose direction differs. Global clipping leaves smaller finite gradients unchanged. These calculations assume no momentum, weight decay, or adaptive preconditioning.",
+    "references": [
+      {
+        "label": "PyTorch: clip_grad_norm_",
+        "url": "https://docs.pytorch.org/docs/main/generated/torch.nn.utils.clip_grad_norm_.html"
+      }
+    ]
+  },
+  {
+    "slug": "ml-freezing-parameters",
+    "title": "Freezing Weights and Evaluation Mode Solve Different Problems",
+    "description": "Distinguish trainable parameters, autograd recording, and stateful layer behavior when fine-tuning.",
+    "level": "Intermediate",
+    "track": "Neural networks",
+    "tags": [
+      "Neural networks",
+      "Transfer learning",
+      "Autograd"
+    ],
+    "concept": "A frozen parameter is not meant to receive training updates. In PyTorch, requires_grad controls whether gradients are needed for a tensor; optimizer parameter groups determine which parameters an optimizer manages. Evaluation mode changes behavior of layers such as dropout and batch normalization, but does not globally disable gradients. Conversely, no_grad disables graph recording for operations in its scope without switching the module into evaluation mode. These controls should be chosen separately.",
+    "example": "Imagine a frozen image encoder followed by a trainable linear head. If only the head needs gradients, encoder features can be computed without recording an encoder graph. The head can still learn from those features. However, a frozen encoder left in training mode may update batch-normalization running statistics. If a trainable input adapter precedes the encoder, disabling the encoder graph would also block the gradient needed by that adapter.",
+    "pitfall": "Setting requires_grad to false does not automatically clear an old gradient tensor or remove optimizer state. Avoid stale updates by managing parameter groups and clearing gradients when changing the training plan. Calling eval on the whole model can also disable regularization in a head that is supposed to train. Verify parameter and buffer behavior directly.",
+    "exercise": "For a frozen encoder and trainable head, list which weights should change after a step and whether encoder normalization buffers should change. Then add a trainable adapter before the encoder and explain why the previous no_grad shortcut no longer serves the new objective.",
+    "answer": "Only head weights should change in the first setup; fixed encoder statistics require evaluation behavior for the relevant encoder layers. The adapter needs derivatives through the encoder input-to-output computation, even though encoder weights remain frozen. Compare snapshots of both parameters and buffers, and inspect adapter gradients before trusting a fine-tuning run.",
+    "references": [
+      {
+        "label": "PyTorch: Autograd Mechanics and Evaluation Mode",
+        "url": "https://docs.pytorch.org/docs/main/notes/autograd.html"
+      }
+    ]
+  }
+]

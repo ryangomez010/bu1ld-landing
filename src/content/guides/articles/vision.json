@@ -1,0 +1,268 @@
+[
+  {
+    "slug": "ml-convolutions",
+    "title": "Convolutions Share a Detector across an Image",
+    "description": "Follow a small filter as it turns local image patterns into a feature map.",
+    "level": "Beginner",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "CNNs"
+    ],
+    "concept": "A convolutional layer applies shared weights to local regions of an input. In many deep learning libraries, the operation called convolution is technically cross-correlation because the filter is not reversed. Weight sharing lets the same local detector respond at different spatial positions while using fewer parameters than a fully connected mapping over all pixels. Multiple filters produce different feature channels. The resulting representation depends on learned patterns, input channels, boundary handling, and how layers are composed.",
+    "example": "Consider an illustrative three-by-three filter designed to respond to vertical contrast. Sliding it across a grayscale image produces a response at each valid location. Strong values suggest local patterns aligned with the filter, not necessarily complete objects. In a learned network, training adjusts such filters rather than requiring a person to specify every useful pattern. A one-dimensional cross-correlation makes the arithmetic visible: applying kernel [1,−1] to input [1,3,2,0] with stride one and no padding produces [−2,1,2]. Each output is a local weighted sum with the same two weights. Reversing the kernel would reverse these signs, illustrating why the operation convention matters.",
+    "pitfall": "Translation equivariance is not the same as complete translation invariance. Moving an object can shift its feature map, and padding, stride, pooling, or boundary effects can alter responses. A CNN can also learn shortcuts from backgrounds or watermarks instead of the intended object features.",
+    "exercise": "Apply the one-dimensional cross-correlation kernel [1,0,−1] to [2,1,3,0,4] with stride one and no padding. Calculate every output. Then state the output length for an input of length seven and a kernel of length three under the same settings.",
+    "references": [
+      {
+        "label": "Dive into Deep Learning: Convolutions for Images",
+        "url": "https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html"
+      }
+    ],
+    "answer": "The outputs are 2−3 = −1, 1−0 = 1, and 3−4 = −1. With no padding, unit stride, and unit dilation, output length is input length minus kernel length plus one, so the second case has length five. Boundary handling and stride changes require a different size calculation."
+  },
+  {
+    "slug": "ml-receptive-fields",
+    "title": "Stride, Padding, and Receptive Fields",
+    "description": "Calculate output sizes and understand how much of an image each feature can see.",
+    "level": "Intermediate",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "CNNs"
+    ],
+    "concept": "A feature's receptive field is the region of the original input that can influence it. Kernel size, stride, dilation, padding, and earlier layers determine that region. Stride spaces out filter applications, reducing spatial resolution; padding controls boundary coverage and output dimensions. A theoretical receptive field describes possible dependence, while the learned model may rely much more strongly on some pixels within it than others. Tracking both spatial size and receptive field helps prevent architectural choices that erase useful detail.",
+    "example": "For an illustrative one-dimensional input of length eight, a kernel of size three, stride one, no dilation, and no padding produces six outputs. With stride two it produces three. Stacking two size-three, stride-one layers gives an interior output access to five original positions, not six, because the local neighborhoods overlap.",
+    "pitfall": "Aggressive downsampling can make small objects disappear from the representation even when the final receptive field is large. Padding may introduce recognizable border artifacts. A model that accepts an input shape successfully can still have an unsuitable spatial resolution for the prediction task.",
+    "exercise": "Start with a length-nine input and three size-three convolutional layers, all unpadded with unit dilation and stride one. Calculate each output length and receptive-field width. Repeat with stride two only in the second layer, and explain the difference between larger coverage and finer spatial resolution.",
+    "references": [
+      {
+        "label": "Dive into Deep Learning: Padding and Stride",
+        "url": "https://d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html"
+      }
+    ],
+    "answer": "For three size-three, stride-one, unpadded, unit-dilation layers on a length-nine input, lengths are 7, 5, 3 and receptive-field widths are 3, 5, 7. Track jump j and field r using r_next=r+(k−1)j and j_next=sj. If the second layer instead has stride two, lengths become 7, 3, 1 and the final field is nine. That output covers more positions but offers less spatial resolution. Padding and dilation require their explicit adjustments."
+  },
+  {
+    "slug": "ml-image-augmentation",
+    "title": "Augment Images without Changing Their Meaning",
+    "description": "Choose transformations according to the labels and the conditions expected at deployment.",
+    "level": "Beginner",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Data augmentation"
+    ],
+    "concept": "Image augmentation creates varied training inputs through transformations such as cropping, color changes, flips, or geometric adjustments. Its purpose is to encourage useful invariances and broaden exposure to plausible conditions. A transformation is appropriate only when the target should remain unchanged or can be transformed consistently. Classification, detection, and segmentation therefore require different handling. Augmentation should be part of the training pipeline, while validation preprocessing should be defined separately and should support reproducible comparisons.",
+    "example": "A horizontal flip might preserve the label of an illustrative animal photograph. The same operation could reverse a directional traffic symbol or change the meaning of handwritten text. For object detection, flipping the pixels also requires transforming every bounding box. Cropping can remove the object entirely, so blindly keeping the original label may introduce incorrect supervision.",
+    "pitfall": "More augmentation is not automatically better. Unnatural transformations can move training examples away from the deployment distribution or destroy subtle diagnostic features. Applying random training augmentation during ordinary validation adds measurement noise and changes the question the evaluation answers.",
+    "exercise": "Create a contact sheet of transformed examples with their labels and any boxes or masks overlaid. Inspect rare classes as well as common ones. Compare a small set of justified augmentations against an unaugmented baseline, keeping the split fixed and documenting any transformation that changes or invalidates a target.",
+    "references": [
+      {
+        "label": "Dive into Deep Learning: Image Augmentation",
+        "url": "https://d2l.ai/chapter_computer-vision/image-augmentation.html"
+      }
+    ],
+    "answer": "The contact sheet must show transformed targets together with pixels. With continuous corner coordinates and image width W, a horizontal flip maps box (x1,y1,x2,y2) to (W−x2,y1,W−x1,y2). Crops must clip or remove boxes and apply the declared policy when the target disappears; categorical masks must retain valid class IDs. Inspect directional/text labels that a flip can change. Compare the chosen policy with the baseline on identical deterministic validation inputs and include rare-class counts, not just attractive augmented examples."
+  },
+  {
+    "slug": "ml-vision-transfer-learning",
+    "title": "Fine-Tune a Vision Model in Stages",
+    "description": "Distinguish a frozen feature extractor from full fine-tuning and track domain mismatch.",
+    "level": "Intermediate",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Transfer learning"
+    ],
+    "concept": "Transfer learning starts from parameters learned on another task or dataset. A frozen feature extractor keeps most of the network fixed while training a new prediction head. Fine-tuning updates some or all pretrained layers, usually with deliberate learning-rate and regularization choices. The pretrained representation can be useful even when labels differ, but its suitability depends on domain similarity, input preprocessing, and the features required for the new task. Pretraining is a starting point rather than evidence of performance on your data.",
+    "example": "For an illustrative plant-image classifier, first replace the original classification head and train only that head. Then unfreeze a later block and compare validation performance under a fixed tuning budget. If photographs differ strongly from the pretraining domain, deeper adaptation may help, but the result must be measured rather than assumed from model size.",
+    "pitfall": "Using the wrong channel order, normalization, or image resizing can quietly undermine pretrained features. A randomly split dataset with near-duplicate photographs may exaggerate the benefit of fine-tuning. Batch-normalization behavior also needs an explicit policy when layers are frozen or data are scarce.",
+    "exercise": "Record the checkpoint identity, preprocessing recipe, trainable parameter groups, and learning rates. Compare a frozen-head baseline with one staged fine-tuning configuration. Use group-aware splits when several images represent the same subject, and report variation across seeds before attributing a small gain to adaptation.",
+    "references": [
+      {
+        "label": "PyTorch: Transfer Learning for Computer Vision",
+        "url": "https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html"
+      }
+    ],
+    "answer": "The frozen-head baseline updates the new head while preserving encoder parameters and its declared normalization-buffer policy. The staged variant additionally updates the named encoder block at its recorded learning rate. Match the checkpoint’s preprocessing, group images by subject, and retain every planned run. Verify parameter and buffer snapshots rather than relying on the word frozen. Report actual differences in held-out error, training cost, and variability; a larger pretrained model or one favorable seed does not establish a transfer advantage."
+  },
+  {
+    "slug": "ml-object-detection",
+    "title": "Object Detection Adds Localization and Matching",
+    "description": "Understand why detecting several objects requires more than classifying an entire image.",
+    "level": "Intermediate",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Object detection"
+    ],
+    "concept": "Image classification assigns labels to an image; object detection identifies individual instances and their locations. A detector typically predicts class scores and bounding boxes, then uses a matching or postprocessing procedure to turn predictions into a final set. Evaluation must account for both category correctness and localization quality. Intersection over union measures the overlap between two boxes relative to their combined area. A detection can therefore name the right class while still failing because its box is poorly placed.",
+    "example": "Imagine an illustrative photograph containing three bicycles. A classifier can correctly label the image as containing a bicycle while saying nothing about the number or positions. A detector needs separate predictions. If it produces two boxes around the same bicycle and misses another, the evaluation must distinguish the duplicate prediction from an additional correct instance.",
+    "pitfall": "Coordinate conventions are a frequent source of bugs: corners versus center-and-size, absolute pixels versus normalized values, and inclusive versus exclusive boundaries. A plausible-looking visualization may hide systematic offsets. Evaluation thresholds and matching rules also materially affect reported average precision.",
+    "exercise": "Draw predicted and reference boxes on several images, including empty scenes and crowded examples. Compute one overlap value by hand, then compare it with the evaluation code. Document box format, class mapping, confidence filtering, and matching thresholds so another person can reproduce the metric.",
+    "references": [
+      {
+        "label": "Dive into Deep Learning: Object Detection and Bounding Boxes",
+        "url": "https://d2l.ai/chapter_computer-vision/bounding-box.html"
+      }
+    ],
+    "answer": "Using continuous corners, boxes (0,0,4,4) and (2,0,6,4) share area eight and have union 24, giving IoU=1/3. At a 0.5 IoU criterion that pair does not qualify, even with the correct class. For duplicate predictions, only one can match the same reference under one-to-one matching; other eligible unmatched detections are false positives in the usual protocol. Include empty images, class mismatches, and crowded scenes, and declare filtering, ignore-region, and matching rules before computing the final summary."
+  },
+  {
+    "slug": "ml-semantic-segmentation",
+    "title": "Segmentation Predicts a Label for Each Pixel",
+    "description": "Connect dense predictions to mask preprocessing and overlap-based evaluation.",
+    "level": "Intermediate",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Segmentation"
+    ],
+    "concept": "Semantic segmentation assigns a category to each pixel, preserving a spatial map of the scene. Unlike instance segmentation, it does not necessarily distinguish two separate objects belonging to the same class. Models must combine contextual information with enough resolution to locate boundaries. The target mask is categorical data, so preprocessing must preserve label identities. Metrics such as intersection over union and Dice summarize overlap, but their interpretation depends on class averaging, ignored pixels, and treatment of absent classes.",
+    "example": "In an illustrative road scene, a mask may label pixels as road, vehicle, pedestrian, or background. Two cars can share the same semantic label without separate instance identities. If road pixels dominate, a model can achieve high pixel accuracy while missing most pedestrians. Per-class overlap reveals this failure more clearly than one overall accuracy value.",
+    "pitfall": "Resizing a categorical mask with ordinary smooth interpolation can create invalid label values or blur boundaries. Geometric augmentation must transform the image and mask together. Ignored regions should be handled consistently in both loss and evaluation, rather than silently counted as background.",
+    "exercise": "Inspect image-mask overlays before training. Verify that every mask value belongs to the label vocabulary or the designated ignore value. Compute per-class overlap on a small hand-checked example, then report both common and rare classes with a documented policy for images where a class is absent.",
+    "references": [
+      {
+        "label": "Dive into Deep Learning: Semantic Segmentation and the Dataset",
+        "url": "https://d2l.ai/chapter_computer-vision/semantic-segmentation-and-dataset.html"
+      }
+    ],
+    "answer": "For one class with TP=6, FP=2, and FN=4 pixels, IoU=6/(6+2+4)=0.5 and Dice=12/(12+2+4)=2/3. Compute class counts after excluding ignore pixels consistently. If prediction and reference both contain no pixels of a class, the usual ratio has a zero denominator; specify whether the implementation excludes that case or assigns a defined value. Verify mask IDs after every resize/augmentation and report rare-class results so dominant background pixels cannot conceal missed objects."
+  },
+  {
+    "slug": "ml-vision-transformer-patches",
+    "title": "A Vision Transformer Reads Image Patches as Tokens",
+    "description": "Explore the tradeoff between patch size, spatial detail, and attention cost.",
+    "level": "Intermediate",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Transformers"
+    ],
+    "concept": "A vision transformer can divide an image into fixed-size patches, map each patch into an embedding, and process the resulting sequence with transformer layers. Positional information helps the model distinguish where patches came from. Patch size controls both the number of tokens and the granularity of the initial representation. Smaller patches preserve finer spatial detail but create longer sequences. The architecture's behavior depends on its pretraining, positional scheme, attention design, and task head, not just the presence of transformer blocks.",
+    "example": "For an illustrative 224-by-224 image with nonoverlapping 16-by-16 patches, the patch grid contains 14 by 14, or 196, tokens before any special token is added. Halving the patch width and height produces 784 patch tokens. With standard full attention, the number of token pairs grows approximately quadratically with sequence length.",
+    "pitfall": "A patch embedding does not inherently encode all the locality assumptions of a convolutional network. Training data and augmentation can therefore matter greatly. Changing image resolution at inference may also require a supported positional-embedding adaptation rather than merely passing a larger tensor.",
+    "exercise": "Calculate token counts for several image and patch sizes. Estimate relative attention-matrix sizes while clearly labeling this as a partial cost estimate. Inspect the model's supported resolutions and positional handling, then compare accuracy, memory, and latency under the same actual inference workload.",
+    "references": [
+      {
+        "label": "An Image is Worth 16x16 Words",
+        "url": "https://arxiv.org/abs/2010.11929"
+      }
+    ],
+    "answer": "For a 224-by-224 image, 16-by-16 patches give 196 tokens and 8-by-8 patches give 784. Excluding special tokens, the full-attention score matrices contain 196²=38,416 and 784²=614,656 entries per head: a sixteenfold increase. This estimates only attention-pair storage/work, not whole-model latency or memory. Account for special tokens, heads, precision, and runtime implementation, then measure the actual workload. Supported positional handling must be checked before interpreting larger-resolution execution as evidence of preserved quality."
+  },
+  {
+    "slug": "ml-clip",
+    "title": "Contrastive Vision-Language Models Depend on the Candidate Labels",
+    "description": "Understand image-text matching and the limits of interpreting similarity as certainty.",
+    "level": "Intermediate",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Multimodal"
+    ],
+    "concept": "A contrastive vision-language model learns image and text representations that align paired examples relative to alternatives. At inference, an image can be compared with text descriptions of candidate classes. This supports flexible classification without training a new head for every label set, but predictions depend on the descriptions and candidates supplied. Similarity scores express compatibility within the learned representation. They are not automatically calibrated probabilities of real-world truth, and broad pretraining does not eliminate domain-specific blind spots.",
+    "example": "Suppose an illustrative image is compared with prompts describing a cat, a dog, and a bicycle. The highest similarity identifies the best match among those candidates. If the image actually shows a fox, the model may still choose one of the available labels. Adding a fox description can change the ranking without changing the image or model weights.",
+    "pitfall": "Prompt wording can influence results, so selecting prompts after repeatedly inspecting test outcomes leaks evaluation information. Candidate sets that exclude plausible alternatives can make the model appear more decisive than it is. Sensitive or specialized uses require domain-appropriate evaluation rather than confidence inferred from a softmax.",
+    "exercise": "Define a candidate label set and prompt templates before evaluating. Include ambiguous and out-of-scope images. Compare several predefined wording variants on validation data, record sensitivity to the candidate set, and distinguish ranking quality from any separately assessed probability calibration.",
+    "references": [
+      {
+        "label": "Learning Transferable Visual Models From Natural Language Supervision",
+        "url": "https://arxiv.org/abs/2103.00020"
+      }
+    ],
+    "answer": "A fox image forced to choose among cat, dog, and bicycle can yield a confident-looking relative winner without any correct candidate. Freeze prompt templates and candidate sets using development data, then evaluate ambiguous and out-of-scope images with counts and predefined abstention criteria. Compare rankings across wording variants, and assess calibration separately if probabilities drive decisions. A softmax normalizes over the supplied labels; adding a fox label changes that comparison and does not by itself prove broad open-world recognition."
+  },
+  {
+    "slug": "ml-shortcut-learning",
+    "title": "Detect When a Vision Model Learns the Background",
+    "description": "Use controlled slices and interventions to test whether a model uses the intended evidence.",
+    "level": "Intermediate",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Robustness"
+    ],
+    "concept": "Shortcut learning occurs when a model relies on predictive cues that work in the observed data but fail under the intended deployment conditions. Backgrounds, acquisition devices, borders, watermarks, and compression patterns can all correlate with labels. A random split often preserves those correlations, so high held-out performance may not expose the problem. Testing the intended mechanism requires carefully chosen slices or interventions that change suspected shortcuts while preserving the relevant content as much as possible.",
+    "example": "Imagine an illustrative animal dataset where most cows appear on grass and most camels appear on sand. A classifier may exploit scenery instead of animal shape. Evaluating cows on sand and camels on grass probes that dependence. Such examples need valid labels and realistic construction; crude image edits can introduce new artifacts that complicate interpretation.",
+    "pitfall": "Saliency maps alone do not establish a causal explanation for a prediction. Likewise, one successful background intervention does not prove complete robustness. Multiple cues can coexist, and changing one may reveal another. The test distribution must remain relevant to the claim being made.",
+    "exercise": "List three plausible shortcuts in a dataset and identify how each could cross a random split. Build or locate a small, independently labeled challenge slice for one hypothesis. Report slice performance alongside the ordinary evaluation and describe exactly what the intervention does and does not isolate.",
+    "references": [
+      {
+        "label": "Shortcut Learning in Deep Neural Networks",
+        "url": "https://arxiv.org/abs/2004.07780"
+      }
+    ],
+    "answer": "Background habitat, camera identity, and watermarks can each remain correlated with labels across a random row split. For the habitat hypothesis, use independently labeled cows on sand and camels on grass, ideally with realistic images and a matched ordinary slice. Report both denominators and performance. A decline on this slice is consistent with shortcut reliance but may also involve other changed conditions. Control image quality and editing artifacts, and avoid using one intervention or a saliency map as proof of the entire decision mechanism."
+  },
+  {
+    "slug": "ml-vision-error-analysis",
+    "title": "Review Vision Errors by Slice, Not Only by Score",
+    "description": "Turn prediction failures into a structured investigation of data and model limitations.",
+    "level": "Beginner",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Error analysis"
+    ],
+    "concept": "Error analysis organizes failures into meaningful categories so that the next improvement targets a specific mechanism. For vision tasks, useful slices might include object size, lighting, occlusion, capture device, viewpoint, and label ambiguity. The goal is not to search endlessly for a flattering subgroup; it is to understand where the model fails and how often those conditions matter. Slice definitions, sample counts, and uncertainty should accompany performance summaries, especially when some categories are rare.",
+    "example": "For an illustrative detector, review missed objects and discover that many occupy fewer than a few dozen pixels. This suggests hypotheses involving image resolution, downsampling, or annotation consistency. It does not yet establish which mechanism is responsible. A targeted comparison can then test one change while preserving an untouched evaluation set for the final assessment.",
+    "pitfall": "Manually inspected errors are often selected because they are striking rather than representative. Reviewing only high-confidence mistakes can miss broad low-confidence weaknesses. Repeatedly adjusting the model against the same small error set also turns that set into development data, even if it was originally called a test set.",
+    "exercise": "Sample errors and correct predictions using a documented procedure. Annotate a short, predefined set of attributes and allow an ambiguous category. Count failures and total examples within each slice, record labeling disagreements, and propose one falsifiable follow-up experiment rather than a collection of untested fixes.",
+    "references": [
+      {
+        "label": "Datasheets for Datasets",
+        "url": "https://arxiv.org/abs/1803.09010"
+      }
+    ],
+    "answer": "Count errors over all sampled examples in each slice, not over errors alone. If 20 of 100 small objects and 5 of 100 large objects are missed, miss rates are 20% and 5%; these hypothetical counts motivate a size-focused hypothesis without identifying the cause. Record ambiguity and reviewer disagreement. A follow-up could compare two input resolutions under fixed training and evaluation rules while checking annotation quality. Preserve an untouched final set because repeatedly studying the current errors makes them development data."
+  },
+  {
+    "slug": "ml-intersection-over-union",
+    "title": "Intersection over Union Measures Overlap, Not Object Identity",
+    "description": "Compute bounding-box overlap with explicit coordinates before interpreting detection metrics.",
+    "level": "Beginner",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Detection",
+      "IoU"
+    ],
+    "concept": "Intersection over union, or IoU, divides the area shared by two regions by the area of their union. For axis-aligned boxes, compute overlap width and height, clamp each at zero, and multiply. The union is area A plus area B minus intersection. Coordinate conventions must be explicit: continuous corner coordinates differ from inclusive integer-pixel indexing. IoU evaluates geometry, while a detector evaluation additionally needs class matching, score ordering, and rules for assigning predictions to ground truth.",
+    "example": "Using continuous (x1,y1,x2,y2) coordinates, let A = (0,0,4,4) and B = (2,0,6,4). Each area is 16, their intersection is 2×4 = 8, and their union is 24. IoU is 1/3. Two identical predictions for one object would each have high geometric overlap, but a one-to-one matching protocol does not award two true positives for the same object.",
+    "pitfall": "Small objects can suffer large IoU changes from a one-pixel shift. Invalid or degenerate boxes also need explicit handling; zero union makes the usual ratio undefined. A high IoU does not repair an incorrect class label. Avoid mixing normalized and pixel coordinates or silently adding one to widths under a continuous convention.",
+    "exercise": "Compute IoU for A = (0,0,2,2) and B = (1,1,3,3), then for a disjoint box C = (3,3,4,4) against A. Explain whether two identical predicted boxes matching A should both count as correct under one-to-one matching.",
+    "answer": "A and B each have area four, share area one, and have union seven, so IoU is 1/7. A and C have no overlap, giving zero. Under one-to-one matching, only one eligible prediction can match A; the duplicate is unmatched. The full evaluation protocol determines how unmatched predictions are counted.",
+    "references": [
+      {
+        "label": "Torchvision: box_iou",
+        "url": "https://docs.pytorch.org/vision/main/generated/torchvision.ops.box_iou.html"
+      }
+    ]
+  },
+  {
+    "slug": "ml-pretrained-image-preprocessing",
+    "title": "Pretrained Image Models Need Their Original Input Contract",
+    "description": "Trace color order, scaling, normalization, and resizing before blaming a pretrained network.",
+    "level": "Beginner",
+    "track": "Computer vision",
+    "tags": [
+      "Computer vision",
+      "Preprocessing",
+      "Transfer learning"
+    ],
+    "concept": "A pretrained image model expects more than a tensor of the right shape. Its input contract includes color channel order, numeric range, resizing and cropping policy, interpolation, and channel normalization. A weights package may supply the associated transforms. Reusing that contract creates a meaningful starting point for evaluation. Changing preprocessing can be a legitimate experiment, but it changes the effective model and should be measured rather than silently substituted.",
+    "example": "For a hypothetical channel with mean 0.5 and standard deviation 0.25, an 8-bit pixel value of 128 first becomes 128/255, approximately 0.502. Standardization then gives about 0.008. Applying the same mean and standard deviation directly to 128 gives 510, a radically different input despite identical tensor dimensions. This is an illustrative contract, not a recommended normalization for every checkpoint.",
+    "pitfall": "Normalizing twice, swapping RGB and BGR, or cropping away a small target can make a working model appear broken. Training augmentation and deterministic evaluation preprocessing also have different jobs. Read the contract for the exact checkpoint; a familiar architecture name does not guarantee identical weight preparation.",
+    "exercise": "Under the illustrative mean and standard deviation above, transform pixel values zero and 255. Write a minimal parity check for one fixed image processed by the training evaluation path and the serving path, including shape, channel order, range, and final tensor comparison.",
+    "answer": "The endpoints become −2 and 2 after scaling to [0,1] and standardizing. The parity check should use the same decoded image and compare the resulting tensors within a stated tolerance, with matching resize and crop semantics. Matching shapes alone cannot detect a channel swap or a second normalization pass.",
+    "references": [
+      {
+        "label": "Torchvision: Pretrained Weights and Inference Transforms",
+        "url": "https://docs.pytorch.org/vision/main/models.html"
+      }
+    ]
+  }
+]

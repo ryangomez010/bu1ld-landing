@@ -1,0 +1,1096 @@
+{
+  "schemaVersion": "1.0.0",
+  "publisher": {
+    "name": "The BU1LD",
+    "url": "https://thebu1ld.com",
+    "manifestUrl": "https://thebu1ld.com/portfolio-manifest.json"
+  },
+  "evidenceNotice": "Source binding, code presence, and local execution are distinct from scientific validation, independent reproduction, publication, and production readiness.",
+  "evidenceLevels": {
+    "E0": "Identity or idea only",
+    "E1": "Written specification",
+    "E2": "Code exists",
+    "E3": "Smoke-tested",
+    "E4": "Controlled result or complete local user flow",
+    "E5": "Multi-seed benchmark or comprehensive product test",
+    "E6": "External dataset or real-user evidence",
+    "E7": "Independent reproduction or external reviewer confirmation",
+    "E8": "Release-ready or production-ready after live credentials and external checks"
+  },
+  "sources": {
+    "portfolioRegistry": "research/PROJECT_REGISTRY.yaml",
+    "publicPortfolioProjection": "src/data/portfolio.ts",
+    "researchAtlasProjection": "src/data/research-portfolio.ts",
+    "researchAtlasSourceRevision": "a5464067d3f154f306d7e3d11d66edcda3e347ef"
+  },
+  "counts": {
+    "destinations": 6,
+    "portfolioIdentities": 20,
+    "boundSourceIdentities": 17,
+    "unresolvedSourceIdentities": 3,
+    "researchLines": 40,
+    "researchAtlasClassification": {
+      "records": 40,
+      "projects": 32,
+      "subprojects": 1,
+      "collections": 6,
+      "unresolvedDirections": 1
+    }
+  },
+  "destinations": [
+    {
+      "id": "bu1ld-nexus",
+      "projectId": "bu1ld-nexus",
+      "name": "The BU1LD",
+      "role": "Research and builder institution",
+      "description": "The public home for BU1LD research, programs, projects, and the member evidence workflow.",
+      "availability": "live",
+      "publicUrl": "https://thebu1ld.com/",
+      "repositoryUrl": "https://github.com/ryangomez010/bu1ld-landing",
+      "note": "Public site responded successfully on 11 October 2026.",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/bu1ld-nexus"
+    },
+    {
+      "id": "financemeta-public",
+      "projectId": "financemeta",
+      "name": "FinanceMeta",
+      "role": "Public finance research and education",
+      "description": "The public FinanceMeta site for research protocols, programs, reading tools, and participation paths.",
+      "availability": "live",
+      "publicUrl": "https://finance-meta-landing.vercel.app/",
+      "repositoryUrl": "https://github.com/build-the-future-11/FinanceMeta-Landing",
+      "note": "Public deployment responded successfully on 11 October 2026.",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/financemeta"
+    },
+    {
+      "id": "financemeta-member",
+      "projectId": "financemeta",
+      "name": "FinanceMeta member portal",
+      "role": "Member learning and evidence workspace",
+      "description": "The separate account surface for finance learning, evidence review, and member workflows.",
+      "availability": "live",
+      "publicUrl": "https://finance4all-global-reach.vercel.app/",
+      "repositoryUrl": "https://github.com/build-the-future-11/finance4all-global-reach",
+      "note": "Public deployment responded successfully on 11 October 2026.",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/financemeta"
+    },
+    {
+      "id": "iyern",
+      "name": "IYERN",
+      "role": "Youth economics research network",
+      "description": "An evidence-bounded pre-launch archive, submission route, and public research standard for youth economics work.",
+      "availability": "live",
+      "publicUrl": "https://iy-ern.vercel.app/",
+      "repositoryUrl": "https://github.com/build-the-future-11/Iy-ERN",
+      "note": "Public deployment responded successfully on 11 October 2026; the archive truthfully remains empty until verified submissions exist.",
+      "portfolioProfileUrl": null
+    },
+    {
+      "id": "vertexed",
+      "projectId": "vertexed",
+      "name": "VertexED",
+      "role": "Adaptive learning product",
+      "description": "A separate education product for guided study and adaptive learning experiences.",
+      "availability": "preview",
+      "publicUrl": "https://vertex-ed-ai.vercel.app/",
+      "repositoryUrl": "https://github.com/vertex-studyAI/vertexED.ai",
+      "note": "Fallback deployment is reachable; the custom domain remains unlinked until TLS is repaired.",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/vertexed"
+    },
+    {
+      "id": "obscured-records-agent",
+      "projectId": "obscured-records-agent",
+      "name": "Obscured Records",
+      "role": "Evidence-led editorial product",
+      "description": "A long-form publication and research archive with a deliberately separate editorial identity.",
+      "availability": "private",
+      "publicUrl": null,
+      "repositoryUrl": "https://github.com/build-the-future-11/Obscured-Records",
+      "note": "The hosted reader is owner-only, so this directory links source without bypassing access control.",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/obscured-records-agent"
+    }
+  ],
+  "portfolioIdentities": [
+    {
+      "id": "bu1ld-nexus",
+      "name": "The BU1LD Nexus",
+      "classification": "PRODUCT",
+      "evidenceLevel": "E4",
+      "sourceStatus": "BOUND_CURRENT_CHECKOUT",
+      "category": "Research-and-builder institution platform",
+      "objective": "Create a credible journey from public discovery and applications to contribution evidence and public proof.",
+      "implemented": "A TanStack and Vite product with public institutional routes, a member portal, project workflows, evidence controls, tests, release scripts, and a phased Supabase schema.",
+      "intendedOutput": "A deployable public site, member portal, and research evidence system.",
+      "limitations": [
+        "Live Supabase checks and multi-role production journeys remain external release gates.",
+        "The paper analyzer is deterministic triage, not citation verification or scientific review."
+      ],
+      "repositoryUrl": "https://github.com/ryangomez010/bu1ld-landing",
+      "profileUrl": "https://thebu1ld.com/portfolio/bu1ld-nexus"
+    },
+    {
+      "id": "financemeta",
+      "name": "FinanceMeta / Finance4All Global Reach",
+      "classification": "PRODUCT",
+      "evidenceLevel": "E4",
+      "sourceStatus": "BOUND_RELOCATED_REPOSITORY",
+      "category": "Finance education and member platform",
+      "objective": "Support a distinct visitor-to-member finance learning and contribution journey.",
+      "implemented": "A Vite React product with Supabase migrations, edge functions, member workflows, tests, release scripts, and product documentation.",
+      "intendedOutput": "A deployable finance website, member portal, programs, and editorial workflow.",
+      "limitations": [
+        "Finance claims must not imply investment performance without artifact-backed evidence.",
+        "Live RLS verification and full browser journeys have not been re-established for this profile."
+      ],
+      "repositoryUrl": "https://github.com/build-the-future-11/finance4all-global-reach",
+      "profileUrl": "https://thebu1ld.com/portfolio/financemeta"
+    },
+    {
+      "id": "project-genesis",
+      "name": "Project Genesis",
+      "classification": "FLAGSHIP",
+      "evidenceLevel": "E4",
+      "sourceStatus": "BOUND_ARCHIVED_REPOSITORY",
+      "category": "Continual and modular learning research",
+      "objective": "Test bounded developmental modular learning with sparse routing and continual-learning controls.",
+      "implemented": "A Python package with configurations, command-line entry points, tests, synthetic and vision loaders, smoke artifacts, and paper and audit documentation.",
+      "intendedOutput": "A reproducible research release with code, configurations, raw runs, a paper packet, and multi-seed experiments.",
+      "limitations": [
+        "Smoke artifacts do not support public benchmark or novelty claims.",
+        "The declared multi-seed public benchmark campaign and independent reproduction remain incomplete."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/project-genesis"
+    },
+    {
+      "id": "genesis-econ",
+      "name": "GenesisE / Genesis Economics Edition",
+      "classification": "CORE",
+      "evidenceLevel": "E4",
+      "sourceStatus": "BOUND_ARCHIVED_REPOSITORY",
+      "category": "Synthetic economic intelligence simulator",
+      "objective": "Provide an executable lab for adaptive markets, memory, regimes, agents, counterfactuals, and economic world models.",
+      "implemented": "A dependency-free Python package with simulation modules, a CLI, benchmark and validation artifacts, documentation, and tests.",
+      "intendedOutput": "A reproducible synthetic economic simulation package with explicit validation artifacts.",
+      "limitations": [
+        "All retained evidence is synthetic and internal; it does not establish real-market validity.",
+        "The broad program surface still needs stronger nearest-baseline comparisons."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/genesis-econ"
+    },
+    {
+      "id": "montecarlo",
+      "name": "MonteCarlo",
+      "classification": "ARCHIVE",
+      "evidenceLevel": "E0",
+      "sourceStatus": "BOUND_EMPTY_REPOSITORY",
+      "category": "Empty or uninitialized research repository",
+      "objective": "No research objective is evidenced by the current source.",
+      "implemented": "Only repository metadata was found; no implementation or artifacts were present.",
+      "intendedOutput": "Undetermined until a precise, falsifiable objective is supplied.",
+      "limitations": [
+        "No question, code, dataset, test, license, or result has been established."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/montecarlo"
+    },
+    {
+      "id": "visualization-scratch",
+      "name": "Codex visualization scratch root",
+      "classification": "ARCHIVE",
+      "evidenceLevel": "E0",
+      "sourceStatus": "UNRESOLVED_NON_PROJECT",
+      "category": "Scratch artifact directory",
+      "objective": "No standalone project objective was discovered.",
+      "implemented": "No project files were found in the registered scratch location.",
+      "intendedOutput": "Conversation visualizations, not a research release.",
+      "limitations": [
+        "This is retained for identity completeness and is not presented as a project."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/visualization-scratch"
+    },
+    {
+      "id": "olympus",
+      "name": "Olympus",
+      "classification": "RESEARCH_PLATFORM",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Cognitive research platform and model foundry",
+      "objective": "Reconcile distinct model and study lines without collapsing their protocols or evidence.",
+      "implemented": "A source repository has been discovered and identity-bound.",
+      "intendedOutput": "An evidence-governed local research platform.",
+      "limitations": [
+        "Source binding establishes identity and code presence only, not a reproduced scientific result."
+      ],
+      "repositoryUrl": "https://github.com/build-the-future-11/olympus-cognitive-architecture",
+      "profileUrl": "https://thebu1ld.com/portfolio/olympus"
+    },
+    {
+      "id": "vertexed",
+      "name": "VertexED",
+      "classification": "PRODUCT",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Adaptive education product",
+      "objective": "Establish product evidence and release integrity for guided learning workflows.",
+      "implemented": "A source repository and reachable fallback deployment have been identified.",
+      "intendedOutput": "A verified production education platform.",
+      "limitations": [
+        "The custom domain is excluded until TLS is repaired.",
+        "Repository discovery and a preview URL do not establish production readiness."
+      ],
+      "repositoryUrl": "https://github.com/vertex-studyAI/vertexED.ai",
+      "profileUrl": "https://thebu1ld.com/portfolio/vertexed"
+    },
+    {
+      "id": "obscured-records-agent",
+      "name": "Obscured Records Agent",
+      "classification": "PRODUCT",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Editorial and publishing product",
+      "objective": "Establish product evidence and release integrity for an editorial workflow.",
+      "implemented": "A source repository has been discovered and identity-bound.",
+      "intendedOutput": "A verified editorial product and publication workflow.",
+      "limitations": [
+        "The hosted reader remains owner-only and this directory does not bypass that access boundary.",
+        "Source discovery alone is not evidence of a public production release."
+      ],
+      "repositoryUrl": "https://github.com/build-the-future-11/Obscured-Records",
+      "profileUrl": "https://thebu1ld.com/portfolio/obscured-records-agent"
+    },
+    {
+      "id": "pi-jepa",
+      "name": "PI-JEPA",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E1",
+      "sourceStatus": "BOUND_RECOVERED_SOURCE",
+      "category": "Physics-informed joint-embedding predictive architecture",
+      "objective": "Reconcile the recovered source before defining an independently scoped study.",
+      "implemented": "A source subtree was recovered, but no standalone repository identity was proven.",
+      "intendedOutput": "An independently scoped, falsifiable study.",
+      "limitations": [
+        "Recovered source is specification-level evidence and does not establish a runnable result."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/pi-jepa"
+    },
+    {
+      "id": "apen-pen",
+      "name": "APEN / PEN",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Adaptive predictive engram networks",
+      "objective": "Reconcile APEN and PEN identities against retained protocols and outcomes.",
+      "implemented": "A source repository has been discovered and identity-bound.",
+      "intendedOutput": "An evidence-bound research release.",
+      "limitations": [
+        "Code presence does not qualify scientific claims; protocol and outcome reconciliation remain required."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/apen-pen"
+    },
+    {
+      "id": "ripii-ipii",
+      "name": "RIPII / IPII",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_PARTIAL_IDENTITY",
+      "category": "Representation and projective reasoning research",
+      "objective": "Reconcile the RIPII source and the unresolved IPII identity.",
+      "implemented": "RIPII source was found; IPII was not independently resolved.",
+      "intendedOutput": "An evidence-bound research release after identity reconciliation.",
+      "limitations": [
+        "The combined label remains partial and must not imply that both source identities are verified."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/ripii-ipii"
+    },
+    {
+      "id": "eigen-jepa",
+      "name": "Eigen-JEPA",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Spectral financial predictive representation research",
+      "objective": "Test spectral market-state prediction under a frozen protocol.",
+      "implemented": "A source repository has been discovered and identity-bound.",
+      "intendedOutput": "An evidence-bound research release.",
+      "limitations": [
+        "No controlled result or protected-evaluation outcome is claimed by this source binding."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/eigen-jepa"
+    },
+    {
+      "id": "eigen-finance",
+      "name": "Eigen-Finance",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E1",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Financial latent-structure research",
+      "objective": "Define a precise falsifiable study beyond the currently reserved repository scope.",
+      "implemented": "A reserved-scope repository has been discovered.",
+      "intendedOutput": "A precise falsifiable study.",
+      "limitations": [
+        "The current scope is too thin to support implementation or result claims."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/eigen-finance"
+    },
+    {
+      "id": "lgwm",
+      "name": "LGWM",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E1",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Liquidation graph world models",
+      "objective": "Define a precise falsifiable study beyond the currently reserved repository scope.",
+      "implemented": "A reserved-scope repository has been discovered.",
+      "intendedOutput": "A precise falsifiable study.",
+      "limitations": [
+        "The current scope is too thin to support implementation or result claims."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/lgwm"
+    },
+    {
+      "id": "esnf",
+      "name": "ESNF",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E0",
+      "sourceStatus": "UNRESOLVED_NO_LOCAL_OR_ORG_REPOSITORY",
+      "category": "Unresolved research identity",
+      "objective": "Unknown until an authoritative source and research question are recovered.",
+      "implemented": "No authoritative source was found in the registered local or organization scope.",
+      "intendedOutput": "Unknown.",
+      "limitations": [
+        "No source, protocol, implementation, or result is currently attributable."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/esnf"
+    },
+    {
+      "id": "nfgm",
+      "name": "NFGM",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E0",
+      "sourceStatus": "UNRESOLVED_NO_LOCAL_OR_ORG_REPOSITORY",
+      "category": "Unresolved research identity",
+      "objective": "Unknown until an authoritative source and research question are recovered.",
+      "implemented": "No authoritative source was found in the registered local or organization scope.",
+      "intendedOutput": "Unknown.",
+      "limitations": [
+        "No source, protocol, implementation, or result is currently attributable."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/nfgm"
+    },
+    {
+      "id": "npms",
+      "name": "NPMS",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Neural predictive memory systems",
+      "objective": "Reconcile controlled diagnostics with the precise claim under test.",
+      "implemented": "A source repository has been discovered and identity-bound.",
+      "intendedOutput": "An evidence-bound research release.",
+      "limitations": [
+        "Controlled diagnostics and a frozen evaluation boundary remain necessary before result claims."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/npms"
+    },
+    {
+      "id": "atg",
+      "name": "Adaptive Theory Geometry",
+      "classification": "RESEARCH",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Adaptive geometry and experimental design",
+      "objective": "Reconcile the manuscript, implementation, and retained experiment receipts.",
+      "implemented": "A source repository has been discovered and identity-bound.",
+      "intendedOutput": "An evidence-bound research release.",
+      "limitations": [
+        "The manuscript and retained receipts still need claim-level reconciliation and reproduction."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/atg"
+    },
+    {
+      "id": "neurocad",
+      "name": "NeuroCAD",
+      "classification": "PRODUCT_RESEARCH",
+      "evidenceLevel": "E2",
+      "sourceStatus": "BOUND_DISCOVERED_REPOSITORY",
+      "category": "Bounded language-to-CAD system",
+      "objective": "Preserve compiler evidence separately from open-ended intelligence claims.",
+      "implemented": "A source repository has been discovered and identity-bound.",
+      "intendedOutput": "A verified product and bounded research artifact.",
+      "limitations": [
+        "Compiler behavior can support bounded engineering claims, not general intelligence claims."
+      ],
+      "profileUrl": "https://thebu1ld.com/portfolio/neurocad"
+    }
+  ],
+  "researchAtlas": [
+    {
+      "slug": "what-survived-the-search-navier-stokes",
+      "title": "Navier–Stokes Extremal Search",
+      "summary": "A falsification-first search for persistent extreme flows, with matched random controls and strict numerical refinement.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Scientific ML",
+        "Fluid dynamics",
+        "Negative results"
+      ],
+      "publicStatus": "Executed study · negative result",
+      "evidenceBoundary": "The completed screen promoted no candidate and does not establish blow-up or a new extreme-flow family.",
+      "featured": true,
+      "profileUrl": "https://thebu1ld.com/research-atlas/what-survived-the-search-navier-stokes",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "neurocad",
+      "title": "NeuroCAD",
+      "summary": "A verification-first prompt-to-parametric-program workflow for editable, testable CAD artifacts.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Applied AI",
+        "CAD",
+        "Geometry"
+      ],
+      "publicStatus": "Alpha research prototype",
+      "evidenceBoundary": "The bounded compiler path is reproducible; open-world language, physics, and manufacturing validation remain open.",
+      "repositoryUrl": "https://github.com/THE-BU1LD/NeuroCAD",
+      "portfolioRecordId": "neurocad",
+      "featured": true,
+      "profileUrl": "https://thebu1ld.com/research-atlas/neurocad",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/neurocad"
+    },
+    {
+      "slug": "siderea-transient-jepa",
+      "title": "SIDEREA",
+      "summary": "A human-supervised astronomical discovery pipeline combining transient triage with representation-learning research.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Space intelligence",
+        "JEPA",
+        "Astronomy"
+      ],
+      "publicStatus": "Research alpha · shadow only",
+      "evidenceBoundary": "Core components are tested, but prospective real-sky validation and a complete broker-to-report campaign are still required.",
+      "repositoryUrl": "https://github.com/build-the-future-11/IRIS-Space",
+      "featured": true,
+      "profileUrl": "https://thebu1ld.com/research-atlas/siderea-transient-jepa",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "counterfactual-defect-worlds",
+      "title": "Counterfactual Defect Worlds",
+      "summary": "Controlled defect worlds for testing whether learned systems detect, localize, and recover from broken causal structure.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "World models",
+        "Robustness",
+        "Scientific ML"
+      ],
+      "publicStatus": "Executed pilots · mixed evidence",
+      "evidenceBoundary": "The implementation is substantial, while retained studies remain mixed or negative and do not support a blanket success claim.",
+      "featured": true,
+      "profileUrl": "https://thebu1ld.com/research-atlas/counterfactual-defect-worlds",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "adaptive-theory-geometry",
+      "title": "Adaptive Theory Geometry",
+      "summary": "A closed-loop study of geometry-aware experiment selection under model misspecification and natural-data falsification.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Scientific ML",
+        "Active learning",
+        "Geometry"
+      ],
+      "publicStatus": "Executed study · negative / mixed",
+      "evidenceBoundary": "The public atlas retains a negative/mixed selection result. Historical manuscript, illustration, and experiment identities still need reconciliation before quantitative claims can be reused.",
+      "portfolioRecordId": "atg",
+      "featured": true,
+      "profileUrl": "https://thebu1ld.com/research-atlas/adaptive-theory-geometry",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/atg"
+    },
+    {
+      "slug": "causal-memory-use",
+      "title": "Causal Memory Use",
+      "summary": "Diagnostics for whether a model actually uses supplied memory, including controlled interventions and naturalistic transfer checks.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Memory",
+        "Evaluation",
+        "Causality"
+      ],
+      "publicStatus": "Controlled evidence retained",
+      "evidenceBoundary": "The controlled diagnostic is strong; a key naturalistic exchangeability assumption fails and limits transfer claims.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/causal-memory-use",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "assumption-integrity",
+      "title": "Assumption Integrity Under Distribution Shift",
+      "summary": "Tests whether model-selection assumptions survive synthetic and natural distribution shifts.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Robustness",
+        "Distribution shift",
+        "Evaluation"
+      ],
+      "publicStatus": "Executed study · adverse natural result",
+      "evidenceBoundary": "The natural-data result is adverse and has not been independently reproduced.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/assumption-integrity",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "fabric-induced-memory",
+      "title": "Fabric-Induced Memory",
+      "summary": "Structured latent memory dynamics for long-horizon sequence modeling, retrieval, decay, and persistent traces.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Memory",
+        "Sequence modeling",
+        "Dynamical systems"
+      ],
+      "publicStatus": "Frozen component study · negative",
+      "evidenceBoundary": "The retained study does not show blanket superiority; a baseline wins part of the compact benchmark.",
+      "repositoryUrl": "https://github.com/THE-BU1LD/Fabric-Induced-Memory",
+      "profileUrl": "https://thebu1ld.com/research-atlas/fabric-induced-memory",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "gaussian-memory-fields",
+      "title": "Gaussian Memory Fields",
+      "summary": "A mechanism study of differentiable memory fields, write dynamics, and long-horizon retrieval.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Memory",
+        "Mechanistic evaluation",
+        "Sequence modeling"
+      ],
+      "publicStatus": "Executed study · negative",
+      "evidenceBoundary": "The primary hypothesis failed correction and the original write mechanism showed zero write-token gradient.",
+      "repositoryUrl": "https://github.com/THE-BU1LD/GaussianMemory",
+      "profileUrl": "https://thebu1ld.com/research-atlas/gaussian-memory-fields",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "ngmt-robust-memory",
+      "title": "NGMT Robust Memory",
+      "summary": "Tests whether Student-t influence weighting improves forecasting recovery beyond a Student-t output distribution.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Memory",
+        "Forecasting",
+        "Robust statistics"
+      ],
+      "publicStatus": "Recovery study · null",
+      "evidenceBoundary": "The predefined improvement criterion was not met, and older overwritten mechanism artifacts remain compromised.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/ngmt-robust-memory",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "neural-predictive-memory-spectroscopy",
+      "title": "Neural Predictive Memory Spectroscopy",
+      "summary": "A controlled framework for measuring memory transfer, failure profiles, and intervention sensitivity across systems.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Memory",
+        "Evaluation",
+        "Language models"
+      ],
+      "publicStatus": "Controlled transfer supported",
+      "evidenceBoundary": "Synthetic transfer gates pass; accepted LoCoMo and LongMemEval confirmatory evidence is still absent.",
+      "portfolioRecordId": "npms",
+      "profileUrl": "https://thebu1ld.com/research-atlas/neural-predictive-memory-spectroscopy",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/npms"
+    },
+    {
+      "slug": "ripii-world-models",
+      "title": "RIPII World Models",
+      "summary": "Object-state world modeling with multiresolution dynamics, conditional routing, and exact-resume evaluation.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "World models",
+        "Object state",
+        "Multiresolution"
+      ],
+      "publicStatus": "Executed pilots · no advance",
+      "evidenceBoundary": "Controlled pilots did not advance the benchmark; conditional routing remains experimental.",
+      "repositoryUrl": "https://github.com/THE-BU1LD/RIPII",
+      "portfolioRecordId": "ripii-ipii",
+      "profileUrl": "https://thebu1ld.com/research-atlas/ripii-world-models",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/ripii-ipii"
+    },
+    {
+      "slug": "eigen-jepa",
+      "title": "Eigen-JEPA",
+      "summary": "Joint-embedding predictive modeling for market representations across a real multi-asset panel.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "JEPA",
+        "Finance",
+        "Representation learning"
+      ],
+      "publicStatus": "Real-panel study · mostly null",
+      "evidenceBoundary": "The retained real-panel comparisons are mostly null and the paper-facing single-seed path fails the rigor gate.",
+      "repositoryUrl": "https://github.com/Finance-Meta-Research/Eigen-JEPA",
+      "portfolioRecordId": "eigen-jepa",
+      "profileUrl": "https://thebu1ld.com/research-atlas/eigen-jepa",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/eigen-jepa"
+    },
+    {
+      "slug": "fi-jepa",
+      "title": "FI-JEPA",
+      "summary": "A macroeconomic representation-learning study comparing joint-embedding prediction with simple forecasting baselines.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "JEPA",
+        "Economics",
+        "Forecasting"
+      ],
+      "publicStatus": "Development study · negative",
+      "evidenceBoundary": "The retained development study underperforms ridge and persistence baselines.",
+      "repositoryUrl": "https://github.com/Finance-Meta-Research/FI-JEPA",
+      "profileUrl": "https://thebu1ld.com/research-atlas/fi-jepa",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "lam-jepa",
+      "title": "LAM-JEPA",
+      "summary": "Latent-action predictive modeling for educational reasoning, tutoring, and intervention selection.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "JEPA",
+        "Education",
+        "Reasoning"
+      ],
+      "publicStatus": "Frozen external validation · negative",
+      "evidenceBoundary": "The current ARC validation loses to the supervised baseline and shows codebook collapse.",
+      "repositoryUrl": "https://github.com/vertex-studyAI/LAM-JEPA",
+      "profileUrl": "https://thebu1ld.com/research-atlas/lam-jepa",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "weather-jepa",
+      "title": "Weather-JEPA",
+      "summary": "A predictive representation pipeline for weather fields, designed around staged synthetic and ERA5 validation.",
+      "kind": "study",
+      "stage": "scoping",
+      "tags": [
+        "JEPA",
+        "Weather",
+        "Scientific ML"
+      ],
+      "publicStatus": "Stage 0 · synthetic pipeline",
+      "evidenceBoundary": "The engineering path runs on synthetic data; ERA5 science and external validation have not started.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/weather-jepa",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "pde-surrogate-phase-transitions",
+      "title": "Dynamical Representation Phase Transitions",
+      "summary": "A study of whether representation changes can warn when neural PDE surrogates will fail outside training regimes.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Scientific ML",
+        "PDEs",
+        "Representation learning"
+      ],
+      "publicStatus": "Prototype · active study",
+      "evidenceBoundary": "Finite smoke runs and phase feedback exist; a scientific phase-transition result has not been established.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/pde-surrogate-phase-transitions",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "residual-event-tokenization",
+      "title": "Residual Event Tokenization",
+      "summary": "Event-centered tokenization that spends representation budget on changes and surprise in continuous streams.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Tokenization",
+        "Compression",
+        "World models"
+      ],
+      "publicStatus": "Working prototype",
+      "evidenceBoundary": "Train and evaluation paths exist, but there is no frozen paper-grade multi-seed result ledger yet.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/residual-event-tokenization",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "epu-omega",
+      "title": "EPU-Ω∞",
+      "summary": "An efficient processing and retrieval architecture explored through a retained digit-level benchmark.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Systems",
+        "Retrieval",
+        "Efficient intelligence"
+      ],
+      "publicStatus": "Research prototype",
+      "evidenceBoundary": "A retained benchmark exists, while hardware and deployment claims remain untested.",
+      "repositoryUrl": "https://github.com/THE-BU1LD/EPU",
+      "profileUrl": "https://thebu1ld.com/research-atlas/epu-omega",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "eigenfinance",
+      "title": "EigenFinance",
+      "summary": "A walk-forward research evaluator for financial hypotheses, data identity, and held-out market testing.",
+      "kind": "study",
+      "stage": "scoping",
+      "tags": [
+        "Finance",
+        "Evaluation",
+        "Time series"
+      ],
+      "publicStatus": "Engineering complete · science not started",
+      "evidenceBoundary": "The evaluator is implemented, but no retained licensed real-market result supports a performance claim.",
+      "repositoryUrl": "https://github.com/Finance-Meta-Research/EigenFinance",
+      "portfolioRecordId": "eigen-finance",
+      "profileUrl": "https://thebu1ld.com/research-atlas/eigenfinance",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/eigen-finance"
+    },
+    {
+      "slug": "colorworld",
+      "title": "ColorWorld",
+      "summary": "A learned color-grading and palette system spanning aligned grades, image/video inference, and LUT export.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Applied AI",
+        "Computer vision",
+        "Generative tools"
+      ],
+      "publicStatus": "Product research prototype",
+      "evidenceBoundary": "The pipeline and synthetic demo run; production weights and production validation are absent.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/colorworld",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "olympus-cognitive-architecture",
+      "title": "OLYMPUS Cognitive Architecture",
+      "summary": "A modular cognitive architecture and model-family foundry for testing memory, planning, and reconstruction ideas.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Agents",
+        "Cognitive architecture",
+        "Systems"
+      ],
+      "publicStatus": "Engineering foundry · science T0/T1",
+      "evidenceBoundary": "Demos and software exist; current ledgers do not authorize model-family promotion or autonomous-agent claims.",
+      "portfolioRecordId": "olympus",
+      "profileUrl": "https://thebu1ld.com/research-atlas/olympus-cognitive-architecture",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/olympus"
+    },
+    {
+      "slug": "ris-bounded-hessian-study",
+      "title": "RIS Bounded Hessian Study",
+      "summary": "A bounded numerical study of logistic Hessian behavior and finite-difference agreement on WDBC.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "Optimization",
+        "Numerical methods",
+        "Evaluation"
+      ],
+      "publicStatus": "Numerical prototype",
+      "evidenceBoundary": "The current result is numerical-only and does not support the earlier broader interpretation.",
+      "repositoryUrl": "https://github.com/build-the-future-11/RIS",
+      "profileUrl": "https://thebu1ld.com/research-atlas/ris-bounded-hessian-study",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "scdmit",
+      "title": "SCDMIT",
+      "summary": "A large experimental codebase exploring structured dynamics and memory-inspired learning systems.",
+      "kind": "study",
+      "stage": "scoping",
+      "tags": [
+        "Memory",
+        "Dynamical systems",
+        "Research tooling"
+      ],
+      "publicStatus": "Prototype · evidence ledger incomplete",
+      "evidenceBoundary": "The implementation surface is larger than the retained claim-bearing evidence; no broad result is public.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/scdmit",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "sapir-whorf-latent-language",
+      "title": "Sapir–Whorf and the Latent Tongue",
+      "summary": "Tools and experiments for asking how language priors shape internal representation geometry.",
+      "kind": "study",
+      "stage": "scoping",
+      "tags": [
+        "Language",
+        "Representation learning",
+        "Geometry"
+      ],
+      "publicStatus": "Research toolkit",
+      "evidenceBoundary": "A toolkit exists, while canonical real-model evidence and a frozen result ledger remain unverified.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/sapir-whorf-latent-language",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "speechly",
+      "title": "Speechly",
+      "summary": "A callable speech and language experimentation pipeline with disclosed heuristic components.",
+      "kind": "study",
+      "stage": "scoping",
+      "tags": [
+        "Speech",
+        "Language",
+        "Applied AI"
+      ],
+      "publicStatus": "Prototype / demo",
+      "evidenceBoundary": "The pipeline runs, but there is no trained-checkpoint evidence ledger supporting performance claims.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/speechly",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "apen-synthica",
+      "title": "APEN / Synthica",
+      "summary": "A portfolio of adaptive prediction experiments and synthetic research packages with retained gate outcomes.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Foundry",
+        "Prediction",
+        "Synthetic studies"
+      ],
+      "publicStatus": "Portfolio · negative / partial",
+      "evidenceBoundary": "APEN studies fail their gates and the Synthica packages are not independent submission-ready studies.",
+      "portfolioRecordId": "apen-pen",
+      "profileUrl": "https://thebu1ld.com/research-atlas/apen-synthica",
+      "portfolioProfileUrl": "https://thebu1ld.com/portfolio/apen-pen"
+    },
+    {
+      "slug": "project-2424",
+      "title": "Project 2424",
+      "summary": "A registry and quality-gate control plane for a large research-idea portfolio with explicit implementation classes.",
+      "kind": "idea",
+      "stage": "scoping",
+      "tags": [
+        "Foundry",
+        "Research operations",
+        "Evaluation"
+      ],
+      "publicStatus": "Registry + selected implementations",
+      "evidenceBoundary": "The registry contains 2,424 records, but only a small classified subset is executable research; the portfolio remains release-rejected.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/project-2424",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "independent-research-foundry",
+      "title": "Independent Research Foundry",
+      "summary": "A 64-direction screening foundry for turning broad research ideas into bounded, testable protocols.",
+      "kind": "idea",
+      "stage": "scoping",
+      "tags": [
+        "Foundry",
+        "Research operations",
+        "Screening"
+      ],
+      "publicStatus": "Stage-1 screens",
+      "evidenceBoundary": "The 64 names are screens and specifications, not 64 papers or submission-ready studies.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/independent-research-foundry",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "ml4science-portfolio",
+      "title": "ML4Science Portfolio",
+      "summary": "A mechanism-led scientific ML portfolio spanning eight families and four externally framed proposals.",
+      "kind": "idea",
+      "stage": "scoping",
+      "tags": [
+        "Foundry",
+        "Scientific ML",
+        "Mechanisms"
+      ],
+      "publicStatus": "Audited hypothesis portfolio",
+      "evidenceBoundary": "The externally framed proposals fail advancement gates; the portfolio is not a set of validated discoveries.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/ml4science-portfolio",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "ml4industry-portfolio",
+      "title": "ML4Industry Portfolio",
+      "summary": "A 64-identity industrial ML foundry for scoping task-native studies and deployment questions.",
+      "kind": "idea",
+      "stage": "scoping",
+      "tags": [
+        "Foundry",
+        "Industry",
+        "Applied AI"
+      ],
+      "publicStatus": "Shared scaffolds + small external subset",
+      "evidenceBoundary": "Most identities share scaffolding; synthetic demonstrations are not industrial proof.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/ml4industry-portfolio",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "ml4semantic-intelligence",
+      "title": "ML4SemanticIntelligence",
+      "summary": "A semantic-intelligence idea portfolio with diagnostics, specifications, and a small external subset.",
+      "kind": "idea",
+      "stage": "scoping",
+      "tags": [
+        "Foundry",
+        "Semantics",
+        "Language"
+      ],
+      "publicStatus": "Predominantly specification-only",
+      "evidenceBoundary": "Most entries remain specification-only and none is currently conference-ready.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/ml4semantic-intelligence",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "ml-invention-foundry",
+      "title": "MLInvention Foundry",
+      "summary": "A 64-proxy invention foundry with three promoted domains and explicit promotion gates.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "Foundry",
+        "Invention",
+        "Evaluation"
+      ],
+      "publicStatus": "Three promoted lanes · negative / inconclusive",
+      "evidenceBoundary": "The foundry is operational, but the promoted lanes do not support a positive research claim.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/ml-invention-foundry",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "krylov-jepa",
+      "title": "Spectral Krylov-JEPA",
+      "summary": "A controlled study of operator-informed predictive representations and classical spectral baselines for synthetic quantum systems.",
+      "kind": "report",
+      "stage": "review",
+      "tags": [
+        "JEPA",
+        "Spectral methods",
+        "Scientific ML"
+      ],
+      "publicStatus": "Public baseline audit · no advantage established",
+      "evidenceBoundary": "The retained audit favors simple spectral controls in important comparisons. Pipeline checks do not establish a Krylov pretraining or few-shot transfer advantage.",
+      "repositoryUrl": "https://github.com/build-the-future-11/Kyrlov-JEPA",
+      "profileUrl": "https://thebu1ld.com/research-atlas/krylov-jepa",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "spectral-jepa",
+      "title": "Spectral JEPA",
+      "summary": "A proposed research direction asking whether spectral structure improves predictive representations of scientific and dynamical systems.",
+      "kind": "idea",
+      "stage": "scoping",
+      "tags": [
+        "JEPA",
+        "Spectral methods",
+        "Scientific ML"
+      ],
+      "publicStatus": "Research direction · identity reconciliation open",
+      "evidenceBoundary": "This public seed record has no verified independent result. Its relationship to Spectral Krylov-JEPA is unresolved; it is not counted as another evaluated study or merged with financial Eigen-JEPA.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/spectral-jepa",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "quantized-adaptive-transformers",
+      "title": "Quantized Adaptive Transformers",
+      "summary": "A research brief on adaptation under limited numerical precision and compute, with quality, latency, and memory considered together.",
+      "kind": "idea",
+      "stage": "scoping",
+      "tags": [
+        "Transformers",
+        "Quantization",
+        "Efficient ML"
+      ],
+      "publicStatus": "Research brief · evaluation unverified",
+      "evidenceBoundary": "The public description establishes the question, not an implemented precision policy, benchmark result, or performance improvement.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/quantized-adaptive-transformers",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "mahjong",
+      "title": "Mahjong",
+      "summary": "A research direction on decision-making and uncertainty in a partially observed combinatorial game.",
+      "kind": "idea",
+      "stage": "scoping",
+      "tags": [
+        "Reinforcement learning",
+        "Decision making",
+        "Game AI"
+      ],
+      "publicStatus": "Research brief · environment unverified",
+      "evidenceBoundary": "The ruleset, environment implementation, opponents, and evaluation protocol are not established by the public record. No solved-game or competitive-strength claim is made.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/mahjong",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "latent-safety-recovery",
+      "title": "Latent Safety & Recovery",
+      "summary": "An archived public research thread asking whether models can detect confident errors and recover through self-consistency.",
+      "kind": "study",
+      "stage": "archived",
+      "tags": [
+        "Safety",
+        "Evaluation",
+        "World models"
+      ],
+      "publicStatus": "Archived thread · results not independently verified",
+      "evidenceBoundary": "The existing public catalog marks this thread closed. A retained paper, result artifact, and reproducible comparison have not been verified for this page.",
+      "profileUrl": "https://thebu1ld.com/research-atlas/latent-safety-recovery",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "space-jepa",
+      "title": "Space JEPA 2",
+      "summary": "SIDEREA's shadow-only predictive-representation subproject for irregular astronomical light curves, with time-aware provenance and entity-disjoint evaluation controls.",
+      "kind": "study",
+      "stage": "experiment",
+      "tags": [
+        "JEPA",
+        "Astronomy",
+        "Representation learning"
+      ],
+      "publicStatus": "SIDEREA subproject · engineering only",
+      "evidenceBoundary": "The public implementation report has no genuine model-ready time-series input with point-in-time availability. Synthetic examples establish execution, not improved recall, calibration, workload, or discovery yield.",
+      "repositoryUrl": "https://github.com/build-the-future-11/IRIS-Space",
+      "parentSlug": "siderea-transient-jepa",
+      "profileUrl": "https://thebu1ld.com/research-atlas/space-jepa",
+      "portfolioProfileUrl": null
+    },
+    {
+      "slug": "iris-robust-memory",
+      "title": "IRIS Robust Recurrent Memory",
+      "summary": "A retained robust-memory mechanism study with mixed/negative development evidence and unresolved canonical trajectory provenance.",
+      "kind": "report",
+      "stage": "archived",
+      "tags": [
+        "Memory",
+        "Robust statistics",
+        "Negative results"
+      ],
+      "publicStatus": "Closed evidence line · confirmation blocked",
+      "evidenceBoundary": "The learned mechanism did not clear strong-control or persistent-shift gates. Protected confirmation remains unopened while canonical raw-trajectory provenance is unresolved. This is separate from SIDEREA's astronomy work.",
+      "repositoryUrl": "https://github.com/build-the-future-11/IRIS",
+      "profileUrl": "https://thebu1ld.com/research-atlas/iris-robust-memory",
+      "portfolioProfileUrl": null
+    }
+  ]
+}

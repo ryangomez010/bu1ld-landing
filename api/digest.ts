@@ -6,6 +6,7 @@
  *   { "path": "/api/digest", "schedule": "0 8 * * *" }
  */
 import { handleDigestRequest, type DigestEnv } from "../src/lib/digest-handler";
+import { sendFetchResponse, serverRequestUrl } from "../src/lib/server-request";
 
 type VercelReq = {
   method?: string;
@@ -23,18 +24,12 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     else if (Array.isArray(value)) headers.set(key, value.join(", "));
   }
 
-  const hostHeader = req.headers["x-forwarded-host"] ?? req.headers.host;
-  const host = (Array.isArray(hostHeader) ? hostHeader[0] : hostHeader) ?? "localhost";
-  const protoHeader = req.headers["x-forwarded-proto"];
-  const proto = (Array.isArray(protoHeader) ? protoHeader[0] : protoHeader) ?? "https";
-
-  const request = new Request(`${proto}://${host}/api/digest`, {
+  const request = new Request(serverRequestUrl("/api/digest", req.headers, process.env), {
     method: req.method ?? "GET",
     headers,
     body: req.method === "POST" ? JSON.stringify(req.body ?? {}) : undefined,
   });
 
   const response = await handleDigestRequest(request, process.env as DigestEnv);
-  const text = await response.text();
-  res.status(response.status).send(text);
+  await sendFetchResponse(response, res, request.url.startsWith("https://"));
 }

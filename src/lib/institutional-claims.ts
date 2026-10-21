@@ -21,14 +21,22 @@ function normalizeClaim(row: Record<string, unknown>): InstitutionalClaim {
   };
 }
 
-export async function fetchVerifiedInstitutionalClaims(): Promise<InstitutionalClaim[]> {
+export async function fetchVerifiedInstitutionalClaims(
+  options: { throwOnUnavailable?: boolean } = {},
+): Promise<InstitutionalClaim[]> {
   const supabase = getSupabase();
-  if (!supabase) return [];
+  if (!supabase) {
+    if (options.throwOnUnavailable)
+      throw new Error("The claims register is temporarily unavailable.");
+    return [];
+  }
   const { data, error } = await supabase
     .from("institutional_claims")
     .select("*")
     .eq("status", "verified")
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: false })
+    .abortSignal(AbortSignal.timeout(8_000));
+  if (error && options.throwOnUnavailable) throw new Error("Verified claims could not be loaded.");
   return error ? [] : (data ?? []).map((row) => normalizeClaim(row as Record<string, unknown>));
 }
 

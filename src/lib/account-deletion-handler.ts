@@ -1,13 +1,19 @@
-/** Finalize account deletion — removes auth.users after RPC anonymization. */
+/** Verify the session/configuration, scrub member data, then remove the Auth user. */
 
-import { isTrustedSupabaseUrl, isUuid, jsonResponse } from "@/lib/security";
+import { isSameOriginRequest, isTrustedSupabaseUrl, isUuid, jsonResponse } from "@/lib/security";
 
 export type AccountDeletionEnv = {
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
   VITE_SUPABASE_URL?: string;
   VITE_SUPABASE_ANON_KEY?: string;
+  NODE_ENV?: string;
+  ENVIRONMENT?: string;
 };
+
+function isProduction(env: AccountDeletionEnv): boolean {
+  return env.NODE_ENV === "production" || env.ENVIRONMENT === "production";
+}
 
 async function resolveUserId(
   request: Request,
@@ -33,6 +39,7 @@ async function resolveUserId(
       Authorization: `Bearer ${token}`,
       apikey: serviceKey,
     },
+    signal: AbortSignal.timeout(8000),
   });
 
   if (!userRes.ok) {
@@ -54,26 +61,67 @@ export async function handleAccountDeletionRequest(
   if (request.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
+  if (isProduction(env)) {
+    try {
+      if (!isSameOriginRequest(request, new URL(request.url).origin)) {
+        return jsonResponse({ error: "Forbidden" }, 403);
+      }
+    } catch {
+      return jsonResponse({ error: "Forbidden" }, 403);
+    }
+  }
 
-  const resolved = await resolveUserId(request, env);
+  let resolved: Awaited<ReturnType<typeof resolveUserId>>;
+  try {
+    resolved = await resolveUserId(request, env);
+  } catch {
+    return jsonResponse({ error: "Session could not be verified", status: "not_started" }, 502);
+  }
   if (resolved instanceof Response) return resolved;
 
   const supabaseUrl = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL!;
   const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY!;
 
-  const res = await fetch(`${supabaseUrl}/auth/v1/admin/users/${resolved.userId}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${serviceKey}`,
-      apikey: serviceKey,
-    },
-  });
+  let dataRemoved = false;
+  try {
+    const scrub = await fetch(`${supabaseUrl}/rest/v1/rpc/request_account_deletion`, {
+      method: "POST",
+      headers: {
+        Authorization: request.headers.get("authorization")!,
+        apikey: serviceKey,
+        "Content-Type": "application/json",
+      },
+      body: "{}",
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!scrub.ok)
+      return jsonResponse({ error: "Member data deletion failed", status: "not_started" }, 502);
+    dataRemoved = true;
+    const res = await fetch(`${supabaseUrl}/auth/v1/admin/users/${resolved.userId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey },
+      signal: AbortSignal.timeout(8000),
+    });
 
-  if (!res.ok) {
-    const detail = await res.text();
-    console.error("[account-deletion]", res.status, detail);
-    return jsonResponse({ error: "Failed to delete auth user" }, res.status === 404 ? 404 : 502);
+    if (!res.ok) {
+      return jsonResponse(
+        {
+          error: "Member data removed; Auth deletion failed",
+          dataRemoved: true,
+          status: "partial",
+        },
+        502,
+      );
+    }
+    return jsonResponse({ deleted: true });
+  } catch {
+    return jsonResponse(
+      {
+        error: "Account deletion could not be confirmed",
+        dataRemoved,
+        status: dataRemoved ? "partial" : "unknown",
+      },
+      502,
+    );
   }
-
-  return jsonResponse({ deleted: true });
 }

@@ -1,0 +1,122 @@
+[
+  {
+    "file": "01_engineering.py",
+    "title": "Parse CSV and preserve missingness",
+    "command": "python3 01_engineering.py --smoke",
+    "expected": "Counts are 2 observed and 1 missing; mean_cm is 1.0; rowwise MSE is 1.0.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "02_mathematics.py",
+    "title": "Check a gradient and a base-rate calculation",
+    "command": "python3 02_mathematics.py --smoke",
+    "expected": "gradient= -6, next_weight=0.6, next_loss=5.76; precision=90/585.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "03_classical.py",
+    "title": "Separate a fitted baseline from calibration error",
+    "command": "python3 03_classical.py --smoke",
+    "expected": "slope=2, intercept=1, Brier score=0.04; deliberate all-positive alternative is worse.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "04_deep_learning.py",
+    "title": "Backpropagate through a scalar affine model",
+    "command": "python3 04_deep_learning.py --smoke",
+    "expected": "prediction=7, loss=4, d_weight=12, d_bias=4; gradient agrees within 1e-7.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "05_language.py",
+    "title": "Build a causal mask and stable softmax",
+    "command": "python3 05_language.py --smoke",
+    "expected": "mask=[[1,0,0],[1,1,0],[1,1,1]], probabilities sum to 1 and future weight is 0.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "06_representations.py",
+    "title": "Detect a collapsed target and compare recursive dynamics",
+    "command": "python3 06_representations.py --smoke",
+    "expected": "original variance=8/3; collapsed variance=0; 0.88 rollout error is lower than 1.01 at horizon10.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "07_scientific_ml.py",
+    "title": "Diffuse an impulse with fixed boundaries",
+    "command": "python3 07_scientific_ml.py --smoke",
+    "expected": "step1=[0,.25,.5,.25,0], step2=[0,.25,.375,.25,0]; r=.75 yields a negative centre.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "08_memory_agents.py",
+    "title": "Intervene on synthetic memory and preserve idempotent receipts",
+    "command": "python3 08_memory_agents.py --smoke",
+    "expected": "relevant accuracy=1, absent=0; duplicate calls produce one receipt; conflicting payload fails.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "09_efficiency.py",
+    "title": "Quantization error, cache bytes, and speculative cost",
+    "command": "python3 09_efficiency.py --smoke",
+    "expected": "0.26 reconstructs as0.3, error=.04; cache=25600bytes; ideal speedup=2.5, break-even=1.6tokens.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "10_domain_ml.py",
+    "title": "Audit availability and compare a persistence forecast",
+    "command": "python3 10_domain_ml.py --smoke",
+    "expected": "only record a has a label at day3; persistence MAE=4/3; model MAE=1; confirmation fraction among followed-up=.25.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "11_decision_systems.py",
+    "title": "Compute a return, action value, and bounded control rollout",
+    "command": "python3 11_decision_systems.py --smoke",
+    "expected": "return=2.75; wait=.5*4=2; clipped-control positions=[3,2,1,.5]; IPS=1.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  },
+  {
+    "file": "12_research_practice.py",
+    "title": "Keep paired comparisons and an exact sign-randomization check",
+    "command": "python3 12_research_practice.py --smoke",
+    "expected": "differences=[-1,-1,1,-1], mean=-.5, wins=3; exact two-sided sign randomization p=.625.",
+    "data": "Original synthetic fixture embedded in source",
+    "seed": 20261016,
+    "environment": "CPython 3.14.7; standard library only",
+    "mode": "CPU smoke and bounded default"
+  }
+]

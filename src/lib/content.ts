@@ -18,6 +18,7 @@ function parseJsonField<T>(value: unknown, fallback: T): T {
 
 function normalizeEvent(row: Record<string, unknown>): MlEvent {
   return {
+    ...row,
     id: String(row.id),
     slug: String(row.slug),
     title: String(row.title),
@@ -139,29 +140,35 @@ export async function fetchPapers(): Promise<Paper[]> {
 }
 
 /** Public catalog: published papers with review_status = published (anon-safe). */
-export async function fetchPublicPapers(): Promise<Paper[]> {
+export async function fetchPublicPapers(
+  options: { throwOnUnavailable?: boolean } = {},
+): Promise<Paper[]> {
   const supabase = getSupabase();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("papers")
-      .select("*")
-      .eq("published", true)
-      .eq("review_status", "published")
-      .order("published_at", { ascending: false });
-    if (!error) {
-      const rows = (data ?? []).map((r) => normalizePaper(r as Record<string, unknown>));
-      return withSeedFallback(
-        rows,
-        SEED_PAPERS.filter((p) => p.published && (p.review_status ?? "published") === "published"),
-      );
-    }
-    return isDemoMode()
+  const fallback = () =>
+    isDemoMode()
       ? SEED_PAPERS.filter((p) => p.published && (p.review_status ?? "published") === "published")
       : [];
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("papers")
+        .select("*")
+        .eq("published", true)
+        .eq("review_status", "published")
+        .order("published_at", { ascending: false })
+        .abortSignal(AbortSignal.timeout(8_000));
+      if (!error) {
+        const rows = (data ?? []).map((r) => normalizePaper(r as Record<string, unknown>));
+        return options.throwOnUnavailable ? rows : withSeedFallback(rows, fallback());
+      }
+    } catch (error) {
+      if (!options.throwOnUnavailable) throw error;
+    }
   }
-  return isDemoMode()
-    ? SEED_PAPERS.filter((p) => p.published && (p.review_status ?? "published") === "published")
-    : [];
+  if (options.throwOnUnavailable) {
+    throw new Error("The publications directory is temporarily unavailable. Please try again.");
+  }
+  return fallback();
 }
 
 export async function fetchPaperBySlug(slug: string): Promise<Paper | null> {
@@ -268,20 +275,17 @@ export async function setContentPublished(
   published: boolean,
   actorId?: string,
 ): Promise<{ error: string | null }> {
+  if (table === "papers")
+    return {
+      error: "Use the paper editorial workflow to approve, publish or withdraw a revision.",
+    };
   const { supabase, error } = await requireSupabase();
   if (!supabase) return { error };
   const updatedAt = new Date().toISOString();
-  const { error: err } =
-    table === "papers"
-      ? await supabase
-          .from("papers")
-          .update({
-            published,
-            review_status: published ? "published" : "draft",
-            updated_at: updatedAt,
-          })
-          .eq("id", id)
-      : await supabase.from(table).update({ published, updated_at: updatedAt }).eq("id", id);
+  const { error: err } = await supabase
+    .from(table)
+    .update({ published, updated_at: updatedAt })
+    .eq("id", id);
   if (!err && actorId) {
     await logAdminAction(actorId, published ? "content.publish" : "content.unpublish", {
       targetType: table,
@@ -297,22 +301,21 @@ export async function bulkSetContentPublished(
   published: boolean,
   actorId?: string,
 ): Promise<{ error: string | null; count: number }> {
+  if (table === "papers")
+    return {
+      error:
+        "Paper publication requires an individual reviewed revision. Use the editorial workflow.",
+      count: 0,
+    };
   const { supabase, error } = await requireSupabase();
   if (!supabase) return { error, count: 0 };
   if (!ids.length) return { error: null, count: 0 };
 
   const updatedAt = new Date().toISOString();
-  const { error: err } =
-    table === "papers"
-      ? await supabase
-          .from("papers")
-          .update({
-            published,
-            review_status: published ? "published" : "draft",
-            updated_at: updatedAt,
-          })
-          .in("id", ids)
-      : await supabase.from(table).update({ published, updated_at: updatedAt }).in("id", ids);
+  const { error: err } = await supabase
+    .from(table)
+    .update({ published, updated_at: updatedAt })
+    .in("id", ids);
 
   if (!err && actorId) {
     await logAdminAction(actorId, published ? "content.bulk_publish" : "content.bulk_unpublish", {
@@ -339,26 +342,30 @@ export async function deleteContentRow(
 
 export async function updateEventAdmin(
   id: string,
-  patch: Partial<{
-    title: string;
-    summary: string | null;
-    topics: string[];
-    prep_notes: string | null;
-    location: string | null;
-    start_date: string | null;
-    end_date: string | null;
-    url: string | null;
-    deadlines: { label: string; date: string }[];
-    resources: { label: string; url: string; kind?: string }[];
-    published: boolean;
-  }>,
+  patch: Partial<
+    MlEvent & {
+      title: string;
+      summary: string | null;
+      topics: string[];
+      prep_notes: string | null;
+      location: string | null;
+      start_date: string | null;
+      end_date: string | null;
+      url: string | null;
+      deadlines: { label: string; date: string }[];
+      resources: { label: string; url: string; kind?: string }[];
+      published: boolean;
+    }
+  >,
 ): Promise<{ error: string | null }> {
   const { supabase, error } = await requireSupabase();
   if (!supabase) return { error };
   const { error: err } = await supabase
     .from("events")
     .update({ ...patch, updated_at: new Date().toISOString() } as Partial<MlEvent>)
-    .eq("id", id);
+    .eq("id", id)
+    .select("id")
+    .single();
   return { error: err?.message ?? null };
 }
 
@@ -383,6 +390,8 @@ export async function updatePaperAdmin(
     prerequisites: string[];
   }>,
 ): Promise<{ error: string | null }> {
+  if ("published" in patch || "review_status" in patch)
+    return { error: "Publication decisions require the paper editorial workflow." };
   const { supabase, error } = await requireSupabase();
   if (!supabase) return { error };
   const { error: err } = await supabase

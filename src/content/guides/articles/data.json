@@ -1,0 +1,268 @@
+[
+  {
+    "slug": "ml-train-validation-test",
+    "title": "Give Training, Validation, and Test Data Different Jobs",
+    "description": "Create an evaluation boundary that survives repeated model development.",
+    "level": "Beginner",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Evaluation"
+    ],
+    "concept": "Training data fits parameters. Validation data informs choices such as model family, regularization, and stopping time. Test data estimates the behavior of the chosen procedure after those choices are settled. The distinction is about information flow, not filenames. Looking at test errors and then redesigning the model makes that test set part of development. A useful protocol records the split rule, access policy, and final evaluation criterion before optimization begins.",
+    "example": "For a document classifier, assign documents to training, validation, and test partitions before creating derived chunks. Every chunk from one document should stay in the same partition. Use validation results to choose the classifier. Once you select the complete pipeline, evaluate it on the protected test documents. If the task concerns new organizations, grouping by document alone may be insufficient; organizations may also need separation. For example, 100 source documents split into five chunks each create 500 rows but still only 100 document groups. Holding out 20 documents yields 100 held-out chunks without cross-document leakage. The estimate is conditional on this document population; it does not automatically establish transfer to new publishers or a later period.",
+    "pitfall": "A random row split is not automatically fair. Repeated users, overlapping time windows, and near-duplicate content can connect partitions. A clean separation should match the kind of novelty expected in deployment, such as future time periods or previously unseen sources.",
+    "exercise": "Four documents A, B, C, and D each produce three chunks. Assign A and B to training, C to validation, and D to test. Count the chunks in each partition. Identify the problem if a vocabulary or normalization transform is fitted using all twelve chunks before training.",
+    "references": [
+      {
+        "label": "scikit-learn: Cross-validation",
+        "url": "https://scikit-learn.org/stable/modules/cross_validation.html"
+      }
+    ],
+    "answer": "The partitions contain six, three, and three chunks. A transform fitted on all twelve has learned from the held-out inputs, even without their labels. Fit learned preprocessing on the training partition and reuse it elsewhere. Also check for duplicate text across document IDs; distinct names do not establish independent content."
+  },
+  {
+    "slug": "ml-data-leakage",
+    "title": "Find Leakage Before It Becomes a Great Result",
+    "description": "Trace every feature back to when and how it became available.",
+    "level": "Beginner",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Leakage"
+    ],
+    "concept": "Leakage occurs when training or evaluation uses information unavailable in the intended prediction setting. It can enter through a feature created after the target, preprocessing fitted on held-out observations, duplicates spanning partitions, or repeated decisions based on a protected evaluation set. The result may look exceptionally strong because the task has quietly become easier. Prevention requires understanding the data-generating process, not only checking whether the target column was removed.",
+    "example": "Imagine predicting whether a code review will require revisions at the moment it is opened. A feature counting final review comments contains information created after that moment. Renaming it 'discussion activity' does not make it valid. By contrast, the author's number of previously completed reviews may be available, provided the count includes only records before the current review's cutoff time.",
+    "pitfall": "Dropping suspiciously predictive columns indiscriminately is also a mistake. Some features are legitimately informative. Investigate their provenance, timestamps, and serving availability. A large performance drop after correcting leakage is useful evidence that the previous score answered the wrong question.",
+    "exercise": "For each feature, record its source table, event time, availability time, and transformation. Rebuild a small evaluation set using only information available at each historical prediction time. Compare that result with the original pipeline and preserve both receipts, clearly marking the earlier estimate as invalid if leakage is confirmed.",
+    "references": [
+      {
+        "label": "scikit-learn: Common Pitfalls",
+        "url": "https://scikit-learn.org/stable/common_pitfalls.html"
+      }
+    ],
+    "answer": "For review-open predictions, final comment count fails the availability-time check and must be excluded; completed prior-review count is valid only if reconstructed as of opening. Record event and ingestion times separately, fit transforms inside training folds, and group related records before splitting. Rebuild the same comparison with valid features and retain both outputs. A lower corrected score can expose leakage, but the direction or size is not known before execution. Mark a confirmed contaminated estimate invalid instead of averaging it with the corrected result."
+  },
+  {
+    "slug": "ml-missing-values",
+    "title": "Missing Values Are a Modeling Decision",
+    "description": "Choose an imputation strategy while preserving what missingness means.",
+    "level": "Beginner",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Preprocessing"
+    ],
+    "concept": "A missing value can mean that a measurement was unavailable, not applicable, delayed, or intentionally omitted. Those meanings are often more important than the numerical replacement. Median imputation supplies a training-derived typical value; an additional indicator can tell the model which observations were imputed. Other strategies use neighboring examples or multivariate relationships. Every learned imputation step belongs inside the training pipeline so held-out observations do not influence fitted statistics.",
+    "example": "Suppose a sensor records temperature but occasionally fails to transmit. Fill missing training temperatures with the training median and add a 'temperature missing' indicator. Apply the same stored median to validation and future rows. If failures occur during unusually hot periods, the indicator may carry predictive information. That can help prediction, but it also reveals that the missingness mechanism is related to the underlying process.",
+    "pitfall": "Do not replace all missing values with zero unless zero has the intended meaning. A zero temperature is an observation; an absent temperature is not. Also check whether the missingness mechanism changes after a sensor upgrade, because a useful indicator can become a brittle shortcut.",
+    "exercise": "Training temperatures are [10,12,missing,20] and validation temperatures are [missing,100]. Fit median imputation on training only, give the transformed values and missingness indicators, and explain why the value 100 must not affect the imputer. Then specify a fair comparison with a model that supports missing values natively.",
+    "references": [
+      {
+        "label": "scikit-learn: Imputation of Missing Values",
+        "url": "https://scikit-learn.org/stable/modules/impute.html"
+      }
+    ],
+    "answer": "The observed training values [10,12,20] have median 12, so the missing training value and missing validation value both become 12 with missingness indicator 1. The observed validation value 100 stays 100 with indicator 0; it must not alter the stored median. Report complete/incomplete counts and errors separately when comparing models. An entirely new missingness pattern follows a documented reject, fallback, or supported-imputation path, rather than silently re-estimating statistics on the request."
+  },
+  {
+    "slug": "ml-categorical-encoding",
+    "title": "Encode Categories Without Inventing an Order",
+    "description": "Choose representations for names, IDs, and categories according to their meaning.",
+    "level": "Beginner",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Preprocessing"
+    ],
+    "concept": "Assigning arbitrary integers to categories can accidentally suggest a numerical order or distance. For a linear model, coding red as 1, green as 2, and blue as 3 implies relationships that the category names do not contain. One-hot encoding gives each category an indicator. Ordinal encoding is appropriate when an actual order exists, although spacing still needs thought. High-cardinality identifiers may require other representations and careful controls against memorization.",
+    "example": "For a project-type feature with research, product, and infrastructure categories, create three binary columns. A research row becomes [1, 0, 0]. Decide what to do with a future category such as education: an explicit unknown bucket or a configured all-zero representation are possible policies. Fit the vocabulary only on training examples, and preserve it with the model artifact so serving uses the same column order.",
+    "pitfall": "Target encoding replaces categories with label-derived statistics and therefore can leak labels if computed before splitting or directly from each row's own target. It requires appropriate out-of-fold construction within development data, plus a policy for rare and unseen categories.",
+    "exercise": "List every categorical field in a dataset and mark whether its order is meaningful. Train a small baseline with a documented unseen-category policy. Test an input containing a new category and verify the resulting feature shape, rather than waiting for the first production request to reveal the issue.",
+    "references": [
+      {
+        "label": "scikit-learn: Preprocessing Data",
+        "url": "https://scikit-learn.org/stable/modules/preprocessing.html"
+      }
+    ],
+    "answer": "Research/product/infrastructure have no inherent order, so the stated three-column one-hot vocabulary is appropriate for a linear baseline. An unseen education value can map to [0,0,0] only if that policy was deliberately configured; an unknown bucket requires its own stable column. Low/medium/high may be ordered, but equal numeric spacing remains an additional assumption. Verify output dimension and column order at serving, including unknown values. Label-derived encoding must exclude each training row’s own target through a leakage-safe fitting procedure."
+  },
+  {
+    "slug": "ml-feature-scaling",
+    "title": "Scale Features for the Model, Not by Habit",
+    "description": "Understand when standardization changes optimization and distance.",
+    "level": "Beginner",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Optimization"
+    ],
+    "concept": "Standardization subtracts a training mean and divides by a training standard deviation. It can improve optimization conditioning and prevent large-unit features from dominating distance calculations. Scaling also changes how coefficient penalties act: an L2 penalty treats equally sized coefficients similarly, even when their input units differ. Tree split decisions are often less sensitive to monotonic rescaling, so scaling is not a universal prerequisite. Choose it in relation to the estimator and objective.",
+    "example": "Suppose a nearest-neighbor model uses age in years and file size in bytes. A difference of 1,000,000 bytes can overwhelm a difference of twenty years in raw Euclidean distance. Standardizing each feature can make the distance more balanced, but only if equal standardized differences are a sensible similarity assumption. Scaling fixes units; it does not prove that the chosen features should have equal influence.",
+    "pitfall": "Fitting the scaler on the full dataset leaks held-out distribution information. Recomputing statistics independently at inference creates a different representation from training. Very small variances and heavy tails also need explicit handling; a standard score can be dominated by a few extreme values.",
+    "exercise": "A training-fitted scaler has means [40,1000000] and standard deviations [10,500000] for age and file size. Transform rows [40,1000000] and [60,1500000], and compare their raw and scaled Euclidean distances. Explain why validation or serving must not refit these statistics.",
+    "references": [
+      {
+        "label": "scikit-learn: Preprocessing Data",
+        "url": "https://scikit-learn.org/stable/modules/preprocessing.html"
+      }
+    ],
+    "answer": "Using stored means [40,1000000] and standard deviations [10,500000], the rows [40,1000000] and [60,1500000] become [0,0] and [2,1]. Their scaled Euclidean distance is √5; raw distance is √(20²+500000²), dominated by bytes. This changes the similarity assumption rather than proving better neighbors. Reuse training statistics, define constant-feature handling, and inspect whether the revised neighbors make domain sense before selecting the pipeline on validation data."
+  },
+  {
+    "slug": "ml-class-imbalance",
+    "title": "Class Imbalance Is About Costs and Coverage",
+    "description": "Evaluate rare classes without confusing sampling choices with deployment prevalence.",
+    "level": "Intermediate",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Classification"
+    ],
+    "concept": "An imbalanced dataset contains classes at substantially different frequencies. The main question is whether the training objective and evaluation reflect the errors that matter. Class weighting changes the influence of examples on fitting. Resampling changes which examples appear during training. Threshold selection changes how scores become decisions. These interventions act at different points and should be evaluated separately. Keep the test distribution representative of the population for which the reported metric is intended.",
+    "example": "In a hypothetical collection of 10,000 items with 100 positives, a model predicting every item negative reaches 99% accuracy and zero positive recall. If a review team can inspect only fifty alerts each day, precision among the highest-ranked alerts and the fraction of positives found within that capacity may matter more than raw accuracy. The threshold is part of that operational decision.",
+    "pitfall": "Oversampling before a train-test split can place duplicates in both partitions. Weighting may also alter the interpretation of predicted probabilities, so calibration should be assessed under the intended deployment distribution. A rare class with very few independent examples yields uncertain estimates regardless of how many copies are made.",
+    "exercise": "Create a confusion matrix at several validation thresholds and report the expected review workload. Select a threshold using a stated cost or capacity rule, then freeze it before the final test. Include uncertainty or raw counts for the rare class so a small sample is not mistaken for reliable coverage.",
+    "references": [
+      {
+        "label": "scikit-learn: Metrics and Scoring",
+        "url": "https://scikit-learn.org/stable/modules/model_evaluation.html"
+      }
+    ],
+    "answer": "Each threshold report needs TP, FP, FN, TN, precision, recall, and TP+FP alerts. If capacity is fifty items, a policy selecting more than fifty does not satisfy the constraint even if its recall is higher. Choose a threshold or a top-fifty rule on development data with explicit ties, then freeze it. The 100 positives in the example remain 100 observed positives after oversampling; copied rows do not narrow independent uncertainty. Preserve representative test prevalence and check calibration separately."
+  },
+  {
+    "slug": "ml-deduplication",
+    "title": "Deduplicate at the Level of the Real Example",
+    "description": "Prevent repeated content from inflating apparent generalization.",
+    "level": "Intermediate",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Leakage"
+    ],
+    "concept": "Two rows can differ byte-for-byte while representing the same underlying example. Cropped images, lightly edited documents, multiple exports, and adjacent windows of one signal are common sources of near-duplicates. Exact hashing catches identical files, but semantic or provenance-based grouping may be needed for related versions. The deduplication policy should reflect the evaluation question: recognizing a familiar document version is different from handling genuinely new content.",
+    "example": "Imagine splitting a set of technical reports into paragraphs, then randomly assigning paragraphs to train and test. Repeated headers, copied summaries, and shared document style may let a classifier identify the source rather than solve the intended task. Grouping all paragraphs by report before splitting is stronger. If several reports copy the same template or stem from one original draft, the group boundary may need to be broader still.",
+    "pitfall": "Aggressive similarity thresholds can merge legitimately distinct examples and remove difficult cases. Deduplication is not just deleting anything close in embedding space. Inspect representative matches, retain an audit trail, and avoid using evaluation labels to decide which examples are convenient to discard.",
+    "exercise": "Build exact-hash groups and a separate list of candidate near-duplicate pairs. Manually review a sample near the chosen similarity threshold. Assign groups to partitions as a unit, then report the number of independent groups as well as the number of rows used in evaluation.",
+    "references": [
+      {
+        "label": "scikit-learn: Cross-validation",
+        "url": "https://scikit-learn.org/stable/modules/cross_validation.html"
+      }
+    ],
+    "answer": "If A and B are exact duplicates and B and C are confirmed related versions, assign A, B, and C to one component before splitting; checking only individual pairs is insufficient. Review candidate near-matches, including borderline matches and a sample of rejected pairs, so the threshold’s mistakes are visible. Save the hash or similarity method, reviewed decisions, group assignments, and row/group counts. Similar embedding scores alone do not justify deleting distinct examples, and evaluation labels must not decide which inconvenient records disappear."
+  },
+  {
+    "slug": "ml-label-quality",
+    "title": "Audit Labels Before Blaming the Model",
+    "description": "Separate annotation mistakes, ambiguity, and changing definitions.",
+    "level": "Intermediate",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Annotation"
+    ],
+    "concept": "Labels are measurements produced by people or procedures. They can be wrong, ambiguous, incomplete, or inconsistent with the current task definition. Disagreement is not always noise to erase: it may reveal that the categories themselves are unclear. A useful label audit records the original label, the annotation rule, reviewer judgments, and any adjudication. Treating a model's confident prediction as automatic ground truth risks reinforcing the model's own systematic errors.",
+    "example": "Suppose project updates are labeled 'blocked' or 'not blocked.' One annotator treats a missing dependency as blocked; another requires an explicit request for help. The same text can then receive different labels without either annotator being careless. Rewriting the instructions with examples and boundary cases is more useful than simply increasing the training set. An 'uncertain' annotation option may preserve important ambiguity during review.",
+    "pitfall": "Reviewing only cases the model gets wrong creates a selective view of label quality. Include randomly sampled cases and inspect agreement across meaningful subgroups. If labels are revised after examining final test predictions, the revised benchmark needs transparent versioning and a clear account of the intervention.",
+    "exercise": "Select a blinded sample for independent annotation by two reviewers. Categorize disagreements as instruction ambiguity, missing context, or likely error. Revise the label guide, reannotate a fresh sample, and preserve the before-and-after definitions so later model comparisons remain interpretable.",
+    "references": [
+      {
+        "label": "Datasheets for Datasets",
+        "url": "https://arxiv.org/abs/1803.09010"
+      }
+    ],
+    "answer": "The blocked/not-blocked disagreement in the example begins with incompatible instructions, not proof that either reviewer is careless. Preserve both blinded judgments, categorize the reason, and adjudicate using a versioned guide with boundary examples. Reassess agreement on a fresh randomly selected sample, including important subgroups and uncertain labels. Report the counts reviewed and disagreements rather than claiming improvement from revised wording alone. If final-test labels change, publish a new benchmark version and retain the original results with their original label version."
+  },
+  {
+    "slug": "ml-distribution-shift",
+    "title": "Recognize Which Distribution Changed",
+    "description": "Distinguish changing inputs, changing label frequencies, and changing relationships.",
+    "level": "Intermediate",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Robustness"
+    ],
+    "concept": "Distribution shift means the deployment population differs from the one used to develop a model. Pure covariate shift changes the input distribution P(x) while holding P(y|x) fixed. Pure label shift changes label frequencies P(y) while holding P(x|y) fixed. Concept shift changes the input-to-target relationship P(y|x). These assumptions help formulate hypotheses, but real changes often combine them. Detecting a changed feature histogram is evidence of a data change, not proof that predictive quality has fallen or that a particular correction will work.",
+    "example": "A document classifier trained on short forum posts may later receive long technical reports. Length and vocabulary shift even if the category definitions stay the same. If the organization also redefines categories, the target relationship changes too. Truncating reports might restore input length while discarding the paragraphs containing the label evidence. A preprocessing fix can therefore address one shift and worsen another.",
+    "pitfall": "A model's confidence is not a dependable shift detector by itself. Neural networks can remain highly confident on unfamiliar inputs. Monitoring only aggregate distributions may also miss a small but important source whose error rate has deteriorated sharply.",
+    "exercise": "Define expected changes in source, time, format, and population. Reserve evaluation slices that represent those changes, and report their metrics separately. For live monitoring, distinguish signals available immediately from quality estimates requiring delayed labels, then specify what evidence triggers investigation rather than automatic retraining.",
+    "references": [
+      {
+        "label": "WILDS: A Benchmark of in-the-Wild Distribution Shifts",
+        "url": "https://arxiv.org/abs/2012.07421"
+      }
+    ],
+    "answer": "Length, vocabulary, source mix, missingness, and prediction rates can be monitored immediately; accuracy, recall, and calibration require appropriate outcome labels. Reserve future-time and new-source slices and report their counts. A length change alone triggers investigation of preprocessing and evidence loss, not a claim of lower quality. Pure covariate shift assumes P(y|x) stays fixed while P(x) changes; pure label shift assumes P(x|y) stays fixed while P(y) changes. State and assess these assumptions before applying a correction."
+  },
+  {
+    "slug": "ml-time-aware-features",
+    "title": "Build Features That Respect Time",
+    "description": "Make historical feature construction match what serving could have known.",
+    "level": "Intermediate",
+    "track": "Data preparation",
+    "tags": [
+      "Time series",
+      "Data"
+    ],
+    "concept": "A time-aware feature uses only information available by the prediction cutoff. Event time describes when something happened; availability time describes when the system could observe it. They are not always identical. Rolling aggregates, delayed labels, and backfilled records make this distinction especially important. A historical query that uses today's corrected database may reconstruct a cleaner past than the deployed model would have seen. Point-in-time correctness is therefore a data contract, not just a date filter.",
+    "example": "To predict next week's project activity on Monday morning, count updates available before that Monday. A Sunday update imported on Tuesday was not available at prediction time, despite its earlier event timestamp. Similarly, a seven-day rolling count should specify whether the boundary includes the current event. Write the window explicitly so training and serving do not implement subtly different definitions.",
+    "pitfall": "Randomly shuffling time-dependent rows can let the model learn from a later regime while evaluating on an earlier one. Overlapping target windows can also connect training and test observations. A temporal gap may be needed, with its duration justified by the target horizon and data dependencies.",
+    "exercise": "Choose three historical cutoff times and reconstruct the exact feature values using availability timestamps. Compare those values with the online feature logic. Save the discrepancies as test cases, and document the handling of late arrivals, timezone conversion, and records that are corrected after their original publication.",
+    "references": [
+      {
+        "label": "scikit-learn: Time-aware Cross-validation",
+        "url": "https://scikit-learn.org/stable/modules/cross_validation.html"
+      }
+    ],
+    "answer": "At a Monday 09:00 cutoff, a Sunday event ingested on Tuesday is excluded, while a Sunday event ingested by Monday 08:00 can enter the declared historical window. Use both availability and event-time predicates, with explicit inclusive/exclusive endpoints and one timezone convention. Corrections made after the cutoff must not replace the version historically visible. Compare reconstructed values with the online path for each cutoff and retain every discrepancy as a regression case. Successful current-time queries alone do not establish historical parity."
+  },
+  {
+    "slug": "ml-grouped-evaluation",
+    "title": "Group Splits Test Generalization to New Entities",
+    "description": "Choose the independence unit before splitting repeated patients, devices, authors, or organizations.",
+    "level": "Intermediate",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Groups",
+      "Evaluation"
+    ],
+    "concept": "Rows are not always independent examples. A device may contribute thousands of windows, or an author may contribute many documents. If related rows cross a train–test boundary, a model can exploit entity-specific patterns. Grouped evaluation keeps a declared entity entirely within one partition. The right group depends on the claim: holding out documents tests something different from holding out authors or organizations. Stratification balances labels where possible; it does not enforce independence by itself.",
+    "example": "In a hypothetical dataset of 60 devices with 100 measurements each, an 80/20 random row split will usually place every device on both sides. A device identifier or stable sensor offset may then help predictions on the test rows. Holding out 12 complete devices instead tests transfer to unseen devices. The 1,200 held-out rows still represent only 12 device groups, which matters for uncertainty estimates.",
+    "pitfall": "Group separation alone does not solve temporal leakage or duplicate content shared across entities. A new-device deployment may also occur in a future season. Decide whether the evaluation must hold out both devices and time. Small numbers of groups also make balanced folds difficult; report group counts and label coverage rather than hiding this limitation.",
+    "exercise": "Create six groups, each containing four rows, and assign four groups to training and two to validation. Write the identifier sets for both partitions and check their intersection. Then imagine two groups belong to one organization: explain how the split changes if the claim concerns new organizations.",
+    "answer": "There are 16 training rows and eight validation rows, with no group identifier in both sets. For organization-level transfer, all groups belonging to one organization must move together. A disjoint row-ID check is insufficient: every row can be unique while the same organization still appears on both sides.",
+    "references": [
+      {
+        "label": "scikit-learn: Cross-validation with Grouped Data",
+        "url": "https://scikit-learn.org/stable/modules/cross_validation.html"
+      }
+    ]
+  },
+  {
+    "slug": "ml-delayed-labels",
+    "title": "A Missing Outcome Is Not Yet a Negative Label",
+    "description": "Handle observation windows and label maturity before training on outcomes that arrive late.",
+    "level": "Intermediate",
+    "track": "Data preparation",
+    "tags": [
+      "Data",
+      "Labels",
+      "Time"
+    ],
+    "concept": "Some targets become known only after a waiting period. A project may finish within fourteen days, but a record collected after two days cannot yet be labeled a failure. The observation is incomplete relative to the target horizon. A label policy must specify the prediction timestamp, outcome window, ingestion delay, and extraction date. One simple approach trains on fully matured windows; approaches that retain incomplete observations require explicit assumptions about the delay process.",
+    "example": "Suppose the target is completion within fourteen days after assignment. At an illustrative extraction date of day 30, an assignment from day 10 has a completed observation window, while an assignment from day 25 does not. If the newer assignment is unfinished, its outcome is unknown rather than zero. A completion already observed on day 27 establishes a positive event, but admitting only early positives from recent cohorts would distort the sample.",
+    "pitfall": "Waiting for mature labels reduces freshness and may change the population represented in training. Including recent positives while dropping recent unresolved cases creates selection bias. Also distinguish event time from ingestion time: a completion on day 12 reported on day 17 may not have been available to a pipeline running on day 14.",
+    "exercise": "At day 40, classify three assignments under a fourteen-day horizon: A started on day 20 and completed on day 30; B started on day 30 and is unfinished; C started on day 10 and completed on day 28. Assume immediate reporting. Which labels are positive, unresolved, and negative?",
+    "answer": "A is positive because completion occurred ten days after assignment. B is unresolved because only ten days have elapsed. C is negative for this target because completion took eighteen days, although it eventually finished. Preserve that distinction in the label definition: eventual completion and completion within fourteen days are different questions.",
+    "references": [
+      {
+        "label": "Capturing Delayed Feedback in Conversion Rate Prediction via Elapsed-Time Sampling",
+        "url": "https://arxiv.org/abs/2012.03245"
+      }
+    ]
+  }
+]

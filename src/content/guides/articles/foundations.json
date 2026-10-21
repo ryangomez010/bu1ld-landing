@@ -1,0 +1,266 @@
+[
+  {
+    "slug": "ml-problem-framing",
+    "title": "Turn a Product Question into an ML Task",
+    "description": "Define the prediction, decision, and information boundary before choosing a model.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Foundations",
+      "Problem framing"
+    ],
+    "concept": "A useful ML task starts with a decision someone can take. Specify the unit being predicted, the target, the prediction time, and the information available at that time. These choices determine whether a dataset can answer the question. A model that predicts yesterday's outcome with today's information may be accurate and useless. Also name a non-ML alternative: a rule, a lookup, or an existing workflow. Improvement means a better decision under real constraints, rather than a higher score on an arbitrary label.",
+    "example": "Suppose a community wants to identify projects likely to miss a milestone. One row might represent a project each Monday. The target is whether the next scheduled milestone is missed within fourteen days. Features can include updates already posted by that Monday. A reviewer comment added after the deadline cannot be a feature. The proposed action might be offering help, which needs its own evaluation beyond prediction accuracy. For a concrete eligibility check, consider a snapshot taken Monday at 09:00. An update posted Sunday is available; a Tuesday review is not. A project with no milestone scheduled in the target window may need exclusion or a separate target definition, rather than an automatic negative label. Write that rule before extracting the training table.",
+    "pitfall": "Avoid choosing the target just because a column is easy to obtain. A count of messages can measure activity while missing whether useful work was completed. Predicting a proxy well does not establish that acting on it improves the intended outcome.",
+    "exercise": "A Monday 09:00 snapshot contains three proposed features: commits through Sunday, a Tuesday reviewer note, and the final milestone status recorded two weeks later. Decide which may enter the model. Then specify the outcome horizon and one non-ML baseline for offering timely project support.",
+    "references": [
+      {
+        "label": "An Introduction to Statistical Learning",
+        "url": "https://www.statlearning.com/"
+      }
+    ],
+    "answer": "Only the commits are available at prediction time. The later note is future information, and final status belongs in label construction rather than the input. A possible baseline flags projects with no recent update, using only pre-cutoff records. Whether offering help improves completion needs an intervention evaluation beyond this predictive task."
+  },
+  {
+    "slug": "ml-supervised-unsupervised",
+    "title": "Supervised, Unsupervised, and Self-Supervised Learning",
+    "description": "Distinguish learning setups by where their training signal comes from.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Foundations",
+      "Learning paradigms"
+    ],
+    "concept": "Supervised learning uses examples paired with desired outputs. Unsupervised learning looks for structure without those task labels. Self-supervised learning constructs a prediction target from the data itself, such as hiding part of an input and predicting it. These descriptions identify the learning signal, not the quality of the result. A representation learned without manual labels still needs an evaluation tied to its intended use. A single system may combine all three approaches during different stages.",
+    "example": "Consider a collection of support documents. Training on documents paired with topic labels is supervised classification. Grouping documents by similarity is clustering, an unsupervised task. Masking words and predicting them is self-supervised training. You could use the resulting representation as input to a small supervised classifier. That final classifier still needs independent labeled examples to estimate whether it categorizes future documents correctly.",
+    "pitfall": "Do not interpret clusters as discovered ground truth. They depend on the representation, distance measure, and algorithm settings. Likewise, automatically constructed targets are not free of bias: they inherit the selection and content of the underlying corpus.",
+    "exercise": "Take one dataset and propose a task for each setup. For every proposal, name the training target, the downstream question, and the held-out evidence needed to assess usefulness. Notice which tasks require new human judgments even when training itself does not require manual labels.",
+    "references": [
+      {
+        "label": "Deep Learning: Machine Learning Basics",
+        "url": "https://www.deeplearningbook.org/contents/ml.html"
+      }
+    ],
+    "answer": "For support documents, a supervised topic classifier uses human topic labels and is assessed on independently labeled held-out documents. Clustering uses no topic target; assess whether its groups help a declared routing task, with human judgments and source-separated documents. Masked-word prediction constructs targets from the text itself; assess both held-out prediction loss and a downstream topic probe. Good word recovery alone does not establish good routing. Keep related documents together across all three evaluations."
+  },
+  {
+    "slug": "ml-vectors-matrices",
+    "title": "Read Vectors and Matrices as Data Operations",
+    "description": "Use shapes and units to understand a linear predictor.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Math",
+      "Linear algebra"
+    ],
+    "concept": "A feature vector records measurements for one example. Stacking examples as rows produces a matrix X with shape n by d: n observations and d features. A linear predictor combines those features using a weight vector w of length d, then adds an intercept b. The expression Xw + b produces one prediction per row. Matrix notation is useful because it makes the same computation explicit for many examples and exposes incompatible shapes before an experiment runs.",
+    "example": "Suppose each row contains hours spent studying and exercises completed. With weights 2 and 0.5 and an intercept of 3, the row [4, 6] produces 2 times 4 plus 0.5 times 6 plus 3, or 14. A batch containing three rows has shape 3 by 2; multiplying by the two weights yields three predictions. The coefficients carry units that depend on how each input is measured.",
+    "pitfall": "An array with an unexpected singleton dimension can broadcast silently instead of failing. Subtracting targets shaped n by 1 from predictions shaped n can create an n by n matrix. The loss then measures the wrong pairings while remaining numerically computable.",
+    "exercise": "Use X = [[4,6],[1,2],[0,0]], w = [2,0.5], b = 3, and targets [14,5,4]. State every shape, calculate all three predictions and mean squared error, and explain the error caused by storing targets as a 3-by-1 array while predictions have shape 3.",
+    "references": [
+      {
+        "label": "Deep Learning: Linear Algebra",
+        "url": "https://www.deeplearningbook.org/contents/linear_algebra.html"
+      }
+    ],
+    "answer": "X has shape 3 by 2, w has shape 2, and the scalar b broadcasts across three predictions. The results are [14, 6, 3]. Against targets [14, 5, 4], prediction-minus-target residuals are [0, 1, −1] and MSE is 2/3. Predictions and targets must both have shape 3; a target shaped 3 by 1 can broadcast against shape 3 into nine comparisons. The target and prediction units must also agree."
+  },
+  {
+    "slug": "ml-dot-products",
+    "title": "Dot Products, Cosine Similarity, and Scale",
+    "description": "Separate directional similarity from vector magnitude.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Math",
+      "Embeddings"
+    ],
+    "concept": "The dot product multiplies corresponding vector coordinates and sums the results. It becomes large when two vectors align and have large magnitudes. Cosine similarity divides that dot product by both vector lengths, isolating alignment for nonzero vectors. Choosing between them therefore expresses a modeling assumption: should vector length affect the ranking? Neither measure inherently means semantic similarity. That interpretation depends on how the representation was trained and the data on which it is used.",
+    "example": "Take a query [1, 0] and candidates A = [2, 0] and B = [1, 1]. Their dot products are 2 and 1. Their cosine similarities are 1 and about 0.707. Now replace A with [0.1, 0]. Its cosine similarity stays 1, but its dot product becomes 0.1, below B. Normalization changes the ranking by removing magnitude as a signal.",
+    "pitfall": "Normalizing every embedding without checking the model's intended similarity can discard useful information. Conversely, unnormalized vectors may rank large-norm items highly for reasons unrelated to relevance. Zero vectors need an explicit policy because their cosine denominator is zero.",
+    "exercise": "For query [1,0], rank A=[2,0], B=[1,1], C=[0.1,0], D=[−1,0], and E=[0,2] by dot product and cosine similarity. Keep ties explicit. Explain the changed ordering and how you would handle an additional candidate [0,0].",
+    "references": [
+      {
+        "label": "scikit-learn: Pairwise Metrics, Affinities and Kernels",
+        "url": "https://scikit-learn.org/stable/modules/metrics.html"
+      }
+    ],
+    "answer": "Dot products with [1,0] are A:2, B:1, C:0.1, D:−1, E:0, giving A > B > C > E > D. Cosines are A:1, B:1/√2, C:1, D:−1, E:0, giving A = C > B > E > D. C outranks B after normalization because its direction matches exactly despite its smaller norm. The zero vector has undefined cosine and needs a rejection or explicit fallback policy. Human relevance remains a separate test."
+  },
+  {
+    "slug": "ml-probability-conditioning",
+    "title": "Conditional Probability and the Base-Rate Trap",
+    "description": "Understand why a seemingly accurate detector can produce many false alarms.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Probability",
+      "Foundations"
+    ],
+    "concept": "Conditional probability changes the population under consideration. P(A given B) asks how common A is among cases where B holds; it does not equal P(B given A). Bayes' rule connects these quantities using their base rates. This matters whenever a model flags a rare event. A high detection rate can coexist with low precision if a small false-positive rate acts on a much larger negative population. Write the counts before interpreting the percentage.",
+    "example": "Imagine 1,000 files, of which 10 contain a particular fault. A detector catches 9 faulty files and falsely flags 20 of the 990 clean ones. It has 90% recall, but only 9 of its 29 alerts are correct: precision is about 31%. These are hypothetical counts illustrating the arithmetic, not evidence about any detector. A review team must handle all 29 alerts to find those 9 faults.",
+    "pitfall": "A benchmark balanced to contain equal positive and negative counts may not reflect deployment precision. Sensitivity and specificity also can change with distribution shift, so adjusting the base rate alone is not always enough to predict real operation.",
+    "exercise": "For 10,000 items, assume sensitivity is 90% and the false-positive rate among negative items is 2%. Construct count tables at 1% and 10% positive prevalence. Calculate alerts and precision at each prevalence, keeping the error rates fixed. Identify the assumptions behind using these hypothetical counts to plan a review queue.",
+    "references": [
+      {
+        "label": "Deep Learning: Probability and Information Theory",
+        "url": "https://www.deeplearningbook.org/contents/prob.html"
+      }
+    ],
+    "answer": "At 1% prevalence there are 100 positives: TP=90, FN=10, FP=198, TN=9,702. The 288 alerts have precision 90/288=31.25%. At 10% prevalence, TP=900, FN=100, FP=180, TN=8,820; 1,080 alerts have precision 83.33%. These are expected counts under fixed 90% sensitivity and 2% false-positive rate. Deployment estimates additionally require those class-conditional rates to remain applicable and the prevalence estimate to describe the incoming population."
+  },
+  {
+    "slug": "ml-expectation-variance",
+    "title": "Expectation and Variance Explain Noisy Metrics",
+    "description": "Distinguish the average outcome from how much outcomes fluctuate.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Probability",
+      "Evaluation"
+    ],
+    "concept": "An expectation is a probability-weighted average, while variance measures squared deviations from that average. Both describe a distribution, not a promise about the next observation. In evaluation, the reported metric is often an estimate based on a finite sample. It may vary because the test examples change, because training is random, or because the environment changes. Those sources of variation answer different questions and should not be collapsed into one unexplained error bar.",
+    "example": "A classifier evaluated on 100 independent examples with true success probability 0.8 has expected accuracy 0.8. Under that simple binomial model, the standard deviation of its sample accuracy is the square root of 0.8 times 0.2 divided by 100, or 0.04. Increasing the sample to 400 reduces that standard deviation to 0.02. These calculations assume a fixed classifier and independent, identically distributed outcomes.",
+    "pitfall": "One hundred frames from the same video are not necessarily one hundred independent pieces of evidence. Correlation can make uncertainty much larger than the binomial calculation suggests. Variation across training seeds also does not substitute for variation across test populations.",
+    "exercise": "List the randomness in a planned evaluation. Decide whether resampling should occur over examples, users, documents, or entire experimental runs. Explain which uncertainty that procedure captures and which it leaves unmeasured before attaching a confidence interval to the result.",
+    "references": [
+      {
+        "label": "Deep Learning: Probability and Information Theory",
+        "url": "https://www.deeplearningbook.org/contents/prob.html"
+      }
+    ],
+    "answer": "For a fixed classifier on independent Bernoulli outcomes with p=0.8, variance of accuracy is p(1−p)/n: 0.0016 at n=100 and 0.0004 at n=400. Their standard deviations are 0.04 and 0.02. If many observations belong to each user, resample users with their observations to study population sampling variation. To study training instability, refit on planned training samples or seeds. Neither procedure alone captures future distribution shifts; name the randomness included in any interval."
+  },
+  {
+    "slug": "ml-loss-functions",
+    "title": "Choose a Loss by the Error You Care About",
+    "description": "Connect squared, absolute, and probabilistic losses to different goals.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Foundations",
+      "Optimization"
+    ],
+    "concept": "A loss tells training which mistakes are costly. Squared error magnifies large residuals and targets the conditional mean under ideal population minimization. Absolute error grows linearly and targets a conditional median. Classification losses such as log loss assess assigned probabilities rather than only the final class decision. The training loss and the operational evaluation metric can differ, but that difference should be deliberate. A convenient differentiable objective may only approximate the decision you ultimately need.",
+    "example": "For targets [0, 0, 9], the constant minimizing squared error is the mean, 3. Its sum of squared errors is 54. The constant minimizing absolute error is the median, 0, with total absolute error 9. These two answers are both correct for their respective objectives. Choosing between them requires knowing whether an occasional large underprediction deserves disproportionate weight in the application.",
+    "pitfall": "Do not compare numerical values from differently scaled losses as if smaller always means better. Changing target units multiplies squared error quadratically. Also, minimizing average loss can conceal a subgroup with unacceptable errors or a constraint that the average does not represent.",
+    "exercise": "Score constant predictions 0, 3, and 9 on targets [0,0,9] using total squared error and total absolute error. Identify each winner. Then describe a loss for a planning task where each unit of underprediction costs twice as much as each unit of overprediction, and state how its cost assumptions should be checked.",
+    "references": [
+      {
+        "label": "scikit-learn: Metrics and Scoring",
+        "url": "https://scikit-learn.org/stable/modules/model_evaluation.html"
+      }
+    ],
+    "answer": "For predictions 0, 3, and 9 on targets [0,0,9], squared-error totals are 81, 54, and 162, while absolute-error totals are 9, 12, and 18. Thus 3 wins the squared criterion and 0 wins the absolute criterion among these candidates. If underprediction costs twice as much per unit as overprediction, an asymmetric linear loss is appropriate; specify that cost before evaluation. These loss totals illustrate objectives, not measured forecast quality."
+  },
+  {
+    "slug": "ml-gradient-descent",
+    "title": "Gradient Descent One Step at a Time",
+    "description": "See exactly how a learning rate changes a parameter update.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Math",
+      "Optimization"
+    ],
+    "concept": "The gradient points toward the steepest local increase of a differentiable function under the usual Euclidean geometry. Gradient descent subtracts a multiple of that gradient to seek a smaller loss. The multiplier is the learning rate. Local information does not guarantee that an arbitrarily large step improves the objective. Curvature and parameter scaling influence which steps are stable, while minibatch estimates add noise to the direction. Inspecting a one-parameter example makes these effects easier to recognize in a large model.",
+    "example": "Let L(w) = (w - 3) squared. At w = 0 the derivative is -6. With learning rate 0.1, the next weight is 0 - 0.1 times -6 = 0.6; loss falls from 9 to 5.76. With learning rate 1, the update jumps to 6 and leaves the loss at 9. Repeating that second rule oscillates between 0 and 6 rather than converging.",
+    "pitfall": "A decreasing training loss does not establish generalization, and a noisy loss curve does not by itself imply a broken optimizer. Check the update scale, finite values, and a held-out metric before changing architecture in response to a single batch.",
+    "exercise": "Starting at w=0 for L(w)=(w−3)², compare learning rates 0.1, 1, and 1.1 over twenty updates. Derive the error multiplier instead of relying only on a plot. Repeat the derivation for 10(w−3)² and identify the stable learning-rate interval.",
+    "references": [
+      {
+        "label": "Deep Learning: Optimization for Training Deep Models",
+        "url": "https://www.deeplearningbook.org/contents/optimization.html"
+      }
+    ],
+    "answer": "Writing e=w−3 gives e_next=(1−2η)e for the original loss. Rates 0.1, 1, and 1.1 respectively contract the error by 0.8, flip it without shrinking, and flip/amplify it by 1.2. For ten times the loss, the factor becomes 1−20η, so convergence requires 0<η<0.1. The previously stable rate 0.1 now oscillates. These bounds apply to this scalar quadratic and do not transfer unchanged to arbitrary neural objectives."
+  },
+  {
+    "slug": "ml-bias-variance",
+    "title": "Bias and Variance as a Diagnostic Lens",
+    "description": "Reason about underfitting and instability without treating a slogan as a law.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Foundations",
+      "Generalization"
+    ],
+    "concept": "Bias describes systematic error relative to a target, while variance describes sensitivity to the sampled training data. The classical squared-error decomposition gives a useful lens on prediction error under specific assumptions. It is not a universal formula for every metric or modern training regime. In practice, inspect training performance, validation performance, and variation across appropriate resamples. A model can be consistently wrong, unstable, or both; different interventions address each problem.",
+    "example": "Imagine fitting a straight line to a strongly curved relationship. Even with many observations, the line may miss the same shape: that is a model-class limitation. A high-degree polynomial fitted to a handful of noisy points may pass almost exactly through the training observations yet change sharply when one point is replaced. The first example motivates a richer representation; the second motivates regularization, more data, or a less unstable fitting procedure.",
+    "pitfall": "The training-validation gap alone does not identify the cause. Data leakage, label noise, distribution shift, and a mismatched split can imitate familiar underfitting or overfitting patterns. Avoid automatically shrinking a model when the real problem is an evaluation boundary.",
+    "exercise": "Draw learning curves using increasing training-set sizes and the same untouched validation protocol. Record both mean scores and variability across admissible resamples. State whether more data, a different feature set, or stronger regularization is supported by the pattern, and name an alternative explanation you have not excluded.",
+    "references": [
+      {
+        "label": "An Introduction to Statistical Learning",
+        "url": "https://www.statlearning.com/"
+      }
+    ],
+    "answer": "Persistently poor training and validation scores suggest a limitation shared by both, such as representation, objective, optimization, or noisy labels; they do not identify one cause. Strong training scores with variable, weaker validation scores can motivate stronger regularization or more representative data. If validation improves as training size grows under adequate optimization, more data is a defensible next experiment. A complete answer keeps the validation boundary fixed, reports resampling variability, and considers source shift or leakage before naming bias or variance."
+  },
+  {
+    "slug": "ml-baselines",
+    "title": "Build a Baseline That Can Actually Win",
+    "description": "Use simple alternatives to test whether complexity earns its place.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Baselines",
+      "Research process"
+    ],
+    "concept": "A baseline is a serious competing explanation for a result. It establishes what can be achieved without the mechanism you want to test. Useful baselines include constant predictions, simple linear models, a previous production system, and domain rules. They should receive the same information available to the proposed model and an appropriate tuning budget. A deliberately weak baseline can make any complicated system look impressive while saying little about whether that system is useful.",
+    "example": "Suppose 92% of requests belong to one class. Always predicting that class achieves 92% accuracy, so a new model at 93% has not yet explained its practical advantage. Compare per-class recall, precision, probability quality, and the workload induced by its decisions. For a seasonal time series, yesterday's value and the value from the same day last week are different baselines with different information assumptions.",
+    "pitfall": "A baseline can be accidentally handicapped by different preprocessing, fewer training examples, or untuned regularization. Conversely, letting it use future information makes the comparison invalid in the opposite direction. The comparison needs an explicit common boundary.",
+    "exercise": "Before training a complex model, implement a constant predictor and one domain-informed alternative. Write down what result would make you keep the baseline. Freeze that criterion, then compare accuracy, runtime, maintenance cost, and relevant failure cases using the same evaluation examples.",
+    "references": [
+      {
+        "label": "scikit-learn: DummyClassifier",
+        "url": "https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html"
+      }
+    ],
+    "answer": "An always-majority classifier scores 92% accuracy in the example but has zero minority recall. A useful comparison must therefore include minority counts, the selected operating threshold, and the workload or cost of decisions. Predeclare a rule such as retaining the baseline unless the new model improves the primary metric by a useful amount while satisfying latency and maintenance constraints. Both candidates need identical information cutoffs, partitions, and credible tuning; no complex-model victory follows from the one-point accuracy difference alone."
+  },
+  {
+    "slug": "ml-entropy-cross-entropy",
+    "title": "Entropy and Cross-Entropy Measure Different Uncertainties",
+    "description": "Calculate surprise in bits and distinguish an uncertain population from a poor probability forecast.",
+    "level": "Intermediate",
+    "track": "ML foundations",
+    "tags": [
+      "Probability",
+      "Information theory"
+    ],
+    "concept": "Before comparing probability models, distinguish the distribution generating outcomes, p, from the probabilities assigned by a model, q. Entropy H(p) = −sum p log p measures average surprise when the true distribution is used. Cross-entropy H(p,q) = −sum p log q measures average surprise under the forecast. Their difference is KL divergence, which is nonnegative when defined. Base-two logarithms give bits; natural logarithms give nats. Lower cross-entropy can reflect a better forecast, but entropy also depends on the task population.",
+    "example": "Consider a hypothetical binary outcome with p = (0.5, 0.5). Its entropy is one bit. A model predicting q = (0.75, 0.25) has cross-entropy −0.5 log2(0.75) −0.5 log2(0.25), approximately 1.208 bits. The extra 0.208 bits comes from the mismatch, not additional randomness in the data. A balanced forecast would reduce that penalty even though neither outcome becomes individually predictable.",
+    "pitfall": "A confident wrong prediction receives a large log-loss penalty. Assigning exactly zero probability to an outcome that actually occurs gives infinite theoretical loss. Numerical clipping avoids infinite computation but changes the score near the boundary. Do not compare losses with different logarithm bases or quietly average different populations.",
+    "exercise": "For p = (0.8, 0.2), calculate entropy and the cross-entropy of q = (0.5, 0.5) using base-two logarithms. Subtract them to find the mismatch penalty. Explain why one bit of cross-entropy can represent a perfect model on one population and an imperfect model on another.",
+    "answer": "H(p) is about 0.722 bits and H(p,q) is exactly one bit, so KL(p||q) is about 0.278 bits. The balanced model ignores the 80/20 base rate. On a genuinely balanced population it would instead match p and achieve the minimum cross-entropy. The population must be held fixed for this comparison.",
+    "references": [
+      {
+        "label": "Deep Learning: Probability and Information Theory",
+        "url": "https://www.deeplearningbook.org/contents/prob.html"
+      }
+    ]
+  },
+  {
+    "slug": "ml-likelihood-not-posterior",
+    "title": "Likelihood Is Not the Probability That a Model Is True",
+    "description": "Use a coin example to separate observed-data likelihood, parameter estimation, and Bayesian probability.",
+    "level": "Beginner",
+    "track": "ML foundations",
+    "tags": [
+      "Probability",
+      "Estimation"
+    ],
+    "concept": "A likelihood treats the observed dataset as fixed and varies a model parameter. For independent Bernoulli observations with success probability θ, the likelihood of one ordered sequence with h successes and t failures is θ^h(1−θ)^t. Maximum likelihood chooses the parameter that makes those observations most probable within the chosen family. This does not assign probabilities to parameter values themselves. A Bayesian posterior additionally requires a prior and normalization over parameters.",
+    "example": "Imagine observing the ordered sequence success, success, failure. The likelihood at θ = 0.5 is 0.125; at θ = 2/3 it is 4/27, about 0.148. Differentiating the log-likelihood 2 log θ + log(1−θ) gives a maximum at 2/3. These are likelihoods of a particular sequence. If only the count of two successes matters, a combinatorial factor multiplies both likelihoods without changing their maximizing parameter.",
+    "pitfall": "Maximum likelihood estimates can sit on a boundary: after three successes and no failures, the estimate is one. That estimate does not establish that failure is impossible. The assumed independence, model family, and sampling mechanism matter; an incorrectly specified model can fit observations confidently while missing their generating process.",
+    "exercise": "For three successes and one failure, compute the maximum-likelihood estimate. Then compare it with the posterior mean under a uniform Beta(1,1) prior. State what extra assumption the second answer uses, and why neither number guarantees the next outcome.",
+    "answer": "The maximum-likelihood estimate is 3/4. Multiplying the Bernoulli likelihood by the uniform prior gives a Beta(4,2) posterior, with mean 4/6. The posterior mean includes prior information and differs from the posterior mode. Both summarize uncertainty under the Bernoulli model; neither establishes that the model itself is correct.",
+    "references": [
+      {
+        "label": "Deep Learning: Maximum Likelihood and Bayesian Statistics",
+        "url": "https://www.deeplearningbook.org/contents/ml.html"
+      }
+    ]
+  }
+]

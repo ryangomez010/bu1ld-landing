@@ -17,6 +17,7 @@ import {
   jsonResponse,
   LIMITS,
   sanitizeEmailHtml,
+  secretsMatch,
 } from "@/lib/security";
 import { parseDigestRequestInput } from "@/lib/validation";
 
@@ -66,7 +67,7 @@ function checkAuth(request: Request, env: DigestEnv): Response | null {
     return jsonResponse({ error: "Digest API secret not configured" }, 503);
   }
   const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${secret}`) {
+  if (!auth || !secretsMatch(auth, `Bearer ${secret}`)) {
     return jsonResponse({ error: "Unauthorized" }, 401);
   }
   return null;
@@ -133,6 +134,7 @@ async function supabaseFetch<T>(
         "Content-Type": "application/json",
         ...(init?.headers ?? {}),
       },
+      signal: init?.signal ?? AbortSignal.timeout(8_000),
     });
     if (!res.ok) {
       return { data: null, error: await res.text() };
@@ -212,17 +214,23 @@ async function sendDigestEmail(
   const safeSubject = clampText(subject, LIMITS.emailSubject);
   const safeHtml = sanitizeEmailHtml(clampText(html, LIMITS.emailHtml));
 
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ from, to: recipient.email, subject: safeSubject, html: safeHtml }),
-  });
+  let res: Response;
+  try {
+    res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from, to: recipient.email, subject: safeSubject, html: safeHtml }),
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch {
+    return { sent: false, error: "Email provider unavailable" };
+  }
 
   if (!res.ok) {
-    return { sent: false, error: await res.text() };
+    return { sent: false, error: `Email provider returned ${res.status}` };
   }
   return { sent: true };
 }

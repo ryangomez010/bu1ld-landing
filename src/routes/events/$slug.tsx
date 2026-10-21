@@ -1,258 +1,207 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { CalendarPlus, ExternalLink, Users } from "lucide-react";
-import { toast } from "sonner";
-
-import { RequireMember } from "@/components/auth/RequireAuth";
-import { TagList } from "@/components/member/ContentCard";
-import { LoadingState } from "@/components/member/LoadingState";
-import { MemberLayout } from "@/components/member/MemberLayout";
-import { PageBackLink } from "@/components/member/PageBackLink";
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
 import { SaveToCollectionButton } from "@/components/member/SaveToCollectionButton";
-import { ReportContentButton } from "@/components/member/ReportContentButton";
-import { ShareButton } from "@/components/member/ShareButton";
-import { Button } from "@/components/ui/button";
+import { publicEvents } from "@/lib/public-library";
+import { eventState, publicHttpUrl } from "@/lib/event-state";
 import { buildIcsEvent, downloadIcs } from "@/lib/calendar";
-import { fetchEventBySlug, fetchEvents, relatedEvents } from "@/lib/content";
-import { eventLink } from "@/lib/app-paths";
-import { daysUntil, formatDate } from "@/lib/date";
-import { fetchRsvpCount, isRsvped, toggleEventRsvp } from "@/lib/event-rsvp";
 import { useAuth } from "@/lib/auth";
-import type { MlEvent } from "@/lib/types";
+import { pageHead } from "@/lib/seo";
+import { EventRegistration } from "@/components/events/EventRegistration";
 
 export const Route = createFileRoute("/events/$slug")({
-  component: EventDetailPage,
+  loader: async ({ params }) => {
+    const catalog = await publicEvents();
+    const event = catalog.records.find((record) => record.slug === params.slug);
+    if (catalog.state === "ready" && !event) throw notFound();
+    return { catalog, event };
+  },
+  head: ({ loaderData, params }) =>
+    pageHead({
+      title: `${loaderData?.event?.title ?? "Event"} — The BU1LD`,
+      description: loaderData?.event?.summary ?? "Event details and organizer information.",
+      path: `/events/${params.slug}`,
+      robots: loaderData?.event ? "index, follow" : "noindex, nofollow",
+    }),
+  component: EventDetail,
 });
 
-function EventDetailPage() {
-  return (
-    <RequireMember>
-      <EventDetail />
-    </RequireMember>
-  );
-}
-
 function EventDetail() {
-  const { slug } = Route.useParams();
-  const { user } = useAuth();
-  const [event, setEvent] = useState<MlEvent | null>(null);
-  const [related, setRelated] = useState<MlEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [rsvped, setRsvped] = useState(false);
-  const [rsvpCount, setRsvpCount] = useState(0);
-  const [rsvpBusy, setRsvpBusy] = useState(false);
-  const eventId = event?.id;
-
-  useEffect(() => {
-    void Promise.all([fetchEventBySlug(slug), fetchEvents()]).then(([e, all]) => {
-      setEvent(e);
-      if (e) setRelated(relatedEvents(e, all));
-      setLoading(false);
-    });
-  }, [slug]);
-
-  useEffect(() => {
-    if (!user || !eventId) return;
-    void isRsvped(user.id, eventId).then(setRsvped);
-    void fetchRsvpCount(eventId).then(setRsvpCount);
-  }, [user, eventId]);
-
-  const onToggleRsvp = async () => {
-    if (!user || !event) return;
-    setRsvpBusy(true);
-    const { rsvped: next, error } = await toggleEventRsvp(user.id, event);
-    setRsvpBusy(false);
-    if (error) {
-      toast.error(error);
-      return;
-    }
-    setRsvped(next);
-    setRsvpCount((c) => Math.max(0, c + (next ? 1 : -1)));
-    toast.success(next ? "You're on the list." : "RSVP removed.");
+  const { event, catalog } = Route.useLoaderData() as {
+    event: import("@/lib/types").MlEvent | undefined;
+    catalog: Awaited<ReturnType<typeof publicEvents>>;
   };
-
-  if (loading) {
+  const router = useRouter();
+  const { user } = useAuth();
+  if (!event)
     return (
-      <MemberLayout>
-        <LoadingState />
-      </MemberLayout>
-    );
-  }
-
-  if (!event) {
-    return (
-      <MemberLayout title="Event not found">
-        <p className="text-muted-foreground mb-4 max-w-xl leading-relaxed">
-          This event may have been removed or the slug changed. Check the events calendar for
-          upcoming deadlines and prep notes.
+      <InstitutionLayout title="Event information unavailable">
+        <p role="status">
+          {catalog.state === "unavailable" ? catalog.message : "Event not found."}
         </p>
-        <Link to="/events" className="text-accent-blue hover:text-bone text-sm">
-          ← Back to events
+        <button
+          className="mt-4 min-h-11 border border-border px-4"
+          onClick={() => void router.invalidate()}
+        >
+          Retry
+        </button>
+        <Link to="/events" className="ml-4 text-accent-blue">
+          All events
         </Link>
-      </MemberLayout>
+      </InstitutionLayout>
     );
-  }
-
+  const status = eventState(event);
+  const source = publicHttpUrl(event.source_url ?? event.url);
+  const start = event.starts_at ?? event.start_date;
+  const end = event.ends_at ?? event.end_date;
+  const calendarReady =
+    !!start &&
+    !!end &&
+    !!event.verified_at &&
+    ["upcoming", "ongoing", "completed"].includes(status);
   return (
-    <MemberLayout>
-      <PageBackLink to="/events" label="Events" />
-      <div className="mt-2">
-        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent-blue">
-          conference / event
-        </p>
-        <h1 className="font-display text-4xl text-bone mt-3 tracking-tight">{event.title}</h1>
-        <div className="mt-2 flex flex-wrap items-center gap-3">
-          <SaveToCollectionButton itemType="event" itemSlug={event.slug} itemTitle={event.title} />
-          <ShareButton title={event.title} />
-          <ReportContentButton contentType="event" contentSlug={event.slug} />
-          {event.start_date ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="font-mono text-[9px] tracking-[0.15em] uppercase"
-              onClick={() => {
-                const ics = buildIcsEvent({
-                  title: event.title,
-                  startDate: event.start_date!,
-                  endDate: event.end_date,
-                  description: event.summary ?? undefined,
-                  location: event.location,
-                  url: event.url,
-                });
-                downloadIcs(`${event.slug}.ics`, ics);
-              }}
-            >
-              <CalendarPlus className="h-3.5 w-3.5 mr-1.5" />
-              Add to calendar
-            </Button>
-          ) : null}
-          <Button
-            type="button"
-            size="sm"
-            variant={rsvped ? "default" : "outline"}
-            disabled={rsvpBusy}
-            className="font-mono text-[9px] tracking-[0.15em] uppercase"
-            onClick={() => void onToggleRsvp()}
-          >
-            {rsvpBusy ? "…" : rsvped ? "Going ✓" : "RSVP"}
-          </Button>
-          {rsvpCount > 0 ? (
-            <span className="inline-flex items-center gap-1.5 font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
-              <Users className="h-3.5 w-3.5" />
-              {rsvpCount} going
-            </span>
-          ) : null}
+    <InstitutionLayout
+      title={event.title}
+      eyebrow="Event information"
+      description={event.summary ?? undefined}
+    >
+      <Link to="/events" className="text-accent-blue">
+        ← All events
+      </Link>
+      <dl className="my-8 grid gap-6 border-y border-border py-6 sm:grid-cols-2">
+        <div>
+          <dt className="text-sm text-muted-foreground">Listed schedule</dt>
+          <dd className="mt-2">
+            {start ?? "Start unconfirmed"} — {end ?? "End unconfirmed"}
+          </dd>
         </div>
-        <p className="mt-2 text-muted-foreground">
-          {[
-            event.location,
-            event.start_date && formatDate(event.start_date),
-            event.end_date && `– ${formatDate(event.end_date)}`,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
-        </p>
-        <TagList tags={event.topics} linkToSearch className="mt-4" />
-
-        {event.prep_notes ? (
-          <div className="mt-6 rounded-sm border border-accent-blue/30 bg-accent-blue/5 px-5 py-4">
-            <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-accent-blue mb-2">
-              How to prepare
-            </p>
-            <p className="text-sm text-foreground/90 leading-relaxed">{event.prep_notes}</p>
-          </div>
-        ) : null}
-
-        {event.summary ? (
-          <p className="mt-6 text-lg text-muted-foreground leading-relaxed">{event.summary}</p>
-        ) : null}
-
-        {event.deadlines.length > 0 ? (
-          <section className="mt-10">
-            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
-              Deadlines
-            </h2>
-            <div className="grid gap-px bg-border/40 border border-border/40 sm:grid-cols-2">
-              {event.deadlines.map((d) => {
-                const days = daysUntil(d.date);
-                return (
-                  <div key={d.label} className="bg-background/70 p-4">
-                    <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-bone/50">
-                      {d.label}
-                    </p>
-                    <p className="font-display text-lg text-bone mt-1">{formatDate(d.date)}</p>
-                    {days != null && days >= 0 ? (
-                      <p className="font-mono text-[9px] tracking-[0.15em] uppercase text-accent-green mt-1">
-                        {days === 0 ? "Today" : `${days} days`}
-                      </p>
-                    ) : null}
-                  </div>
-                );
-              })}
+        <div>
+          <dt className="text-sm text-muted-foreground">Schedule state</dt>
+          <dd className="mt-2">
+            {status}
+            {event.archived ? " · archived" : ""}
+            {event.verified_at
+              ? ` · verified ${event.verified_at.slice(0, 10)}`
+              : " · organizer status unverified"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-sm text-muted-foreground">Location</dt>
+          <dd className="mt-2">{event.location ?? "To be confirmed"}</dd>
+        </div>
+        <div>
+          <dt className="text-sm text-muted-foreground">Timezone</dt>
+          <dd className="mt-2">
+            {event.timezone ??
+              (start?.includes("T")
+                ? "Offset shown with the source timestamp"
+                : "Calendar dates only; meeting time and timezone unconfirmed")}
+          </dd>
+        </div>
+      </dl>
+      <section className="max-w-3xl">
+        <h2 className="font-display text-2xl">Registration and eligibility</h2>
+        <dl className="mt-5 space-y-4">
+          {(
+            [
+              ["Organizer", event.organizer],
+              ["Eligibility and prerequisites", event.eligibility],
+              ["Format and access", event.format_details],
+              ["Price", event.price_details],
+              ["Agenda and deliverables", event.agenda],
+              ["Verified capacity", event.capacity == null ? null : String(event.capacity)],
+            ] as const
+          ).map(([label, value]) => (
+            <div key={label}>
+              <dt className="text-sm text-muted-foreground">{label}</dt>
+              <dd className="mt-1 whitespace-pre-wrap">{value ?? "Unconfirmed"}</dd>
             </div>
-          </section>
-        ) : null}
-
-        {event.resources.length > 0 ? (
-          <section className="mt-10">
-            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
-              Resources
-            </h2>
-            <ul className="space-y-2">
-              {event.resources.map((r) => (
-                <li key={r.url}>
-                  <a
-                    href={r.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-sm text-accent-blue hover:text-bone transition"
-                  >
-                    {r.label}
-                    {r.kind === "latex" ? (
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-                        latex
-                      </span>
-                    ) : null}
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {event.url ? (
+          ))}
+        </dl>
+        <EventRegistration event={event} />
+        <p className="mt-3 leading-relaxed text-muted-foreground">
+          Check the organizer’s current eligibility, deadline, fees, capacity and access
+          instructions before applying. This listing does not establish an open registration or
+          institutional partnership. No attendance is confirmed by clicking a link or saving this
+          event.
+        </p>
+        {source ? (
           <a
-            href={event.url}
+            href={source}
             target="_blank"
             rel="noreferrer"
-            className="mt-10 inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] uppercase text-bone border border-bone/25 px-5 py-3 rounded-sm hover:bg-bone/5 transition"
+            className="mt-5 inline-flex min-h-12 items-center border border-border px-5"
           >
-            Official site <ExternalLink className="h-3 w-3" />
+            Visit organizer website ↗
           </a>
-        ) : null}
-
-        {related.length > 0 ? (
-          <section className="mt-14">
-            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4">
-              Related events
-            </h2>
-            <div className="grid gap-px border border-border/40 bg-border/40">
-              {related.map((r) => (
-                <Link
-                  key={r.id}
-                  {...eventLink(r.slug)}
-                  className="bg-background/75 p-5 hover:bg-bone/5 transition block"
-                >
-                  <h3 className="font-display text-lg text-bone">{r.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{r.summary}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        ) : null}
+        ) : (
+          <p className="mt-4">An organizer registration destination has not been verified.</p>
+        )}
+      </section>
+      {event.public_materials?.length ? (
+        <section className="mt-8">
+          <h2 className="font-display text-2xl">Public materials</h2>
+          <ul className="mt-4 space-y-3">
+            {event.public_materials.map((material) =>
+              publicHttpUrl(material.url) ? (
+                <li key={material.url}>
+                  <a
+                    className="text-accent-blue underline"
+                    href={material.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {material.label} ↗
+                  </a>
+                </li>
+              ) : null,
+            )}
+          </ul>
+        </section>
+      ) : null}
+      {publicHttpUrl(event.contact_url) ? (
+        <a
+          className="mt-5 inline-flex min-h-11 items-center text-accent-blue underline"
+          href={event.contact_url!}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Contact the organizer ↗
+        </a>
+      ) : null}
+      <div className="mt-8 flex flex-wrap gap-4 items-center">
+        <SaveToCollectionButton itemType="event" itemSlug={event.slug} itemTitle={event.title} />
+        {!user && (
+          <Link to="/login" className="text-accent-blue">
+            Sign in to save this event
+          </Link>
+        )}
+        {calendarReady && (
+          <button
+            className="min-h-11 border border-border px-4"
+            onClick={() =>
+              downloadIcs(
+                `${event.slug}.ics`,
+                buildIcsEvent({
+                  id: event.id,
+                  title: event.title,
+                  startDate: start!,
+                  endDate: end,
+                  description: event.summary ?? undefined,
+                  location: event.location,
+                  url: source,
+                  updatedAt: event.updated_at,
+                }),
+              )
+            }
+          >
+            Download listed dates (.ics)
+          </button>
+        )}
       </div>
-    </MemberLayout>
+      <p className="mt-6 text-sm text-muted-foreground">
+        Record updated: {event.updated_at.slice(0, 10)}. This timestamp is not an organizer
+        verification receipt.
+      </p>
+    </InstitutionLayout>
   );
 }

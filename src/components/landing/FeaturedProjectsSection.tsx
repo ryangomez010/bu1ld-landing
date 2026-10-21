@@ -5,15 +5,26 @@ import { SectionLabel } from "@/components/landing/Section";
 import { trackEvent } from "@/lib/analytics";
 import { projectLink } from "@/lib/app-paths";
 import { useProjectsQuery } from "@/lib/queries/use-projects";
+import type { Project } from "@/lib/types";
 
-export function FeaturedProjectsSection() {
-  const { data, isLoading } = useProjectsQuery();
+export function FeaturedProjectsSection({
+  initial,
+}: {
+  initial: { state: "ready"; projects: Project[] } | { state: "unavailable"; projects: null };
+}) {
+  const {
+    data,
+    isLoading: queryLoading,
+    isError: queryError,
+  } = useProjectsQuery(undefined, undefined, initial.projects ?? undefined);
+  const isError = queryError || (!data && initial.state === "unavailable");
+  const isLoading = queryLoading && !isError;
   const projects = (data?.projects ?? [])
     .filter((project) => project.status === "open" || project.status === "active")
     .slice(0, 3);
 
   return (
-    <section className="border-t border-border/60 bg-background/70 py-24 md:py-32">
+    <section id="active-work" className="border-t border-border/60 bg-background/70 py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
         <SectionLabel id="live">active work</SectionLabel>
         <div className="mt-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
@@ -34,6 +45,35 @@ export function FeaturedProjectsSection() {
           </Link>
         </div>
 
+        {isError ? (
+          <div
+            role="alert"
+            className="mt-8 rounded-sm border border-accent-blue/30 bg-accent-blue/5 p-6"
+          >
+            <h3 className="font-display text-xl text-bone">
+              Project availability couldn’t be refreshed.
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {data
+                ? "The briefs below are from the last successful update."
+                : "Please try again, or explore the research atlas while the directory is unavailable."}
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-4">
+              <a
+                href="/"
+                className="inline-flex min-h-11 items-center rounded-sm border border-bone/25 px-4 text-sm text-bone hover:bg-bone/5"
+              >
+                Retry projects
+              </a>
+              <Link
+                to="/research-atlas"
+                className="inline-flex min-h-11 items-center text-sm text-accent-blue hover:text-bone"
+              >
+                Explore the research atlas →
+              </Link>
+            </div>
+          </div>
+        ) : null}
         {isLoading ? (
           <div
             className="mt-10 grid gap-3 md:grid-cols-3"
@@ -77,10 +117,14 @@ export function FeaturedProjectsSection() {
                     <span>~{project.weekly_commitment_hours} hrs/week</span>
                   ) : null}
                 </div>
+                <span className="mt-5 inline-flex items-center text-sm text-accent-blue transition group-hover:text-bone">
+                  Open the full brief{" "}
+                  <span className="ml-2 transition group-hover:translate-x-1">→</span>
+                </span>
               </Link>
             ))}
           </div>
-        ) : (
+        ) : isError ? null : (
           <div className="mt-10 rounded-sm border border-border/50 bg-bone/[0.02] p-7">
             <p className="font-display text-xl text-bone">
               No recruiting brief is published today.

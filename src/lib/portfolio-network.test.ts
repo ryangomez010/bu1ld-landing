@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 import {
   BOUND_SOURCE_COUNT,
+  getPortfolioRecord,
   PORTFOLIO_RECORDS,
   UNRESOLVED_SOURCE_COUNT,
   WEBSITE_DESTINATIONS,
@@ -44,6 +45,17 @@ describe("portfolio network", () => {
     expect(UNRESOLVED_SOURCE_COUNT).toBe(3);
   });
 
+  test("gives every canonical identity a complete public profile", () => {
+    for (const record of PORTFOLIO_RECORDS) {
+      expect(getPortfolioRecord(record.id)).toBe(record);
+      expect(record.category.length).toBeGreaterThan(0);
+      expect(record.objective.length).toBeGreaterThan(0);
+      expect(record.implemented.length).toBeGreaterThan(0);
+      expect(record.intendedOutput.length).toBeGreaterThan(0);
+      expect(record.limitations.length).toBeGreaterThan(0);
+    }
+  });
+
   test("publishes only https destinations and keeps owner-only sites private", () => {
     expect(WEBSITE_DESTINATIONS.map((site) => site.id)).toEqual([
       "bu1ld-nexus",
@@ -62,13 +74,32 @@ describe("portfolio network", () => {
   });
 
   test("links the network from every public navigation layer", () => {
-    expect(readFileSync("src/data/landing.ts", "utf8")).toContain('["Network", "/network"]');
+    expect(readFileSync("src/data/landing.ts", "utf8")).toContain(
+      '["Research atlas", "/research-atlas"]',
+    );
     expect(readFileSync("src/components/institution/InstitutionLayout.tsx", "utf8")).toContain(
-      '{ label: "Network", to: "/network" }',
+      "<SiteHeader />",
+    );
+    expect(readFileSync("src/lib/public-navigation.ts", "utf8")).toContain(
+      '{ label: "Research", to: "/research-atlas" }',
     );
     expect(readFileSync("src/components/landing/SiteFooter.tsx", "utf8")).toContain(
       'to="/network"',
     );
     expect(readFileSync("public/sitemap.xml", "utf8")).toContain("https://thebu1ld.com/network");
+    expect(readFileSync("src/routes/network.tsx", "utf8")).toContain('to="/portfolio/$projectId"');
+
+    const sitemap = readFileSync("public/sitemap.xml", "utf8");
+    for (const record of PORTFOLIO_RECORDS) {
+      expect(sitemap).toContain(`https://thebu1ld.com/portfolio/${record.id}`);
+    }
+  });
+
+  test("keeps network discovery state shareable and recoverable", () => {
+    const network = readFileSync("src/routes/network.tsx", "utf8");
+    expect(network).toContain("validateSearch");
+    expect(network).toContain("Search canonical portfolio identities");
+    expect(network).toContain("Reset network");
+    expect(network).toContain('aria-live="polite"');
   });
 });

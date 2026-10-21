@@ -13,7 +13,7 @@ export function ContactSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-blue/[0.04] to-transparent" />
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <div className="flex justify-center">
-          <SectionLabel id="08">contact / apply</SectionLabel>
+          <SectionLabel id="09">contact / apply</SectionLabel>
         </div>
         <h2 className="font-display text-5xl md:text-8xl mt-8 tracking-[-0.035em] leading-[0.95]">
           Build with <Wordmark />.

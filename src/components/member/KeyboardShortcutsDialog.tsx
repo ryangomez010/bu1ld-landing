@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/dialog";
 
 const SHORTCUTS = [
-  { keys: ["⌘", "K"], label: "Open command palette" },
-  { keys: ["/"], label: "Focus search" },
+  { keys: ["⌘ / Ctrl", "K"], label: "Open command palette" },
+  { keys: ["/"], label: "Focus search on the search page" },
   { keys: ["?"], label: "Show keyboard shortcuts" },
   { keys: ["Esc"], label: "Close dialogs" },
 ] as const;
@@ -20,9 +20,10 @@ export function KeyboardShortcutsDialog() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "?" && document.activeElement?.tagName !== "INPUT") {
-        const tag = document.activeElement?.tagName;
-        if (tag === "TEXTAREA") return;
+      if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey && !e.defaultPrevented) {
+        const target = e.target as HTMLElement | null;
+        if (target?.closest('input, textarea, select, [contenteditable="true"], [role="dialog"]'))
+          return;
         e.preventDefault();
         setOpen((v) => !v);
       }

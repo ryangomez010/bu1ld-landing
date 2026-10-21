@@ -1615,6 +1615,7 @@ grant execute on function public.increment_reading_activity(uuid, date) to authe
 
 -- Phase 19 is maintained separately so existing installations can migrate safely.
 -- For a fresh setup, run supabase/phase19.sql immediately after this file.
+
 -- END supabase/full-setup.sql
 
 -- BEGIN supabase/phase19.sql
@@ -1932,6 +1933,7 @@ revoke all on function public.assert_private_collaboration_tables() from public;
 grant execute on function public.assert_private_collaboration_tables() to authenticated;
 
 insert into public.schema_migrations (phase) values ('phase19') on conflict (phase) do nothing;
+
 -- END supabase/phase19.sql
 
 -- BEGIN supabase/phase20.sql
@@ -2147,6 +2149,7 @@ create trigger sync_project_team_count_trigger
   for each row execute function public.sync_project_team_count();
 
 insert into public.schema_migrations (phase) values ('phase20') on conflict (phase) do nothing;
+
 -- END supabase/phase20.sql
 
 -- BEGIN supabase/phase21.sql
@@ -2432,6 +2435,7 @@ create policy "Reviewers revise own paper drafts" on public.papers for update
   );
 
 insert into public.schema_migrations (phase) values ('phase21') on conflict (phase) do nothing;
+
 -- END supabase/phase21.sql
 
 -- BEGIN supabase/phase22.sql
@@ -2735,6 +2739,7 @@ revoke all on function public.review_institutional_claim(uuid, text) from public
 grant execute on function public.review_institutional_claim(uuid, text) to authenticated;
 
 insert into public.schema_migrations (phase) values ('phase22') on conflict (phase) do nothing;
+
 -- END supabase/phase22.sql
 
 -- BEGIN supabase/phase23.sql
@@ -2806,6 +2811,7 @@ create policy "Members delete their paper analyses" on public.paper_analyses for
   );
 
 insert into public.schema_migrations (phase) values ('phase23') on conflict (phase) do nothing;
+
 -- END supabase/phase23.sql
 
 -- BEGIN supabase/phase24.sql
@@ -3124,11 +3130,9 @@ $$;
 
 revoke all on function public.accept_invitation(uuid) from public;
 grant execute on function public.accept_invitation(uuid) to authenticated;
+
 -- END supabase/phase24.sql
 
-
-
--- ===== Phase 25 (appended)
 -- BEGIN supabase/phase25.sql
 -- Phase 25 — platform admin helper, institution seeds, experiments & deliverables
 -- Additive migration. Apply after phase24.sql.
@@ -3476,6 +3480,7 @@ where not exists (
 
 insert into public.schema_migrations (phase) values ('phase25') on conflict (phase) do nothing;
 
+-- END supabase/phase25.sql
 
 -- BEGIN supabase/phase26.sql
 -- Phase 26 — Pass 2 heavy additions: profile enrichment, paper metadata,
@@ -3804,7 +3809,6 @@ insert into public.schema_migrations (phase) values ('phase26') on conflict (pha
 
 -- END supabase/phase26.sql
 
-
 -- BEGIN supabase/phase27.sql
 -- Phase 27 — Assigned reviewers for project contributions (independent of lead-only review).
 -- Additive. Apply after phase26.sql.
@@ -4004,9 +4008,8 @@ create policy "Public reads verified project contributions" on public.project_co
   to anon
   using (visibility = 'public' and verification_status = 'verified');
 
-insert into public.schema_migrations (phase)
-values ('phase28')
-on conflict (phase) do nothing;
+insert into public.schema_migrations (phase) values ('phase28') on conflict (phase) do nothing;
+
 -- END supabase/phase28.sql
 
 -- BEGIN supabase/phase29.sql
@@ -4030,9 +4033,8 @@ begin
   end if;
 end $$;
 
-insert into public.schema_migrations (phase)
-values ('phase29')
-on conflict (phase) do nothing;
+insert into public.schema_migrations (phase) values ('phase29') on conflict (phase) do nothing;
+
 -- END supabase/phase29.sql
 
 -- BEGIN supabase/phase30.sql
@@ -4137,6 +4139,7 @@ create trigger validate_project_brief_trigger
 insert into public.schema_migrations (phase)
 values ('phase30')
 on conflict (phase) do nothing;
+
 -- END supabase/phase30.sql
 
 -- BEGIN supabase/phase31.sql
@@ -4622,6 +4625,7 @@ set title = excluded.title,
 insert into public.schema_migrations (phase)
 values ('phase31')
 on conflict (phase) do nothing;
+
 -- END supabase/phase31.sql
 
 -- BEGIN supabase/phase32.sql
@@ -4917,3 +4921,888 @@ insert into public.schema_migrations (phase) values ('phase34')
 on conflict (phase) do nothing;
 
 -- END supabase/phase34.sql
+
+-- BEGIN supabase/phase35.sql
+-- Phase 35: verified event operations and atomic, private registration.
+-- Existing date-only records and RSVPs are retained. No event is opened by migration.
+begin;
+
+drop policy if exists "Admins manage events" on public.events;
+create policy "Admins manage events" on public.events for all to authenticated
+  using (public.is_platform_admin()) with check (public.is_platform_admin());
+
+alter table public.events
+  add column if not exists starts_at timestamptz,
+  add column if not exists ends_at timestamptz,
+  add column if not exists timezone text,
+  add column if not exists operational_state text not null default 'scheduled'
+    check (operational_state in ('scheduled', 'cancelled', 'postponed')),
+  add column if not exists archived boolean not null default false,
+  add column if not exists registration_mode text not null default 'unavailable'
+    check (registration_mode in ('unavailable', 'internal', 'external')),
+  add column if not exists registration_state text not null default 'closed'
+    check (registration_state in ('open', 'waitlist', 'closed')),
+  add column if not exists registration_opens_at timestamptz,
+  add column if not exists registration_deadline timestamptz,
+  add column if not exists registration_url text,
+  add column if not exists capacity integer check (capacity is null or capacity >= 0),
+  add column if not exists waitlist_enabled boolean not null default false,
+  add column if not exists organizer text,
+  add column if not exists eligibility text,
+  add column if not exists format_details text,
+  add column if not exists price_details text,
+  add column if not exists agenda text,
+  add column if not exists contact_url text,
+  add column if not exists source_url text,
+  add column if not exists verified_at timestamptz,
+  add column if not exists public_materials jsonb not null default '[]';
+
+-- Anonymous access is limited to the public projection; legacy preparation notes stay private.
+drop policy if exists "Visitors read published events" on public.events;
+create policy "Visitors read published events" on public.events for select to anon using (published = true);
+revoke select on public.events from public, anon;
+grant select (id, slug, title, summary, location, start_date, end_date, topics, url, published,
+  created_at, updated_at, starts_at, ends_at, timezone, operational_state, archived,
+  registration_mode, registration_state, registration_opens_at, registration_deadline,
+  registration_url, capacity, waitlist_enabled, organizer, eligibility, format_details,
+  price_details, agenda, contact_url, source_url, verified_at, public_materials)
+  on public.events to anon;
+
+alter table public.event_rsvps
+  add column if not exists status text not null default 'legacy'
+    check (status in ('legacy', 'confirmed', 'waitlisted', 'cancelled')),
+  add column if not exists updated_at timestamptz not null default now();
+create index if not exists event_rsvps_capacity_idx
+  on public.event_rsvps (event_id, status, created_at, user_id);
+
+-- Request identities make retries safe even if a later cancellation has occurred.
+create table if not exists public.event_registration_requests (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  request_id uuid not null,
+  event_id uuid not null references public.events(id) on delete cascade,
+  action text not null check (action in ('register', 'cancel')),
+  created_at timestamptz not null default now(),
+  primary key (user_id, request_id)
+);
+alter table public.event_registration_requests enable row level security;
+revoke all on public.event_registration_requests from anon, authenticated;
+-- Only the security-definer transaction can mutate registration rows.
+revoke all on public.event_rsvps from anon, authenticated;
+grant select on public.event_rsvps to authenticated;
+drop policy if exists "Members read event rsvps" on public.event_rsvps;
+drop policy if exists "Users read own event rsvps" on public.event_rsvps;
+drop policy if exists "Users manage own event rsvps" on public.event_rsvps;
+drop policy if exists "Users delete own event rsvps" on public.event_rsvps;
+create policy "Users read own event rsvps" on public.event_rsvps
+  for select to authenticated using (user_id = (select auth.uid()));
+
+create or replace function public.validate_event_operations()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if new.timezone is not null and not exists (
+    select 1 from pg_catalog.pg_timezone_names where name = new.timezone
+  ) then raise exception 'Use a valid IANA timezone.'; end if;
+  if new.starts_at is not null and new.ends_at is not null and new.ends_at <= new.starts_at then
+    raise exception 'The event must end after it starts.';
+  end if;
+  if new.registration_opens_at is not null and new.registration_deadline is not null
+     and new.registration_deadline <= new.registration_opens_at then
+    raise exception 'The registration deadline must follow opening.';
+  end if;
+  if new.verified_at > now() then raise exception 'Verification cannot be future dated.'; end if;
+  if jsonb_typeof(new.public_materials) <> 'array' then raise exception 'Materials must be a list.'; end if;
+  if exists (select 1 from unnest(array[new.registration_url, new.contact_url, new.source_url]) u
+     where u is not null and u !~ '^https://[^/@[:space:]]+([/?#][^[:space:]]*)?$') then
+    raise exception 'Public event links must use HTTPS without credentials.';
+  end if;
+  if exists (select 1 from jsonb_array_elements(new.public_materials) m
+     where jsonb_typeof(m) <> 'object' or coalesce(m->>'label', '') = ''
+       or coalesce(m->>'url', '') !~ '^https://[^/@[:space:]]+([/?#][^[:space:]]*)?$') then
+    raise exception 'Each public material needs a label and HTTPS link.';
+  end if;
+  if new.registration_state <> 'closed' then
+    if new.registration_mode = 'unavailable' or new.archived or new.operational_state <> 'scheduled'
+       or new.verified_at is null or new.timezone is null or new.starts_at is null or new.ends_at is null
+       or new.registration_deadline is null or new.registration_opens_at is null
+       or new.registration_deadline > new.ends_at
+       or nullif(trim(new.organizer), '') is null or nullif(trim(new.eligibility), '') is null
+       or nullif(trim(new.format_details), '') is null or nullif(trim(new.price_details), '') is null
+       or nullif(trim(new.agenda), '') is null or new.contact_url is null or new.source_url is null
+    then raise exception 'Confirm event details and registration window before opening.'; end if;
+    if new.registration_mode = 'internal' and (new.capacity is null or new.price_details <> 'Free') then
+      raise exception 'Internal registration requires verified capacity and Free pricing.';
+    end if;
+    if new.registration_mode = 'external' and new.registration_url is null then
+      raise exception 'External registration requires the canonical organizer form.';
+    end if;
+    if new.registration_state = 'waitlist' and not new.waitlist_enabled then
+      raise exception 'Enable the waitlist before opening waitlist registration.';
+    end if;
+  end if;
+  if new.capacity is not null and new.capacity < (
+    select count(*) from public.event_rsvps where event_id = new.id and status in ('confirmed', 'legacy')
+  ) then raise exception 'Capacity cannot be lower than retained registrations.'; end if;
+  new.updated_at := now();
+  return new;
+end;
+$$;
+drop trigger if exists validate_event_operations on public.events;
+create trigger validate_event_operations before insert or update on public.events
+  for each row execute function public.validate_event_operations();
+
+create or replace function public.promote_event_waitlist(p_event_id uuid)
+returns integer language plpgsql security definer set search_path = '' as $$
+declare ev public.events%rowtype; seats integer; promoted integer;
+begin
+  select * into ev from public.events where id = p_event_id for update;
+  if not found or ev.published is not true or ev.archived or ev.operational_state <> 'scheduled'
+    or ev.registration_mode <> 'internal' or ev.registration_state <> 'open'
+    or ev.verified_at is null or ev.capacity is null or ev.registration_opens_at is null
+    or ev.registration_deadline is null or ev.ends_at is null
+    or now() < ev.registration_opens_at or now() >= ev.registration_deadline or now() >= ev.ends_at
+  then return 0; end if;
+  select greatest(ev.capacity - count(*), 0)::integer into seats from public.event_rsvps
+    where event_id = ev.id and status in ('confirmed', 'legacy');
+  update public.event_rsvps set status = 'confirmed', updated_at = now()
+    where (event_id, user_id) in (select event_id, user_id from public.event_rsvps
+      where event_id = ev.id and status = 'waitlisted' order by created_at, user_id limit seats);
+  get diagnostics promoted = row_count;
+  return promoted;
+end;
+$$;
+revoke all on function public.promote_event_waitlist(uuid) from public, anon, authenticated;
+
+create or replace function public.refresh_event_waitlist()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin perform public.promote_event_waitlist(new.id); return new; end;
+$$;
+revoke all on function public.refresh_event_waitlist() from public, anon, authenticated;
+drop trigger if exists refresh_event_waitlist on public.events;
+create trigger refresh_event_waitlist after update on public.events
+  for each row execute function public.refresh_event_waitlist();
+
+create or replace function public.set_event_registration(p_event_id uuid, p_action text, p_request_id uuid)
+returns text language plpgsql security definer set search_path = '' as $$
+declare
+  actor uuid := (select auth.uid());
+  ev public.events%rowtype;
+  current_status text;
+  previous_request public.event_registration_requests%rowtype;
+begin
+  if actor is null then raise exception 'Sign in to register.' using errcode = '42501'; end if;
+  if p_action is null or p_action not in ('register', 'cancel') or p_request_id is null then
+    raise exception 'Invalid registration request.' using errcode = '22023';
+  end if;
+  -- Serializes seats, waitlist promotion, and concurrent editor changes per event.
+  select * into ev from public.events where id = p_event_id for update;
+  if not found then raise exception 'Event unavailable.'; end if;
+  if p_action = 'register' then perform public.promote_event_waitlist(ev.id); end if;
+  select status into current_status from public.event_rsvps where event_id = ev.id and user_id = actor;
+  select * into previous_request from public.event_registration_requests
+    where user_id = actor and request_id = p_request_id;
+  if found then
+    if previous_request.event_id <> ev.id or previous_request.action <> p_action then
+      raise exception 'Request identity was already used.' using errcode = '22023';
+    end if;
+    return coalesce(current_status, 'cancelled');
+  end if;
+  if p_action = 'cancel' then
+    update public.event_rsvps set status = 'cancelled', updated_at = now()
+      where event_id = ev.id and user_id = actor;
+    perform public.promote_event_waitlist(ev.id);
+    current_status := 'cancelled';
+  elsif current_status in ('confirmed', 'waitlisted', 'legacy') then
+    null; -- Repeated registration returns the durable existing state.
+  else
+    if ev.published is not true or ev.archived or ev.operational_state <> 'scheduled'
+       or ev.registration_mode <> 'internal' or ev.registration_state = 'closed'
+       or ev.verified_at is null or ev.capacity is null or ev.starts_at is null or ev.ends_at is null
+       or ev.registration_opens_at is null or ev.registration_deadline is null
+       or now() < ev.registration_opens_at or now() >= ev.registration_deadline or now() >= ev.ends_at
+    then raise exception 'Registration is not open.' using errcode = '42501'; end if;
+    if ev.registration_state = 'waitlist' or (
+      select count(*) from public.event_rsvps where event_id = ev.id and status in ('confirmed', 'legacy')
+    ) >= ev.capacity then
+      if not ev.waitlist_enabled then raise exception 'This event is full.'; end if;
+      current_status := 'waitlisted';
+    else current_status := 'confirmed'; end if;
+    insert into public.event_rsvps (user_id, event_id, status, created_at, updated_at)
+      values (actor, ev.id, current_status, now(), now())
+      on conflict (user_id, event_id) do update
+      set status = excluded.status, created_at = excluded.created_at, updated_at = excluded.updated_at;
+  end if;
+  insert into public.event_registration_requests (user_id, request_id, event_id, action)
+    values (actor, p_request_id, ev.id, p_action);
+  return current_status;
+end;
+$$;
+revoke all on function public.set_event_registration(uuid, text, uuid) from public, anon;
+grant execute on function public.set_event_registration(uuid, text, uuid) to authenticated;
+revoke all on function public.validate_event_operations() from public, anon, authenticated;
+
+insert into public.schema_migrations (phase) values ('phase35') on conflict (phase) do nothing;
+commit;
+
+-- END supabase/phase35.sql
+
+-- BEGIN supabase/phase36.sql
+-- Phase 36: human paper editorial workflow. UNAPPLIED until owner deployment.
+-- Existing public rows retain an explicit legacy state, never an invented approval.
+begin;
+
+create table if not exists public.paper_editorial_workflows (
+  paper_id uuid primary key references public.papers(id) on delete cascade,
+  state text not null default 'draft' check (state in ('draft', 'source_checked', 'editorial_pending', 'approved', 'published', 'legacy_published', 'withdrawn')),
+  revision_hash text not null,
+  decision_token uuid not null default gen_random_uuid(),
+  source_evidence jsonb not null default '{}',
+  checked_by uuid references public.profiles(id) on delete set null,
+  checked_at timestamptz,
+  approved_by uuid references public.profiles(id) on delete set null,
+  approved_at timestamptz,
+  approval_note text,
+  published_by uuid references public.profiles(id) on delete set null,
+  published_at timestamptz,
+  updated_at timestamptz not null default now()
+);
+create table if not exists public.paper_editorial_events (
+  id bigint generated always as identity primary key,
+  paper_id uuid references public.papers(id) on delete set null,
+  paper_identity uuid not null,
+  actor_id uuid references public.profiles(id) on delete set null,
+  from_state text,
+  to_state text not null,
+  revision_hash text not null,
+  evidence jsonb not null default '{}',
+  created_at timestamptz not null default now()
+);
+create index if not exists paper_editorial_events_paper_idx
+  on public.paper_editorial_events (paper_id, created_at desc, id desc);
+alter table public.paper_editorial_workflows enable row level security;
+alter table public.paper_editorial_events enable row level security;
+revoke all on public.paper_editorial_workflows, public.paper_editorial_events from public, anon, authenticated;
+grant select on public.paper_editorial_workflows, public.paper_editorial_events to authenticated;
+drop policy if exists "Editors read paper workflow" on public.paper_editorial_workflows;
+drop policy if exists "Editors read paper audit" on public.paper_editorial_events;
+create policy "Editors read paper workflow" on public.paper_editorial_workflows
+  for select to authenticated using ((select public.is_platform_admin()));
+
+drop policy if exists "Admins manage papers" on public.papers;
+create policy "Admins manage papers" on public.papers for all to authenticated
+  using ((select public.is_platform_admin())) with check ((select public.is_platform_admin()));
+create policy "Editors read paper audit" on public.paper_editorial_events
+  for select to authenticated using ((select public.is_platform_admin()));
+
+-- Bind all material metadata and text; operational timestamps/state are excluded.
+create or replace function public.paper_revision_hash(p public.papers)
+returns text language sql immutable set search_path = '' as $$
+  select encode(sha256(convert_to((to_jsonb(p) - array['id', 'published', 'published_at', 'review_status', 'created_at', 'updated_at'])::text, 'UTF8')), 'hex');
+$$;
+create or replace function public.paper_quality_issues(p public.papers)
+returns text[] language plpgsql immutable set search_path = '' as $$
+declare issues text[] := '{}'; words integer;
+begin
+  words := cardinality(regexp_split_to_array(trim(coalesce(p.review_body, '')), '[[:space:]]+'));
+  if length(trim(coalesce(p.title, ''))) < 5 then issues := array_append(issues, 'Add a descriptive title.'); end if;
+  if length(trim(coalesce(p.authors, ''))) < 3 then issues := array_append(issues, 'Identify the paper authors.'); end if;
+  if coalesce(p.source_url, p.arxiv_url, '') !~ '^https://[^/@?#[:space:]]+([/?#][^[:space:]]*)?$' then issues := array_append(issues, 'Add an HTTPS primary source.'); end if;
+  if length(trim(coalesce(p.editorial_summary, p.summary, ''))) < 40 then issues := array_append(issues, 'Add an editorial summary of at least 40 characters.'); end if;
+  if words < 700 or words > 1200 then issues := array_append(issues, 'The review must contain 700–1200 words.'); end if;
+  if (select count(*) from regexp_matches(p.review_body, '^##[[:space:]]+[^#]', 'gn')) < 8 then issues := array_append(issues, 'Use eight clearly headed review sections.'); end if;
+  return issues;
+end;
+$$;
+
+insert into public.paper_editorial_workflows (paper_id, state, revision_hash)
+  select p.id, case when p.published and p.review_status = 'published' then 'legacy_published' else 'draft' end,
+    public.paper_revision_hash(p) from public.papers p
+  on conflict (paper_id) do nothing;
+insert into public.paper_editorial_events (paper_id, paper_identity, to_state, revision_hash, evidence)
+  select w.paper_id, w.paper_id, w.state, w.revision_hash,
+    jsonb_build_object('migration', 'phase36', 'note', 'Imported existing state; no historical source check or approval asserted.')
+  from public.paper_editorial_workflows w
+  where not exists (select 1 from public.paper_editorial_events e where e.paper_id = w.paper_id);
+
+create or replace function public.guard_paper_editorial_publication()
+returns trigger language plpgsql security definer set search_path = '' as $$
+declare w public.paper_editorial_workflows; revision text;
+begin
+  if tg_op = 'INSERT' then
+    new.published := false;
+    new.review_status := 'draft';
+    return new;
+  end if;
+  revision := public.paper_revision_hash(new);
+  select * into w from public.paper_editorial_workflows where paper_id = old.id for update;
+  if not found then raise exception 'Paper editorial workflow unavailable.'; end if;
+  if revision is distinct from w.revision_hash then
+    -- Editing a checked or public revision always revokes its old evidence and approval.
+    insert into public.paper_editorial_events (paper_id, paper_identity, actor_id, from_state, to_state, revision_hash, evidence)
+      values (old.id, old.id, auth.uid(), w.state, 'draft', revision,
+        jsonb_build_object('reason', 'Material content changed; prior checks retained in audit history.'));
+    update public.paper_editorial_workflows set state = 'draft', revision_hash = revision, decision_token = gen_random_uuid(),
+      source_evidence = '{}', checked_by = null, checked_at = null, approved_by = null,
+      approved_at = null, approval_note = null, published_by = null, published_at = null, updated_at = now()
+      where paper_id = old.id;
+    new.published := false;
+    new.review_status := 'draft';
+  elsif new.published is distinct from old.published
+    or new.review_status is distinct from old.review_status
+    or new.published_at is distinct from old.published_at then
+    if auth.uid() is null or not public.is_platform_admin() then raise exception 'Editor access required.'; end if;
+    if new.published then
+      if w.state <> 'published' or w.approved_at is null or w.checked_at is null
+        or w.published_by is distinct from auth.uid() or w.published_at is distinct from new.published_at
+        or new.review_status <> 'published' then
+        raise exception 'Publish through the approved editorial workflow.';
+      end if;
+    elsif w.state in ('published', 'legacy_published') or new.review_status <> 'draft' then
+      raise exception 'Withdraw through the editorial workflow.';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+create or replace function public.initialize_paper_editorial_workflow()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  insert into public.paper_editorial_workflows (paper_id, revision_hash)
+    values (new.id, public.paper_revision_hash(new));
+  insert into public.paper_editorial_events (paper_id, paper_identity, actor_id, to_state, revision_hash)
+    values (new.id, new.id, auth.uid(), 'draft', public.paper_revision_hash(new));
+  return new;
+end;
+$$;
+drop trigger if exists guard_paper_editorial_publication_trigger on public.papers;
+create trigger guard_paper_editorial_publication_trigger before insert or update on public.papers
+  for each row execute function public.guard_paper_editorial_publication();
+drop trigger if exists initialize_paper_editorial_workflow_trigger on public.papers;
+create trigger initialize_paper_editorial_workflow_trigger after insert on public.papers
+  for each row execute function public.initialize_paper_editorial_workflow();
+
+create or replace function public.transition_paper_editorial(
+  p_paper_id uuid, p_action text, p_revision_hash text, p_decision_token uuid, p_evidence jsonb default '{}'
+) returns public.paper_editorial_workflows
+language plpgsql security definer set search_path = '' as $$
+declare p public.papers; w public.paper_editorial_workflows; previous text; issues text[]; citation jsonb;
+begin
+  if auth.uid() is null or not public.is_platform_admin() then raise exception 'Editor access required.'; end if;
+  -- Consistent lock order with direct editing: paper first, then workflow.
+  select * into p from public.papers where id = p_paper_id for update;
+  if not found then raise exception 'Paper not found.'; end if;
+  select * into w from public.paper_editorial_workflows where paper_id = p_paper_id for update;
+  if not found then raise exception 'Paper editorial workflow unavailable.'; end if;
+  if p_revision_hash is null or w.revision_hash <> p_revision_hash or w.revision_hash <> public.paper_revision_hash(p) then
+    raise exception 'This revision changed. Reload before recording a decision.';
+  end if;
+  if p_decision_token is null or w.decision_token <> p_decision_token then
+    raise exception 'The editorial evidence or state changed. Reload before recording a decision.';
+  end if;
+  if p_action is null or p_action not in ('source_check', 'submit', 'approve', 'publish', 'withdraw', 'request_changes') then raise exception 'Invalid editorial action.'; end if;
+  if p_evidence is null or jsonb_typeof(p_evidence) <> 'object' or octet_length(p_evidence::text) > 32000 then raise exception 'Invalid editorial evidence.'; end if;
+  previous := w.state;
+  if p_action in ('source_check', 'submit', 'approve', 'publish') then
+    issues := public.paper_quality_issues(p);
+    if cardinality(issues) > 0 then raise exception '%', array_to_string(issues, ' '); end if;
+  end if;
+  if p_action = 'source_check' then
+    if w.state <> 'draft' then raise exception 'Source checks require a private draft.'; end if;
+    if p_evidence->>'human_attestation' is distinct from 'true'
+      or p_evidence->>'full_text_read' is distinct from 'true'
+      or p_evidence->>'appendices_inspected' is distinct from 'true'
+      or p_evidence->>'figures_inspected' is distinct from 'true' then
+      raise exception 'Explicit human full-text, appendix and figure attestation required.';
+    end if;
+    if coalesce(p_evidence->>'full_text_url', '') !~ '^https://[^/@?#[:space:]]+([/?#][^[:space:]]*)?$'
+      or coalesce(p_evidence->>'source_sha256', '') !~ '^[a-f0-9]{64}$'
+      or length(trim(coalesce(p_evidence->>'source_version', ''))) < 1
+      or length(trim(coalesce(p_evidence->>'license', ''))) < 3
+      or length(trim(coalesce(p_evidence->>'notes', ''))) < 40
+      or length(trim(coalesce(p_evidence->>'ai_disclosure', ''))) < 10 then
+      raise exception 'Provide source version, license, SHA256, full-text URL, check notes and AI disclosure.';
+    end if;
+    if jsonb_typeof(p_evidence->'citations') is distinct from 'array' then raise exception 'Provide at least three claim-level citations.'; end if;
+    if jsonb_array_length(p_evidence->'citations') < 3 then raise exception 'Provide at least three claim-level citations.'; end if;
+    for citation in select value from jsonb_array_elements(p_evidence->'citations') loop
+      if coalesce(citation->>'url', '') !~ '^https://[^/@?#[:space:]]+([/?#][^[:space:]]*)?$'
+        or length(trim(coalesce(citation->>'locator', ''))) < 3
+        or length(trim(coalesce(citation->>'claim', ''))) < 10 then raise exception 'Each citation needs an HTTPS source, locator and supported claim.'; end if;
+    end loop;
+    w.state := 'source_checked'; w.checked_by := auth.uid(); w.checked_at := now();
+    -- Whitelist fields; caller-supplied actor identities and timestamps are never trusted.
+    w.source_evidence := jsonb_build_object('full_text_url', p_evidence->>'full_text_url', 'source_sha256', p_evidence->>'source_sha256',
+      'source_version', p_evidence->>'source_version', 'license', p_evidence->>'license', 'notes', p_evidence->>'notes',
+      'ai_disclosure', p_evidence->>'ai_disclosure', 'citations', p_evidence->'citations',
+      'human_attestation', true, 'full_text_read', true, 'appendices_inspected', true, 'figures_inspected', true);
+  elsif p_action = 'submit' then
+    if w.state <> 'source_checked' then raise exception 'A recorded source check is required.'; end if;
+    w.state := 'editorial_pending';
+  elsif p_action = 'approve' then
+    if w.state <> 'editorial_pending' or w.checked_at is null then raise exception 'Submit the checked revision for editorial review first.'; end if;
+    if p_evidence->>'human_attestation' is distinct from 'true' or length(trim(coalesce(p_evidence->>'note', ''))) < 40 then
+      raise exception 'Explicit human editorial approval and a 40-character rationale are required.';
+    end if;
+    w.state := 'approved'; w.approved_by := auth.uid(); w.approved_at := now(); w.approval_note := p_evidence->>'note';
+  elsif p_action = 'publish' then
+    if w.state <> 'approved' or w.approved_at is null or w.checked_at is null then raise exception 'Approve this checked revision before publishing.'; end if;
+    w.state := 'published'; w.published_by := auth.uid(); w.published_at := now();
+  elsif p_action = 'withdraw' then
+    if w.state not in ('published', 'legacy_published') then raise exception 'Only a public paper can be withdrawn.'; end if;
+    if length(trim(coalesce(p_evidence->>'note', ''))) < 10 then raise exception 'Record a withdrawal reason.'; end if;
+    w.state := 'withdrawn'; w.published_by := null; w.published_at := null;
+  elsif p_action = 'request_changes' then
+    if length(trim(coalesce(p_evidence->>'note', ''))) < 10 then raise exception 'Record the requested changes.'; end if;
+    w.state := 'draft'; w.source_evidence := '{}'; w.checked_by := null; w.checked_at := null;
+    w.approved_by := null; w.approved_at := null; w.approval_note := null; w.published_by := null; w.published_at := null;
+  end if;
+  update public.paper_editorial_workflows set state = w.state, source_evidence = w.source_evidence, decision_token = gen_random_uuid(),
+    checked_by = w.checked_by, checked_at = w.checked_at, approved_by = w.approved_by, approved_at = w.approved_at,
+    approval_note = w.approval_note, published_by = w.published_by, published_at = w.published_at, updated_at = now()
+    where paper_id = p_paper_id returning * into w;
+  if p_action = 'publish' then
+    update public.papers set published = true, review_status = 'published', published_at = w.published_at, updated_at = now() where id = p_paper_id;
+  elsif p_action in ('withdraw', 'request_changes') then
+    update public.papers set published = false, review_status = 'draft', updated_at = now() where id = p_paper_id;
+  end if;
+  insert into public.paper_editorial_events (paper_id, paper_identity, actor_id, from_state, to_state, revision_hash, evidence)
+    values (p_paper_id, p_paper_id, auth.uid(), previous, w.state, w.revision_hash,
+      case when p_action = 'source_check' then w.source_evidence
+      else jsonb_build_object('action', p_action, 'note', p_evidence->>'note', 'human_attestation', p_action = 'approve') end);
+  return w;
+end;
+$$;
+revoke all on function public.paper_revision_hash(public.papers), public.paper_quality_issues(public.papers),
+  public.guard_paper_editorial_publication(), public.initialize_paper_editorial_workflow() from public, anon, authenticated;
+revoke all on function public.transition_paper_editorial(uuid, text, text, uuid, jsonb) from public, anon;
+grant execute on function public.transition_paper_editorial(uuid, text, text, uuid, jsonb) to authenticated;
+insert into public.schema_migrations (phase) values ('phase36') on conflict (phase) do nothing;
+commit;
+
+-- END supabase/phase36.sql
+
+-- BEGIN supabase/phase37.sql
+-- Phase 37: close SECURITY DEFINER execution leaks and bind identity helpers to the caller.
+-- Additive hardening migration. Apply after phase36.sql.
+begin;
+
+-- This helper bypasses RLS for an internal relationship check. A caller may never
+-- impersonate a project lead by supplying another user's ID.
+create or replace function public.can_notify_project_subscriber(
+  caller_id uuid,
+  p_project_id uuid,
+  target_id uuid
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select caller_id = (select auth.uid())
+  and exists (
+    select 1
+    from public.projects pr
+    where pr.id = p_project_id
+      and (
+        pr.lead_id = caller_id
+        or exists (
+          select 1 from public.project_applications pa
+          where pa.project_id = p_project_id
+            and pa.user_id = caller_id
+            and pa.status = 'accepted'
+        )
+        or exists (
+          select 1 from public.profiles p
+          where p.id = caller_id and p.role = 'admin'
+        )
+      )
+  )
+  and (
+    target_id = (select lead_id from public.projects where id = p_project_id)
+    or exists (
+      select 1 from public.project_follows pf
+      where pf.project_id = p_project_id
+        and pf.user_id = target_id
+        and pf.notify_updates = true
+    )
+    or exists (
+      select 1 from public.project_applications pa
+      where pa.project_id = p_project_id
+        and pa.user_id = target_id
+        and pa.status = 'accepted'
+    )
+  );
+$$;
+
+-- The admin predicate remains callable by anonymous RLS policies, but an RPC caller
+-- can only ask about their own JWT identity.
+create or replace function public.is_platform_admin(uid uuid default auth.uid())
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select uid is not null
+  and uid = (select auth.uid())
+  and (
+    exists (select 1 from public.profiles p where p.id = uid and p.role = 'admin')
+    or exists (
+      select 1 from public.member_roles mr
+      where mr.user_id = uid and mr.role = 'administrator'
+    )
+  );
+$$;
+
+revoke all on function public.can_notify_project_subscriber(uuid, uuid, uuid)
+  from public, anon, authenticated;
+revoke all on function public.notify_users(uuid[], text, text, text, uuid),
+  public.get_project_update_subscribers(uuid),
+  public.increment_reading_activity(uuid, date),
+  public.has_institution_role(uuid, text),
+  public.request_account_deletion()
+  from public, anon, authenticated;
+grant execute on function public.notify_users(uuid[], text, text, text, uuid),
+  public.get_project_update_subscribers(uuid),
+  public.increment_reading_activity(uuid, date),
+  public.has_institution_role(uuid, text),
+  public.request_account_deletion()
+  to authenticated;
+
+revoke all on function public.is_platform_admin(uuid) from public, anon, authenticated;
+grant execute on function public.is_platform_admin(uuid) to anon, authenticated;
+
+-- Trigger helpers have no direct API surface.
+revoke all on function public.protect_profile_role(),
+  public.default_profile_role(),
+  public.create_lead_project_membership(),
+  public.sync_project_team_count(),
+  public.guard_project_application_update(),
+  public.guard_project_contribution_update(),
+  public.guard_project_publication(),
+  public.guard_program_application_update(),
+  public.prevent_last_admin_removal(),
+  public.validate_project_brief(),
+  public.guard_invitation_update(),
+  public.guard_project_deliverable_update(),
+  public.validate_event_operations(),
+  public.refresh_event_waitlist(),
+  public.guard_paper_editorial_publication(),
+  public.initialize_paper_editorial_workflow()
+  from public, anon, authenticated;
+
+insert into public.schema_migrations (phase) values ('phase37')
+on conflict (phase) do nothing;
+commit;
+
+-- END supabase/phase37.sql
+
+-- BEGIN supabase/phase38.sql
+-- Phase 38: enforce safe notification destinations and close remaining trigger helpers.
+-- Additive hardening migration. Apply after phase37.sql.
+begin;
+
+-- Notification destinations are internal application paths. Remove unsafe legacy values before
+-- making the database enforce the same boundary as the browser client.
+update public.notifications
+set href = null
+where href is not null
+  and not (
+    char_length(href) <= 500
+    and href like '/%'
+    and href not like '//%'
+    and position(chr(92) in href) = 0
+    and href !~ '[[:cntrl:]]'
+    and lower(href) !~ '%(2f|5c|2e)'
+    and split_part(split_part(href, '?', 1), '#', 1) !~ '(^|/)\.{1,2}(/|$)'
+  );
+
+alter table public.notifications
+  drop constraint if exists notifications_safe_href_check;
+alter table public.notifications
+  add constraint notifications_safe_href_check check (
+    href is null
+    or (
+      char_length(href) <= 500
+      and href like '/%'
+      and href not like '//%'
+      and position(chr(92) in href) = 0
+      and href !~ '[[:cntrl:]]'
+      and lower(href) !~ '%(2f|5c|2e)'
+      and split_part(split_part(href, '?', 1), '#', 1) !~ '(^|/)\.{1,2}(/|$)'
+    )
+  );
+
+-- These functions exist only for database triggers/internal maintenance.
+revoke all on function public.handle_new_user(),
+  public.promote_event_waitlist(uuid)
+  from public, anon, authenticated;
+
+insert into public.schema_migrations (phase) values ('phase38')
+on conflict (phase) do nothing;
+commit;
+
+-- END supabase/phase38.sql
+
+-- BEGIN supabase/phase39.sql
+-- Phase 39: mentorship and member community. Apply after phase38.sql.
+-- These tables deliberately require opt-in availability and authenticated, row-scoped participation.
+begin;
+
+create table if not exists public.mentor_profiles (
+  mentor_id uuid primary key references public.profiles(id) on delete cascade,
+  headline text not null default '' check (char_length(headline) <= 160),
+  expertise text[] not null default '{}' check (cardinality(expertise) <= 12),
+  availability_note text not null default '' check (char_length(availability_note) <= 500),
+  monthly_capacity integer not null default 0 check (monthly_capacity between 0 and 20),
+  accepting_requests boolean not null default false,
+  visible boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.mentor_profiles enable row level security;
+create policy "Members read visible mentor profiles" on public.mentor_profiles for select
+  using (visible or mentor_id = auth.uid() or public.is_platform_admin());
+create policy "Mentors create own availability" on public.mentor_profiles for insert
+  with check (mentor_id = auth.uid() and (public.has_institution_role(auth.uid(), 'mentor') or public.is_platform_admin()));
+create policy "Mentors update own availability" on public.mentor_profiles for update
+  using (mentor_id = auth.uid() or public.is_platform_admin())
+  with check (mentor_id = auth.uid() or public.is_platform_admin());
+
+create table if not exists public.mentorship_requests (
+  id uuid primary key default gen_random_uuid(),
+  mentor_id uuid not null references public.mentor_profiles(mentor_id) on delete cascade,
+  requester_id uuid not null references public.profiles(id) on delete cascade,
+  topic text not null check (char_length(topic) between 3 and 120),
+  goal text not null check (char_length(goal) between 40 and 2000),
+  availability_note text not null check (char_length(availability_note) between 3 and 500),
+  status text not null default 'pending' check (status in ('pending', 'accepted', 'declined', 'closed')),
+  decision_note text check (decision_note is null or char_length(decision_note) <= 1000),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (mentor_id, requester_id, topic, status) deferrable initially immediate
+);
+alter table public.mentorship_requests enable row level security;
+create policy "Participants read mentorship requests" on public.mentorship_requests for select
+  using (requester_id = auth.uid() or mentor_id = auth.uid() or public.is_platform_admin());
+create policy "Members request opted in mentors" on public.mentorship_requests for insert
+  with check (requester_id = auth.uid() and requester_id <> mentor_id and status = 'pending'
+    and exists (select 1 from public.mentor_profiles mp where mp.mentor_id = mentorship_requests.mentor_id and mp.visible and mp.accepting_requests and mp.monthly_capacity > 0));
+create policy "Mentors decide own requests" on public.mentorship_requests for update
+  using (mentor_id = auth.uid() or public.is_platform_admin())
+  with check ((mentor_id = auth.uid() or public.is_platform_admin()) and status in ('accepted', 'declined', 'closed'));
+
+create table if not exists public.mentorship_sessions (
+  id uuid primary key default gen_random_uuid(),
+  request_id uuid not null references public.mentorship_requests(id) on delete cascade,
+  scheduled_for timestamptz,
+  summary text not null check (char_length(summary) between 3 and 2000),
+  follow_up text check (follow_up is null or char_length(follow_up) <= 2000),
+  created_by uuid not null references public.profiles(id) on delete restrict,
+  created_at timestamptz not null default now()
+);
+alter table public.mentorship_sessions enable row level security;
+create policy "Pairs read mentorship sessions" on public.mentorship_sessions for select using (
+  exists (select 1 from public.mentorship_requests mr where mr.id = request_id and mr.status = 'accepted' and (mr.mentor_id = auth.uid() or mr.requester_id = auth.uid())) or public.is_platform_admin());
+create policy "Pairs add mentorship sessions" on public.mentorship_sessions for insert with check (
+  created_by = auth.uid() and exists (select 1 from public.mentorship_requests mr where mr.id = request_id and mr.status = 'accepted' and (mr.mentor_id = auth.uid() or mr.requester_id = auth.uid())));
+
+create table if not exists public.mentorship_feedback (
+  id uuid primary key default gen_random_uuid(),
+  session_id uuid not null references public.mentorship_sessions(id) on delete cascade,
+  author_id uuid not null references public.profiles(id) on delete cascade,
+  rating integer check (rating between 1 and 5),
+  body text not null check (char_length(body) between 3 and 1500),
+  created_at timestamptz not null default now(),
+  unique (session_id, author_id)
+);
+alter table public.mentorship_feedback enable row level security;
+create policy "Pairs read mentorship feedback" on public.mentorship_feedback for select using (
+  exists (select 1 from public.mentorship_sessions ms join public.mentorship_requests mr on mr.id = ms.request_id where ms.id = session_id and (mr.mentor_id = auth.uid() or mr.requester_id = auth.uid())) or public.is_platform_admin());
+create policy "Pairs give own mentorship feedback" on public.mentorship_feedback for insert with check (
+  author_id = auth.uid() and exists (select 1 from public.mentorship_sessions ms join public.mentorship_requests mr on mr.id = ms.request_id where ms.id = session_id and (mr.mentor_id = auth.uid() or mr.requester_id = auth.uid())));
+
+create table if not exists public.community_channels (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null check (slug ~ '^[a-z0-9-]{3,80}$'),
+  title text not null check (char_length(title) between 3 and 100),
+  description text not null check (char_length(description) between 10 and 500),
+  published boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.community_channels enable row level security;
+create policy "Members read published community channels" on public.community_channels for select using (published or public.is_platform_admin());
+create policy "Admins manage community channels" on public.community_channels for all using (public.is_platform_admin()) with check (public.is_platform_admin());
+
+create table if not exists public.community_posts (
+  id uuid primary key default gen_random_uuid(),
+  channel_id uuid not null references public.community_channels(id) on delete cascade,
+  author_id uuid not null references public.profiles(id) on delete cascade,
+  body text not null check (char_length(body) between 3 and 4000),
+  status text not null default 'published' check (status in ('published', 'hidden', 'removed')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.community_posts enable row level security;
+create policy "Members read published posts" on public.community_posts for select using (status = 'published' or author_id = auth.uid() or public.is_platform_admin());
+create policy "Members create published posts" on public.community_posts for insert with check (author_id = auth.uid() and status = 'published' and exists (select 1 from public.community_channels cc where cc.id = channel_id and cc.published));
+create policy "Authors edit own published posts" on public.community_posts for update using (author_id = auth.uid() or public.is_platform_admin()) with check (author_id = auth.uid() or public.is_platform_admin());
+
+create table if not exists public.community_comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.community_posts(id) on delete cascade,
+  author_id uuid not null references public.profiles(id) on delete cascade,
+  body text not null check (char_length(body) between 3 and 2000),
+  status text not null default 'published' check (status in ('published', 'hidden', 'removed')),
+  created_at timestamptz not null default now()
+);
+alter table public.community_comments enable row level security;
+create policy "Members read published comments" on public.community_comments for select using (status = 'published' or author_id = auth.uid() or public.is_platform_admin());
+create policy "Members create comments" on public.community_comments for insert with check (author_id = auth.uid() and status = 'published' and exists (select 1 from public.community_posts cp where cp.id = post_id and cp.status = 'published'));
+
+create table if not exists public.community_reactions (
+  post_id uuid not null references public.community_posts(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  reaction text not null check (reaction in ('useful', 'insightful', 'welcome')),
+  created_at timestamptz not null default now(), primary key (post_id, user_id, reaction)
+);
+alter table public.community_reactions enable row level security;
+create policy "Members read community reactions" on public.community_reactions for select using (true);
+create policy "Members manage own reactions" on public.community_reactions for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+insert into public.schema_migrations (phase) values ('phase39') on conflict (phase) do nothing;
+commit;
+
+-- END supabase/phase39.sql
+
+-- BEGIN supabase/phase40.sql
+-- Phase 40: close phase39 authorization gaps without changing historical migrations.
+begin;
+
+-- Do not inherit Supabase's default table grants or PUBLIC policy roles.
+do $$
+declare entry record;
+begin
+  for entry in select tablename, policyname from pg_policies
+    where schemaname = 'public' and tablename in (
+      'mentor_profiles', 'mentorship_requests', 'mentorship_sessions', 'mentorship_feedback',
+      'community_channels', 'community_posts', 'community_comments', 'community_reactions'
+    )
+  loop
+    execute format('alter policy %I on public.%I to authenticated', entry.policyname, entry.tablename);
+  end loop;
+end;
+$$;
+
+revoke all on table public.mentor_profiles, public.mentorship_requests,
+  public.mentorship_sessions, public.mentorship_feedback, public.community_channels,
+  public.community_posts, public.community_comments, public.community_reactions
+  from public, anon, authenticated;
+grant select on table public.mentor_profiles, public.mentorship_requests,
+  public.mentorship_sessions, public.mentorship_feedback, public.community_channels,
+  public.community_posts, public.community_comments, public.community_reactions to authenticated;
+grant insert (mentor_id, headline, expertise, availability_note, monthly_capacity, accepting_requests, visible),
+  update (mentor_id, headline, expertise, availability_note, monthly_capacity, accepting_requests, visible)
+  on public.mentor_profiles to authenticated;
+grant insert (mentor_id, requester_id, topic, goal, availability_note),
+  update (status, decision_note) on public.mentorship_requests to authenticated;
+grant insert (request_id, scheduled_for, summary, follow_up, created_by)
+  on public.mentorship_sessions to authenticated;
+grant insert (session_id, author_id, rating, body) on public.mentorship_feedback to authenticated;
+grant insert (slug, title, description, published), update (title, description, published)
+  on public.community_channels to authenticated;
+grant insert (channel_id, author_id, body), update (body, status)
+  on public.community_posts to authenticated;
+grant insert (post_id, author_id, body) on public.community_comments to authenticated;
+grant insert (post_id, user_id, reaction), delete on public.community_reactions to authenticated;
+
+create or replace function public.guard_mentor_profile_update()
+returns trigger language plpgsql set search_path = public as $$
+begin
+  if new.mentor_id is distinct from old.mentor_id or new.created_at is distinct from old.created_at then
+    raise exception 'Mentor identity is immutable' using errcode = '23514';
+  end if;
+  new.updated_at := now();
+  return new;
+end;
+$$;
+create trigger guard_mentor_profile_update_trigger before update on public.mentor_profiles
+  for each row execute function public.guard_mentor_profile_update();
+revoke all on function public.guard_mentor_profile_update() from public, anon, authenticated;
+
+alter policy "Mentors create own availability" on public.mentor_profiles
+  with check (mentor_id = (select auth.uid()) and (
+    public.has_institution_role((select auth.uid()), 'mentor')
+    or public.has_institution_role((select auth.uid()), 'lab_lead') or public.is_platform_admin()));
+
+-- Revoking a mentor role also revokes availability writes and request decisions.
+alter policy "Mentors update own availability" on public.mentor_profiles
+  using ((mentor_id = (select auth.uid()) and (public.has_institution_role((select auth.uid()), 'mentor') or public.has_institution_role((select auth.uid()), 'lab_lead'))) or public.is_platform_admin())
+  with check ((mentor_id = (select auth.uid()) and (public.has_institution_role((select auth.uid()), 'mentor') or public.has_institution_role((select auth.uid()), 'lab_lead'))) or public.is_platform_admin());
+alter policy "Mentors decide own requests" on public.mentorship_requests
+  using ((mentor_id = (select auth.uid()) and (public.has_institution_role((select auth.uid()), 'mentor') or public.has_institution_role((select auth.uid()), 'lab_lead'))) or public.is_platform_admin())
+  with check (((mentor_id = (select auth.uid()) and (public.has_institution_role((select auth.uid()), 'mentor') or public.has_institution_role((select auth.uid()), 'lab_lead'))) or public.is_platform_admin()) and status in ('accepted', 'declined', 'closed'));
+
+create or replace function public.guard_mentorship_decision()
+returns trigger language plpgsql set search_path = public as $$
+begin
+  if row(new.id, new.mentor_id, new.requester_id, new.topic, new.goal, new.availability_note, new.created_at)
+    is distinct from row(old.id, old.mentor_id, old.requester_id, old.topic, old.goal, old.availability_note, old.created_at) then
+    raise exception 'Request identity and submitted content are immutable' using errcode = '23514';
+  end if;
+  if not ((old.status = 'pending' and new.status in ('accepted', 'declined'))
+    or (old.status = 'accepted' and new.status = 'closed')) then
+    raise exception 'Invalid mentorship request transition' using errcode = '23514';
+  end if;
+  new.updated_at := now();
+  return new;
+end;
+$$;
+create trigger guard_mentorship_decision_trigger before update on public.mentorship_requests
+  for each row execute function public.guard_mentorship_decision();
+revoke all on function public.guard_mentorship_decision() from public, anon, authenticated;
+
+-- Restrictive policies apply to every permissive policy, including author-owned rows.
+-- Unpublishing a channel or moderating a post hides its descendant content.
+create policy "Community posts require a published channel" on public.community_posts
+  as restrictive for all to authenticated
+  using (public.is_platform_admin() or exists (select 1 from public.community_channels c where c.id = channel_id and c.published))
+  with check (public.is_platform_admin() or exists (select 1 from public.community_channels c where c.id = channel_id and c.published));
+create policy "Community comments require a published post" on public.community_comments
+  as restrictive for all to authenticated
+  using (public.is_platform_admin() or exists (select 1 from public.community_posts p where p.id = post_id and p.status = 'published'))
+  with check (public.is_platform_admin() or exists (select 1 from public.community_posts p where p.id = post_id and p.status = 'published'));
+create policy "Community reactions require a published post" on public.community_reactions
+  as restrictive for all to authenticated
+  using (public.is_platform_admin() or exists (select 1 from public.community_posts p where p.id = post_id and p.status = 'published'))
+  with check (public.is_platform_admin() or exists (select 1 from public.community_posts p where p.id = post_id and p.status = 'published'));
+
+create or replace function public.guard_community_post_update()
+returns trigger language plpgsql set search_path = public as $$
+begin
+  if row(new.id, new.channel_id, new.author_id, new.created_at)
+    is distinct from row(old.id, old.channel_id, old.author_id, old.created_at) then
+    raise exception 'Post identity and channel are immutable' using errcode = '23514';
+  end if;
+  if not public.is_platform_admin() and (old.status <> 'published' or new.status <> 'published') then
+    raise exception 'Only administrators can change moderation status' using errcode = '23514';
+  end if;
+  new.updated_at := now();
+  return new;
+end;
+$$;
+create trigger guard_community_post_update_trigger before update on public.community_posts
+  for each row execute function public.guard_community_post_update();
+revoke all on function public.guard_community_post_update() from public, anon, authenticated;
+
+-- Index referencing columns used by the parent visibility checks and pair lookups.
+create index if not exists mentorship_requests_requester_idx on public.mentorship_requests (requester_id);
+create index if not exists mentorship_sessions_request_idx on public.mentorship_sessions (request_id);
+create index if not exists community_posts_channel_idx on public.community_posts (channel_id);
+create index if not exists community_comments_post_idx on public.community_comments (post_id);
+
+insert into public.schema_migrations (phase) values ('phase40') on conflict (phase) do nothing;
+commit;
+
+-- END supabase/phase40.sql

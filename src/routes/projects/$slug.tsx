@@ -1,9 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { InstitutionLayout } from "@/components/institution/InstitutionLayout";
-import { clearPitchDraft, loadPitchDraft, savePitchDraft } from "@/lib/application-draft";
+import {
+  clearPitchDraft,
+  loadApplicationDraft,
+  saveApplicationDraft,
+} from "@/lib/application-draft";
 import { InterestMatchTags } from "@/components/member/InterestMatchTags";
 import { ApplicationNextSteps } from "@/components/member/ApplicationNextSteps";
 import { ApplicationStatusTimeline } from "@/components/member/ApplicationStatusTimeline";
@@ -31,6 +35,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
+import { trackEvent } from "@/lib/analytics";
+import { applicationAnalyticsProps } from "@/lib/application-analytics";
+import { isDemoMode } from "@/lib/supabase-fallback";
 import { memberLink, projectEditLink, projectLink, projectManageLink } from "@/lib/app-paths";
 import {
   applyToProject,
@@ -51,6 +58,7 @@ import type { Project, ProjectApplication } from "@/lib/types";
 import { fetchProjectMembership } from "@/lib/project-collaboration";
 import { isAdministrator } from "@/lib/roles";
 import { pageHead, titleFromSlug } from "@/lib/seo";
+import { safeHref } from "@/lib/urls";
 
 export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetailPage,
@@ -64,7 +72,9 @@ export const Route = createFileRoute("/projects/$slug")({
 });
 
 function ProjectDetailPage() {
-  return <ProjectDetail />;
+  const { user } = useAuth();
+  const { slug } = Route.useParams();
+  return <ProjectDetail key={`${slug}:${user?.id ?? "visitor"}`} />;
 }
 
 function ProjectPageLayout({ title, children }: { title: string; children: React.ReactNode }) {
@@ -98,6 +108,11 @@ function ProjectDetail() {
   const [loadAttempt, setLoadAttempt] = useState(0);
   const [questions, setQuestions] = useState<ProjectApplicationQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [draftProjectId, setDraftProjectId] = useState("");
+  const [draftStored, setDraftStored] = useState(true);
+  const applicationStarted = useRef(false);
+  const draftUserId = user?.id;
+  const currentProjectId = project?.id;
 
   useEffect(() => {
     let cancelled = false;
@@ -147,25 +162,54 @@ function ProjectDetail() {
 
   useEffect(() => {
     if (!user || !project) return;
-    void fetchProjectMembership(project.id, user.id).then((membership) => {
-      setIsCollaborator(membership?.status === "active" || membership?.status === "paused");
-    });
+    let current = true;
+    void fetchProjectMembership(project.id, user.id)
+      .then((membership) => {
+        if (current)
+          setIsCollaborator(membership?.status === "active" || membership?.status === "paused");
+      })
+      .catch(() => {
+        if (current) setIsCollaborator(false);
+      });
+    return () => {
+      current = false;
+    };
   }, [user, project]);
 
   useEffect(() => {
     if (!user || !project) return;
-    void getApplicationForProject(user.id, project.id).then(setApplication);
-    setPitch(loadPitchDraft(user.id, project.id));
+    let current = true;
+    void getApplicationForProject(user.id, project.id)
+      .then((next) => {
+        if (current) setApplication(next);
+      })
+      .catch(() => {
+        if (current)
+          toast.error(
+            "Your application status could not be loaded. Check your applications before submitting again.",
+          );
+      });
+    return () => {
+      current = false;
+    };
   }, [user, project]);
 
   useEffect(() => {
-    if (!user || !project) return;
-    savePitchDraft(user.id, project.id, pitch);
-  }, [pitch, user, project]);
+    if (!draftUserId || !currentProjectId) return;
+    const draft = loadApplicationDraft(draftUserId, currentProjectId);
+    setPitch(draft.pitch);
+    setAnswers(draft.answers);
+    setDraftProjectId(currentProjectId);
+  }, [draftUserId, currentProjectId]);
+
+  useEffect(() => {
+    if (!user || !project || draftProjectId !== project.id) return;
+    setDraftStored(saveApplicationDraft(user.id, project.id, { pitch, answers }));
+  }, [pitch, answers, user, project, draftProjectId]);
 
   const onApply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !project || !profile) return;
+    if (!user || !project || !profile || submitting || draftProjectId !== project.id) return;
     for (const q of questions) {
       if (q.required && !answers[q.id]?.trim().length) {
         toast.error("Answer all required application questions.");
@@ -187,7 +231,11 @@ function ProjectDetail() {
       }
       toast.success("Application submitted.");
       clearPitchDraft(user.id, project.id);
-      void getApplicationForProject(user.id, project.id).then(setApplication);
+      void getApplicationForProject(user.id, project.id)
+        .then(setApplication)
+        .catch(() =>
+          toast.error("Application submitted. Refresh your applications to see its status."),
+        );
       setPitch("");
       setAnswers({});
     } catch {
@@ -336,9 +384,9 @@ function ProjectDetail() {
           </section>
         ) : null}
 
-        {user && project.discord_url ? (
+        {user && safeHref(project.discord_url) ? (
           <a
-            href={project.discord_url}
+            href={safeHref(project.discord_url)}
             target="_blank"
             rel="noreferrer"
             className="mt-6 inline-flex font-mono text-[10px] tracking-[0.22em] uppercase text-accent-blue hover:text-bone"
@@ -380,19 +428,25 @@ function ProjectDetail() {
             {editingPitch && application.status === "pending" ? (
               <form
                 className="mt-4 space-y-3"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  if (!user) return;
+                  if (!user || submitting) return;
                   setSubmitting(true);
-                  void updateApplicationPitch(user.id, application.id, pitch).then(({ error }) => {
-                    setSubmitting(false);
+                  try {
+                    const { error } = await updateApplicationPitch(user.id, application.id, pitch);
                     if (error) toast.error(error);
                     else {
                       toast.success("Pitch updated.");
                       setEditingPitch(false);
-                      void getApplicationForProject(user.id, project.id).then(setApplication);
+                      setApplication({ ...application, pitch });
                     }
-                  });
+                  } catch {
+                    toast.error(
+                      "Your pitch update could not be confirmed. Keep your text and try again after checking your connection.",
+                    );
+                  } finally {
+                    setSubmitting(false);
+                  }
                 }}
               >
                 <Textarea
@@ -450,13 +504,24 @@ function ProjectDetail() {
         ) : canApply ? (
           <form
             onSubmit={onApply}
+            onFocusCapture={() => {
+              if (!applicationStarted.current && !isDemoMode()) {
+                applicationStarted.current = true;
+                trackEvent("application_started", applicationAnalyticsProps("project"));
+              }
+            }}
             className="mt-10 rounded-sm border border-border/60 bg-background/70 p-6 space-y-4"
           >
             <h2 className="font-display text-lg text-bone">Apply to this project</h2>
             <p className="text-sm text-muted-foreground">
               Submitting attaches your full profile to the lead's review queue: display name, bio,
-              background, interest tags, GitHub, and LinkedIn. The pitch below is the only free-text
-              field — be specific about what you would ship in the first 30 days.
+              background, interest tags, GitHub, and LinkedIn. Be specific about what you would ship
+              in the first 30 days and answer any project questions below.
+            </p>
+            <p role="status" className="text-xs text-muted-foreground">
+              {draftStored
+                ? "Your pitch and answers are saved on this browser until you submit."
+                : "Browser storage is unavailable. Keep this page open or copy your pitch and answers before leaving."}
             </p>
             <div className="space-y-2">
               <Label htmlFor="pitch">Why you? What would you ship in 30 days?</Label>
@@ -485,16 +550,16 @@ function ProjectDetail() {
                 />
               </div>
             ))}
-            {profile?.linkedin_url ? (
+            {safeHref(profile?.linkedin_url) ? (
               <p className="text-xs text-muted-foreground">
                 LinkedIn attached:{" "}
                 <a
-                  href={profile.linkedin_url}
+                  href={safeHref(profile?.linkedin_url)}
                   className="text-accent-blue hover:underline"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {profile.linkedin_url}
+                  {profile?.linkedin_url}
                 </a>
               </p>
             ) : (

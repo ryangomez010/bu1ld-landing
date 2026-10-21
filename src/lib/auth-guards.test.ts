@@ -6,8 +6,17 @@ import { authedRedirectPath, memberGatePath, shouldUseNotifyUsersRpc } from "./a
 describe("auth-guards", () => {
   test("captures the original private destination and replaces login history", () => {
     const source = readFileSync("src/components/auth/RequireAuth.tsx", "utf8");
-    expect(source).toContain("useRef(sanitizeAppPath");
+    expect(source).toMatch(/useRef\(\s*sanitizeAppPath/);
     expect(source).toContain("replace: true");
+  });
+  test("uses one PKCE exchange owner for login and recovery callbacks", () => {
+    const config = readFileSync("src/lib/supabase.ts", "utf8");
+    expect(config).toContain("detectSessionInUrl: true");
+    for (const path of ["src/routes/auth/callback.tsx", "src/routes/reset-password.tsx"]) {
+      const source = readFileSync(path, "utf8");
+      expect(source).toContain("supabase.auth.initialize()");
+      expect(source).not.toContain("exchangeCodeForSession");
+    }
   });
   test("authedRedirectPath sends incomplete onboarding to /onboarding", () => {
     expect(authedRedirectPath({ id: "u1" }, { onboarding_completed: false }, "/dashboard")).toBe(

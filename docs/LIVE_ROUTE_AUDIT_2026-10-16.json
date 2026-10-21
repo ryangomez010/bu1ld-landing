@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-16",
+  "scope": "Read-only HTTP availability and redirect snapshot. No browser, authenticated journey, or database certification.",
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "final_url": "https://thebu1ld.com/",
+      "health": null
+    },
+    {
+      "path": "/api/health",
+      "status": 200,
+      "final_url": "https://thebu1ld.com/api/health",
+      "health": {
+        "ok": true,
+        "service": "the-bu1ld-nexus",
+        "revision": "3fe04bf8afc0043453dd967e3e0eb3f72428b228",
+        "environment": "production",
+        "builtAt": null
+      }
+    },
+    {
+      "path": "/network",
+      "status": 404,
+      "final_url": "https://thebu1ld.com/network"
+    },
+    {
+      "path": "/research-atlas",
+      "status": 404,
+      "final_url": "https://thebu1ld.com/research-atlas"
+    },
+    {
+      "path": "/projects",
+      "status": 200,
+      "final_url": "https://thebu1ld.com/projects",
+      "health": null
+    },
+    {
+      "path": "/apply",
+      "status": 404,
+      "final_url": "https://thebu1ld.com/apply"
+    },
+    {
+      "path": "/guides",
+      "status": 200,
+      "final_url": "https://thebu1ld.com/guides",
+      "health": null
+    },
+    {
+      "path": "/workspace",
+      "status": 200,
+      "final_url": "https://thebu1ld.com/workspace",
+      "health": null
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "final_url": "https://thebu1ld.com/login",
+      "health": null
+    },
+    {
+      "path": "/signup",
+      "status": 200,
+      "final_url": "https://thebu1ld.com/signup",
+      "health": null
+    }
+  ]
+}

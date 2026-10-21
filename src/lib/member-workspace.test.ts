@@ -32,4 +32,15 @@ describe("memberWorkspaceStats", () => {
     expect(route).toContain("resubmitContribution");
     expect(route).not.toContain("verifyContribution(");
   });
+
+  test("accepts a bounded project slug so a member can open the right evidence log", () => {
+    const route = readFileSync("src/routes/workspace.tsx", "utf8");
+    const applicationSteps = readFileSync("src/components/member/ApplicationNextSteps.tsx", "utf8");
+
+    expect(route).toContain("validateSearch");
+    expect(route).toContain("search.project");
+    expect(route).toContain("project.slug === search.project");
+    expect(applicationSteps).toContain('to="/workspace"');
+    expect(applicationSteps).toContain("search={{ project: projectSlug }}");
+  });
 });
