@@ -9,8 +9,31 @@ import {
 import { isDemoMode, resolveSeedItem, withSeedFallback } from "./supabase-fallback";
 
 const originalEnv = { ...import.meta.env };
+const supabaseEnvKeys = [
+  "VITE_SUPABASE_URL",
+  "VITE_SUPABASE_ANON_KEY",
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "VITE_SUPABASE_PUBLISHABLE_KEY",
+  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+] as const;
+const originalSupabaseEnv = Object.fromEntries(
+  supabaseEnvKeys.map((key) => [key, process.env[key]]),
+) as Record<(typeof supabaseEnvKeys)[number], string | undefined>;
+
+function clearSupabaseEnv() {
+  for (const key of supabaseEnvKeys) {
+    delete process.env[key];
+    import.meta.env[key] = "";
+  }
+}
 
 afterEach(() => {
+  for (const key of supabaseEnvKeys) {
+    const value = originalSupabaseEnv[key];
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
+  }
   Object.assign(import.meta.env, originalEnv);
 });
 
@@ -35,12 +58,7 @@ describe("supabase-fallback", () => {
 
   test("isDemoMode is true without Supabase in development", () => {
     import.meta.env.PROD = false;
-    import.meta.env.VITE_SUPABASE_URL = "";
-    import.meta.env.VITE_SUPABASE_ANON_KEY = "";
-    import.meta.env.NEXT_PUBLIC_SUPABASE_URL = "";
-    import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "";
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY = "";
-    import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "";
+    clearSupabaseEnv();
     expect(isDemoMode()).toBe(true);
   });
 });
