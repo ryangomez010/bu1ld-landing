@@ -5,6 +5,18 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
+// Preserve the existing Hooks correctness gate during the plugin upgrade.
+// This application does not enable React Compiler. Its additional migration
+// diagnostics remain available as a separate audit, without silently changing
+// the lint contract for every existing component.
+const hookRules =
+  process.env.BU1LD_REACT_COMPILER_LINT === "1"
+    ? reactHooks.configs.recommended.rules
+    : {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+      };
+
 export default tseslint.config(
   { ignores: ["dist", ".output", ".vinxi", "public/runtime-env.js"] },
   {
@@ -19,7 +31,7 @@ export default tseslint.config(
       "react-refresh": reactRefresh,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      ...hookRules,
       "no-restricted-imports": [
         "error",
         {
@@ -32,7 +44,10 @@ export default tseslint.config(
           ],
         },
       ],
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true, allowExportNames: ["Route"] },
+      ],
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },

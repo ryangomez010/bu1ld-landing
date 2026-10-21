@@ -1,5 +1,9 @@
 # Next Handoff
 
+## 2026-10-21 — code committed; PR integration awaiting public-push approval
+
+See [the PR integration report](PR_INTEGRATION_2026-10-21.md). Finalized code and both dependency PR heads are committed on `codex/finalize-bu1ld-20261021`; their remote PRs remain open. Combined tests and audit pass, and the frozen lockfile is repaired. Normal lint preserves the pre-upgrade Hooks gate (0 errors / 134 refresh warnings); the new separate React Compiler audit has 46 errors. Full typecheck/build on the integrated versions remains unverified. Automatic approval review rejected the public snapshot push; explicit publication approval was requested. No remote merge, push, SQL execution or deployment occurred. Do not claim a completed merge from local ancestry.
+
 ## 2026-10-21 — mentorship/community authorization and setup synchronization
 
 Read [the current completion report](COMPLETION_2026-10-21.md) and [verification receipt](COMPLETION_2026-10-21.json). New forward phase40 repairs broad phase39 grants, mutable request identity/content, unchecked decision transitions, author moderation bypass and hidden-parent visibility. The fresh-install bundle now includes phases39–40 with a deterministic generator and release drift check. The schema verifier covers the new feature tables and controls. A guarded rollback-only local role contract is prepared but **has not executed**.

@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { ExternalLink, Github, Globe, Linkedin } from "lucide-react";
+import { ExternalLink, Code2, Globe, BriefcaseBusiness } from "lucide-react";
 
 import { TagList } from "@/components/member/ContentCard";
 import { CtaLink } from "@/components/member/ContentCard";
@@ -100,7 +100,7 @@ export function IdentityCard({
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 surface-card border border-border/40 px-3 py-1.5 label-xs text-muted-foreground hover:text-bone transition-colors"
           >
-            <Github className="h-3.5 w-3.5" /> GitHub
+            <Code2 className="h-3.5 w-3.5" /> GitHub
           </a>
         ) : null}
         {linkedin ? (
@@ -110,7 +110,7 @@ export function IdentityCard({
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 surface-card border border-border/40 px-3 py-1.5 label-xs text-muted-foreground hover:text-bone transition-colors"
           >
-            <Linkedin className="h-3.5 w-3.5" /> LinkedIn
+            <BriefcaseBusiness className="h-3.5 w-3.5" /> LinkedIn
           </a>
         ) : null}
         {website ? (

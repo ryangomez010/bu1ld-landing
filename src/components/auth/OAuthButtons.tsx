@@ -1,4 +1,4 @@
-import { Github } from "lucide-react";
+import { Code2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth";
 type Provider = "github" | "google";
 
 const PROVIDERS: { id: Provider; label: string; icon?: React.ReactNode }[] = [
-  { id: "github", label: "GitHub", icon: <Github className="h-4 w-4" /> },
+  { id: "github", label: "GitHub", icon: <Code2 className="h-4 w-4" /> },
   { id: "google", label: "Google" },
 ];
 

@@ -38,7 +38,8 @@
     "research:pipeline:status": "node scripts/research-pipeline.mjs status",
     "research:pipeline:validate": "node scripts/research-pipeline.mjs validate",
     "release:check": "node scripts/release-readiness.mjs",
-    "release:prod": "BU1LD_RELEASE_STRICT=1 node scripts/release-readiness.mjs"
+    "release:prod": "BU1LD_RELEASE_STRICT=1 node scripts/release-readiness.mjs",
+    "lint:react-compiler": "BU1LD_REACT_COMPILER_LINT=1 eslint ."
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.63.1",
