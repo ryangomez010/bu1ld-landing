@@ -81,7 +81,7 @@ export function parseMentorshipRequest(input: {
   const result = mentorshipRequestSchema.safeParse(input);
   return result.success
     ? { data: result.data, error: null }
-    : { data: null, error: result.error.errors[0]?.message ?? "Invalid mentorship request." };
+    : { data: null, error: result.error.issues[0]?.message ?? "Invalid mentorship request." };
 }
 
 export function parseCreateProjectInput(input: {
@@ -96,7 +96,7 @@ export function parseCreateProjectInput(input: {
 }): { data: CreateProjectInput | null; error: string | null } {
   const result = createProjectInputSchema.safeParse(input);
   if (!result.success) {
-    return { data: null, error: result.error.errors[0]?.message ?? "Invalid project input." };
+    return { data: null, error: result.error.issues[0]?.message ?? "Invalid project input." };
   }
   return { data: result.data, error: null };
 }
@@ -116,7 +116,7 @@ export function parseUpdateProjectInput(input: {
 }): { data: UpdateProjectInput | null; error: string | null } {
   const result = updateProjectInputSchema.safeParse(input);
   if (!result.success) {
-    return { data: null, error: result.error.errors[0]?.message ?? "Invalid project update." };
+    return { data: null, error: result.error.issues[0]?.message ?? "Invalid project update." };
   }
   return { data: result.data, error: null };
 }
@@ -127,7 +127,7 @@ export function parseLeadRequestInput(message: string): {
 } {
   const result = leadRequestSchema.safeParse({ message });
   if (!result.success) {
-    return { data: null, error: result.error.errors[0]?.message ?? "Invalid request." };
+    return { data: null, error: result.error.issues[0]?.message ?? "Invalid request." };
   }
   return { data: result.data, error: null };
 }
@@ -149,7 +149,7 @@ export function parseEmailRequestInput(raw: unknown): {
 } {
   const result = emailRequestSchema.safeParse(raw);
   if (!result.success) {
-    return { data: null, error: result.error.errors[0]?.message ?? "Invalid email payload." };
+    return { data: null, error: result.error.issues[0]?.message ?? "Invalid email payload." };
   }
   if (!result.data.to && !result.data.userId) {
     return { data: null, error: "Missing recipient (to or userId)." };
@@ -173,7 +173,7 @@ export function parseDigestRequestInput(raw: unknown): {
 } {
   const result = digestRequestSchema.safeParse(raw ?? {});
   if (!result.success) {
-    return { data: {}, error: result.error.errors[0]?.message ?? "Invalid digest payload." };
+    return { data: {}, error: result.error.issues[0]?.message ?? "Invalid digest payload." };
   }
   return { data: result.data, error: null };
 }
